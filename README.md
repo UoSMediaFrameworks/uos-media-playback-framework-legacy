@@ -5,7 +5,7 @@ Layers for Media Framework
 ---------------------
 
 
-- MediaPlayers : display media request responding to a MediaPlayerController or MediaHub 
+- MediaPlayers : display media request responding to a MediaPlayerController or MediaHub
   - HTMLCanvasMediaPlayer (priority 1)
   - HTMLWebGLMediaPlater (priority 2)
   - UnityGameEngineMediaPlayer (priority 3)
@@ -16,5 +16,5 @@ Layers for Media Framework
   - Saves MediaScene to PlayerPlayerController
 - MediaController : interacts with MediaHubs to control MediaPlayers by a MediaPlayerContoller of files using the MediaConrollerAPI
 - MediaHub : Media Players subscribe to a media hub. MediaHub directly control players though a websocket
-- MediaControllerAPI : API used to control MeidaPlayers and Hubs JSON XML
+- MediaControllerAPI : API used to control MediaPlayers and Hubs JSON XML
 - ServerPlayerController : Server that plays MediaScenes to MediaControllers uses HTTP Websockets
