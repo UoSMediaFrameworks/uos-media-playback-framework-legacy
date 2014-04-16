@@ -1,0 +1,136 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MediaFamework | MockUp1</title>
+    <link rel="stylesheet" href="css/foundation.css" />
+    <script src="js/vendor/modernizr.js"></script>
+  </head>
+  <body>
+    
+    <div class="row">
+      <div class="large-12 columns">
+        <h1>HTMLCanvasMediaPlayer</h1>
+      </div>
+    <div>
+    <div class="row">
+      <div class="large-12 columns">
+        <div class="panel">
+        Canvas  
+          
+        </div>
+      </div>
+    </div>
+  
+    <div class="row">
+      <div class="large-12 columns">
+        <h1>MediaController</h1>
+      </div>
+    </div>
+    
+    <div class="row">
+    <div class="large-12 columns">
+      <div class="panel">
+      <h2>Controls</h2>
+      <div class="row">
+    <div class="large-12 columns">
+      <label>Add Media Element
+        <select>
+          <option value="image">image</option>
+          <option value="video">video</option>
+          <option value="audio">audio</option>
+        </select>
+      </label>
+    </div>
+  </div>
+      <form>
+        <fieldset>
+          <legend>Image</legend>
+          <div class="row collapse">
+            <div class="small-2 large-2 columns">
+              <span class="prefix">http://</span>
+            </div>
+            <div class="small-8 large-8 columns">
+              <input type="text" placeholder="someurl.com/image.png">
+            </div>
+            <div class="small-2 large-1 columns">
+              <a href="#" class="button postfix">Play</a>
+            </div>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Video</legend>
+          <div class="row collapse">
+            <div class="small-2 large-2 columns">
+              <span class="prefix">http://</span>
+            </div>
+            <div class="small-8 large-8 columns">
+              <input type="text" placeholder="anotherurl.com/video.ogg">
+            </div>
+            <div class="small-2 large-1 columns">
+              <a href="#" class="button postfix">Play</a>
+            </div>
+          </div>
+          <div class="row collapse">
+            <div class="small-3 large-3 columns">
+              <span class="prefix">StartTime:</span>
+            </div>
+            <div class="small-3 large-3 columns">
+              <input type="text" placeholder="00:00:00:00">
+            </div>
+            <div class="small-3 large-3 columns">
+              <span class="prefix">StopTime:</span>
+            </div>
+            <div class="small-3 large-3 columns">
+              <input type="text" placeholder="00:00:00:05">
+            </div>
+          </div>
+        </fieldset>
+      </form>
+      
+      
+      </div>
+    </div>
+  </div>
+
+  <pre>
+  {
+  "version": "1",
+  "name": "scene1",
+  "scene": [
+    {
+      "mediaObject": {
+        "name": "image",
+        "type": "image",
+        "mimeType": "image/png",
+        "url": "http://someurl.com/image.png",
+        "anmiationIn": "default",
+        "anmiationOut": "default",
+        "cachePolicy": "default",
+        "tags": "some,tags"
+      }
+    },
+    {
+      "mediaObject": {
+        "name": "video",
+        "type": "video",
+        "mimeType": "video/ogg",
+        "url": "http://anotherurl.com/video.ogg",
+        "anmiationIn": "default",
+        "anmiationOut": "default",
+        "cachePolicy": "default",
+        "subclips": [
+          {
+            "in": "00:00:00:00",
+            "out": "00:00:00:05",
+            "tags": "some,tags"
+          }
+        ]
+      }
+    }
+  ]
+}
+      </pre>
+    
+  </body>
