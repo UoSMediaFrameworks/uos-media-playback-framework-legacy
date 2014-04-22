@@ -32,12 +32,6 @@ form, #canvas {
     text-align: center;
 }
 
-#canvas > img {
-    position: absolute;
-    width: 50%;
-    opacity: 0;
-}
-
 .show-scene {
     float: right;
 }
