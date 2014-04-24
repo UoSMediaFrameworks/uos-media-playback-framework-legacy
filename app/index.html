@@ -57,13 +57,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{#scene}}
-                    <tr>
+                    {{#scene:i}}
+                    <tr data-index="{{i}}">
                         <td><img class="media-object-preview" src="{{mediaObject.url}}" /></td>
                         <td>{{mediaObject.url}}</td>
                         <td>{{mediaObject.tags}}</td>
                         <td>
                             <button on-tap="preview" type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-play"></span></button>
+                            <button on-tap="remove" type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
                         </td>
                     </tr>
                     {{#/scene}}

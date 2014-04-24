@@ -33,12 +33,19 @@ var MediaSceneEditor = Ractive.extend({
 
             preview: function(event) {
                 this.mediaPlayer.showImage(this.get(event.keypath).mediaObject.url, true);
+
+            },
+
+            remove: function(event) {
+                var index = event.index.i;
+                this.mediaScene.scene.splice(index, 1);
+                console.log(index);
             },
 
             displayScene: function(event) {
                 var key = this.mediaScene.name;
                 localStorage[key] = JSON.stringify(this.mediaScene);
-                window.open('scene.html?scene=' + key);
+                window.location.href = 'scene.html?scene=' + key;
             }
         });
     }
