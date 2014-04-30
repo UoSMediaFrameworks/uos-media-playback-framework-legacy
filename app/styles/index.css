@@ -35,3 +35,7 @@ form, #canvas {
 .show-scene {
     float: right;
 }
+
+textarea.json-preview {
+    height: 400px;
+}

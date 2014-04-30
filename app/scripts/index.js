@@ -7,13 +7,12 @@ var MediaSceneEditor = Ractive.extend({
     },
 
     init: function(options) {
-        this.mediaScene = options.mediaScene;
-        this.set('scene', this.mediaScene.scene);
+        this.set('mediaScene', options.mediaScene);
         this.mediaPlayer = options.mediaPlayer;
 
         this.on({
             newMediaObject: function(event) {
-                this.mediaScene.scene.push({
+                this.getScene().push({
                     mediaObject: {
                         name: 'image',
                         type: 'image',
@@ -38,16 +37,24 @@ var MediaSceneEditor = Ractive.extend({
 
             remove: function(event) {
                 var index = event.index.i;
-                this.mediaScene.scene.splice(index, 1);
-                console.log(index);
+                this.getScene().splice(index, 1);
             },
 
             displayScene: function(event) {
-                var key = this.mediaScene.name;
-                localStorage[key] = JSON.stringify(this.mediaScene);
+                var key = this.get('mediaScene.name');
+                localStorage[key] = JSON.stringify(this.get('mediaScene'));
                 window.location.href = 'scene.html?scene=' + key;
+            },
+
+            updateScene: function(event) {
+                var newScene = JSON.parse(event.node.value);
+                this.set('mediaScene', newScene);
             }
         });
+    },
+
+    getScene: function() {
+        return this.get('mediaScene.scene');
     }
 });
 
@@ -59,6 +66,3 @@ new MediaSceneEditor({
     mediaPlayer: mediaScenePlayer($('#canvas')),
     mediaScene: loadMediaScene()
 });
-
-
-
