@@ -2,35 +2,83 @@
 
 var loadMediaScene = (function() {
     var defaultMediaScene = {
-        version: '1',
-        name: 'scene1',
-        scene: [
-            {
-                mediaObject: {
-                    name: 'image',
-                    type: 'image',
-                    mimeType: 'image/jpeg',
-                    url: 'http://www.rabbit.org/adoption/bunny.jpg',
-                    anmiationIn: 'default',
-                    anmiationOut: 'default',
-                    cachePolicy: 'default',
-                    tags: 'some,tags'
-                }
-            },
-            {
-                mediaObject: {
-                    name: 'image',
-                    type: 'image',
-                    mimeType: 'image/jpeg',
-                    url: 'http://www.safehavenrr.org/Images/bunny.jpg',
-                    anmiationIn: 'default',
-                    anmiationOut: 'default',
-                    cachePolicy: 'default',
-                    tags: 'some,tags'
-                }
-            }
-        ]
-    };
+  "version": "1",
+  "name": "scene1",
+  "scene": [
+    {
+      "mediaObject": {
+        "name": "image",
+        "type": "image",
+        "mimeType": "image/jpeg",
+        "url": "http://www.safehavenrr.org/Images/bunny.jpg",
+        "anmiationIn": "default",
+        "anmiationOut": "default",
+        "cachePolicy": "default",
+        "tags": "rabbit"
+      }
+    },
+    {
+      "mediaObject": {
+        "name": "image",
+        "type": "image",
+        "mimeType": "image/jpeg",
+        "url": "http://www.rabbit.org/adoption/bunny.jpg",
+        "animiationIn": "default",
+        "animiationOut": "default",
+        "cachePolicy": "default",
+        "tags": "rabbit"
+      }
+    },
+    {
+      "mediaObject": {
+        "name": "image",
+        "type": "image",
+        "mimeType": "image/jpeg",
+        "url": "http://www.ikea.com/us/en/images/products/kritter-childrens-chair__0096632_PE236603_S4.JPG",
+        "animiationIn": "default",
+        "animiationOut": "default",
+        "cachePolicy": "default",
+        "tags": "chair"
+      }
+    },
+    {
+      "mediaObject": {
+        "name": "image",
+        "type": "image",
+        "mimeType": "image/jpeg",
+        "url": "http://upload.wikimedia.org/wikipedia/commons/2/2c/Art_deco_club_chair.jpg",
+        "animiationIn": "default",
+        "animiationOut": "default",
+        "cachePolicy": "default",
+        "tags": "chair"
+      }
+    },
+    {
+      "mediaObject": {
+        "name": "image",
+        "type": "image",
+        "mimeType": "image/jpeg",
+        "url": "http://research.fuseink.com/artifactimg/201210/MTM1MTUwOTc2MDE1MjYxXzE.jpg",
+        "animiationIn": "default",
+        "animiationOut": "default",
+        "cachePolicy": "default",
+        "tags": "rabbit, chair"
+      }
+    },
+    {
+      "mediaObject": {
+        "name": "image",
+        "type": "image",
+        "mimeType": "image/jpeg",
+        "url": "http://bestrainer.net/wp-content/uploads/2012/07/Captura-de-pantalla-2012-07-12-a-las-09.09.21-301x398.png",
+        "animiationIn": "default",
+        "animiationOut": "default",
+        "cachePolicy": "default",
+        "tags": "rabbit, chair"
+      }
+    }
+  ]
+};
 
     return function() {
         var sceneKey = $.url().param('scene');
@@ -46,6 +94,24 @@ var loadMediaScene = (function() {
 }());
 
 var mediaScenePlayer = (function() {
+    var tokenizeTags = function(tagString) {
+        // clean up tags into nice array, removing any empty strings
+        var tags = _.map(tagString.split(','), function (s) { return s.trim(); });
+        return _.filter(tags, function(s) { return s !== ""});
+    };
+
+    var filterMediaSceneByTags = function(mediaScene, tagsArray) {
+        if ( tagsArray.length > 0 ) {
+            return _.filter(mediaScene.scene, function (obj) {
+                if (_.intersection(obj.mediaObject.tags, tagsArray).length > 0) {
+                    return true;
+                }
+            });
+        } else {
+            return mediaScene.scene;
+        }
+    };
+
     var methods = {
         showImage: function(url, clear) {
             var el = this.el;
@@ -60,20 +126,39 @@ var mediaScenePlayer = (function() {
             });
         },
 
+        setMediaScene: function(mediaScene) {
+            var newScene = _.clone(mediaScene);
+            // tokenize the tags
+            newScene.scene = _.map(newScene.scene, function (obj) {
+                obj.mediaObject.tags = tokenizeTags(obj.mediaObject.tags);
+                return obj;
+            });
+
+            this.filteredMediaObjects = filterMediaSceneByTags(newScene, this.tagTokens);
+            this.mediaScene = newScene;
+        },
+
         playScene: function() {
             var self = this;
+
             setInterval(function() {
-                var url = self.randomImage().mediaObject.url;
-                var img = self.showImage(url);
-                setTimeout(function() {
-                    self.animateOutImage(img);
-                }, 6000);
+                var obj = self.randomImage();
+
+                if ( obj ) {
+                    var url = obj.mediaObject.url;
+                    var img = self.showImage(url);
+                    setTimeout(function() {
+                        self.animateOutImage(img);
+                    }, 6000);
+                } else {
+                    console.log('no image to show');
+                }
 
             }, 3000);
         },
 
         randomImage: function() {
-            var scene = this.mediaScene.scene;
+            var scene = this.filteredMediaObjects;
             return scene[Math.floor(Math.random()*scene.length)];
         },
 
@@ -104,17 +189,31 @@ var mediaScenePlayer = (function() {
             imgEl.src = url;
 
             return img;
+        },
+
+        filterByTags: function(tags) {
+            if ( tags ) {
+                this.tagTokens = tokenizeTags(tags);
+            } else {
+                this.tagTokens = [];
+            }
+
+            if ( this.mediaScene ) {
+                this.filteredMediaObjects = filterMediaSceneByTags(this.mediaScene, this.tagTokens);
+            }
         }
     };
 
-    var constructor = function(el, mediaScene) {
+    var constructor = function(el, mediaScene, tagString) {
         var instance = Object.create(methods);
         instance.el = el;
-        instance.mediaScene = mediaScene;
         instance.elWidth = el.width();
         instance.elHeight = el.height();
 
+        instance.filterByTags(tagString)
+
         if ( mediaScene ) {
+            instance.setMediaScene(mediaScene);
             instance.playScene();
         }
 
