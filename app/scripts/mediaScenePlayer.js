@@ -113,14 +113,46 @@ var mediaScenePlayer = (function() {
     };
 
     var methods = {
-        showImage: function(url, clear) {
+        showMediaObject: function(mediaObject, clear) {
+            var el = this.el;
+            var self = this;
+
+            if ( clear ) {
+                el.empty();
+            }
+
+            switch (mediaObject.type) {
+            case 'image':
+                this.showImage(mediaObject.url, clear);
+                break;
+
+            case 'video':
+                var videoEL = $('<div id="youtubePlayer"></div>');
+                el.append(videoEL);
+                var player = new YT.Player('youtubePlayer', {
+                    height: '300',
+                    width: '500',
+                    videoId: $.url(mediaObject.url).param('v'),
+                    playerVars: {
+                        controls: 0,
+                        showinfo: 0,
+                        modestbranding: 1,
+                        playsinline: 1,
+                    },
+                    events: {
+                        onReady: function(event) {
+                            event.target.playVideo();
+                        }
+                    }
+                });
+                break;
+            }
+        },
+        showImage: function(url) {
             var el = this.el;
             var self = this;
             return this.makeImage(url, function(img) {
                 img.addClass('image-media-object');
-                if ( clear ) {
-                    el.empty();
-                }
                 el.append(img);
                 self.animateInImage(img);
             });

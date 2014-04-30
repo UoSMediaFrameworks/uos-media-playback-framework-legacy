@@ -12,17 +12,38 @@ var MediaSceneEditor = Ractive.extend({
 
         this.on({
             newMediaObject: function(event) {
-                this.getScene().push({
-                    mediaObject: {
+                var mediaObject = {
+                    url: this.get('newUrl'),
+                    animiationIn: 'default',
+                    animiationOut: 'default',
+                    cachePolicy: 'default',
+                    tags: this.get('newTags')
+                };
+
+                switch (this.get('mediaType')) {
+                case 'image':
+                    mediaObject = _.extend(mediaObject, {
                         name: 'image',
                         type: 'image',
-                        mimeType: 'image/jpeg',
-                        url: this.get('newUrl'),
-                        animiationIn: 'default',
-                        animiationOut: 'default',
-                        cachePolicy: 'default',
-                        tags: this.get('newTags')
-                    }
+                        mimeType: 'image/jpeg'
+
+                    });
+                    break;
+
+                case 'video':
+                    mediaObject = _.extend(mediaObject, {
+                        name: 'video',
+                        type: 'video'
+                    });
+                    break;
+
+                case 'audio':
+                    // todo
+                    break;
+                }
+
+                this.getScene().push({
+                    mediaObject: mediaObject
                 });
 
                 this.set({newUrl: '', newTags: ''});
@@ -31,8 +52,7 @@ var MediaSceneEditor = Ractive.extend({
             },
 
             preview: function(event) {
-                this.mediaPlayer.showImage(this.get(event.keypath).mediaObject.url, true);
-
+                this.mediaPlayer.showMediaObject(this.get(event.keypath).mediaObject, true);
             },
 
             remove: function(event) {
@@ -49,6 +69,10 @@ var MediaSceneEditor = Ractive.extend({
             updateScene: function(event) {
                 var newScene = JSON.parse(event.node.value);
                 this.set('mediaScene', newScene);
+            },
+
+            acceptMediaType: function(event, type) {
+                this.set('mediaType', type);
             }
         });
     },
@@ -62,6 +86,9 @@ var MediaSceneEditor = Ractive.extend({
 
 new MediaSceneEditor({
     el: 'editor',
+    data: {
+        mediaType: 'image'
+    },
     template: '#media-scene-editor',
     mediaPlayer: mediaScenePlayer($('#canvas')),
     mediaScene: loadMediaScene()

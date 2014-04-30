@@ -1,52 +1,52 @@
 <!doctype html>
-<html class="no-js">
+<html class='no-js'>
     <head>
-        <meta charset="utf-8">
+        <meta charset='utf-8'>
         <title>MediaPlaybackFramework</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width">
+        <meta name='description' content=''>
+        <meta name='viewport' content='width=device-width'>
 
         <!-- build:css styles/vendor.css -->
         <!-- bower:css -->
-        <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css" />
+        <link rel='stylesheet' href='../bower_components/bootstrap/dist/css/bootstrap.css' />
         <!-- endbower -->
         <!-- endbuild -->
 
         <!-- build:css(.tmp) styles/index.css -->
-        <link rel="stylesheet" href="styles/mediaScenePlayer.css">
-        <link rel="stylesheet" href="styles/index.css">
+        <link rel='stylesheet' href='styles/mediaScenePlayer.css'>
+        <link rel='stylesheet' href='styles/index.css'>
         <!-- endbuild -->
     </head>
     <body>
         <!--[if lt IE 10]>
-            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+            <p class='browsehappy'>You are using an <strong>outdated</strong> browser. Please <a href='http://browsehappy.com/'>upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-        <script id="media-scene-editor" type="text/ractive">
-            <form class="form-inline" role="form">
-                <div class="form-group">
-                    <div class="input-group">
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-picture"></span></button>
-                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-volume-up"></span></button>
-                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-facetime-video"></span></button>
+        <script id='media-scene-editor' type='text/ractive'>
+            <form class='form-inline' role='form'>
+                <div class='form-group'>
+                    <div class='input-group'>
+                        <div class='btn-group'>
+                            <button on-tap='acceptMediaType:image' type='button' class='btn btn-default {{ mediaType === "image" ? "btn-selected" : ""}}'><span class='glyphicon glyphicon-picture'></span></button>
+                            <button on-tap='acceptMediaType:video' type='button' class='btn btn-default {{ mediaType === "video" ? "btn-selected" : ""}}'><span class='glyphicon glyphicon-facetime-video'></span></button>
+                            <button type='button' class='btn btn-default {{ mediaType === "audio" ? "btn-selected" : ""}}'><span class='glyphicon glyphicon-volume-up'></span></button>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <input type="url" value="{{newUrl}}" class="form-control" placeholder="URL">
+                <div class='form-group'>
+                    <input type='url' value='{{newUrl}}' class='form-control' placeholder='{{ mediaType }} url'>
                 </div>
 
-                <div class="form-group">
-                    <input type="text" value="{{newTags}}" class="form-control" placeholder="tag, tag, ...">
+                <div class='form-group'>
+                    <input type='text' value='{{newTags}}' class='form-control' placeholder='tag, tag, ...'>
                 </div>
 
-                <button on-tap="newMediaObject" type="submit" class="btn btn-primary">Add</button>
+                <button on-tap='newMediaObject' type='submit' class='btn btn-primary'>Add</button>
 
-                <button on-tap="displayScene" type="button" class="show-scene btn btn-default">Show Scene</button>
+                <button on-tap='displayScene' type='button' class='show-scene btn btn-default'>Show Scene</button>
             </form>
 
-            <table class="table">
+            <table class='table'>
                 <thead>
                     <tr>
                         <th>Preview</th>
@@ -57,31 +57,38 @@
                 </thead>
                 <tbody>
                     {{#mediaScene.scene:i}}
-                    <tr data-index="{{i}}">
-                        <td><img class="media-object-preview" src="{{mediaObject.url}}" /></td>
+                    <tr data-index='{{i}}'>
+                        <td>
+                            {{# mediaObject.type === 'image' }}
+                                <img class='media-object-preview' src='{{mediaObject.url}}' />
+                            {{/ image}}
+                            {{# mediaObject.type === 'video' }}
+                                <span class='glyphicon glyphicon-facetime-video'>
+                            {{/ video }}
+                        </td>
                         <td>{{mediaObject.url}}</td>
                         <td>{{mediaObject.tags}}</td>
                         <td>
-                            <button on-tap="preview" type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-play"></span></button>
-                            <button on-tap="remove" type="button" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
+                            <button on-tap='preview' type='button' class='btn btn-default btn-xs'><span class='glyphicon glyphicon-play'></span></button>
+                            <button on-tap='remove' type='button' class='btn btn-default btn-xs'><span class='glyphicon glyphicon-remove'></span></button>
                         </td>
                     </tr>
                     {{/mediaScene.scene}}
                 </tbody>
             </table>
 
-            <textarea class="json-preview form-control" on-blur="updateScene" value="{{JSON.stringify(mediaScene, null, '  ')}}"></textarea>
+            <textarea class='json-preview form-control' on-blur='updateScene' value='{{JSON.stringify(mediaScene, null, "    ")}}'></textarea>
         </script>
 
-        <div class="container">
+        <div class='container'>
 
-            <div id="canvas">
+            <div id='canvas'>
                 <h1>Test Canvas</h1>
 
             </div>
 
-            <div class="row">
-                <div id="editor" class="col-lg-12">
+            <div class='row'>
+                <div id='editor' class='col-lg-12'>
 
 
 
@@ -93,20 +100,22 @@
 
         <!-- build:js scripts/vendor.js -->
         <!-- bower:js -->
-        <script src="../bower_components/jquery/dist/jquery.js"></script>
-        <script src="../bower_components/ractive/ractive.js"></script>
-        <script src="../bower_components/ractive-events-tap/ractive-events-tap.js"></script>
-        <script src="../bower_components/greensock-js/src/minified/TweenLite.min.js"></script>
-        <script src="../bower_components/greensock-js/src/minified/plugins/CSSPlugin.min.js"></script>
-        <script src="../bower_components/purl/purl.js"></script>
-        <script src="../bower_components/underscore/underscore.js"></script>
+        <script src='../bower_components/jquery/dist/jquery.js'></script>
+        <script src='../bower_components/ractive/ractive.js'></script>
+        <script src='../bower_components/ractive-events-tap/ractive-events-tap.js'></script>
+        <script src='../bower_components/greensock-js/src/minified/TweenLite.min.js'></script>
+        <script src='../bower_components/greensock-js/src/minified/plugins/CSSPlugin.min.js'></script>
+        <script src='../bower_components/purl/purl.js'></script>
+        <script src='../bower_components/underscore/underscore.js'></script>
         <!-- endbower -->
         <!-- endbuild -->
 
+        <script src='https://www.youtube.com/iframe_api'></script>
+
 
         <!-- build:js({app,.tmp}) scripts/index.js -->
-        <script src="scripts/mediaScenePlayer.js"></script>
-        <script src="scripts/index.js"></script>
+        <script src='scripts/mediaScenePlayer.js'></script>
+        <script src='scripts/index.js'></script>
         <!-- endbuild -->
 </body>
 </html>

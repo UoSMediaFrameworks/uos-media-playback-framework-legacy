@@ -39,3 +39,8 @@ form, #canvas {
 textarea.json-preview {
     height: 400px;
 }
+
+.btn-selected {
+    background-color: #ebebeb;
+    border-color: #adadad;
+}
