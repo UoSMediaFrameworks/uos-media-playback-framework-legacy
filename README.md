@@ -8,12 +8,11 @@ Front end media player creating and previewing MediaScene JSON.
 ### Usage
 A fully functional version of the HTMLMediaPlayer is included in `dist/` directory.  Open up `dist/index.html` in your browser and start editing a scene.
 
-### Directory Structure
+### Directory/File Structure
 
-__app/__ Contains source code for development.  Development should happen in here.
-__dist/__ Version of app working and ready to go.
-__docs/__ Various documentation files from planning stages.
-
+- __app/__ Contains source code for development.  Development should happen in here.
+- __dist/__ Version of app working and ready to go.
+- __docs/__ Various documentation files from planning stages.
 
 ### Development
 For contributing you'll want to have [npm](https://www.npmjs.org/) installed.
