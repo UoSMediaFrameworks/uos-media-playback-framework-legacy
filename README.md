@@ -29,18 +29,20 @@ Checkout the repo and cd into the folder
 git clone git@github.com:Colum-SMA-Dev/MediaPlaybackFramework.git
 cd MediaPlaybackFramework
 ```
-Install our required packages
+
+Install our required packages for development
 ```
 npm install
 ```
-Launch the local webserver
-```
 
-install our client side packages
+Install our client side libraries
 ```
 bower install
 ```
 
+
+Launch the local webserver
+```
 grunt serve
 ```
 
