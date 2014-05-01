@@ -8,10 +8,18 @@ Front end media player creating and previewing MediaScene JSON.
 ### Usage
 A fully functional version of the HTMLMediaPlayer is included in `dist/` directory.  Open up `dist/index.html` in your browser and start editing a scene.
 
+### Directory Structure
+
+#### app
+Contains source code for development.  Development should happen in here.
+
+#### dist
+Version of app working and ready to go
+
 ### Development
 For contributing you'll want to have [npm](https://www.npmjs.org/) installed.
 
-Install [yeoman](http://yeoman.io/), this'll give us some handy tools development and packaging up `app` into `dist'.
+Install [yeoman](http://yeoman.io/), this'll give us some handy tools development and deployment.
 ```
 npm install -g yo
 ```
@@ -25,10 +33,25 @@ Install our required packages
 ```
 npm install
 ```
-And kick open a server
+Launch the local webserver
 ```
+
+install our client side packages
+```
+bower install
+```
+
 grunt serve
 ```
+
+### Deployment
+
+Using [Grunt](http://gruntjs.com/) (which was installed when we install yeoman above), packaging for deployment is one command
+```
+grunt build
+```
+
+
 
 
 
