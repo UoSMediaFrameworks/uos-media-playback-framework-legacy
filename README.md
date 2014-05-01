@@ -10,11 +10,15 @@ A fully functional version of the HTMLMediaPlayer is included in `dist/` directo
 
 ### Directory Structure
 
-#### app
+#### app/
 Contains source code for development.  Development should happen in here.
 
-#### dist
-Version of app working and ready to go
+#### dist/
+Version of app working and ready to go.
+
+#### docs/
+Various documentation files from planning stages.
+
 
 ### Development
 For contributing you'll want to have [npm](https://www.npmjs.org/) installed.
