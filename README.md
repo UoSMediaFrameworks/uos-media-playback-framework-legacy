@@ -10,9 +10,9 @@ A fully functional version of the HTMLMediaPlayer is included in `dist/` directo
 
 ### Directory Structure
 
-- __app/__ Contains source code for development.  Development should happen in here.
-- __dist/__ Version of app working and ready to go.
-- __docs/__ Various documentation files from planning stages.
+__app/__ Contains source code for development.  Development should happen in here.
+__dist/__ Version of app working and ready to go.
+__docs/__ Various documentation files from planning stages.
 
 
 ### Development
