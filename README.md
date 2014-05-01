@@ -1,7 +1,44 @@
-MediaPlaybackFramework
-======================
+# MediaPlaybackFramework
 
-Layers for Media Framework
+
+## HTMLMediaPlayer
+
+Front end media player creating and previewing MediaScene JSON.
+
+### Usage
+A fully functional version of the HTMLMediaPlayer is included in `dist/` directory.  Open up `dist/index.html` in your browser and start editing a scene.
+
+### Development
+For contributing you'll want to have [npm](https://www.npmjs.org/) installed.
+
+Install [yeoman](http://yeoman.io/), this'll give us some handy tools development and packaging up `app` into `dist'.
+```
+npm install -g yo
+```
+
+Checkout the repo and cd into the folder
+```
+git clone git@github.com:Colum-SMA-Dev/MediaPlaybackFramework.git
+cd MediaPlaybackFramework
+```
+Install our required packages
+```
+npm install
+```
+And kick open a server
+```
+grunt serve
+```
+
+
+
+
+
+
+
+
+
+Old notes Layers for Media Framework
 ---------------------
 
 
