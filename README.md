@@ -17,7 +17,7 @@ A fully functional version of the HTMLMediaPlayer is included in `dist/` directo
 ### Development
 For contributing you'll want to have [npm](https://www.npmjs.org/) installed.
 
-Install [yeoman](http://yeoman.io/), this'll give us some handy tools development and deployment.
+Install [yeoman](http://yeoman.io/), this'll give us some handy tools development and deployment.  If you're unfamiliar with yeoman, read their [getting started page](http://yeoman.io/gettingstarted.html).
 ```
 npm install -g yo
 ```
@@ -50,6 +50,8 @@ Using [Grunt](http://gruntjs.com/) (which was installed when we install yeoman a
 ```
 grunt build
 ```
+
+All files inside of `dist/` will be updated to reflect any changes made to files in `app`.
 
 
 
