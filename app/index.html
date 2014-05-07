@@ -43,7 +43,16 @@
 
                 <button on-tap='newMediaObject' type='submit' class='btn btn-primary'>Add</button>
 
-                <button on-tap='displayScene' type='button' class='show-scene btn btn-default'>Show Scene</button>
+                <div class='scene-buttons'>
+                    {{# playerState === 'stopped' }}
+                        <button on-tap='previewScene' type='button' class='btn btn-default'><span class='glyphicon glyphicon-play'></span></button>
+                    {{/ playerState }}
+                    {{# playerState === 'playing' }}
+                        <button on-tap='stopScene' type='button' class='btn btn-default'><span class='glyphicon glyphicon-stop'></span></button>
+                    {{/ playerState }}
+                    <button on-tap='viewScene' type='button' class='btn btn-default'>Play in Viewer</button>
+                </div>
+
             </form>
 
             <table class='table'>

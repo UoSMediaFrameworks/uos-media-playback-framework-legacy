@@ -159,34 +159,45 @@ var mediaScenePlayer = (function() {
         },
 
         setMediaScene: function(mediaScene) {
-            var newScene = _.clone(mediaScene);
+
             // tokenize the tags
-            newScene.scene = _.map(newScene.scene, function (obj) {
+            mediaScene.scene = _.map(mediaScene.scene, function (obj) {
                 obj.mediaObject.tags = tokenizeTags(obj.mediaObject.tags);
                 return obj;
             });
 
-            this.filteredMediaObjects = filterMediaSceneByTags(newScene, this.tagTokens);
-            this.mediaScene = newScene;
+            this.filteredMediaObjects = filterMediaSceneByTags(mediaScene, this.tagTokens);
+            this.mediaScene = mediaScene;
         },
 
         playScene: function() {
             var self = this;
+            this.el.empty();
 
-            setInterval(function() {
+            var showRandomImage = function() {
                 var obj = self.randomImage();
 
                 if ( obj ) {
                     var url = obj.mediaObject.url;
                     var img = self.showImage(url);
-                    setTimeout(function() {
+                    self.timeouts.push(setTimeout(function() {
                         self.animateOutImage(img);
-                    }, 6000);
+                    }, 6000));
                 } else {
                     console.log('no image to show');
                 }
+            };
 
-            }, 3000);
+            this.intervals.push(setInterval(showRandomImage, 3000));
+            showRandomImage();
+        },
+
+        stopScene: function () {
+            this.el.stop(true);
+            _.map(this.intervals, clearInterval);
+            _.map(this.timeouts, clearTimeout);
+            this.intervals = [];
+            this.timeouts = [];
         },
 
         randomImage: function() {
@@ -202,13 +213,13 @@ var mediaScenePlayer = (function() {
             });
 
             // and show
-            TweenLite.to(img, 2, {opacity: 1});
+            img.animate({'opacity': 1}, 1400);
         },
 
         animateOutImage: function(img) {
-            TweenLite.to(img, 2, {opacity: 0, onComplete: function() {
-                img.remove();
-            }});
+            img.animate({'opacity': 0}, 1400, function () {
+                img.remove()
+            });
         },
 
         makeImage: function(url, callback) {
@@ -241,6 +252,8 @@ var mediaScenePlayer = (function() {
         instance.el = el;
         instance.elWidth = el.width();
         instance.elHeight = el.height();
+        instance.intervals = [];
+        instance.timeouts = [];
 
         instance.filterByTags(tagString)
 

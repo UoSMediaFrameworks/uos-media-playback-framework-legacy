@@ -6,8 +6,19 @@ var MediaSceneEditor = Ractive.extend({
 
     },
 
+    startPlayer: function() {
+        this.mediaPlayer.playScene();
+        this.set('playerState', 'playing');
+    },
+
+    stopPlayer: function() {
+        this.mediaPlayer.stopScene();
+        this.set('playerState', 'stopped');
+    },
+
     init: function(options) {
         this.set('mediaScene', options.mediaScene);
+        this.set('playerState', 'stopped');
         this.mediaPlayer = options.mediaPlayer;
 
         this.on({
@@ -52,6 +63,7 @@ var MediaSceneEditor = Ractive.extend({
             },
 
             preview: function(event) {
+                this.stopPlayer();
                 this.mediaPlayer.showMediaObject(this.get(event.keypath).mediaObject, true);
             },
 
@@ -60,7 +72,17 @@ var MediaSceneEditor = Ractive.extend({
                 this.getScene().splice(index, 1);
             },
 
-            displayScene: function(event) {
+            previewScene: function(event) {
+                // ensure we pass a fresh object
+                this.mediaPlayer.setMediaScene(JSON.parse(JSON.stringify(this.get('mediaScene'))));
+                this.startPlayer();
+            },
+
+            stopScene: function(event) {
+                this.stopPlayer();
+            },
+
+            viewScene: function(event) {
                 var key = this.get('mediaScene.name');
                 localStorage[key] = JSON.stringify(this.get('mediaScene'));
                 window.location.href = 'scene.html?scene=' + key;
