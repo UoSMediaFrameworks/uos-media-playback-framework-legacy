@@ -120,9 +120,8 @@ var mediaScenePlayer = (function() {
             var tag = document.createElement('script');
             tag.src = "https://www.youtube.com/iframe_api";
 
-            var body = document.getElementsByTagName('body')[0];
-
-            body.appendChild(tag);
+            var firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
             window.onYouTubeIframeAPIReady = function() {
                 ytAPILoaded = true;
                 ytLoadCallbacks.forEach(function(func) {
@@ -133,7 +132,7 @@ var mediaScenePlayer = (function() {
     };
 
     var methods = {
-        showMediaObject: function(mediaObject, clear) {
+        showMediaObject: function(mediaObject, clear, completeCallback) {
             var el = this.el;
             var self = this;
 
@@ -169,7 +168,7 @@ var mediaScenePlayer = (function() {
                         onStateChange: function(event) {
                             if (event.data == YT.PlayerState.ENDED) {
                                 self.youtubePlayer.destroy();
-                                self.showRandomMediaObject('video');
+                                if (completeCallback) completeCallback();
                             }
                         }
                     }
@@ -179,7 +178,7 @@ var mediaScenePlayer = (function() {
                 this.audioPlayer = new Howl({
                     urls: [mediaObject.url],
                     onend: function () {
-                        self.showRandomMediaObject('audio');
+                        if (completeCallback) completeCallback();
                     }
                 }).play();
                 break;
@@ -216,10 +215,18 @@ var mediaScenePlayer = (function() {
                     self.showRandomMediaObject('image');
                 };
 
+                var showRandomVideo = function() {
+                    self.showRandomMediaObject('video', false, showRandomVideo);
+                }
+
+                var showRandomAudio = function () {
+                    self.showRandomMediaObject('audio', false, showRandomAudio);
+                }
+
                 self.intervals.push(setInterval(showRandomImage, 3000));
                 showRandomImage();
-                self.showRandomMediaObject('video');
-                self.showRandomMediaObject('audio');
+                showRandomAudio();
+                showRandomVideo();
             });
 
         },

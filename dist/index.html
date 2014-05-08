@@ -1,4 +1,4 @@
-<!DOCTYPE html><html class=no-js><head><meta charset=utf-8><title>MediaPlaybackFramework</title><meta name=description content=""><meta name=viewport content="width=device-width"><link rel=stylesheet href=styles/71c590b0.vendor.css><link rel=stylesheet href=styles/1e71d2e9.index.css><body><!--[if lt IE 10]>
+<!DOCTYPE html><html class=no-js><head><meta charset=utf-8><title>MediaPlaybackFramework</title><meta name=description content=""><meta name=viewport content="width=device-width"><link rel=stylesheet href=styles/71c590b0.vendor.css><link rel=stylesheet href=styles/4487dcec.index.css><body><!--[if lt IE 10]>
             <p class='browsehappy'>You are using an <strong>outdated</strong> browser. Please <a href='http://browsehappy.com/'>upgrade your browser</a> to improve your experience.</p>
         <![endif]--><script id=media-scene-editor type=text/ractive><form class='form-inline' role='form'>
                 <div class='form-group'>
@@ -6,7 +6,7 @@
                         <div class='btn-group'>
                             <button on-tap='acceptMediaType:image' type='button' class='btn btn-default {{ mediaType === "image" ? "btn-selected" : ""}}'><span class='glyphicon glyphicon-picture'></span></button>
                             <button on-tap='acceptMediaType:video' type='button' class='btn btn-default {{ mediaType === "video" ? "btn-selected" : ""}}'><span class='glyphicon glyphicon-facetime-video'></span></button>
-                            <button type='button' class='btn btn-default {{ mediaType === "audio" ? "btn-selected" : ""}}'><span class='glyphicon glyphicon-volume-up'></span></button>
+                            <button on-tap='acceptMediaType:audio' type='button' class='btn btn-default {{ mediaType === "audio" ? "btn-selected" : ""}}'><span class='glyphicon glyphicon-volume-up'></span></button>
                         </div>
                     </div>
                 </div>
@@ -21,7 +21,16 @@
 
                 <button on-tap='newMediaObject' type='submit' class='btn btn-primary'>Add</button>
 
-                <button on-tap='displayScene' type='button' class='show-scene btn btn-default'>Show Scene</button>
+                <div class='scene-buttons'>
+                    {{# playerState === 'stopped' }}
+                        <button on-tap='previewScene' type='button' class='btn btn-default'><span class='glyphicon glyphicon-play'></span></button>
+                    {{/ playerState }}
+                    {{# playerState === 'playing' }}
+                        <button on-tap='stopScene' type='button' class='btn btn-default'><span class='glyphicon glyphicon-stop'></span></button>
+                    {{/ playerState }}
+                    <button on-tap='viewScene' type='button' class='btn btn-default'>Play in Viewer</button>
+                </div>
+
             </form>
 
             <table class='table'>
@@ -43,6 +52,9 @@
                             {{# mediaObject.type === 'video' }}
                                 <span class='glyphicon glyphicon-facetime-video'>
                             {{/ video }}
+                            {{# mediaObject.type === 'audio' }}
+                                <span class='glyphicon glyphicon-volume-up'>
+                            {{/ video }}
                         </td>
                         <td>{{mediaObject.url}}</td>
                         <td>{{mediaObject.tags}}</td>
@@ -55,4 +67,4 @@
                 </tbody>
             </table>
 
-            <textarea class='json-preview form-control' on-blur='updateScene' value='{{JSON.stringify(mediaScene, null, "    ")}}'></textarea></script><div class=container><div id=canvas><h1>Test Canvas</h1></div><div class=row><div id=editor class=col-lg-12></div></div></div><script src=scripts/1be26d44.vendor.js></script><script src=https://www.youtube.com/iframe_api></script><script src=scripts/12941123.index.js></script>
+            <textarea class='json-preview form-control' on-blur='updateScene' value='{{JSON.stringify(mediaScene, null, "    ")}}'></textarea></script><div class=container><div id=canvas><h1>Test Canvas</h1></div><div class=row><div id=editor class=col-lg-12></div></div></div><script src=scripts/0bebbfc4.vendor.js></script><script src=scripts/2427423a.index.js></script>
