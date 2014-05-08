@@ -100,16 +100,13 @@ var mediaScenePlayer = (function() {
         return _.filter(tags, function(s) { return s !== ""});
     };
 
-    var filterMediaSceneByTags = function(mediaScene, tagsArray) {
-        if ( tagsArray.length > 0 ) {
-            return _.filter(mediaScene.scene, function (obj) {
-                if (_.intersection(obj.mediaObject.tags, tagsArray).length > 0) {
-                    return true;
-                }
-            });
-        } else {
-            return mediaScene.scene;
-        }
+    var filterMediaScene = function(mediaScene, tagsArray, mediaType) {
+        return _.filter(mediaScene.scene, function (obj) {
+            if ((tagsArray.length == 0 || _.intersection(obj.mediaObject.tags, tagsArray).length > 0 ) &&
+                (! mediaType || obj.mediaObject.type === mediaType)) {
+                return true;
+            }
+        });
     };
 
     var methods = {
@@ -123,7 +120,10 @@ var mediaScenePlayer = (function() {
 
             switch (mediaObject.type) {
             case 'image':
-                this.showImage(mediaObject.url, clear);
+                var img = this.showImage(mediaObject.url, clear);
+                this.timeouts.push(setTimeout(function() {
+                        self.animateOutImage(img);
+                }, 6000));
                 break;
 
             case 'video':
@@ -165,9 +165,8 @@ var mediaScenePlayer = (function() {
                 obj.mediaObject.tags = tokenizeTags(obj.mediaObject.tags);
                 return obj;
             });
-
-            this.filteredMediaObjects = filterMediaSceneByTags(mediaScene, this.tagTokens);
             this.mediaScene = mediaScene;
+            this.filterByTags(this.tagString);
         },
 
         playScene: function() {
@@ -175,21 +174,12 @@ var mediaScenePlayer = (function() {
             this.el.empty();
 
             var showRandomImage = function() {
-                var obj = self.randomImage();
-
-                if ( obj ) {
-                    var url = obj.mediaObject.url;
-                    var img = self.showImage(url);
-                    self.timeouts.push(setTimeout(function() {
-                        self.animateOutImage(img);
-                    }, 6000));
-                } else {
-                    console.log('no image to show');
-                }
+                self.showRandomMediaObject('image');
             };
 
             this.intervals.push(setInterval(showRandomImage, 3000));
             showRandomImage();
+            self.showRandomMediaObject('video');
         },
 
         stopScene: function () {
@@ -200,9 +190,19 @@ var mediaScenePlayer = (function() {
             this.timeouts = [];
         },
 
-        randomImage: function() {
-            var scene = this.filteredMediaObjects;
-            return scene[Math.floor(Math.random()*scene.length)];
+        getRandomMedia: function(type) {
+            var scene = this.filteredMediaObjects[type];
+            var obj = scene[Math.floor(Math.random()*scene.length)];
+            if ( obj ) {
+                return obj;
+            } else {
+                console.log('no ' + type +'s in current scene');
+            }
+        },
+
+        showRandomMediaObject: function(type) {
+            var obj = this.getRandomMedia(type);
+            if ( obj ) this.showMediaObject(obj.mediaObject);
         },
 
         animateInImage: function(img) {
@@ -235,14 +235,15 @@ var mediaScenePlayer = (function() {
         },
 
         filterByTags: function(tags) {
+            this.tagString = tags;
+            var tagTokens = [];
             if ( tags ) {
-                this.tagTokens = tokenizeTags(tags);
-            } else {
-                this.tagTokens = [];
+                tagTokens = tokenizeTags(tags);
             }
-
+            this.filteredMediaObjects = {};
             if ( this.mediaScene ) {
-                this.filteredMediaObjects = filterMediaSceneByTags(this.mediaScene, this.tagTokens);
+                this.filteredMediaObjects.image = filterMediaScene(this.mediaScene, tagTokens, 'image');
+                this.filteredMediaObjects.video = filterMediaScene(this.mediaScene, tagTokens, 'video');
             }
         }
     };
