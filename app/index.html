@@ -28,7 +28,7 @@
                         <div class='btn-group'>
                             <button on-tap='acceptMediaType:image' type='button' class='btn btn-default {{ mediaType === "image" ? "btn-selected" : ""}}'><span class='glyphicon glyphicon-picture'></span></button>
                             <button on-tap='acceptMediaType:video' type='button' class='btn btn-default {{ mediaType === "video" ? "btn-selected" : ""}}'><span class='glyphicon glyphicon-facetime-video'></span></button>
-                            <button type='button' class='btn btn-default {{ mediaType === "audio" ? "btn-selected" : ""}}'><span class='glyphicon glyphicon-volume-up'></span></button>
+                            <button on-tap='acceptMediaType:audio' type='button' class='btn btn-default {{ mediaType === "audio" ? "btn-selected" : ""}}'><span class='glyphicon glyphicon-volume-up'></span></button>
                         </div>
                     </div>
                 </div>
@@ -74,6 +74,9 @@
                             {{# mediaObject.type === 'video' }}
                                 <span class='glyphicon glyphicon-facetime-video'>
                             {{/ video }}
+                            {{# mediaObject.type === 'audio' }}
+                                <span class='glyphicon glyphicon-volume-up'>
+                            {{/ video }}
                         </td>
                         <td>{{mediaObject.url}}</td>
                         <td>{{mediaObject.tags}}</td>
@@ -106,19 +109,17 @@
 
         </div>
 
-
         <!-- build:js scripts/vendor.js -->
         <!-- bower:js -->
         <script src="../bower_components/jquery/dist/jquery.js"></script>
         <script src="../bower_components/ractive/ractive.js"></script>
         <script src="../bower_components/ractive-events-tap/ractive-events-tap.js"></script>
-        <script src="../bower_components/greensock-js/src/minified/TweenMax.min.js"></script>
         <script src="../bower_components/purl/purl.js"></script>
         <script src="../bower_components/underscore/underscore.js"></script>
+        <script src="../bower_components/howler/howler.js"></script>
         <!-- endbower -->
         <!-- endbuild -->
 
-        <script src='https://www.youtube.com/iframe_api'></script>
 
 
         <!-- build:js({app,.tmp}) scripts/index.js -->

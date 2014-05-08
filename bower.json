@@ -8,7 +8,8 @@
     "ractive-events-tap": "~0.1.1",
     "greensock-js": "~1.10.2",
     "purl": "~2.3.1",
-    "underscore": "~1.6.0"
+    "underscore": "~1.6.0",
+    "howler": "~1.1.20"
   },
   "devDependencies": {}
 }

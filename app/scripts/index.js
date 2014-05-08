@@ -49,7 +49,10 @@ var MediaSceneEditor = Ractive.extend({
                     break;
 
                 case 'audio':
-                    // todo
+                    mediaObject = _.extend(mediaObject, {
+                        name: 'audio',
+                        type: 'audio'
+                    });
                     break;
                 }
 

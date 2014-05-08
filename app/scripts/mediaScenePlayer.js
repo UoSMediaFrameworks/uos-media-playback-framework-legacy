@@ -108,6 +108,29 @@ var mediaScenePlayer = (function() {
             }
         });
     };
+    var ytAPILoaded = false;
+    var ytLoadCallbacks = [];
+    var ensureYouTubeApi = function(callback) {
+        if ( ytAPILoaded && callback ) {
+            callback();
+        } else {
+            if (callback) ytLoadCallbacks.push(callback);
+            // set it ahead of time so we don't accidently double load
+            // but hide the var from scope so no one tries to get smart with it
+            var tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+
+            var body = document.getElementsByTagName('body')[0];
+
+            body.appendChild(tag);
+            window.onYouTubeIframeAPIReady = function() {
+                ytAPILoaded = true;
+                ytLoadCallbacks.forEach(function(func) {
+                    func();
+                });
+            };
+        }
+    };
 
     var methods = {
         showMediaObject: function(mediaObject, clear) {
@@ -129,7 +152,7 @@ var mediaScenePlayer = (function() {
             case 'video':
                 var videoEL = $('<div id="youtubePlayer"></div>');
                 el.append(videoEL);
-                var player = new YT.Player('youtubePlayer', {
+                this.youtubePlayer = new YT.Player('youtubePlayer', {
                     height: '300',
                     width: '500',
                     videoId: $.url(mediaObject.url).param('v'),
@@ -142,9 +165,23 @@ var mediaScenePlayer = (function() {
                     events: {
                         onReady: function(event) {
                             event.target.playVideo();
+                        },
+                        onStateChange: function(event) {
+                            if (event.data == YT.PlayerState.ENDED) {
+                                self.youtubePlayer.destroy();
+                                self.showRandomMediaObject('video');
+                            }
                         }
                     }
                 });
+                break;
+            case 'audio':
+                this.audioPlayer = new Howl({
+                    urls: [mediaObject.url],
+                    onend: function () {
+                        self.showRandomMediaObject('audio');
+                    }
+                }).play();
                 break;
             }
         },
@@ -171,19 +208,26 @@ var mediaScenePlayer = (function() {
 
         playScene: function() {
             var self = this;
-            this.el.empty();
 
-            var showRandomImage = function() {
-                self.showRandomMediaObject('image');
-            };
+            ensureYouTubeApi(function () {
+                self.el.empty();
 
-            this.intervals.push(setInterval(showRandomImage, 3000));
-            showRandomImage();
-            self.showRandomMediaObject('video');
+                var showRandomImage = function() {
+                    self.showRandomMediaObject('image');
+                };
+
+                self.intervals.push(setInterval(showRandomImage, 3000));
+                showRandomImage();
+                self.showRandomMediaObject('video');
+                self.showRandomMediaObject('audio');
+            });
+
         },
 
         stopScene: function () {
             this.el.stop(true);
+            if (this.youtubePlayer) this.youtubePlayer.stopVideo();
+            if (this.audioPlayer) this.audioPlayer.stop();
             _.map(this.intervals, clearInterval);
             _.map(this.timeouts, clearTimeout);
             this.intervals = [];
@@ -244,6 +288,7 @@ var mediaScenePlayer = (function() {
             if ( this.mediaScene ) {
                 this.filteredMediaObjects.image = filterMediaScene(this.mediaScene, tagTokens, 'image');
                 this.filteredMediaObjects.video = filterMediaScene(this.mediaScene, tagTokens, 'video');
+                this.filteredMediaObjects.audio = filterMediaScene(this.mediaScene, tagTokens, 'audio');
             }
         }
     };
@@ -257,6 +302,9 @@ var mediaScenePlayer = (function() {
         instance.timeouts = [];
 
         instance.filterByTags(tagString)
+
+        ensureYouTubeApi();
+
 
         if ( mediaScene ) {
             instance.setMediaScene(mediaScene);
