@@ -1,4 +1,6 @@
 'use strict';
+/* global _: false */
+/* global Ractive: false */
 
 var MediaSceneEditor = Ractive.extend({
     addMediaObject: function() {
@@ -20,6 +22,7 @@ var MediaSceneEditor = Ractive.extend({
         this.set('mediaScene', options.mediaScene);
         this.set('playerState', 'stopped');
         this.mediaPlayer = options.mediaPlayer;
+        this.set('editing', []);
 
         this.on({
             newMediaObject: function(event) {
@@ -98,6 +101,49 @@ var MediaSceneEditor = Ractive.extend({
 
             acceptMediaType: function(event, type) {
                 this.set('mediaType', type);
+            },
+
+            editField: function(event, attributeName) {
+                console.log(event, attributeName);
+                var self = this,
+                    index = event.index.i,
+                    keydownHandler, blurHandler, input, currentValue;
+
+                currentValue = this.get(
+                    'mediaScene.scene.'+ index + '.mediaObject.' + attributeName);
+                this.set('editing.' + index + '.' + attributeName, true);
+
+                input = this.nodes.editor;
+                input.select();
+
+                window.addEventListener( 'keydown', keydownHandler = function ( event ) {
+                    switch ( event.which ) {
+                    case 13: // ENTER
+                        input.blur();
+                        break;
+
+                    case 27: // ESCAPE
+                        input.value = currentValue;
+                        self.set( 'items.' + index + '.description', currentDescription );
+                        input.blur();
+                        break;
+
+                    case 9: // TAB
+                        event.preventDefault();
+                        input.blur();
+                        self.editItem( ( index + 1 ) % self.get( 'items' ).length );
+                        break;
+                    }
+                });
+
+                input.addEventListener( 'blur', blurHandler = function () {
+                    window.removeEventListener( 'keydown', keydownHandler );
+                    input.removeEventListener( 'blur', blurHandler );
+                });
+            },
+
+            stopEditing: function(event, attributeName) {
+                this.set('editing.' + event.index.i + '.' + attributeName, false);
             }
         });
     },

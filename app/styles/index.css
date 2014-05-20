@@ -44,3 +44,7 @@ textarea.json-preview {
     background-color: #ebebeb;
     border-color: #adadad;
 }
+
+.editable {
+    cursor: pointer;
+}

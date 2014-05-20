@@ -76,6 +76,50 @@ var loadMediaScene = (function() {
         "cachePolicy": "default",
         "tags": "rabbit, chair"
       }
+    },
+    {
+        "mediaObject": {
+            "url": "https://www.youtube.com/watch?v=cY_22EZRI-Y",
+            "animiationIn": "default",
+            "animiationOut": "default",
+            "cachePolicy": "default",
+            "tags": "rabbit",
+            "name": "video",
+            "type": "video"
+        }
+    },
+    {
+        "mediaObject": {
+            "url": "http://www.therecordist.com/assets/sound/mp3_14/Gun_AK47_Machine_Gun_1.mp3",
+            "animiationIn": "default",
+            "animiationOut": "default",
+            "cachePolicy": "default",
+            "tags": "gun",
+            "name": "audio",
+            "type": "audio"
+        }
+    },
+    {
+        "mediaObject": {
+            "url": "http://www.therecordist.com/assets/sound/mp3_14/Water_Splash_1.mp3",
+            "animiationIn": "default",
+            "animiationOut": "default",
+            "cachePolicy": "default",
+            "tags": "splash",
+            "name": "audio",
+            "type": "audio"
+        }
+    },
+    {
+        "mediaObject": {
+            "url": "http://www.therecordist.com/assets/sound/mp3_14/Thunder_Clap_Spring.mp3",
+            "animiationIn": "default",
+            "animiationOut": "default",
+            "cachePolicy": "default",
+            "tags": "thunder",
+            "name": "audio",
+            "type": "audio"
+        }
     }
   ]
 };
@@ -109,25 +153,31 @@ var mediaScenePlayer = (function() {
         });
     };
     var ytAPILoaded = false;
+    var ytLoading = false;
     var ytLoadCallbacks = [];
     var ensureYouTubeApi = function(callback) {
         if ( ytAPILoaded && callback ) {
             callback();
         } else {
             if (callback) ytLoadCallbacks.push(callback);
-            // set it ahead of time so we don't accidently double load
-            // but hide the var from scope so no one tries to get smart with it
-            var tag = document.createElement('script');
-            tag.src = "https://www.youtube.com/iframe_api";
 
-            var firstScriptTag = document.getElementsByTagName('script')[0];
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-            window.onYouTubeIframeAPIReady = function() {
-                ytAPILoaded = true;
-                ytLoadCallbacks.forEach(function(func) {
-                    func();
-                });
-            };
+            if (! ytLoading) {
+                ytLoading = true;
+                // set it ahead of time so we don't accidently double load
+                // but hide the var from scope so no one tries to get smart with it
+                var tag = document.createElement('script');
+                tag.src = "https://www.youtube.com/iframe_api";
+
+                var firstScriptTag = document.getElementsByTagName('script')[0];
+                firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+                window.onYouTubeIframeAPIReady = function() {
+                    ytAPILoaded = true;
+                    ytLoadCallbacks.forEach(function(func) {
+                        func();
+                    });
+                };
+            }
+
         }
     };
 

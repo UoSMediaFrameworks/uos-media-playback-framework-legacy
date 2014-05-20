@@ -78,8 +78,18 @@
                                 <span class='glyphicon glyphicon-volume-up'>
                             {{/ video }}
                         </td>
-                        <td>{{mediaObject.url}}</td>
-                        <td>{{mediaObject.tags}}</td>
+                        <td>
+                            <span class='editable' on-tap='editField:url'>{{mediaObject.url}}</span>
+                            {{#editing[i].url}}
+                                <input id='editor' value='{{mediaObject.url}}' on-blur='stopEditing:url'>
+                            {{/editing[i].url}}
+                        </td>
+                        <td>
+                            <span class='editable' on-tap='editField:tags'>{{mediaObject.tags}}</span>
+                            {{#editing[i].tags}}
+                                <input id='editor' value='{{mediaObject.tags}}' on-blur='stopEditing:tags'>
+                            {{/editing[i].tags}}
+                        </td>
                         <td>
                             <button on-tap='preview' type='button' class='btn btn-default btn-xs'><span class='glyphicon glyphicon-play'></span></button>
                             <button on-tap='remove' type='button' class='btn btn-default btn-xs'><span class='glyphicon glyphicon-remove'></span></button>
