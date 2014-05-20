@@ -107,10 +107,10 @@ var MediaSceneEditor = Ractive.extend({
                 console.log(event, attributeName);
                 var self = this,
                     index = event.index.i,
-                    keydownHandler, blurHandler, input, currentValue;
+                    attributePath = 'mediaScene.scene.'+ index + '.mediaObject.' + attributeName,
+                    currentValue = this.get(attributePath),
+                    keydownHandler, blurHandler, input;
 
-                currentValue = this.get(
-                    'mediaScene.scene.'+ index + '.mediaObject.' + attributeName);
                 this.set('editing.' + index + '.' + attributeName, true);
 
                 input = this.nodes.editor;
@@ -124,15 +124,10 @@ var MediaSceneEditor = Ractive.extend({
 
                     case 27: // ESCAPE
                         input.value = currentValue;
-                        self.set( 'items.' + index + '.description', currentDescription );
+                        self.set(attributePath, currentValue);
                         input.blur();
                         break;
 
-                    case 9: // TAB
-                        event.preventDefault();
-                        input.blur();
-                        self.editItem( ( index + 1 ) % self.get( 'items' ).length );
-                        break;
                     }
                 });
 
