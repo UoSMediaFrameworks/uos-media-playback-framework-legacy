@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang='en' ng-app='MediaPlayer'>
+<head>
+    <meta charset='UTF-8' />
+    <title>Media Player</title>
+
+    <link rel='stylesheet' href='/css/vendor.css' />
+    <link rel='stylesheet' href='/css/main.css' />
+</head>
+<body ng-controller='MediaSceneEditorCtrl as editorCtrl'>
+    <div class='container'>
+        <div ma-media-scene-player media-scene='mediaScene' id='canvas' playing='playerState.playing'>
+            <h1>Test Canvas</h1>
+        </div>
+
+        <div class='row'>
+            <div class='col-lg-12'>
+                <form name='addMediaForm' ma-on-submit='addMediaObject()' role='form' class='form-inline' novalidate>
+                    <div class='scene-buttons'>
+                        <button type='button' ng-if='! playerState.playing' ng-click='playerState.playing = true' class='btn btn-default'>
+                            <span class='glyphicon glyphicon-play'></span>
+                        </button>
+                        <button type='button' ng-if='playerState.playing' ng-click='playerState.playing = false' class='btn btn-default'>
+                            <span class='glyphicon glyphicon-stop'></span>
+                        </button>
+
+                        <button ng-click='viewScene()' class='btn btn-default'>Play in Viewer</button>
+                    </div>
+
+                    <div class='form-group'>
+                        <div class='input-group'>
+                            <div class='btn-group'>
+                                <button type='button' ng-class='btnSelected("image")' ng-click='newMediaObject.type = "image"' class='btn btn-default'>
+                                    <span class='glyphicon glyphicon-picture'></span>
+                                </button>
+                                <button type='button' ng-class='btnSelected("video")' ng-click='newMediaObject.type = "video"' class='btn btn-default'>
+                                    <span class='glyphicon glyphicon-facetime-video'></span>
+                                </button>
+                                <button type='button' ng-class='btnSelected("audio")' ng-click='newMediaObject.type = "audio"' class='btn btn-default'>
+                                    <span class='glyphicon glyphicon-volume-up'></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class='form-group'>
+                        <input type='url' ma-form-group name='url' ng-model='newMediaObject.url' required class='form-control' placeholder='{{ newMediaObject.type }} url'>
+                    </div>
+
+                    <div class='form-group'>
+                        <input type='text' ma-form-group name='tags' ng-model='newMediaObject.tags' class='form-control' placeholder='tag, tag, ...'>
+                    </div>
+
+                    <button class='btn btn-primary' type='submit'>Add</button>
+                </form>
+
+                <table class='table'>
+                    <thead>
+                        <tr>
+                            <th>Preview</th>
+                            <th>Url</th>
+                            <th>Tags</th>
+                            <th>Controls</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat='obj in mediaScene.scene'>
+                            <td ng-switch on='obj.mediaObject.type'>
+                                <img ng-switch-when='image' class='media-object-preview' ng-src='{{obj.mediaObject.url}}' />
+                                <span ng-switch-when='video' class='glyphicon glyphicon-facetime-video'>
+                                <span ng-switch-when='audio' class='glyphicon glyphicon-volume-up'>
+                            </td>
+                            <td>
+                                <span editable-text='obj.mediaObject.url'>
+                                    {{ obj.mediaObject.url|cut:false:30 }}
+                                </span>
+
+
+                                <div ma-timecode ng-model='obj.mediaObject.start'>
+                            </td>
+                            <td>
+                                <span editable-text='obj.mediaObject.tags'>
+                                    {{ obj.mediaObject.tags }}
+                                </span>
+                            </td>
+                            <td>
+                                <button ng-click='previewMediaObject(obj)' type='button' class='btn btn-default btn-xs'>
+                                    <span class='glyphicon glyphicon-play'></span>
+                                </button>
+                                <button ng-click='removeMediaObject($index)' type='button' class='btn btn-default btn-xs'>
+                                    <span class='glyphicon glyphicon-remove'></span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class='form-group'>
+                    <textarea
+                     json-input='mediaScene'
+                     class='json-preview form-control'></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script preload-resource='default_media_scene.json' type='text/angular'>
+        {
+          "version": "1",
+          "name": "scene1",
+          "scene": [
+            {
+              "mediaObject": {
+                "name": "image",
+                "type": "image",
+                "mimeType": "image/jpeg",
+                "url": "http://www.safehavenrr.org/Images/bunny.jpg",
+                "anmiationIn": "default",
+                "anmiationOut": "default",
+                "cachePolicy": "default",
+                "tags": "rabbit"
+              }
+            },
+            {
+              "mediaObject": {
+                "name": "image",
+                "type": "image",
+                "mimeType": "image/jpeg",
+                "url": "http://www.ikea.com/us/en/images/products/kritter-childrens-chair__0096632_PE236603_S4.JPG",
+                "animiationIn": "default",
+                "animiationOut": "default",
+                "cachePolicy": "default",
+                "tags": "chair"
+              }
+            },
+            {
+              "mediaObject": {
+                "name": "image",
+                "type": "image",
+                "mimeType": "image/jpeg",
+                "url": "http://research.fuseink.com/artifactimg/201210/MTM1MTUwOTc2MDE1MjYxXzE.jpg",
+                "animiationIn": "default",
+                "animiationOut": "default",
+                "cachePolicy": "default",
+                "tags": "rabbit, chair"
+              }
+            },
+            {
+                "mediaObject": {
+                    "url": "https://www.youtube.com/watch?v=cY_22EZRI-Y",
+                    "animiationIn": "default",
+                    "animiationOut": "default",
+                    "cachePolicy": "default",
+                    "tags": "rabbit",
+                    "name": "video",
+                    "type": "video"
+                }
+            },
+            {
+                "mediaObject": {
+                    "url": "http://www.therecordist.com/assets/sound/mp3_14/Water_Splash_1.mp3",
+                    "animiationIn": "default",
+                    "animiationOut": "default",
+                    "cachePolicy": "default",
+                    "tags": "splash",
+                    "name": "audio",
+                    "type": "audio"
+                }
+            },
+            {
+                "mediaObject": {
+                    "url": "http://www.therecordist.com/assets/sound/mp3_14/Thunder_Clap_Spring.mp3",
+                    "animiationIn": "default",
+                    "animiationOut": "default",
+                    "cachePolicy": "default",
+                    "tags": "thunder",
+                    "name": "audio",
+                    "type": "audio"
+                }
+            }
+          ]
+        }
+    </script>
+
+    <script src='/js/bundle.js'></script>
+</body>
+</html>

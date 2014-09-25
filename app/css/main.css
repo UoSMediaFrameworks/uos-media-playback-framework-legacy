@@ -1,0 +1,42 @@
+#canvas {
+    position: relative;
+    height: 400px;
+    overflow: hidden;
+    background: #ddd;
+    margin-bottom: 34px;
+}
+
+#canvas h1 {
+    text-align: center;
+}
+
+.scene-buttons {
+    float: right;
+}
+
+.media-object-preview {
+    max-height: 40px;
+    width: auto;
+}
+
+textarea.json-preview {
+    height: 400px;
+}
+
+
+.btn-selected {
+    background-color: #ebebeb;
+    border-color: #adadad;
+}
+
+.image-media-object {
+    position: absolute;
+    width: 50%;
+    opacity: 0;
+}
+
+.timecode-input {
+    width: 25px !important;
+    text-align: center;
+    padding: 0;
+}
