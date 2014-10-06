@@ -8,7 +8,7 @@ var angular = require('angular'),
 
 angular.module(module.exports, [])
 
-.controller('MediaSceneEditorCtrl', ng(function($scope, mediaScene, playerElementManager) {
+.controller('MediaSceneEditorCtrl', ['$scope', 'mediaScene', 'playerElementManager', function($scope, mediaScene, playerElementManager) {
 
     $scope.playerState = {
         playing: false
@@ -25,6 +25,7 @@ angular.module(module.exports, [])
     $scope.mediaScene = mediaScene();
 
     $scope.addMediaObject = function() {
+
         var mediaObject = {
             animiationIn: 'default',
             animiationOut: 'default',
@@ -65,9 +66,9 @@ angular.module(module.exports, [])
     $scope.removeMediaObject = function(index) {
         $scope.mediaScene.scene.splice(index, 1);
     };
-}))
+}])
 
-.controller('MediaScenePlayerCtrl', ng(function($scope, $attrs, playerElementManager, youtubePlayer, $interval) {
+.controller('MediaScenePlayerCtrl', ['$scope', '$attrs', 'playerElementManager', 'youtubePlayer', '$interval', function($scope, $attrs, playerElementManager, youtubePlayer, $interval) {
     function getRandomMediaObject(mediaScene, type) {
         var objs = filterMediaScene(mediaScene, [], type);
         return objs[Math.floor(Math.random() * objs.length)];
@@ -135,4 +136,4 @@ angular.module(module.exports, [])
 
         youtubePlayer.destroyAll();
     };
-}));
+}]);

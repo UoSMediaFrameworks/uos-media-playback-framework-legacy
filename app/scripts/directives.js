@@ -7,12 +7,12 @@ var angular = require('angular'),
 
 angular.module(module.exports, [])
 
-.directive('maMediaScenePlayer', ng(function() {
+.directive('maMediaScenePlayer', function() {
     return {
         controller: 'MediaScenePlayerCtrl',
         scope: {
             mediaScene: '=',
-            playing: '=',
+            playing: '='
         },
         link: function($scope, iElm, iAttrs, ctrl) {
             ctrl.init(iElm, true);
@@ -25,17 +25,17 @@ angular.module(module.exports, [])
             });
         }
     };
-}))
+})
 
-.directive('preloadResource', ng(function(resourceCache) {
+.directive('preloadResource', ['resourceCache', function(resourceCache) {
     return {
         link: function (scope, element, attrs) {
             resourceCache.put(attrs.preloadResource, element.html());
         }
     };
-}))
+}])
 
-.directive('maFormGroup', ng(function() {
+.directive('maFormGroup', function() {
     return {
         require: '^form',
         link: function($scope, iElm, iAttrs, controller) {
@@ -54,9 +54,9 @@ angular.module(module.exports, [])
             $scope.$watch(controller.$name + '.$dirty', displayError);
         }
     };
-}))
+})
 
-.directive('maOnSubmit', ng(function($parse) {
+.directive('maOnSubmit', ['$parse', function($parse) {
     return {
         require: '?form',
         restrict: 'A',
@@ -82,9 +82,9 @@ angular.module(module.exports, [])
             });
         }
     };
-}))
+}])
 
-.directive('maTimecode', ng(function() {
+.directive('maTimecode', function() {
     return {
         require: 'ngModel',
         restrict: 'AE',
@@ -96,7 +96,6 @@ angular.module(module.exports, [])
                   '<input ng-model="frame" placeholder="FF" type="text" ng-change="updateFrame()" class="timecode-input">' +
                   '</div>',
         link: function($scope, elem, attr, ctrl) {
-            console.log(elem);
             var inputs = elem.find('input'),
                 value = [undefined, undefined, undefined, undefined],
                 invalidate = function(iHour, iMinute, iSecond, iFrame) {
@@ -123,8 +122,9 @@ angular.module(module.exports, [])
             }
 
             ctrl.$render = function() {
-                var vals = ctrl.$viewValue.split(':');
-                console.log('$render', ctrl.$viewValue);
+                //var vals = ctrl.$viewValue.split(':');
+                //console.log('$render', ctrl.$viewValue);
+                var vals = ['h'];
                 // for (var i = 0; i < 4; i++) {
                 //     inputs[i].value = vals[i];
                 // }
@@ -147,9 +147,9 @@ angular.module(module.exports, [])
             };
         }
     };
-}))
+})
 
-.directive('jsonInput', ng(function() {
+.directive('jsonInput', function() {
     return {
         restrict: 'A',
         link: function ($scope, elem, attr) {
@@ -179,4 +179,4 @@ angular.module(module.exports, [])
             }, true);
         }
     };
-}));
+});

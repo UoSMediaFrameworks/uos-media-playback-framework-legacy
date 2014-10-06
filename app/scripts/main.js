@@ -11,7 +11,7 @@ angular.module('MediaPlayer', [
     require('./filters'),
     'xeditable'
 ])
-
+ 
 .constant('mediaSceneJSONPath', 'default_media_scene.json')
 
 .run(function(editableOptions) {

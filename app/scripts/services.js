@@ -8,7 +8,7 @@ var angular = require('angular'),
 
 angular.module(module.exports, [])
 
-.factory('mediaScene', ng(function($location, resourceCache, mediaSceneJSONPath) {
+.factory('mediaScene', ['$location', 'resourceCache', 'mediaSceneJSONPath', function($location, resourceCache, mediaSceneJSONPath) {
     return function (){
         var mediaScene = {};
 
@@ -18,9 +18,9 @@ angular.module(module.exports, [])
 
         return mediaScene;
     };
-}))
+}])
 
-.factory('resourceCache', ng(function($http, $cacheFactory) {
+.factory('resourceCache', ['$http', '$cacheFactory', function($http, $cacheFactory) {
     var promises = {};
     var cache = $cacheFactory('resourceCache');
     return {
@@ -39,9 +39,9 @@ angular.module(module.exports, [])
             cache.put(path, data);
         }
     };
-}))
+}])
 
-.service('youtubePlayer', ng(function($document, $window) {
+.service('youtubePlayer', ['$document', '$window', function($document, $window) {
     var apiLoaded = false,
         callbacks = [],
         players = [];
@@ -51,8 +51,9 @@ angular.module(module.exports, [])
         tag = doc.createElement('script');
 
     tag.src = 'https://www.youtube.com/iframe_api';
-    var firstScriptTag = doc.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    
+    var body = doc.getElementsByTagName('body')[0];
+    body.appendChild(tag);
 
     $window.onYouTubeIframeAPIReady = function () {
         apiLoaded = true;
@@ -72,7 +73,7 @@ angular.module(module.exports, [])
                     controls: 0,
                     showinfo: 0,
                     modestbranding: 1,
-                    playsinline: 1,
+                    playsinline: 1
                 },
                 events: {
                     onReady: function(event) {
@@ -107,9 +108,9 @@ angular.module(module.exports, [])
         players = [];
     };
 
-}))
+}])
 
-.service('playerElementManager', ng(function($timeout, youtubePlayer) {
+.service('playerElementManager', ['$timeout', 'youtubePlayer', function($timeout, youtubePlayer) {
     var self = this;
 
     function animateInImage(img) {
@@ -164,4 +165,4 @@ angular.module(module.exports, [])
 
         youtubePlayer.create(id, url, completeCallback);
     };
-}));
+}]);
