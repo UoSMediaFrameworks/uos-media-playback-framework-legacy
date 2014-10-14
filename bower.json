@@ -11,7 +11,9 @@
     "angular-xeditable": "~0.1.8",
     "angular": "~1.2.19",
     "jquery": "~2.1.1",
-    "purl": "~2.3.1"
+    "purl": "~2.3.1",
+    "lodash": "~2.4.1",
+    "howler": "~1.1.25"
   },
   "overrides": {
     "bootstrap": {

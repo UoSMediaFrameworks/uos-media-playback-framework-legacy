@@ -1,14 +1,8 @@
 'use strict';
 
-module.exports = 'MediaPlayer.controllers';
+angular.module('MediaPlayer.controllers', []) 
 
-var angular = require('angular'),
-    _ = require('lodash'),
-    Howl = require('howler').Howl;
-
-angular.module(module.exports, [])
-
-.controller('MediaSceneEditorCtrl', ['$scope', 'mediaScene', 'playerElementManager', function($scope, mediaScene, playerElementManager) {
+.controller('MediaSceneEditorCtrl', function($scope, mediaScene, playerElementManager, Howl) {
 
     $scope.playerState = {
         playing: false
@@ -54,7 +48,7 @@ angular.module(module.exports, [])
             break;
         case 'audio':
             new Howl({
-                urls: [url],
+                urls: [url]
             }).play();
             break;
         case 'video':
@@ -66,9 +60,9 @@ angular.module(module.exports, [])
     $scope.removeMediaObject = function(index) {
         $scope.mediaScene.scene.splice(index, 1);
     };
-}])
+})
 
-.controller('MediaScenePlayerCtrl', ['$scope', '$attrs', 'playerElementManager', 'youtubePlayer', '$interval', function($scope, $attrs, playerElementManager, youtubePlayer, $interval) {
+.controller('MediaScenePlayerCtrl', function($scope, $attrs, playerElementManager, youtubePlayer, $interval, _, Howl) {
     function getRandomMediaObject(mediaScene, type) {
         var objs = filterMediaScene(mediaScene, [], type);
         return objs[Math.floor(Math.random() * objs.length)];
@@ -136,4 +130,4 @@ angular.module(module.exports, [])
 
         youtubePlayer.destroyAll();
     };
-}]);
+});

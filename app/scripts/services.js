@@ -1,12 +1,7 @@
 'use strict';
-/* global YT: false */
-module.exports = 'MediaPlayer.services';
+/*global YT: false, Image: false */
 
-var angular = require('angular'),
-    $ = require('jquery'),
-    purl = require('purl');
-
-angular.module(module.exports, [])
+angular.module('MediaPlayer.services', [])
 
 .factory('mediaScene', ['$location', 'resourceCache', 'mediaSceneJSONPath', function($location, resourceCache, mediaSceneJSONPath) {
     return function (){
@@ -41,7 +36,7 @@ angular.module(module.exports, [])
     };
 }])
 
-.service('youtubePlayer', ['$document', '$window', function($document, $window) {
+.service('youtubePlayer', function($document, $window, purl) {
     var apiLoaded = false,
         callbacks = [],
         players = [];
@@ -108,9 +103,9 @@ angular.module(module.exports, [])
         players = [];
     };
 
-}])
+})
 
-.service('playerElementManager', ['$timeout', 'youtubePlayer', function($timeout, youtubePlayer) {
+.service('playerElementManager', function($timeout, youtubePlayer, $) {
     var self = this;
 
     function animateInImage(img) {
@@ -165,4 +160,4 @@ angular.module(module.exports, [])
 
         youtubePlayer.create(id, url, completeCallback);
     };
-}]);
+});

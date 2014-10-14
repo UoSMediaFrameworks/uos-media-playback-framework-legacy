@@ -1,10 +1,6 @@
 'use strict';
 
-module.exports = 'MediaPlayer.filters';
-
-var angular = require('angular');
-
-angular.module(module.exports, [])
+angular.module('MediaPlayer.filters', [])
 
 .filter('cut', function () {
     return function (value, wordwise, max, tail) {

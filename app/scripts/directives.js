@@ -1,11 +1,6 @@
 'use strict';
-
-module.exports = 'MediaPlayer.directives';
-
-var angular = require('angular'),
-    _ = require('lodash');
-
-angular.module(module.exports, [])
+ 
+angular.module('MediaPlayer.directives', [])
 
 .directive('maMediaScenePlayer', function() {
     return {
@@ -73,7 +68,7 @@ angular.module(module.exports, [])
                 });
 
                 if (! controller.$valid) {
-                    return false;
+                    event.preventDefault();
                 }
 
                 $scope.$apply(function() {
@@ -84,7 +79,7 @@ angular.module(module.exports, [])
     };
 }])
 
-.directive('maTimecode', function() {
+.directive('maTimecode', function(_) {
     return {
         require: 'ngModel',
         restrict: 'AE',
@@ -109,7 +104,7 @@ angular.module(module.exports, [])
                 };
 
             $scope.updateHour = function() {
-                var hour = parseInt(scope.hour, 10),
+                var hour = parseInt($scope.hour, 10),
                     valid = (hour >= 0);
 
                 if (valid) {
@@ -119,7 +114,7 @@ angular.module(module.exports, [])
                 }
 
                 return hour;
-            }
+            };
 
             ctrl.$render = function() {
                 //var vals = ctrl.$viewValue.split(':');

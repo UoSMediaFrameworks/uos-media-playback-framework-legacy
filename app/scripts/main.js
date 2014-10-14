@@ -1,14 +1,11 @@
 'use strict';
 
-var angular = require('angular');
-
-require('angular-xeditable');
-
 angular.module('MediaPlayer', [
-    require('./controllers'),
-    require('./services'),
-    require('./directives'),
-    require('./filters'),
+    'MediaPlayer.controllers',
+    'MediaPlayer.services',
+    'MediaPlayer.directives',
+    'MediaPlayer.filters',
+    'MediaPlayer.libs',
     'xeditable'
 ])
  

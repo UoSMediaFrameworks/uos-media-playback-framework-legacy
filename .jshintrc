@@ -18,7 +18,7 @@
     "strict": true,
     "trailing": true,
     "smarttabs": true,
-    "predef": [
-        "ng"
-    ]
-}
+    "globals": {
+        "angular": false
+    }
+}       

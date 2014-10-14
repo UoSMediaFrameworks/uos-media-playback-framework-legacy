@@ -1,97 +1,85 @@
-'use strict';
+var gulp = require('gulp');
+var concat = require('gulp-concat');
+var sourcemaps = require('gulp-sourcemaps');
+var uglify = require('gulp-uglify');
+var ngAnnotate = require('gulp-ng-annotate'),
+    livereload = require('gulp-livereload'),
+    dest = 'dist',
+    app = 'app';
 
-var gulp = require('gulp'),
-    jshint = require('gulp-jshint'),
-    browserify = require('gulp-browserify'),
-    concat = require('gulp-concat'),
-    refresh = require('gulp-livereload'),
-    lrserver = require('tiny-lr')(),
-    express = require('express'),
-    livereload = require('connect-livereload'),
-    gulpBowerFiles = require('gulp-bower-files'),
-    gulpFilter = require('gulp-filter'),
-    flatten = require('gulp-flatten'),
-    rimraf = require('rimraf'),
-    angularInjector = require('gulp-angular-injector'),
-    livereloadport = 35729,
-    serverport = 5000;
-
-// Set up an express server (but not starting it yet)
-var server = express();
-// Add live reload
-server.use(livereload({port: livereloadport}));
-// Use our 'dist' folder as rootfolder
-server.use(express.static('./dist'));
-
-gulp.task('dev', ['clean-dist'], function() {
-    gulp.start('copy-css', 'html', 'jshint', 'browserify', 'bower-files');
-    // Start webserver
-    server.listen(serverport);
-    // Start live reload
-    lrserver.listen(livereloadport);
+gulp.task('js', function () {
+    gulp.src([app + '/scripts/**/main.js', app + '/scripts/**/*.js'])
+        .pipe(sourcemaps.init())
+        .pipe(concat('app.js'))
+        .pipe(ngAnnotate())
+    //.pipe(uglify())
+        .pipe(sourcemaps.write({sourceRoot: '/app/scripts'}))
+        .pipe(gulp.dest(dest + '/scripts'));
 });
 
-gulp.task('clean-dist', function(cb) {
-    rimraf('dist/*', cb);
+gulp.task('css', function() {
+    gulp.src(app + '/css/**/*.css')
+        .pipe(concat('app.css'))
+        .pipe(gulp.dest(dest + '/css'));
 });
-
-gulp.task('jshint', function() {
-    gulp.src('./app/scripts/*.js')
-    .pipe(jshint())
-    // You can look into pretty reporters as well, but that's another story
-    .pipe(jshint.reporter('default'));
-});
-
-gulp.task('browserify', function() {
-    // Single point of entry (make sure not to src ALL your files, browserify will figure it out for you)
-    gulp.src(['app/scripts/main.js'])
-    .pipe(browserify({
-        insertGlobals: true,
-        debug: true
-    }))
-    // Bundle to a single file
-    .pipe(concat('bundle.js'))
-    .pipe(angularInjector())
-    // Output it to our dist folder
-    .pipe(gulp.dest('dist/js'))
-    .pipe(refresh(lrserver));
-});
-
-gulp.watch(['app/scripts/*.js', 'app/scripts/**/*.js'],[
-    'jshint',
-    'browserify'
-]);
 
 gulp.task('html', function() {
-    gulp.src('./app/**/*.html')
-    .pipe(gulp.dest('dist/'))
-    .pipe(refresh(lrserver)); // Tell the lrserver to refresh
+    gulp.src(app + '/**/*.html')
+        .pipe(gulp.dest(dest+'/'));
 });
 
-gulp.watch(['app/**/*.html'], [
-    'html'
-]);
+gulp.task('vendor', function() {
+    var mainBowerFiles = require('main-bower-files'),
+        filter = require('gulp-filter'),
+        flatten = require('gulp-flatten'),
+        jsFilter = filter('*.js'),
+        cssFilter = filter('*.css'),
+        cssMapsFilter = filter('*.css.map'),
+        fontFilter = filter(['*.eot', '*.woff', '*.svg', '*.ttf']);
 
-gulp.task('copy-css', function() {
-    gulp.src('./app/css/**/*')
-    .pipe(gulp.dest('dist/css/'))
-    .pipe(refresh(lrserver));
+    return gulp.src(mainBowerFiles({debugging: true}))
+        .pipe(jsFilter)
+        .pipe(concat('vendor.js'))
+    //.pipe(uglify())
+        .pipe(gulp.dest(dest + '/scripts'))
+        .pipe(jsFilter.restore())
+    
+        .pipe(cssFilter)
+        .pipe(concat('vendor.css'))
+        .pipe(gulp.dest(dest + '/css'))
+        .pipe(cssFilter.restore())
+
+        .pipe(cssMapsFilter)
+        .pipe(flatten())
+        .pipe(gulp.dest(dest + '/css'))
+        .pipe(cssMapsFilter.restore())
+
+        .pipe(fontFilter)
+        .pipe(flatten())
+        .pipe(gulp.dest(dest + '/fonts'));
 });
 
-gulp.watch(['app/css/**/*'], ['copy-css']);
-
-gulp.task('bower-files', function() {
-    // css
-    gulpBowerFiles({debugging: true})
-    .pipe(gulpFilter('**/*.css'))
-    .pipe(concat('vendor.css'))
-    .pipe(gulp.dest('dist/css/'));
-
-    // fonts
-    gulpBowerFiles({debugging: true})
-    .pipe(gulpFilter('**/*.{eot,svg,ttf,woff}'))
-    .pipe(flatten())
-    .pipe(gulp.dest('dist/fonts/'));
+gulp.task('watch', ['js', 'css', 'html', 'vendor'], function () {
+    gulp.watch(app + '/scripts/**/*.js', ['js']);
+    gulp.watch(app + '/css/**/*.css', ['css']);
+    gulp.watch(app + '/**/*.html', ['html']);
+    gulp.watch('bower_components/**/*', ['vendor']);
+    
+    livereload.listen();
+    gulp.watch(dest + '/**').on('change', livereload.changed);
 });
 
-gulp.watch(['bower_components/**/*'], ['bower-files']);
+gulp.task('server', function(next) {
+    var connect = require('connect'),
+        serverStatic = require('serve-static'),
+        connectLivereload = require('connect-livereload'),
+        server = connect();
+    server.use(connectLivereload({port: 35729}));
+    server.use(serverStatic(dest, {'index': ['index.html']}));
+
+    server.listen(process.env.PORT || 5000, next);
+});
+
+gulp.task('default', ['server', 'watch']);
+
+
