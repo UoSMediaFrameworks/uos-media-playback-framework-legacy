@@ -80,6 +80,16 @@ gulp.task('server', function(next) {
     server.listen(process.env.PORT || 5000, next);
 });
 
+gulp.task('deploy', function() {
+    var deployCdn = require('deploy-azure-cdn');
+    gulp.src(['dist/**/*'])
+        .pipe(deployCdn.gulpPlugin({
+            containerName: 'site',
+            serviceOptions: ['mediaplayercontroller', '6mzoatD04udXOQE1EpxIHhCDQLui3G6kKWtE4kJqWGO7n6mdKYXB14P/8okDfKTF/wyVmgOIlzgt/4yOotTl0g==']      
+        }));
+        
+});
+
 gulp.task('default', ['server', 'watch']);
 
 
