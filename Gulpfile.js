@@ -59,7 +59,9 @@ gulp.task('vendor', function() {
         .pipe(gulp.dest(dest + '/fonts'));
 });
 
-gulp.task('watch', ['js', 'css', 'html', 'vendor'], function () {
+gulp.task('build', ['js', 'css', 'html', 'vendor']);
+
+gulp.task('watch', ['build'], function () {
     gulp.watch(app + '/scripts/**/*.js', ['js']);
     gulp.watch(app + '/css/**/*.css', ['css']);
     gulp.watch(app + '/**/*.html', ['html']);
@@ -80,7 +82,7 @@ gulp.task('server', function(next) {
     server.listen(process.env.PORT || 5000, next);
 });
 
-gulp.task('deploy', function() {
+gulp.task('deploy', ['build'], function() {
     var deployCdn = require('deploy-azure-cdn');
     gulp.src(['dist/**/*'])
         .pipe(deployCdn.gulpPlugin({
