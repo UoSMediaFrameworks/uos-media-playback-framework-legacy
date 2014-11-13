@@ -6,10 +6,13 @@ angular.module('MediaPlayer', [
     'MediaPlayer.directives',
     'MediaPlayer.filters',
     'MediaPlayer.libs',
-    'xeditable'
+    'xeditable',
+    'ui.bootstrap'
 ])
  
 .constant('mediaSceneJSONPath', 'default_media_scene.json')
+
+.constant('defaultHubUrl', 'http://localhost:3000/')
 
 .run(function(editableOptions) {
     editableOptions.theme = 'bs3';

@@ -2,10 +2,14 @@
 
 angular.module('MediaPlayer.controllers', []) 
 
-.controller('MediaSceneEditorCtrl', function($scope, mediaScene, playerElementManager, Howl) {
+.controller('MediaSceneEditorCtrl', function($scope, mediaScene, playerElementManager, Howl, $modal) {
 
     $scope.playerState = {
         playing: false
+    };
+    
+    $scope.hubState = {
+        authenticated: false
     };
 
     $scope.newMediaObject = {
@@ -59,6 +63,50 @@ angular.module('MediaPlayer.controllers', [])
 
     $scope.removeMediaObject = function(index) {
         $scope.mediaScene.scene.splice(index, 1);
+    };
+    
+    $scope.connectToHub = function() {
+        var modal = $modal.open({
+            templateUrl: 'hubLoginModal.html',
+            controller: 'LoginModalCtrl'
+        });
+        
+        modal.result.then(function(success) {
+            $scope.hubState.authenticated = true;
+        });
+        
+    };
+    
+    $scope.saveScene = function () {
+        
+    }
+})
+
+.controller('LoginModalCtrl', function($scope, $modalInstance, defaultHubUrl, hub) {
+    $scope.connecting = false;
+    $scope.creds = {
+        url: defaultHubUrl,
+        password: ''
+    };
+    
+    $scope.connect = function () {
+        $scope.connecting = true;
+        
+        hub.connect($scope.creds.url, $scope.creds.password).then(function() {
+            $modalInstance.close(true);
+        }, function() {
+            $scope.connecting = false;
+            $scope.$apply(function () {
+                $scope.error = true;    
+            });
+            
+            console.log('error');
+        });
+        
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
     };
 })
 

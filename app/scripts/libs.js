@@ -1,6 +1,6 @@
 'use strict';
 
-/*global _: false, Howl: false, purl: false, $: false */
+/*global _: false, Howl: false, purl: false, $: false, HubClient: false */
 
 angular.module('MediaPlayer.libs', [])
 
@@ -16,7 +16,10 @@ angular.module('MediaPlayer.libs', [])
     return $;
 })
 
-
 .factory('Howl', function() {
     return Howl;
+})
+
+.factory('hubClient', function() {
+    return HubClient;
 });

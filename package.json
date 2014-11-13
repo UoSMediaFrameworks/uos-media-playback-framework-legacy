@@ -9,26 +9,7 @@
   },
   "author": "",
   "license": "ISC",
-  "browser": {
-    "angular": "./bower_components/angular/angular.js",
-    "angular-xeditable": "./bower_components/angular-xeditable/dist/js/xeditable.js",
-    "purl": "./bower_components/purl/purl.js"
-  },
-  "browserify-shim": {
-    "angular": {
-      "exports": "angular"
-    },
-    "angular-xeditable": {
-      "depends": "angular",
-      "exports": null
-    },
-    "purl": "purl"
-  },
-  "browserify": {
-    "transform": [
-      "browserify-shim"
-    ]
-  },
+
   "devDependencies": {
     "connect": "^3.2.0",
     "connect-livereload": "^0.4.0",

@@ -36,6 +36,15 @@ angular.module('MediaPlayer.services', [])
     };
 }])
 
+.service('hub', function(hubClient) {
+    var client;
+    
+    this.connect = function(url, password) {
+        client = hubClient(url);
+        return client.authenticate(password);
+    };
+})
+
 .service('youtubePlayer', function($document, $window, purl) {
     var apiLoaded = false,
         callbacks = [],
