@@ -1,72 +1,38 @@
 'use strict';
 
 var gulp = require('gulp');
-var concat = require('gulp-concat');
-var sourcemaps = require('gulp-sourcemaps');
-var ngAnnotate = require('gulp-ng-annotate'),
+var concat = require('gulp-concat'),
     livereload = require('gulp-livereload'),
-    dest = 'dist',
-    app = 'app';
+    dest = 'dist';
 
-gulp.task('js', function () {
-    gulp.src([app + '/scripts/**/main.js', app + '/scripts/**/*.js'])
-        .pipe(sourcemaps.init())
-        .pipe(concat('app.js'))
-        .pipe(ngAnnotate())
-        .pipe(sourcemaps.write({sourceRoot: '/app/scripts'}))
-        .pipe(gulp.dest(dest + '/scripts'));
+var browserify = require('gulp-browserify');
+var gutil = require('gulp-util');
+
+gulp.task('browserify', function() {
+    gulp.src('src/js/main.jsx')
+    .pipe(browserify({transform: 'reactify', debug: true}))
+    .on('error', gutil.log)
+    .pipe(concat('main.js'))
+    .pipe(gulp.dest('dist/js'));
+});
+
+
+gulp.task('html', function() {
+    gulp.src('src/index.html')
+    .pipe(gulp.dest('dist'));
 });
 
 gulp.task('css', function() {
-    gulp.src(app + '/css/**/*.css')
+    gulp.src('src/css/**/*.css')
         .pipe(concat('app.css'))
         .pipe(gulp.dest(dest + '/css'));
 });
 
-gulp.task('html', function() {
-    gulp.src(app + '/**/*.html')
-        .pipe(gulp.dest(dest+'/'));
-});
-
-gulp.task('vendor', function() {
-    var mainBowerFiles = require('main-bower-files'),
-        filter = require('gulp-filter'),
-        flatten = require('gulp-flatten'),
-        jsFilter = filter('*.js'),
-        cssFilter = filter('*.css'),
-        cssMapsFilter = filter('*.css.map'),
-        fontFilter = filter(['*.eot', '*.woff', '*.svg', '*.ttf']);
-
-    return gulp.src(mainBowerFiles({debugging: true}))
-        .pipe(jsFilter)
-        .pipe(concat('vendor.js'))
-    //.pipe(uglify())
-        .pipe(gulp.dest(dest + '/scripts'))
-        .pipe(jsFilter.restore())
-    
-        .pipe(cssFilter)
-        .pipe(concat('vendor.css'))
-        .pipe(gulp.dest(dest + '/css'))
-        .pipe(cssFilter.restore())
-
-        .pipe(cssMapsFilter)
-        .pipe(flatten())
-        .pipe(gulp.dest(dest + '/css'))
-        .pipe(cssMapsFilter.restore())
-
-        .pipe(fontFilter)
-        .pipe(flatten())
-        .pipe(gulp.dest(dest + '/fonts'));
-});
-
-gulp.task('build', ['js', 'css', 'html', 'vendor']);
+gulp.task('build', ['browserify', 'html', 'css']);
 
 gulp.task('watch', ['build'], function () {
-    gulp.watch(app + '/scripts/**/*.js', ['js']);
-    gulp.watch(app + '/css/**/*.css', ['css']);
-    gulp.watch(app + '/**/*.html', ['html']);
-    gulp.watch('bower_components/**/*', ['vendor']);
-    
+    gulp.watch('src/**/*.*', ['build']);
+
     livereload.listen();
     gulp.watch(dest + '/**').on('change', livereload.changed);
 });
@@ -93,5 +59,3 @@ gulp.task('deploy', ['build'], function() {
 });
 
 gulp.task('default', ['server', 'watch']);
-
-

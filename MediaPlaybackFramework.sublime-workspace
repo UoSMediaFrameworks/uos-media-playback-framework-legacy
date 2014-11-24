@@ -1,0 +1,740 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"react-",
+				"react-router-component"
+			],
+			[
+				"Catal",
+				"CatalogDetail"
+			],
+			[
+				"re",
+				"require"
+			],
+			[
+				"get",
+				"getCatalog"
+			],
+			[
+				"Ad",
+				"AddToCart"
+			],
+			[
+				"App",
+				"AppContants"
+			],
+			[
+				"Rea",
+				"React.class	Object Value JS"
+			],
+			[
+				"r",
+				"React"
+			],
+			[
+				"af",
+				"aftr	after"
+			],
+			[
+				"after",
+				"after"
+			],
+			[
+				"list",
+				"listScenes"
+			],
+			[
+				"api",
+				"apiCalls"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "package.json",
+			"settings":
+			{
+				"buffer_size": 1038,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Gulpfile.js",
+			"settings":
+			{
+				"buffer_size": 1568,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/index.html",
+			"settings":
+			{
+				"buffer_size": 354,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 107.0,
+		"selected_items":
+		[
+			[
+				"lint",
+				"SublimeLinter: Choose Lint Mode"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"listp",
+				"Package Control: List Packages"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"lintm",
+				"SublimeLinter: Choose Lint Mode"
+			],
+			[
+				"jsx",
+				"Set Syntax: JavaScript (JSX)"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"instp",
+				"Package Control: Install Package"
+			],
+			[
+				"mode",
+				"SublimeLinter: Choose Lint Mode"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"list",
+				"Package Control: List Packages"
+			],
+			[
+				"list ",
+				"Package Control: List Packages"
+			],
+			[
+				"prv",
+				"PackageResourceViewer: Open Resource"
+			],
+			[
+				"packa",
+				"Package Control: Install Package"
+			],
+			[
+				"inp",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 521.0
+	},
+	"console":
+	{
+		"height": 139.0,
+		"history":
+		[
+			"sublime.log_commands(True)",
+			"sublime.log_commands(true)",
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/matt/Projects/MediaPlayReact"
+	],
+	"file_history":
+	[
+		"/Users/matt/Projects/MediaPlayReact/MediaPlaybackFramework.sublime-project",
+		"/Users/matt/Projects/MediaPlayReact/src/js/main.jsx",
+		"/Users/matt/Projects/MediaPlayReact/node_modules/react/lib/getUnboundedScrollPosition.js",
+		"/Users/matt/Projects/MediaPlayReact/Gulpfile.js",
+		"/Users/matt/Projects/flux/node_modules/es6-promise/CHANGELOG.md",
+		"/Users/matt/Library/Application Support/Sublime Text 3/Packages/SublimeLinter/SublimeLinter.sublime-settings",
+		"/Users/matt/Projects/flux/node_modules/reactify/node_modules/react-tools/node_modules/commoner/node_modules/recast/node_modules/ast-types/node_modules/depd/lib/compat/callsite-tostring.js",
+		"/Users/matt/Projects/flux/node_modules/react-router-component/node_modules/react-async/tests/isAsyncComponent.js",
+		"/Users/matt/Projects/flux/node_modules/reactify/node_modules/react-tools/src/addons/transitions/ReactTransitionChildMapping.js",
+		"/Users/matt/Projects/flux/src/js/constants/app-constants.js",
+		"/Users/matt/Projects/flux/src/js/components/header/app-cartsummary.jsx",
+		"/Users/matt/Projects/flux/src/js/mixins/StoreWatchMixin.js",
+		"/Users/matt/Projects/flux/node_modules/gulp-concat/node_modules/concat-with-sourcemaps/node_modules/source-map/build/suffix-source-map.jsm",
+		"/Users/matt/Projects/flux/node_modules/gulp-browserify/node_modules/browserify-shim/test/shim-underscore.js",
+		"/Users/matt/Projects/flux/node_modules/es6-promises/setimmediate/setimmediate.js",
+		"/Users/matt/Projects/flux/src/js/components/catalog/app-catalog.jsx",
+		"/Users/matt/Projects/flux/package.json",
+		"/Users/matt/Projects/flux/node_modules/react-async/lib/prefetchAsyncState.js",
+		"/Users/matt/Projects/flux/src/js/stores/app-store.js",
+		"/Users/matt/Projects/flux/src/index.html",
+		"/Users/matt/Projects/flux/src/js/components/product/app-catalogdetail.jsx",
+		"/Users/matt/Projects/flux/src/js/dispatchers/app-dispatcher.js",
+		"/Users/matt/Projects/flux/src/js/dispatchers/dispatcher.js",
+		"/Users/matt/Projects/flux/node_modules/gulp-util/lib/date.js",
+		"/Users/matt/Projects/flux/src/js/components/app.jsx",
+		"/Users/matt/Projects/flux/src/js/components/cart/app-removefromcart.jsx",
+		"/Users/matt/Projects/flux/src/js/components/catalog/app-addtocart.jsx",
+		"/Users/matt/Projects/flux/gulpfile.js",
+		"/Users/matt/Projects/flux/src/js/components/app-template.jsx",
+		"/Users/matt/Projects/flux/src/js/components/header/app-header.jsx",
+		"/Users/matt/Projects/flux/node_modules/gulp-util/lib/isNull.js",
+		"/Users/matt/Projects/flux/node_modules/gulp-concat/node_modules/through/test/auto-destroy.js",
+		"/Users/matt/Projects/flux/src/js/components/cart/app-decrease.jsx",
+		"/Users/matt/Projects/flux/src/js/components/cart/app-cart.jsx",
+		"/Users/matt/Projects/flux/node_modules/react/lib/createArrayFrom.js",
+		"/Users/matt/Projects/flux/node_modules/gulp/node_modules/semver/head.js.txt",
+		"/Users/matt/Projects/flux/node_modules/react-router-component/lib/environment/HashEnvironment.js",
+		"/Users/matt/Projects/flux/node_modules/react/lib/hyphenate.js",
+		"/Users/matt/Projects/flux/node_modules/gulp-util/lib/template.js",
+		"/Users/matt/Projects/flux/node_modules/gulp-browserify/test/fixtures/trans_error.coffee",
+		"/Users/matt/Projects/flux/node_modules/es6-promise/testem.json",
+		"/Users/matt/Projects/flux/flux.sublime-project",
+		"/Users/matt/Library/Application Support/Sublime Text 3/Packages/User/SublimeLinter.sublime-settings",
+		"/Users/matt/Projects/flux/node_modules/react/lib/ReactElement.js",
+		"/Users/matt/Projects/flux/node_modules/es6-promise/README.md",
+		"/Users/matt/Projects/flux/node_modules/react/addons.js",
+		"/Users/matt/Projects/flux/src/js/components/cart/app-increase.jsx",
+		"/Users/matt/Projects/flux/src/js/components/catalog/app-catalogitem.jsx",
+		"/Users/matt/Projects/flux/src/js/components/app-addtocart.jsx",
+		"/Users/matt/Projects/flux/node_modules/gulp-browserify/node_modules/browserify/node_modules/JSONStream/test/stringify_object.js",
+		"/Users/matt/Projects/flux/node_modules/react/lib/SyntheticTouchEvent.js",
+		"/Users/matt/Projects/flux/node_modules/gulp-browserify/node_modules/browserify/node_modules/events/tests/remove-listeners.js",
+		"/Users/matt/Projects/flux/node_modules/react/lib/ReactEventEmitterMixin.js",
+		"/Users/matt/Projects/flux/dist/js/main.js",
+		"/Users/matt/Projects/flux/node_modules/gulp-browserify/node_modules/browserify/node_modules/umd/node_modules/uglify-js/lib/mozilla-ast.js",
+		"/Users/matt/Projects/flux/node_modules/reactify/Makefile",
+		"/Users/matt/Projects/flux/src/js/main.jsx",
+		"/Users/matt/Library/Application Support/Sublime Text 3/Packages/User/Default (OSX).sublime-keymap",
+		"/Users/matt/Library/Application Support/Sublime Text 3/Packages/Emmet/Emmet.sublime-settings",
+		"/Users/matt/Library/Application Support/Sublime Text 3/Packages/Emmet/Default (OSX).sublime-keymap",
+		"/Users/matt/Projects/flux/node_modules/gulp-browserify/test/fixtures/increment.js",
+		"/Users/matt/Projects/flux/node_modules/react/lib/getReactRootElementInContainer.js",
+		"/Users/matt/Projects/flux/node_modules/react/lib/isNode.js",
+		"/Users/matt/Projects/flux/node_modules/gulp-browserify/node_modules/browserify/node_modules/querystring-es3/decode.js",
+		"/Users/matt/Projects/flux/node_modules/react/lib/DefaultEventPluginOrder.js",
+		"/Users/matt/Projects/flux/node_modules/react/lib/Danger.js",
+		"/Users/matt/Projects/flux/node_modules/gulp-browserify/node_modules/browserify/test/catch.js",
+		"/Users/matt/Projects/flux/node_modules/gulp-browserify/node_modules/browserify/bin/advanced.txt",
+		"/Users/matt/Projects/flux/src/js/components/app-decrease.jsx",
+		"/Users/matt/Projects/flux/src/js/components/app-increase.jsx",
+		"/Users/matt/Projects/flux/src/js/components/app-removefromcart.jsx",
+		"/Users/matt/Projects/flux/src/js/components/app-cart.jsx",
+		"/Users/matt/Projects/flux/src/js/components/app-catalog.jsx",
+		"/Users/matt/Projects/flux/src/js/components/app-removefromcart.js",
+		"/Users/matt/Projects/flux/src/js/main.js",
+		"/Users/matt/Projects/flux/node_modules/react/lib/getUnboundedScrollPosition.js",
+		"/Users/matt/Projects/flux/node_modules/react/lib/ReactDefaultInjection.js",
+		"/Users/matt/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/matt/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/Users/matt/Library/Application Support/Sublime Text 3/Packages/JavaScript/function-(fun).sublime-snippet",
+		"/Users/matt/Library/Application Support/Sublime Text 3/Packages/JavaScript/function.sublime-snippet",
+		"/Users/matt/Projects/MediaPlaybackFramework/bower_components/bootstrap/LICENSE",
+		"/Users/matt/Projects/MediaPlaybackFramework/node_modules/gulp/node_modules/minimist/test/stop_early.js",
+		"/Users/matt/Projects/MediaPlaybackFramework/app/scripts/services.js",
+		"/Users/matt/Projects/MediaPlaybackFramework/node_modules/gulp-ng-annotate/node_modules/ng-annotate/node_modules/optimist/example/line_count_options.js",
+		"/Users/matt/Projects/MediaPlaybackFramework/node_modules/gulp-ng-annotate/COPYING",
+		"/Users/matt/Projects/MediaHub/.jshintrc",
+		"/Users/matt/Projects/MediaHub/node_modules/node-inspector/front-end/auditsPanel.css",
+		"/Users/matt/Projects/MediaHub/app.js",
+		"/Users/matt/Projects/MediaHub/test/test-test.js",
+		"/Users/matt/Projects/evo/lisp.js",
+		"/Users/matt/Projects/evo/test/test-lisp.js",
+		"/Users/matt/Google Drive/Columbia/SWM/Moodle Content/LectureNotes.html"
+	],
+	"find":
+	{
+		"height": 25.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			"/Users/matt/Projects/flux/src",
+			"/Users/matt/Projects/flux",
+			"/Users/matt/Projects/flux/src/js",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"Link",
+			"cartTotals",
+			"cartItems",
+			"null",
+			"react-async",
+			"ReactAsync",
+			"async",
+			"ReactAsync",
+			"createFactory",
+			"renderComponent",
+			"React.create",
+			"Promise",
+			"this.props",
+			"Action\": ",
+			"command\"",
+			".js'",
+			"Increase",
+			"increase",
+			"Increase",
+			"Decrease",
+			"hubUrl",
+			"config",
+			"this",
+			"self",
+			"h2>",
+			"&#39;"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			".jsx'",
+			"Increase",
+			"self",
+			"hub",
+			"h1>",
+			"'"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "package.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1038,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								781,
+								781
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "Gulpfile.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1568,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								635,
+								635
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 24.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/index.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 354,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								251,
+								251
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 25.0
+	},
+	"input":
+	{
+		"height": 33.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "MediaPlaybackFramework.sublime-project",
+	"replace":
+	{
+		"height": 46.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"gulp",
+				"Gulpfile.js"
+			],
+			[
+				"catalogit",
+				"src/js/components/catalog/app-catalogitem.jsx"
+			],
+			[
+				"atcata",
+				"src/js/components/catalog/app-catalog.jsx"
+			],
+			[
+				"acata",
+				"src/js/components/product/app-catalogdetail.jsx"
+			],
+			[
+				"acart",
+				"src/js/components/cart/app-cart.jsx"
+			],
+			[
+				"appcart",
+				"src/js/components/cart/app-cart.jsx"
+			],
+			[
+				"cartsum",
+				"src/js/components/header/app-cartsummary.jsx"
+			],
+			[
+				"appst",
+				"src/js/stores/app-store.js"
+			],
+			[
+				"cartsumm",
+				"src/js/components/header/app-cartsummary.jsx"
+			],
+			[
+				"apst",
+				"src/js/stores/app-store.js"
+			],
+			[
+				"apcrt",
+				"src/js/components/cart/app-cart.jsx"
+			],
+			[
+				"cart",
+				"src/js/components/cart/app-cart.jsx"
+			],
+			[
+				"catalog",
+				"src/js/components/catalog/app-catalog.jsx"
+			],
+			[
+				"",
+				"src/js/components/app.jsx"
+			],
+			[
+				"cata",
+				"src/js/components/catalog/app-catalog.jsx"
+			],
+			[
+				"ap",
+				"src/js/components/app.jsx"
+			],
+			[
+				"catalo",
+				"src/js/components/product/app-catalogdetail.jsx"
+			],
+			[
+				"pack",
+				"package.json"
+			],
+			[
+				"pac",
+				"package.json"
+			],
+			[
+				"app.j",
+				"src/js/components/app.jsx"
+			],
+			[
+				"app.",
+				"src/js/components/app.jsx"
+			],
+			[
+				"dispa",
+				"src/js/dispatchers/dispatcher.js"
+			],
+			[
+				"dispat",
+				"src/js/dispatchers/app-dispatcher.js"
+			],
+			[
+				"index",
+				"src/index.html"
+			],
+			[
+				"appsto",
+				"src/js/stores/app-store.js"
+			],
+			[
+				"appte",
+				"src/js/components/app-template.jsx"
+			],
+			[
+				"catadet",
+				"src/js/components/product/app-catalogdetail.jsx"
+			],
+			[
+				"inde",
+				"src/index.html"
+			],
+			[
+				"cadet",
+				"src/js/components/product/app-catalogdetail.jsx"
+			],
+			[
+				"header",
+				"src/js/components/header/app-header.jsx"
+			],
+			[
+				"aptemp",
+				"src/js/components/app-template.jsx"
+			],
+			[
+				"app",
+				"src/js/components/app.jsx"
+			],
+			[
+				"remove",
+				"src/js/components/cart/app-removefromcart.jsx"
+			],
+			[
+				"addto",
+				"src/js/components/catalog/app-addtocart.jsx"
+			],
+			[
+				"store",
+				"src/js/stores/app-store.js"
+			],
+			[
+				"appincr",
+				"src/js/components/cart/app-increase.jsx"
+			],
+			[
+				"appde",
+				"src/js/components/cart/app-decrease.jsx"
+			],
+			[
+				"main",
+				"src/js/main.jsx"
+			],
+			[
+				"apstr",
+				"src/js/stores/app-store.js"
+			],
+			[
+				"app-dis",
+				"src/js/dispatchers/app-dispatcher.js"
+			],
+			[
+				"appcon",
+				"src/js/constants/app-constants.js"
+			],
+			[
+				"increa",
+				"src/js/components/app-increase.jsx"
+			],
+			[
+				"decre",
+				"src/js/components/app-decrease.jsx"
+			],
+			[
+				"appc",
+				"src/js/components/app-cart.jsx"
+			],
+			[
+				"adtoc",
+				"src/js/components/app-addtocart.jsx"
+			],
+			[
+				"incre",
+				"src/js/components/app-increase.js"
+			],
+			[
+				"rem",
+				"src/js/components/app-removefromcart.js"
+			],
+			[
+				"apdis",
+				"src/js/dispatchers/app-dispatcher.js"
+			],
+			[
+				"dis",
+				"src/js/dispatchers/app-dispatcher.js"
+			],
+			[
+				"lib",
+				"app/scripts/libs.js"
+			],
+			[
+				"ser",
+				"app/scripts/services.js"
+			],
+			[
+				"contr",
+				"app/scripts/controllers.js"
+			],
+			[
+				"i",
+				"app/index.html"
+			],
+			[
+				"con",
+				"config.js"
+			],
+			[
+				"hub",
+				"src/hub.js"
+			],
+			[
+				"test",
+				"test/test-webserver.js"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 243.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

@@ -1,0 +1,15 @@
+#player {
+    position: relative;
+    height: 400px;
+    background-color: #ddd;
+    overflow: hidden;
+}
+
+h1 {
+    text-align: center;
+}
+
+textarea {
+    width: 100%;
+    height: 200px;
+}
