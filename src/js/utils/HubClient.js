@@ -1,16 +1,21 @@
 'use strict';
+
 var hubClient = require('media-hub-client');
-var HubActions = require('../actions/hub-actions');
+var HubRecieveActions = require('../actions/hub-recieve-actions');
 var client;
 
 module.exports = {
     login: function(url, password) {
         client = hubClient(url);
         client.authenticate(password).then(function() {
-            client.listScenes().then(HubActions.recieveSceneList);
+            HubRecieveActions.recieveLoginResult(true);
+            client.listScenes().then(HubRecieveActions.recieveSceneList);
         }, function() {
-            console.log('login failed');
+            HubRecieveActions.recieveLoginResult(false);
         });
+    },
+    loadScene: function(id) {
+        client.loadScene(id).then(HubRecieveActions.recieveScene);
     },
     save: function(scene) {
         client.saveScene(scene).then(function() {

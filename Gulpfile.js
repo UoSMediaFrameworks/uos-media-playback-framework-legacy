@@ -3,7 +3,8 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat'),
     livereload = require('gulp-livereload'),
-    dest = 'dist';
+    dest = 'dist',
+    lvPort = 35729;
 
 var browserify = require('gulp-browserify');
 var gutil = require('gulp-util');
@@ -33,7 +34,7 @@ gulp.task('build', ['browserify', 'html', 'css']);
 gulp.task('watch', ['build'], function () {
     gulp.watch('src/**/*.*', ['build']);
 
-    livereload.listen();
+    livereload.listen(lvPort);
     gulp.watch(dest + '/**').on('change', livereload.changed);
 });
 
@@ -42,7 +43,7 @@ gulp.task('server', function(next) {
         serverStatic = require('serve-static'),
         connectLivereload = require('connect-livereload'),
         server = connect();
-    server.use(connectLivereload({port: 35729}));
+    server.use(connectLivereload({port: lvPort}));
     server.use(serverStatic(dest, {'index': ['index.html']}));
 
     server.listen(process.env.PORT || 5000, next);

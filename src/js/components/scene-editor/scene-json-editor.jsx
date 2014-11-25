@@ -1,31 +1,26 @@
 var React = require('react');
-var SceneStoreWatchMixin = require('../mixins/scene-store-watch-mixin');
-var SceneStore = require('../stores/scene-store');
-var SceneActions = require('../actions/scene-actions');
+var SceneStoreWatchMixin = require('../../mixins/scene-store-watch-mixin');
+var SceneStore = require('../../stores/scene-store');
+var SceneActions = require('../../actions/scene-actions');
 
 
-function getScene () {
-    return {scene: SceneStore.getScene()};
-}
-
-function $c(staticClassName, conditionalClassNames) {
-  var classNames = [];
-  if (typeof conditionalClassNames == 'undefined') {
-    conditionalClassNames = staticClassName;
-  }
-  else {
-    classNames.push(staticClassName);
-  }
-  for (var className in conditionalClassNames) {
-    if (!!conditionalClassNames[className]) {
-      classNames.push(className);
-    }
-  }
-  return classNames.join(' ');
+function getScene() {
+    return {value: JSON.stringify(SceneStore.getScene(), null, '\t')};
 }
 
 var SceneJsonEditor = React.createClass({
-    mixins: [SceneStoreWatchMixin(getScene)],
+    getInitialState:function(){
+        return getScene();
+    },
+    componentWillMount:function(){
+        SceneStore.addChangeListener(this._onChange);
+    },
+    componentWillUnmount: function() {
+        SceneStore.removeChangeListener(this._onChange);
+    },
+    _onChange:function(){
+        this.setState(getScene());
+    },
     handleBlur: function(event) {
         try {
             var newScene = JSON.parse(event.target.value);
@@ -40,16 +35,19 @@ var SceneJsonEditor = React.createClass({
         }
     },
 
+    handleChange: function(event) {
+        this.setState({value: event.target.value});
+    },
 
     render: function() {
         var groupClass = 'form-group' + (this.state.error ? ' has-error' : '');
-
         return (
             <div className={groupClass}>
                 <textarea
                  className='form-control' 
                  onBlur={this.handleBlur}
-                 defaultValue={JSON.stringify(this.state.scene, null, '\t')}>
+                 onChange={this.handleChange}
+                 value={this.state.value}>
                 </textarea>
             </div>
         );

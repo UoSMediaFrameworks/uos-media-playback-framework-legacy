@@ -5,7 +5,7 @@ var ActionTypes = SceneConstants.ActionTypes;
 var SceneActions = {
     update: function(scene) {
         AppDispatcher.handleViewAction({
-            actionType: ActionTypes.CHANGE,
+            type: ActionTypes.CHANGE,
             scene: scene
         });
         HubClient.save(scene);
