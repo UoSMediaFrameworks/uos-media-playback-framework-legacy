@@ -1,31 +1,37 @@
-var React = require('react');
-var SceneStoreWatchMixin = require('../../mixins/scene-store-watch-mixin');
+'use strict';
+
+var React = require('react/addons');
 var SceneStore = require('../../stores/scene-store');
 var SceneActions = require('../../actions/scene-actions');
 
-
 function getScene() {
-    return {value: JSON.stringify(SceneStore.getScene(), null, '\t')};
+    return {json: JSON.stringify(SceneStore.getScene(), null, '\t')};
 }
 
 var SceneJsonEditor = React.createClass({
+    mixins: [React.addons.LinkedStateMixin],
+    
     getInitialState:function(){
         return getScene();
     },
+
     componentWillMount:function(){
         SceneStore.addChangeListener(this._onChange);
     },
+
     componentWillUnmount: function() {
         SceneStore.removeChangeListener(this._onChange);
     },
+
     _onChange:function(){
         this.setState(getScene());
     },
+    
     handleBlur: function(event) {
         try {
             var newScene = JSON.parse(event.target.value);
             this.setState({error: false});
-            SceneActions.update(newScene);
+            SceneActions.sceneChange(newScene);
         } catch (e) {
             if (e instanceof SyntaxError) {
                 this.setState({error: true});
@@ -35,10 +41,6 @@ var SceneJsonEditor = React.createClass({
         }
     },
 
-    handleChange: function(event) {
-        this.setState({value: event.target.value});
-    },
-
     render: function() {
         var groupClass = 'form-group' + (this.state.error ? ' has-error' : '');
         return (
@@ -46,8 +48,7 @@ var SceneJsonEditor = React.createClass({
                 <textarea
                  className='form-control' 
                  onBlur={this.handleBlur}
-                 onChange={this.handleChange}
-                 value={this.state.value}>
+                 valueLink={this.linkState('json')}>
                 </textarea>
             </div>
         );

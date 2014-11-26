@@ -4,6 +4,7 @@ var AppDispatcher = require('../dispatchers/app-dispatcher');
 var assign = require('object-assign');
 var EventEmitter = require('events').EventEmitter;
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
+var SceneStore = require('./scene-store');
 
 var CHANGE_EVENT = "change";
 var _scene = {};
@@ -12,7 +13,7 @@ function _updateScene (scene) {
     _scene = scene;
 }
 
-var SceneStore = assign({}, EventEmitter.prototype, {
+var SceneSubscriptionStore = assign({}, EventEmitter.prototype, {
     getScene: function() {
         return _scene;
     },
@@ -29,16 +30,12 @@ var SceneStore = assign({}, EventEmitter.prototype, {
     },
 
     dispatcherIndex: AppDispatcher.register(function(payload){
-        var action = payload.action; // this is our action from handleViewAction
+        var action = payload.action;
         switch(action.type){
-            case ActionTypes.SCENE_CHANGE:
-                _updateScene(action.scene);
-                SceneStore.emitChange();
-                break;
-
             case ActionTypes.RECIEVE_SCENE:
+                AppDispatcher.waitFor([SceneStore.dispatcherIndex]);
                 _updateScene(action.scene);
-                SceneStore.emitChange();
+                SceneSubscriptionStore.emitChange();
                 break;
         }
         
@@ -46,4 +43,4 @@ var SceneStore = assign({}, EventEmitter.prototype, {
     })
 });
 
-module.exports = SceneStore;
+module.exports = SceneSubscriptionStore;

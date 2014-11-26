@@ -21,5 +21,8 @@ module.exports = {
         client.saveScene(scene).then(function() {
             console.log('scene saved');
         });
+    },
+    subscribeScene: function(id) {
+        client.subScene(id).then(HubRecieveActions.recieveScene);
     }
 };

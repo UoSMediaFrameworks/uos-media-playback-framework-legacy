@@ -11,7 +11,6 @@ module.exports = {
     		type: ActionTypes.HUB_LOGIN_ATTEMPT
     	});
     },
-    loadScene: function(id) {
-    	HubClient.loadScene(id);
-    }
+    loadScene: HubClient.loadScene,
+    subscribeScene: HubClient.subscribeScene
 };

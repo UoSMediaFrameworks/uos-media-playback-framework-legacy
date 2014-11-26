@@ -10,6 +10,11 @@ function _getState () {
 var _blank = 'BLANK';
 
 var SceneList = React.createClass({
+
+	propTypes: {
+		onChange: React.PropTypes.func
+	},
+	
 	getInitialState: function() {
 		return _getState();
 	},
@@ -30,6 +35,7 @@ var SceneList = React.createClass({
 		var val = e.target.value;
 		if (val !== _blank) {
 			HubSendActions.loadScene(val);
+			this.props.onChange.call();
 		}
 	},
 

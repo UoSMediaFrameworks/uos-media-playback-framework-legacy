@@ -9,23 +9,28 @@ var concat = require('gulp-concat'),
 var browserify = require('gulp-browserify');
 var gutil = require('gulp-util');
 
-gulp.task('browserify', function() {
-    gulp.src('src/js/main.jsx')
+
+function browserifyHelper (startPath, finishName) {
+    gulp.src(startPath)
     .pipe(browserify({transform: 'reactify', debug: true}))
     .on('error', gutil.log)
-    .pipe(concat('main.js'))
+    .pipe(concat(finishName))
     .pipe(gulp.dest('dist/js'));
+}
+
+gulp.task('browserify', function() {
+    browserifyHelper('src/js/index.jsx', 'index.js');
+    browserifyHelper('src/js/viewer.jsx', 'viewer.js');
 });
 
 
 gulp.task('html', function() {
-    gulp.src('src/index.html')
+    gulp.src('src/*.html')
     .pipe(gulp.dest('dist'));
 });
 
 gulp.task('css', function() {
     gulp.src('src/css/**/*.css')
-        .pipe(concat('app.css'))
         .pipe(gulp.dest(dest + '/css'));
 });
 

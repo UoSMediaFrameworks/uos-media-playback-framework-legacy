@@ -1,6 +1,6 @@
-var App = require('./components/app.jsx'),
+var ViewerApp = require('./components/viewer-app.jsx'),
     React = require('react');
 
 React.render(
-    <App />,
+    <ViewerApp />,
     document.getElementById('main'));

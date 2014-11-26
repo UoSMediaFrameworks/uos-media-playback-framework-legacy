@@ -17,6 +17,13 @@ function _addScenes (scenes) {
 	});
 }
 
+function _updateSceneName (_id, name) {
+	if (_scenes.hasOwnProperty(_id) && _scenes[_id].name !== name) {
+		_scenes[_id].name = name;
+		return true;
+	}
+}
+
 var SceneListStore = assign({}, EventEmitter.prototype, {
 	getAll: function() {
 		return _.values(_scenes);
@@ -47,6 +54,12 @@ var SceneListStore = assign({}, EventEmitter.prototype, {
             	_addScenes(action.scenes);
                 SceneListStore.emitChange();
                 break;
+            case ActionTypes.SCENE_CHANGE:
+            	var scene = action.scene;
+            	if (_updateSceneName(scene._id, scene.name)) {
+            		SceneListStore.emitChange();
+            	}
+            	break;
         }
         
 

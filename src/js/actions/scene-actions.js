@@ -3,9 +3,9 @@ var AppDispatcher = require('../dispatchers/app-dispatcher');
 var HubClient = require('../utils/HubClient');
 var ActionTypes = SceneConstants.ActionTypes;
 var SceneActions = {
-    update: function(scene) {
+    sceneChange: function(scene) {
         AppDispatcher.handleViewAction({
-            type: ActionTypes.CHANGE,
+            type: ActionTypes.SCENE_CHANGE,
             scene: scene
         });
         HubClient.save(scene);

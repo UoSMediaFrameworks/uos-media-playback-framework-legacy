@@ -2,7 +2,7 @@ var keymirror = require('keymirror');
 
 module.exports = {
     ActionTypes: keymirror({
-        CHANGE: null,
+        SCENE_CHANGE: null,
         RECIEVE_SCENE_LIST: null,
         RECIEVE_SCENE: null,
         HUB_LOGIN_ATTEMPT: null,
