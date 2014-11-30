@@ -35,7 +35,10 @@ var SceneList = React.createClass({
 		var val = e.target.value;
 		if (val !== _blank) {
 			HubSendActions.loadScene(val);
-			this.props.onChange.call();
+			if (this.props.hasOwnProperty('onChange')) {
+				this.props.onChange(val);	
+			}
+			
 		}
 	},
 

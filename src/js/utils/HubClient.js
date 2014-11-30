@@ -23,6 +23,11 @@ module.exports = {
         });
     },
     subscribeScene: function(id) {
-        client.subScene(id).then(HubRecieveActions.recieveScene);
+        // no confirmation handler as of yet
+        client.subScene(id, HubRecieveActions.recieveSceneUpdate);
+    },
+    unsubscribeScene: function(id) {
+        // no confirmation handler as of yet
+        client.unsubScene(id);
     }
 };

@@ -12,5 +12,6 @@ module.exports = {
     	});
     },
     loadScene: HubClient.loadScene,
-    subscribeScene: HubClient.subscribeScene
+    subscribeScene: HubClient.subscribeScene,
+    unsubscribeScene: HubClient.unsubscribeScene
 };
