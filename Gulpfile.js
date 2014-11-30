@@ -8,6 +8,7 @@ var concat = require('gulp-concat'),
 
 var browserify = require('gulp-browserify');
 var gutil = require('gulp-util');
+var argv = require('yargs').argv;
 
 
 function browserifyHelper (startPath, finishName) {
@@ -36,19 +37,23 @@ gulp.task('css', function() {
 
 gulp.task('build', ['browserify', 'html', 'css']);
 
-gulp.task('watch', ['build'], function () {
+gulp.task('watch', function () {
     gulp.watch('src/**/*.*', ['build']);
 
     livereload.listen(lvPort);
     gulp.watch(dest + '/**').on('change', livereload.changed);
 });
 
-gulp.task('server', function(next) {
+gulp.task('serve', ['build'], function(next) {
     var connect = require('connect'),
         serverStatic = require('serve-static'),
         connectLivereload = require('connect-livereload'),
         server = connect();
-    server.use(connectLivereload({port: lvPort}));
+
+    if (! argv.production) {
+        server.use(connectLivereload({port: lvPort}));    
+    }
+    
     server.use(serverStatic(dest, {'index': ['index.html']}));
 
     server.listen(process.env.PORT || 5000, next);
@@ -64,4 +69,4 @@ gulp.task('deploy', ['build'], function() {
         
 });
 
-gulp.task('default', ['server', 'watch']);
+gulp.task('default', ['serve', 'watch']);

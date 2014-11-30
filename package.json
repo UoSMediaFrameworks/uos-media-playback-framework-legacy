@@ -4,7 +4,8 @@
   "description": "Media Playback system for Columbia",
   "repository": "https://github.com/Colum-SMA-Dev/MediaPlaybackFramework.git",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "gulp serve --production"
   },
   "author": "",
   "license": "ISC",
@@ -34,6 +35,7 @@
     "keymirror": "^0.1.0",
     "lodash": "^2.4.1",
     "media-hub-client": "git+https://git@github.com/Colum-SMA-Dev/MediaHubClient.git",
-    "object-assign": "^2.0.0"
+    "object-assign": "^2.0.0",
+    "yargs": "^1.3.3"
   }
 }

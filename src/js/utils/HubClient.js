@@ -18,9 +18,7 @@ module.exports = {
         client.loadScene(id).then(HubRecieveActions.recieveScene);
     },
     save: function(scene) {
-        client.saveScene(scene).then(function() {
-            console.log('scene saved');
-        });
+        client.saveScene(scene);
     },
     subscribeScene: function(id) {
         // no confirmation handler as of yet
