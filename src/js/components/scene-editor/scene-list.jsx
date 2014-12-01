@@ -38,7 +38,6 @@ var SceneList = React.createClass({
 			if (this.props.hasOwnProperty('onChange')) {
 				this.props.onChange(val);	
 			}
-			
 		}
 	},
 
@@ -52,7 +51,7 @@ var SceneList = React.createClass({
 		options.unshift(<option key={_blank} value={_blank}>Choose a Scene...</option>);
 
 		return (
-			<select onChange={this.handleSelectChange}>{options}</select>
+			<select className='form-control' onChange={this.handleSelectChange}>{options}</select>
 		);
 	}
 

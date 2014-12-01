@@ -9,6 +9,12 @@ var SceneActions = {
             scene: scene
         });
         HubClient.save(scene);
+    },
+    logout: function() {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.HUB_LOGOUT
+        });
+        HubClient.logout();
     }
 };
 

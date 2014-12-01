@@ -6,7 +6,7 @@ var HubClient = require('../utils/HubClient');
 
 module.exports = {
     tryLogin: function(url, password) {
-    	HubClient.login(url, password);
+    	HubClient.login(url, {password: password});
     	AppDispatcher.handleViewAction({
     		type: ActionTypes.HUB_LOGIN_ATTEMPT
     	});

@@ -8,12 +8,16 @@ var _ = require('lodash');
 var CHANGE_EVENT = 'CHANGE_EVENT';
 
 var _loggedIn = false;
-
+var _failedAttempt = false;
 
 var ClientStore = assign({}, EventEmitter.prototype, {
 	loggedIn: function() {
 		return _loggedIn;
 	},
+
+    failedAttempt: function() {
+        return _failedAttempt;
+    },
 
 	emitChange: function() {
 		this.emit(CHANGE_EVENT);
@@ -32,6 +36,16 @@ var ClientStore = assign({}, EventEmitter.prototype, {
         switch(action.type){
             case ActionTypes.HUB_LOGIN_RESULT:
             	_loggedIn = action.result;
+
+                if (! _loggedIn) {
+                    _failedAttempt = true;
+                }
+                ClientStore.emitChange();
+                break;
+
+            case ActionTypes.HUB_LOGOUT:
+                _loggedIn = false;
+                _failedAttempt = false;
                 ClientStore.emitChange();
                 break;
         }        

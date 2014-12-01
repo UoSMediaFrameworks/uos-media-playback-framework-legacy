@@ -13,7 +13,17 @@ var SceneEditor = React.createClass({
         			<ScenePlayer />
         		</div>
         		<div className="col-sm-12">
-        			<SceneList />
+                    <div className='scene-selector'>
+                        <form className='form-inline' role='form'>
+                            <div className='form-group'>
+                                <SceneList />
+                            </div>
+                            <div className='form-group'>
+                                <button type='button' className='btn btn-link'>+ Create New Scene</button>
+                            </div>
+                        </form>
+                        
+                    </div>
         		</div>
                 <div className="col-sm-12">
                     <SceneJsonEditor />

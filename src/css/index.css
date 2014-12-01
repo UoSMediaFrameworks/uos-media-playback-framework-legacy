@@ -13,3 +13,7 @@ textarea {
     width: 100%;
     height: 200px !important;
 }
+
+.scene-selector {
+    margin: 15px 0;
+}
