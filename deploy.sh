@@ -117,6 +117,13 @@ if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
   cd - > /dev/null
 fi
 
+# 4. execute gulp commands to setup static assets 
+if [ -e "$DEPLOYMENT_SOURCE/Gulpfile.js" ]; then
+  cd "$DEPLOYMENT_TARGET"
+  node node_modules/gulp/bin/gulp.js build
+  exitWithMessageOnError "gulp build failed"
+fi
+
 ##################################################################################################################################
 
 # Post deployment stub
