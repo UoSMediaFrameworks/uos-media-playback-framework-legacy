@@ -8,7 +8,7 @@ var concat = require('gulp-concat'),
 
 var browserify = require('gulp-browserify');
 var gutil = require('gulp-util');
-var argv = require('yargs').argv;
+var static_server = require('./static_server');
 
 
 function browserifyHelper (startPath, finishName) {
@@ -45,18 +45,7 @@ gulp.task('watch', function () {
 });
 
 gulp.task('serve', ['build'], function(next) {
-    var connect = require('connect'),
-        serverStatic = require('serve-static'),
-        connectLivereload = require('connect-livereload'),
-        server = connect();
-
-    if (! argv.production) {
-        server.use(connectLivereload({port: lvPort}));    
-    }
-    
-    server.use(serverStatic(dest, {'index': ['index.html']}));
-
-    server.listen(process.env.PORT || 5000, next);
+    static_server(dest, {callback: next, livereload: true});
 });
 
 gulp.task('deploy', ['build'], function() {
