@@ -7,11 +7,21 @@ var SceneActions = require('./scene-actions');
 
 module.exports = {
     tryLogin: function(url, creds) {
-    	HubClient.login.apply(this, arguments);
     	AppDispatcher.handleViewAction({
-    		type: ActionTypes.HUB_LOGIN_ATTEMPT
-    	});
+            type: ActionTypes.HUB_LOGIN_ATTEMPT,
+            authType: 'user'
+        });
+        HubClient.login(url, creds);
     },
+
+    tryTokenLogin: function() {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.HUB_LOGIN_ATTEMPT,
+            authType: 'token'
+        });
+        HubClient.login();
+    },
+
     tryCreateScene: function(name, cb) {
     	var scene = {
     		'name': name,

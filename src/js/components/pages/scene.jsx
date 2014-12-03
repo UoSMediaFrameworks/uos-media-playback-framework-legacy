@@ -5,6 +5,7 @@ var React = require('react');
 var ScenePlayer = require('../scene-player.jsx');
 var SceneJsonEditor = require('../scene-json-editor.jsx');
 var SceneStore = require('../../stores/scene-store');
+var Authentication = require('../../mixins/Authentication');
 var AddMediaObject = require('../scene-editor/add-media-object.jsx');
 var MediaObjectTable = require('../scene-editor/media-object-table.jsx');
 var Router = require('react-router');
@@ -12,7 +13,7 @@ var Router = require('react-router');
 
 var Scene = React.createClass({
 
-    mixins: [Router.State],
+    mixins: [Router.State, Authentication],
 
     getStateFromStore: function() {
         return {
@@ -29,11 +30,7 @@ var Scene = React.createClass({
     },
 
     _onChange:function(){
-        // there's an error on this line somewhere
-        console.log('BEFORE _onChange');
         this.setState(this.getStateFromStore());
-        // this console.log never executes
-        console.log('AFTER _onChange', this.state); 
     },
 
     getInitialState: function() {

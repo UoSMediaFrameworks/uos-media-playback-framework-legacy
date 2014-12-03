@@ -25,17 +25,7 @@ var LoginPage = React.createClass({
         return _getState();
     },
 
-    componentDidMount: function() {
-        ClientStore.addChangeListener(this._onChange);
-    },
-
-    componentWillUnmount: function() {
-        ClientStore.removeChangeListener(this._onChange);
-    },
-
-    _onChange: function() {
-        this.setState(_getState());
-
+    redirectIfLoggedIn: function() {
         if (this.state.loggedIn) {
             if (LoginPage.attemptedTransition) {
                var trans = LoginPage.attemptedTransition;
@@ -45,7 +35,21 @@ var LoginPage = React.createClass({
                 this.transitionTo('/scenes');
             }
         }
-        
+    },
+
+    componentDidMount: function() {
+        ClientStore.addChangeListener(this._onChange);
+        this.redirectIfLoggedIn();
+    },
+
+    componentWillUnmount: function() {
+        ClientStore.removeChangeListener(this._onChange);
+    },
+
+    _onChange: function() {
+        this.setState(_getState());
+
+        this.redirectIfLoggedIn();
     },
 
 	handleSubmit: function(e) {

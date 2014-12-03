@@ -42,7 +42,7 @@ var ClientStore = assign({}, EventEmitter.prototype, {
             case ActionTypes.HUB_LOGIN_RESULT:
             	_loggedIn = action.result;
                 _attemptingLogin = false;
-                if (! _loggedIn) {
+                if (! _loggedIn && action.authType === 'user') {
                     _failedAttempt = true;
                 }
                 ClientStore.emitChange();

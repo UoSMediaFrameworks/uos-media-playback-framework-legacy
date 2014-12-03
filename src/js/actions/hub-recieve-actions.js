@@ -21,10 +21,11 @@ var HubRecieveActions = {
             scene: scene
         });
     },
-    recieveLoginResult: function(success) {
+    recieveLoginResult: function(success, authType) {
         AppDispatcher.handleServerAction({
             type: ActionTypes.HUB_LOGIN_RESULT,
-            result: success
+            result: success,
+            authType: authType
         });
     }
 };

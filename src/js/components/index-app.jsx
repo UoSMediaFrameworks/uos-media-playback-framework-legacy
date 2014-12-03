@@ -36,15 +36,17 @@ var App = React.createClass({
     _onChange: function() {
         this.setState(_getState());
 
-        if (this.state.loggedIn) {
-            if (LoginPage.attemptedTransition) {
-               var trans = LoginPage.attemptedTransition;
-                LoginPage.attemptedTransition = null;
-                trans.retry();
-            } else {
-                this.transitionTo('/scenes');
-            }
-        }
+        console.log('_onChange', _getState());
+
+        // if (this.state.loggedIn) {
+        //     if (LoginPage.attemptedTransition) {
+        //        var trans = LoginPage.attemptedTransition;
+        //         LoginPage.attemptedTransition = null;
+        //         trans.retry();
+        //     } else {
+        //         this.transitionTo('/scenes');
+        //     }
+        // }
         
     },
 
@@ -56,24 +58,24 @@ var App = React.createClass({
         var logout = this.state.loggedIn ? <button onClick={this.handleLogout} className='btn btn-link'>Log out</button> : null;
 
         //return  <LoginPage header='Media Scene Editor' element={<SceneEditor />} />; 
-        var body;
         if (this.state.attemptingLogin) {
-            body = <h1>Logging in...</h1>;
+            return <h1>Logging in...</h1>;
         } else {
-            body = [<div className='row'>,
+
+            return (
+                <div className='container'>
+                    <div key='row' className='row'>
                         <div className='col-md-12'>
                             <h1>Media Scene Editor</h1>
                             {logout}
-                        </div>]
-                    </div>,
-                    <RouteHandler />];
+                        </div>
+                    </div>
+                    <RouteHandler key='handler' />
+                </div>
+            );    
         }   
 
-        return (
-            <div className='container'>
-                {body}
-            </div>
-        );
+        
     }
 
 });

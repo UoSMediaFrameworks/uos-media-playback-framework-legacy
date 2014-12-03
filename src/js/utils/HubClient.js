@@ -7,40 +7,49 @@ var client,
     HUB_TOKEN = 'HUB_TOKEN',
     HUB_URL = 'HUB_URL';
 
+function _cleanLocalStorage () {
+    localStorage.removeItem(HUB_TOKEN);
+    localStorage.removeItem(HUB_URL);  
+}
+
 module.exports = {
     
     login: function(url, creds) {
+        var type;
         if (arguments.length === 0) {
+            type = 'token';
             url = localStorage.getItem(HUB_URL);
             creds = {token: localStorage.getItem(HUB_TOKEN)};
+
+            if (! url || ! creds) {
+                // bad localstorage, or nothing in it, so just return
+                _cleanLocalStorage();
+                HubRecieveActions.recieveLoginResult(false, type);
+                return;
+            }
         } else {
             localStorage.setItem(HUB_URL, url);
         }
 
         if (! url || ! creds) {
-            throw "url and creds must be provided for login to function";
+            throw 'url and creds must be provided for login to function';
         }
 
         if (url) {
-            try {
-                client = hubClient(url);
-                client.authenticate(creds).then(function(token) {
-                    localStorage.setItem(HUB_TOKEN, token);
-                    HubRecieveActions.recieveLoginResult(true);
-                    client.listScenes().then(HubRecieveActions.recieveSceneList);
-                }, function() {
-                    HubRecieveActions.recieveLoginResult(false);
-                });    
-            } catch (error) {
-                HubRecieveActions.recieveLoginResult(false);
-            }
-            
+            client = hubClient({forceNew: true});
+            client.connect(url, creds).then(function(token) {
+                localStorage.setItem(HUB_TOKEN, token);
+                HubRecieveActions.recieveLoginResult(true, type);
+                client.listScenes().then(HubRecieveActions.recieveSceneList);
+            }, function(error) {
+                client.disconnect();
+                HubRecieveActions.recieveLoginResult(false, type);
+            });    
         }
     },
 
     logout: function() {
-        localStorage.removeItem(HUB_TOKEN);
-        localStorage.removeItem(HUB_URL);
+        _cleanLocalStorage();
         client.disconnect();
     },
 

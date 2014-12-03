@@ -7,7 +7,7 @@ var HubClient = require('./utils/HubClient');
 var HubSendActions = require('./actions/hub-send-actions');
 
 // login with localStorage creds if possible
-HubSendActions.tryLogin();
+HubSendActions.tryTokenLogin();
 
 Router.run(function(Handler) {
     React.render(<Handler />, document.getElementById('main'));
