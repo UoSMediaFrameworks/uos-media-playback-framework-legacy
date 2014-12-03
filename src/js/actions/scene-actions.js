@@ -10,6 +10,17 @@ var SceneActions = {
         });
         HubClient.save(scene);
     },
+
+    addMediaObject: function(id, mediaType, url, tags) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.ADD_MEDIA_OBJECT,
+            id: id,
+            mediaType: mediaType,
+            url: url,
+            tags: tags
+        });
+    },
+
     logout: function() {
         AppDispatcher.handleViewAction({
             type: ActionTypes.HUB_LOGOUT

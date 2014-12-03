@@ -1,6 +1,6 @@
 'use strict';
 var React = require('react');
-var SceneList = require('../scene-editor/scene-list.jsx');
+var SceneList = require('../scene-list.jsx');
 var HubSendActions = require('../../actions/hub-send-actions');
 
 var curSceneId;

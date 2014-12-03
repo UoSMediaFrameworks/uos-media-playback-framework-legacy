@@ -1,7 +1,7 @@
 'use strict';
 var React = require('react');
-var HubSendActions = require('../../actions/hub-send-actions');
-var SceneListStore = require('../../stores/scene-list-store');
+var HubSendActions = require('../actions/hub-send-actions');
+var SceneListStore = require('../stores/scene-list-store');
 
 function _getState () {
 	return {scenes: SceneListStore.getAll()};

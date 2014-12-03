@@ -32,7 +32,6 @@
     "object-assign": "^2.0.0",
     "react": "^0.12.1",
     "react-router": "^0.11.4",
-    "react-router-component": "git+https://git@github.com/STRML/react-router-component.git#react-0.12",
     "reactify": "^0.17.0",
     "serve-static": "^1.6.3"
   }

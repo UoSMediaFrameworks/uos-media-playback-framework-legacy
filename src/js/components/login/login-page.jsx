@@ -3,6 +3,7 @@
 var React = require('react');
 var HubSendActions = require('../../actions/hub-send-actions');
 var ClientStore = require('../../stores/client-store');
+var FormHelper = require('../../mixins/form-helper');
 var Router = require('react-router');
 
 function _getState () {
@@ -14,7 +15,7 @@ function _getState () {
 
 
 var LoginPage = React.createClass({
-    mixins: [Router.Navigation],
+    mixins: [Router.Navigation, FormHelper],
 
     statics: {
         attemptedTransition: null
@@ -41,19 +42,15 @@ var LoginPage = React.createClass({
                 LoginPage.attemptedTransition = null;
                 trans.retry();
             } else {
-                this.replaceWith('/scenes');
+                this.transitionTo('/scenes');
             }
         }
         
     },
 
-	getRefVal: function(name) {
-		return this.refs[name].getDOMNode().value;
-	},
-
 	handleSubmit: function(e) {
 		e.preventDefault();
-		HubSendActions.tryLogin(this.getRefVal('url'), this.getRefVal('password'));
+		HubSendActions.tryLogin(this.getRefVal('url'), {password: this.getRefVal('password')});
 	},
 
 	render: function() {

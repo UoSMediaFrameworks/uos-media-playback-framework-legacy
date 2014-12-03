@@ -17,15 +17,24 @@ module.exports = {
             localStorage.setItem(HUB_URL, url);
         }
 
+        if (! url || ! creds) {
+            throw "url and creds must be provided for login to function";
+        }
+
         if (url) {
-            client = hubClient(url);
-            client.authenticate(creds).then(function(token) {
-                localStorage.setItem(HUB_TOKEN, token);
-                HubRecieveActions.recieveLoginResult(true);
-                client.listScenes().then(HubRecieveActions.recieveSceneList);
-            }, function() {
+            try {
+                client = hubClient(url);
+                client.authenticate(creds).then(function(token) {
+                    localStorage.setItem(HUB_TOKEN, token);
+                    HubRecieveActions.recieveLoginResult(true);
+                    client.listScenes().then(HubRecieveActions.recieveSceneList);
+                }, function() {
+                    HubRecieveActions.recieveLoginResult(false);
+                });    
+            } catch (error) {
                 HubRecieveActions.recieveLoginResult(false);
-            });
+            }
+            
         }
     },
 
@@ -39,8 +48,12 @@ module.exports = {
         client.loadScene(id).then(HubRecieveActions.recieveScene);
     },
 
-    save: function(scene) {
-        client.saveScene(scene);
+    save: function(scene, cb) {
+        client.saveScene(scene).then(function(newScene) {
+            if (cb) {
+                cb(newScene);
+            }
+        });
     },
 
     subscribeScene: function(id) {

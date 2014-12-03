@@ -1,30 +1,32 @@
 'use strict';
 
 var React = require('react/addons');
-var SceneStore = require('../../stores/scene-store');
-var SceneActions = require('../../actions/scene-actions');
+var SceneActions = require('../actions/scene-actions');
 
-function getScene() {
-    return {json: JSON.stringify(SceneStore.getScene(), null, '\t')};
-}
 
 var SceneJsonEditor = React.createClass({
     mixins: [React.addons.LinkedStateMixin],
     
+    stringify: function(value) {
+        return JSON.stringify(value, undefined, '\t');
+    },
+
+    getSceneJson: function() {
+        return this.stringify(this.props.scene);
+    },
+
     getInitialState:function(){
-        return getScene();
+        return {error: false, json: this.getSceneJson()};
     },
 
-    componentWillMount:function(){
-        SceneStore.addChangeListener(this._onChange);
+    componentWillMount: function() {
+        console.log('json componentWillMount', this.getSceneJson());
+        this.setState({json: this.getSceneJson()});
     },
 
-    componentWillUnmount: function() {
-        SceneStore.removeChangeListener(this._onChange);
-    },
-
-    _onChange:function(){
-        this.setState(getScene());
+    componentWillReceiveProps: function(nextProps) {
+        console.log('json componentWillReceiveProps', nextProps);
+        this.setState({json: this.stringify(nextProps.scene)});
     },
     
     handleBlur: function(event) {
@@ -50,7 +52,7 @@ var SceneJsonEditor = React.createClass({
                  onBlur={this.handleBlur}
                  valueLink={this.linkState('json')}>
                 </textarea>
-            </div>
+            </div>    
         );
     }
 

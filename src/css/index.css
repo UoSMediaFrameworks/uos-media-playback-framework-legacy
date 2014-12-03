@@ -17,3 +17,8 @@ textarea {
 .scene-selector {
     margin: 15px 0;
 }
+
+.btn-selected {
+    background-color: #ebebeb;
+    border-color: #adadad;
+}

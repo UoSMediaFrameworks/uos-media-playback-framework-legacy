@@ -2,7 +2,6 @@
 var React = require('react');
 var HubClient = require('../utils/HubClient');
 var LoginPage = require('./login/login-page.jsx');
-var SceneEditor = require('./scene-editor/scene-editor.jsx');
 var ClientStore = require('../stores/client-store');
 var SceneActions = require('../actions/scene-actions');
 var Router = require('react-router'),
@@ -13,11 +12,14 @@ var Router = require('react-router'),
 function _getState () {
     return {
         loggedIn: ClientStore.loggedIn(),
-        error: ClientStore.failedAttempt()
+        error: ClientStore.failedAttempt(),
+        attemptingLogin: ClientStore.attemptingLogin()
     };
 }
 
 var App = React.createClass({
+
+    mixins: [Router.Navigation],
     
     getInitialState: function() {
         return _getState();
@@ -40,7 +42,7 @@ var App = React.createClass({
                 LoginPage.attemptedTransition = null;
                 trans.retry();
             } else {
-                this.replaceWith('/scenes');
+                this.transitionTo('/scenes');
             }
         }
         
@@ -54,12 +56,22 @@ var App = React.createClass({
         var logout = this.state.loggedIn ? <button onClick={this.handleLogout} className='btn btn-link'>Log out</button> : null;
 
         //return  <LoginPage header='Media Scene Editor' element={<SceneEditor />} />; 
+        var body;
+        if (this.state.attemptingLogin) {
+            body = <h1>Logging in...</h1>;
+        } else {
+            body = [<div className='row'>,
+                        <div className='col-md-12'>
+                            <h1>Media Scene Editor</h1>
+                            {logout}
+                        </div>]
+                    </div>,
+                    <RouteHandler />];
+        }   
 
         return (
-            <div>
-                <h1>Media Scene Editor</h1>
-                {logout}
-                <RouteHandler />
+            <div className='container'>
+                {body}
             </div>
         );
     }

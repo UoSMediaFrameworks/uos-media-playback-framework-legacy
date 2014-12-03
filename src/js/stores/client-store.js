@@ -9,6 +9,7 @@ var CHANGE_EVENT = 'CHANGE_EVENT';
 
 var _loggedIn = false;
 var _failedAttempt = false;
+var _attemptingLogin = false;
 
 var ClientStore = assign({}, EventEmitter.prototype, {
 	loggedIn: function() {
@@ -17,6 +18,10 @@ var ClientStore = assign({}, EventEmitter.prototype, {
 
     failedAttempt: function() {
         return _failedAttempt;
+    },
+
+    attemptingLogin: function() {
+        return _attemptingLogin;
     },
 
 	emitChange: function() {
@@ -36,7 +41,7 @@ var ClientStore = assign({}, EventEmitter.prototype, {
         switch(action.type){
             case ActionTypes.HUB_LOGIN_RESULT:
             	_loggedIn = action.result;
-
+                _attemptingLogin = false;
                 if (! _loggedIn) {
                     _failedAttempt = true;
                 }
@@ -44,8 +49,12 @@ var ClientStore = assign({}, EventEmitter.prototype, {
                 break;
 
             case ActionTypes.HUB_LOGOUT:
-                _loggedIn = false;
-                _failedAttempt = false;
+                _loggedIn = _failedAttempt = _attemptingLogin = false;
+                ClientStore.emitChange();
+                break;
+
+            case ActionTypes.HUB_LOGIN_ATTEMPT:
+                _attemptingLogin = true;
                 ClientStore.emitChange();
                 break;
         }        
