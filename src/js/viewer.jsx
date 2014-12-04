@@ -1,6 +1,12 @@
-var ViewerApp = require('./components/viewer-app.jsx'),
-    React = require('react');
+'use strict';
+/*jshint browser: true */
 
-React.render(
-    <ViewerApp />,
-    document.getElementById('main'));
+var React = require('react');
+var Router = require('./viewer-router.jsx');
+var HubSendActions = require('./actions/hub-send-actions');
+
+HubSendActions.tryTokenLogin();
+
+Router.run(function(Handler) {
+    React.render(<Handler />, document.getElementById('main'));
+});

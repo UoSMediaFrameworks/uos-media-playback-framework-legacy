@@ -1,59 +1,48 @@
 'use strict';
+
 var React = require('react');
-var HubSendActions = require('../actions/hub-send-actions');
+var Router = require('react-router');
 var SceneListStore = require('../stores/scene-list-store');
+var Link = require('react-router').Link;
 
 function _getState () {
-	return {scenes: SceneListStore.getAll()};
+    return {scenes: SceneListStore.getAll()};
 }
 
-var _blank = 'BLANK';
 
 var SceneList = React.createClass({
 
-	propTypes: {
-		onChange: React.PropTypes.func
-	},
-	
-	getInitialState: function() {
-		return _getState();
-	},
-	
-	componentDidMount: function() {
-		SceneListStore.addChangeListener(this._onChange);
-	},
-	
-	componentWillUnmount: function() {
-		SceneListStore.removeChangeListener(this._onChange);
-	},
-	
-	_onChange: function() {
-		this.setState(_getState());
-	},
+    getInitialState: function() {
+        return _getState();
+    },
 
-	handleSelectChange: function(e) {
-		var val = e.target.value;
-		if (val !== _blank) {
-			HubSendActions.loadScene(val);
-			if (this.props.hasOwnProperty('onChange')) {
-				this.props.onChange(val);	
-			}
-		}
-	},
+    componentDidMount: function() {
+        SceneListStore.addChangeListener(this._onChange);
+    },
+    
+    componentWillUnmount: function() {
+        SceneListStore.removeChangeListener(this._onChange);
+    },
+    
+    _onChange: function() {
+        this.setState(_getState());
+    },
 
-	render: function() {
-		var options = this.state.scenes.map(function(scene) {
-			return (
-				<option key={scene._id} value={scene._id}>{scene.name}</option>
-			);
-		});
+    render: function() {
+        var links = this.state.scenes.map(function(scene) {
+            return (
+                <li key={scene._id}>
+                    <Link to='scene' params={{id: scene._id}}>{scene.name}</Link>
+                </li>
+            );
+        });
 
-		options.unshift(<option key={_blank} value={_blank}>Choose a Scene...</option>);
-
-		return (
-			<select className='form-control' onChange={this.handleSelectChange}>{options}</select>
-		);
-	}
+        return (
+            <ul>
+                {links}
+            </ul>
+        );
+    }
 
 });
 

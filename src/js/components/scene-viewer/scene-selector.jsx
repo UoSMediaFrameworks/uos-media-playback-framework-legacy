@@ -1,24 +1,19 @@
 'use strict';
-var React = require('react');
-var SceneList = require('../scene-list.jsx');
-var HubSendActions = require('../../actions/hub-send-actions');
 
-var curSceneId;
+var React = require('react');
+var Authentication = require('../../mixins/Authentication');
+var SceneList = require('../scene-list.jsx');
 
 var SceneSelector = React.createClass({
-	handleSceneChange: function(sceneId) {
-        if ( curSceneId ) {
-            HubSendActions.unsubscribeScene(curSceneId);
-        }
-        
-        curSceneId = sceneId;
-		HubSendActions.subscribeScene(curSceneId);
-	},
-	render: function() {
-		return (
-			<SceneList onChange={this.handleSceneChange} />
-		);
-	}
+    mixins: [Authentication],
+    render: function() {
+        return (
+            <div>
+                <h2>Choose a scene</h2>
+                <SceneList />
+            </div>
+        );
+    }
 
 });
 

@@ -14,10 +14,11 @@ function _updateScene (scene) {
 }
 
 function _addMediaObject(ops) {
-    _scenes[ops.id].scene.push({
+    _scenes[ops.sceneId].scene.push({
         mediaObject: {
             url: ops.url,
-            type: ops.type,
+            id: ops.mediaObjectId,
+            type: ops.mediaType,
             tags: ops.tags
         }
     });
@@ -55,7 +56,6 @@ var SceneStore = assign({}, EventEmitter.prototype, {
 
             case ActionTypes.RECIEVE_SCENE:
                 _updateScene(action.scene);
-                console.log('RECIEVE_SCENE scenestore', action);
                 SceneStore.emitChange();
                 break;
 

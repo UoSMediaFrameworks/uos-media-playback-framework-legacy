@@ -24,7 +24,7 @@ var SceneEditor = React.createClass({
 		var url = this.getRefNode('url'),
 			tags = this.getRefNode('tags');
 
-		SceneActions.addMediaObject(this.props.sceneId, this.state.mediaType, url.value, tags.value);
+		SceneActions.addMediaObject(this.props.sceneId, this.state.mediaType, url.value, tags.value);		
 		url.value = tags.value = '';
 	},
 
@@ -44,11 +44,19 @@ var SceneEditor = React.createClass({
 				</div>
 
 				<div className='form-group'>
-					<input ref='url' type='url' className='form-control' placeholder={urlPlaceholder} />
+					<input ref='url' 
+						   type='url' 
+					       className='form-control' 
+					       placeholder={urlPlaceholder} 
+					       defaultValue='http://www.valleyvet.com/images/worming-your-kitten.png' />
 				</div>
 
 				<div className='form-group'>
-					<input ref='tags' type='text' className='form-control' placeholder='tag, tag, ...' />
+					<input ref='tags' 
+						   type='text' 
+						   className='form-control' 
+					 	   placeholder='tag, tag, ...' 
+					 	   defaultValue='kittens, animals' />
 				</div>
 
 				<button className='btn btn-primary' type='submit'>Add</button>

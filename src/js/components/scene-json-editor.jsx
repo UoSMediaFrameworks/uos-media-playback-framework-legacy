@@ -20,12 +20,10 @@ var SceneJsonEditor = React.createClass({
     },
 
     componentWillMount: function() {
-        console.log('json componentWillMount', this.getSceneJson());
         this.setState({json: this.getSceneJson()});
     },
 
     componentWillReceiveProps: function(nextProps) {
-        console.log('json componentWillReceiveProps', nextProps);
         this.setState({json: this.stringify(nextProps.scene)});
     },
     

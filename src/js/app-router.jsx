@@ -2,7 +2,7 @@
 var React = require('react');
 var Router = require('react-router');
 var IndexApp = require('./components/index-app.jsx');
-var SceneList = require('./components/pages/scene-list.jsx');
+var SceneChooser = require('./components/pages/scene-choose-or-create.jsx');
 var LoginPage = require('./components/login/login-page.jsx');
 var Scene = require('./components/pages/scene.jsx');
 var Route = Router.Route,
@@ -13,9 +13,9 @@ var Route = Router.Route,
 
 var routes = (
     <Route handler={IndexApp}>
-        <DefaultRoute handler={SceneList} />
+        <DefaultRoute handler={SceneChooser} />
         <Route name='login' handler={LoginPage} />
-        <Route name='scenes' path='/scenes' handler={SceneList} />
+        <Route name='scenes' path='/scenes' handler={SceneChooser} />
         <Route name='scene' path='/scenes/:id' handler={Scene} />
     </Route>
 );

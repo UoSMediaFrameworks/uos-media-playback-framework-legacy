@@ -37,6 +37,9 @@ module.exports = {
             AppRouter.transitionTo('scene', {id: newScene._id});
         });
     },
+    saveScene: function(scene) {
+        HubClient.save(scene);
+    },
     loadScene: HubClient.loadScene,
     subscribeScene: HubClient.subscribeScene,
     unsubscribeScene: HubClient.unsubscribeScene

@@ -3,24 +3,35 @@
 var React = require('react');
 var MediaObjectPreview = require('./media-object-preview.jsx');
 
+var React = require('react');
+
+var TableItem = React.createClass({
+
+	render: function() {
+		return (
+			<tr>
+				<td>
+					<MediaObjectPreview mediaObject={this.props.mediaObject} />
+				</td>
+				<td>{this.props.mediaObject.url}</td>
+				<td>{this.props.mediaObject.tags}</td>
+			</tr>
+		);
+	}
+
+});
+
+
 var MediaObjectTable = React.createClass({
 
 	render: function() {
 		var rows = null;
 		
-		if (this.props.scene.scene) {
-			rows = this.props.scene.scene.map(function(mediaObject) {
-				var obj = mediaObject.mediaObject,
-					preview;
+		if (this.props.scene.scene && this.props.scene.scene.length !== 0) {
+			rows = this.props.scene.scene.map(function(mediaObject, index) {
+				var obj = mediaObject.mediaObject;
 
-
-				return (
-					<tr>
-						<td>
-							<MediaObjectPreview mediaObject={obj} />
-						</td>
-					</tr>
-				);
+				return <TableItem key={obj.id} mediaObject={obj} />;
 			});	
 		} else {
 			rows = [<tr key='empty'><td>Nothing in the scene yet</td></tr>];

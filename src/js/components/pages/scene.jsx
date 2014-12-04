@@ -7,6 +7,7 @@ var SceneJsonEditor = require('../scene-json-editor.jsx');
 var SceneStore = require('../../stores/scene-store');
 var Authentication = require('../../mixins/Authentication');
 var AddMediaObject = require('../scene-editor/add-media-object.jsx');
+var HubSendActions = require('../../actions/hub-send-actions');
 var MediaObjectTable = require('../scene-editor/media-object-table.jsx');
 var Router = require('react-router');
 
@@ -31,6 +32,7 @@ var Scene = React.createClass({
 
     _onChange:function(){
         this.setState(this.getStateFromStore());
+        HubSendActions.saveScene(this.state.scene);
     },
 
     getInitialState: function() {
