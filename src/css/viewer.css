@@ -1,3 +1,19 @@
 html, body {
 	height: 100%;
 }
+
+#main, #scene-player {
+    height: 100%;
+}
+
+#scene-player {
+    position: relative;
+    background-color: #ddd;
+    overflow: hidden;
+}
+
+.image-media-object {
+    position: absolute;
+    width: 50%;
+    opacity: 0;
+}

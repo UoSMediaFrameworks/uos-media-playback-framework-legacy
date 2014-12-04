@@ -1,4 +1,4 @@
-#player {
+.player {
     position: relative;
     height: 200px;
     background-color: #ddd;
@@ -21,4 +21,9 @@ textarea {
 .btn-selected {
     background-color: #ebebeb;
     border-color: #adadad;
+}
+
+.media-object-preview {
+    max-height: 40px;
+    width: auto;
 }

@@ -8,7 +8,7 @@ var Route = Router.Route,
     Link = Router.Link;
 var LoginPage = require('./components/login/login-page.jsx');
 var ViewerApp = require('./components/viewer-app.jsx');
-var SceneListener = require('./components/SceneListener.jsx');
+var SceneListener = require('./components/scene-listener.jsx');
 var SceneSelector = require('./components/scene-viewer/scene-selector.jsx');
 
 

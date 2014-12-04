@@ -10,7 +10,7 @@ var Player = React.createClass({
     render: function() {
         var json = JSON.stringify(this.props.scene);
         return (
-            <div id="player">
+            <div className="player">
                 <pre>{json}</pre>
             </div>
         );
