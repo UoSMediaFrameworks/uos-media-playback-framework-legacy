@@ -1,47 +1,72 @@
 'use strict';
 
 var gulp = require('gulp');
+var gutil = require('gulp-util');
+var source = require('vinyl-source-stream');
+var watchify = require('watchify');
+var mergeStream = require('merge-stream');
+var objectAssign = require('object-assign');
+var browserify = require('browserify');
+var reactify = require('reactify');
 var concat = require('gulp-concat'),
     livereload = require('gulp-livereload'),
     dest = 'dist',
     lvPort = 35729;
 
-var browserify = require('gulp-browserify');
-var gutil = require('gulp-util');
 var static_server = require('./static_server');
 
 
-function browserifyHelper (startPath, finishName) {
-    gulp.src(startPath)
-    .pipe(browserify({transform: 'reactify', debug: true}))
-    .on('error', gutil.log)
-    .pipe(concat(finishName))
-    .pipe(gulp.dest('dist/js'));
-}
+var indexBundler = bundlerBuilder('./src/js/index.jsx', 'index.js');
+var viewerBundler = bundlerBuilder('./src/js/viewer.jsx', 'viewer.js');
 
-gulp.task('browserify', function() {
-    browserifyHelper('src/js/index.jsx', 'index.js');
-    browserifyHelper('src/js/viewer.jsx', 'viewer.js');
-});
+function bundlerBuilder (startPath, finishName) {
+    var bundler = watchify(browserify(startPath, objectAssign({debug: true}, watchify.args)));
+    bundler.transform(reactify);
+    var rebundle = function() {
+        return bundler.bundle()
+            .on('error', gutil.log.bind(gutil, 'Browserify Error'))
+            .pipe(source(finishName))
+            .pipe(gulp.dest('dist/js'));
+    };
+
+    return {bundler: bundler, rebundle: rebundle};
+}
 
 
 gulp.task('html', function() {
-    gulp.src('src/*.html')
-    .pipe(gulp.dest('dist'));
+    return gulp.src('src/*.html')
+        .pipe(gulp.dest('dist'));
 });
 
 gulp.task('css', function() {
-    gulp.src('src/css/**/*.css')
+    return gulp.src('src/css/**/*.css')
         .pipe(gulp.dest(dest + '/css'));
 });
 
-gulp.task('build', ['browserify', 'html', 'css']);
+gulp.task('bundlejs', function() {
+    return mergeStream(
+        indexBundler.rebundle(),
+        viewerBundler.rebundle()
+    );
+});
+
+gulp.task('build', ['bundlejs', 'html', 'css']);
 
 gulp.task('watch', function () {
-    gulp.watch('src/**/*.*', ['build']);
-
+    
+    // trigger livereload on any change to dest
     livereload.listen(lvPort);
     gulp.watch(dest + '/**').on('change', livereload.changed);
+
+    // html changes
+    gulp.watch('src/*.html', ['html']);
+
+    // css changes
+    gulp.watch('src/css/**/*.css', ['css']);
+
+    
+    indexBundler.bundler.on('update', indexBundler.rebundle);
+    viewerBundler.bundler.on('update', viewerBundler.rebundle);
 });
 
 gulp.task('serve', ['build'], function(next) {
@@ -50,7 +75,7 @@ gulp.task('serve', ['build'], function(next) {
 
 gulp.task('deploy', ['build'], function() {
     var deployCdn = require('deploy-azure-cdn');
-    gulp.src(['dist/**/*'])
+    return gulp.src(['dist/**/*'])
         .pipe(deployCdn.gulpPlugin({
             containerName: 'site',
             serviceOptions: ['mediaplayercontroller', '6mzoatD04udXOQE1EpxIHhCDQLui3G6kKWtE4kJqWGO7n6mdKYXB14P/8okDfKTF/wyVmgOIlzgt/4yOotTl0g==']      
@@ -58,4 +83,4 @@ gulp.task('deploy', ['build'], function() {
         
 });
 
-gulp.task('default', ['serve', 'watch']);
+gulp.task('default', ['build', 'serve', 'watch']);
