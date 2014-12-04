@@ -10,6 +10,12 @@ var SceneListener = React.createClass({
 
     mixins: [Router.State],
 
+    statics: {
+        willTransitionFrom: function(transition, component) {
+            HubSendActions.unsubscribeScene(component.getParams().id);
+        }
+    },
+
     _getState: function() {
         return {scene: SceneStore.getScene(this.getParams().id)};
     },
@@ -25,7 +31,6 @@ var SceneListener = React.createClass({
     
     componentWillUnmount: function() {
         SceneStore.removeChangeListener(this._onChange);
-        HubSendActions.unsubscribeScene(this.getParams().id);
     },
     
     _onChange: function() {
