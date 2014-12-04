@@ -5,6 +5,7 @@ var assign = require('object-assign');
 var EventEmitter = require('events').EventEmitter;
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
 var HubSendActions = require('../actions/hub-send-actions');
+var _ = require('lodash');
 
 var CHANGE_EVENT = "change";
 var _scenes = {};
@@ -22,6 +23,13 @@ function _addMediaObject(ops) {
             tags: ops.tags
         }
     });
+}
+
+function _removeMediaObject (sceneId, mediaObjectId) {
+    var scene = _scenes[sceneId].scene;
+    scene.splice(_.findIndex(scene, function(obj) {
+        return obj.mediaObject.id === mediaObjectId;
+    }), 1);    
 }
 
 var SceneStore = assign({}, EventEmitter.prototype, {
@@ -62,6 +70,12 @@ var SceneStore = assign({}, EventEmitter.prototype, {
             case ActionTypes.ADD_MEDIA_OBJECT:
                 _addMediaObject(action);
                 SceneStore.emitChange();
+                break;
+
+            case ActionTypes.REMOVE_MEDIA_OBJECT:
+                _removeMediaObject(action.sceneId, action.mediaObjectId);
+                SceneStore.emitChange();
+                break;
         }
         
         return true;

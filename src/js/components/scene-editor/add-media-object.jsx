@@ -48,7 +48,8 @@ var SceneEditor = React.createClass({
 						   type='url' 
 					       className='form-control' 
 					       placeholder={urlPlaceholder} 
-					       defaultValue='http://www.valleyvet.com/images/worming-your-kitten.png' />
+					       defaultValue='http://www.valleyvet.com/images/worming-your-kitten.png' 
+					       required />
 				</div>
 
 				<div className='form-group'>

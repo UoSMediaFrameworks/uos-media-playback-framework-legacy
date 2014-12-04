@@ -2,10 +2,15 @@
 
 var React = require('react');
 var MediaObjectPreview = require('./media-object-preview.jsx');
-
-var React = require('react');
+var SceneActions = require('../../actions/scene-actions');
+var Glyphicon = require('../glyphicon.jsx');
 
 var TableItem = React.createClass({
+
+	handleRemoveClick: function(event) {
+		event.preventDefault();
+		SceneActions.removeMediaObject(this.props.sceneId, this.props.mediaObject.id);
+	},
 
 	render: function() {
 		return (
@@ -15,6 +20,11 @@ var TableItem = React.createClass({
 				</td>
 				<td>{this.props.mediaObject.url}</td>
 				<td>{this.props.mediaObject.tags}</td>
+				<td>
+					<button onClick={this.handleRemoveClick} className='btn btn-default btn-sm'>
+						<Glyphicon icon='remove' />
+					</button>
+				</td>
 			</tr>
 		);
 	}
@@ -31,8 +41,8 @@ var MediaObjectTable = React.createClass({
 			rows = this.props.scene.scene.map(function(mediaObject, index) {
 				var obj = mediaObject.mediaObject;
 
-				return <TableItem key={obj.id} mediaObject={obj} />;
-			});	
+				return <TableItem key={obj.id} sceneId={this.props.scene._id} mediaObject={obj} />;
+			}.bind(this));	
 		} else {
 			rows = [<tr key='empty'><td>Nothing in the scene yet</td></tr>];
 		}

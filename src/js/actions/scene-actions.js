@@ -23,11 +23,11 @@ var SceneActions = {
         });
     },
 
-    removeMediaObject: function(sceneId, index) {
+    removeMediaObject: function(sceneId, mediaObjectId) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.REMOVE_MEDIA_OBJECT,
             sceneId: sceneId,
-            index: index
+            mediaObjectId: mediaObjectId
         });
     },
 

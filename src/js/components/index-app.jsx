@@ -35,19 +35,6 @@ var App = React.createClass({
 
     _onChange: function() {
         this.setState(_getState());
-
-        console.log('_onChange', _getState());
-
-        // if (this.state.loggedIn) {
-        //     if (LoginPage.attemptedTransition) {
-        //        var trans = LoginPage.attemptedTransition;
-        //         LoginPage.attemptedTransition = null;
-        //         trans.retry();
-        //     } else {
-        //         this.transitionTo('/scenes');
-        //     }
-        // }
-        
     },
 
     handleLogout: function(event) {
@@ -57,7 +44,6 @@ var App = React.createClass({
     render: function() {
         var logout = this.state.loggedIn ? <button onClick={this.handleLogout} className='btn btn-link'>Log out</button> : null;
 
-        //return  <LoginPage header='Media Scene Editor' element={<SceneEditor />} />; 
         if (this.state.attemptingLogin) {
             return <h1>Logging in...</h1>;
         } else {
