@@ -42,9 +42,6 @@ var Scene = React.createClass({
     render: function() {
         return (
         	<div className="row">
-        		<div className="col-sm-12">
-        			<ScenePlayer scene={this.state.scene} />
-        		</div>
                 <div className="col-sm-12">
                     <AddMediaObject sceneId={this.state.scene._id} />
                 </div>
