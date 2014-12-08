@@ -1,9 +1,9 @@
 'use strict';
 
 var React = require('react');
-var HubSendActions = require('../../actions/hub-send-actions');
-var ClientStore = require('../../stores/client-store');
-var FormHelper = require('../../mixins/form-helper');
+var HubSendActions = require('../actions/hub-send-actions');
+var ClientStore = require('../stores/client-store');
+var FormHelper = require('../mixins/form-helper');
 var Router = require('react-router');
 
 function _getState () {
