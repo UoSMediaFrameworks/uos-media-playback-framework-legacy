@@ -16,6 +16,12 @@ var concat = require('gulp-concat'),
 var static_server = require('./static_server');
 
 
+/*
+I don't want to have to define the browserify code twice.  Yet, I need it to run inside
+of watchify, and then I also want to run it manually for the 'build' task.  So I have to 
+abstract out the process of making a bundler, and then leave it open to manual triggering
+*/
+
 var indexBundler = bundlerBuilder('./src/js/index.jsx', 'index.js');
 var viewerBundler = bundlerBuilder('./src/js/viewer.jsx', 'viewer.js');
 
@@ -32,6 +38,20 @@ function bundlerBuilder (startPath, finishName) {
     return {bundler: bundler, rebundle: rebundle};
 }
 
+gulp.task('watch', function () { 
+    // trigger livereload on any change to dest
+    livereload.listen(lvPort);
+    gulp.watch(dest + '/**').on('change', livereload.changed);
+
+    // html changes
+    gulp.watch('src/*.html', ['html']);
+
+    // css changes
+    gulp.watch('src/css/**/*.css', ['css']);
+
+    indexBundler.bundler.on('update', indexBundler.rebundle);
+    viewerBundler.bundler.on('update', viewerBundler.rebundle);
+});
 
 gulp.task('html', function() {
     return gulp.src('src/*.html')
@@ -44,49 +64,26 @@ gulp.task('css', function() {
 });
 
 gulp.task('bundlejs', function() {
+    return mergeStream(
+        indexBundler.rebundle(),
+        viewerBundler.rebundle()
+    );
+});
+
+gulp.task('build-dist', ['bundlejs', 'html', 'css']);
+
+
+///// BEGIN CLI TASKS ////////////////////////////////
+
+gulp.task('build', ['build-dist'], function() {
     // watchify watch handles must be closed, otherwise gulp task will hang,
     // thus the .on('end', ...)
-    return mergeStream(
-            indexBundler.rebundle(),
-            viewerBundler.rebundle())
-        .on('end', function() {
-            indexBundler.bundler.close();
-            viewerBundler.bundler.close();
-        });
-
+    indexBundler.bundler.close();
+    viewerBundler.bundler.close();
 });
 
-gulp.task('build', ['bundlejs', 'html', 'css']);
-
-gulp.task('watch', function () {
-    
-    // trigger livereload on any change to dest
-    livereload.listen(lvPort);
-    gulp.watch(dest + '/**').on('change', livereload.changed);
-
-    // html changes
-    gulp.watch('src/*.html', ['html']);
-
-    // css changes
-    gulp.watch('src/css/**/*.css', ['css']);
-
-    
-    indexBundler.bundler.on('update', indexBundler.rebundle);
-    viewerBundler.bundler.on('update', viewerBundler.rebundle);
-});
-
-gulp.task('serve', ['build'], function(next) {
+gulp.task('serve', function(next) {
     static_server(dest, {callback: next, livereload: true});
 });
 
-gulp.task('deploy', ['build'], function() {
-    var deployCdn = require('deploy-azure-cdn');
-    return gulp.src(['dist/**/*'])
-        .pipe(deployCdn.gulpPlugin({
-            containerName: 'site',
-            serviceOptions: ['mediaplayercontroller', '6mzoatD04udXOQE1EpxIHhCDQLui3G6kKWtE4kJqWGO7n6mdKYXB14P/8okDfKTF/wyVmgOIlzgt/4yOotTl0g==']      
-        }));
-        
-});
-
-gulp.task('default', ['build', 'serve', 'watch']);
+gulp.task('default', ['build-dist', 'serve', 'watch']);
