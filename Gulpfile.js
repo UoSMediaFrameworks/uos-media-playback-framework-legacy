@@ -44,10 +44,16 @@ gulp.task('css', function() {
 });
 
 gulp.task('bundlejs', function() {
+    // watchify watch handles must be closed, otherwise gulp task will hang,
+    // thus the .on('end', ...)
     return mergeStream(
-        indexBundler.rebundle(),
-        viewerBundler.rebundle()
-    );
+            indexBundler.rebundle(),
+            viewerBundler.rebundle())
+        .on('end', function() {
+            indexBundler.bundler.close();
+            viewerBundler.bundler.close();
+        });
+
 });
 
 gulp.task('build', ['bundlejs', 'html', 'css']);
