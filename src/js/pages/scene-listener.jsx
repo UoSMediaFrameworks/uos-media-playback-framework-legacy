@@ -24,7 +24,7 @@ var SceneListener = React.createClass({
     },
 
     getInitialState: function() {
-        return this._getState(this.props.sceneId);
+        return this._getState();
     },
 
     componentDidMount: function() {
@@ -44,10 +44,17 @@ var SceneListener = React.createClass({
     },
 
     updateTags: function(event) {
-        event.preventDefault();
+        if (event) {
+            event.preventDefault();
+        }
+
         var tagNode = this.getRefNode('tags');
         this.state.player.setTagFilter(tagNode.value);
         tagNode.blur();
+    },
+
+    handleBlur: function(event) {
+        this.updateTags();
     },
     
     _onChange: function() {
@@ -60,7 +67,7 @@ var SceneListener = React.createClass({
             <div className='scene-listener'>
                 <div className='player'></div>
                 <form onSubmit={this.updateTags}>
-                    <input ref='tags' type='text' placeholder='tag, tag, ...' className='form-control scene-listener-tag-input' />
+                    <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...' className='form-control scene-listener-tag-input' />
                 </form>
             </div>
         );
