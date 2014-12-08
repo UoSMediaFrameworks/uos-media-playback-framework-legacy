@@ -32,7 +32,7 @@ var Scene = React.createClass({
 
     _onChange:function(){
         this.setState(this.getStateFromStore());
-        HubSendActions.saveScene(this.state.scene);
+        //HubSendActions.saveScene(this.state.scene);
     },
 
     getInitialState: function() {
