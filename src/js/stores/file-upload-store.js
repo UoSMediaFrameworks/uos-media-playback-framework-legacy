@@ -26,12 +26,22 @@ var FileUploadStore = assign({}, EventEmitter.prototype, {
 
     dispatcherIndex: AppDispatcher.register(function(payload){
         var action = payload.action;
+        var file;
         switch(action.type){
             case ActionTypes.UPLOAD_ASSET:
-                var file = action.file;
+                file = action.file;
                 _fileStates[file.name] = 'uploading';
                 FileUploadStore.emitChange();
                 break;
+
+            case ActionTypes.UPLOAD_ASSET_RESULT:
+                file = action.file;
+                if (action.success) {
+                    _fileStates[file.name] = 'uploaded successfully';
+                } else {
+                    _fileStates[file.name] = 'upload failed: ' + action.msg || 'unknown error';
+                }
+                FileUploadStore.emitChange();
         }
         
         return true;

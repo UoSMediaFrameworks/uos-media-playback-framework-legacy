@@ -62,12 +62,12 @@ var SceneActions = {
         data.append('token', HubClient.getToken());
         var xhr = new XMLHttpRequest();
         xhr.onload = function() {
+            var data = JSON.parse(xhr.responseText);
             if (xhr.status === 200) {
-                var data = JSON.parse(xhr.responseText);
                 SceneActions.addMediaObject(sceneId, 'image', data.url, data.tags.join(', '));    
                 dispatchResult(true);
             } else {
-                dispatchResult(false);
+                dispatchResult(false, data.error);
             }
         };
 
