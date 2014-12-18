@@ -1,4 +1,6 @@
-var LoginPage = require('../components/login/login-page.jsx');
+'use strict';
+
+var LoginPage = require('../pages/login-page.jsx');
 var ClientStore = require('../stores/client-store');
 
 module.exports = {

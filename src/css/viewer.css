@@ -2,11 +2,11 @@ html, body {
 	height: 100%;
 }
 
-#main, #scene-player {
+#main, .player, .scene-listener {
     height: 100%;
 }
 
-#scene-player {
+.player {
     position: relative;
     background-color: #ddd;
     overflow: hidden;
@@ -16,4 +16,12 @@ html, body {
     position: absolute;
     width: 50%;
     opacity: 0;
+}
+
+.scene-listener-tag-input {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 30%;
+    min-width: 200px;
 }

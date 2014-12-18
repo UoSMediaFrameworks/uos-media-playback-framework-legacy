@@ -2,7 +2,7 @@
 
 var React = require('react');
 var Authentication = require('../../mixins/Authentication');
-var SceneList = require('../scene-list.jsx');
+var SceneList = require('../../components/scene-list.jsx');
 
 var SceneSelector = React.createClass({
     mixins: [Authentication],
