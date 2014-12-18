@@ -12,14 +12,13 @@ function _cleanLocalStorage () {
     localStorage.removeItem(HUB_URL);  
 }
 
-module.exports = {
-    
+var HubClient = {
     login: function(url, creds) {
         var type;
         if (arguments.length === 0) {
             type = 'token';
             url = localStorage.getItem(HUB_URL);
-            creds = {token: localStorage.getItem(HUB_TOKEN)};
+            creds = {token: HubClient.getToken()};
 
             if (! url || ! creds) {
                 // bad localstorage, or nothing in it, so just return
@@ -53,6 +52,10 @@ module.exports = {
         client.disconnect();
     },
 
+    getToken: function() {
+        return localStorage.getItem(HUB_TOKEN);
+    },
+
     loadScene: function(id) {
         client.loadScene(id).then(HubRecieveActions.recieveScene);
     },
@@ -75,3 +78,5 @@ module.exports = {
         client.unsubScene(id);
     }
 };
+
+module.exports = HubClient;

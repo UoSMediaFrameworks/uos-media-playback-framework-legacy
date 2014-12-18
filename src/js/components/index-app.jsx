@@ -1,6 +1,5 @@
 'use strict';
 var React = require('react');
-var HubClient = require('../utils/HubClient');
 var LoginPage = require('../pages/login-page.jsx');
 var ClientStore = require('../stores/client-store');
 var SceneActions = require('../actions/scene-actions');

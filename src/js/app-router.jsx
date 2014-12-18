@@ -14,8 +14,8 @@ var Route = Router.Route,
 var routes = (
     <Route handler={IndexApp}>
         <DefaultRoute handler={SceneChooser} />
-        <Route name='login' handler={LoginPage} />
-        <Route name='scenes' path='/scenes' handler={SceneChooser} />
+        <Route name='login' path='/login/?' handler={LoginPage} />
+        <Route name='scenes' path='/scenes/?' handler={SceneChooser} />
         <Route name='scene' path='/scenes/:id' handler={Scene} />
     </Route>
 );
