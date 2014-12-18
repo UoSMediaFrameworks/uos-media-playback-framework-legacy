@@ -36,6 +36,8 @@ var SceneActions = {
             type: ActionTypes.HUB_LOGOUT
         });
         HubClient.logout();
+        var AppRouter = require('../app-router.jsx');
+        AppRouter.transitionTo('login');
     }
 };
 

@@ -48,7 +48,6 @@ var SceneEditor = React.createClass({
 						   type='url' 
 					       className='form-control' 
 					       placeholder={urlPlaceholder} 
-					       defaultValue='http://www.valleyvet.com/images/worming-your-kitten.png' 
 					       required />
 				</div>
 
@@ -56,8 +55,7 @@ var SceneEditor = React.createClass({
 					<input ref='tags' 
 						   type='text' 
 						   className='form-control' 
-					 	   placeholder='tag, tag, ...' 
-					 	   defaultValue='kittens, animals' />
+					 	   placeholder='tag, tag, ...' />
 				</div>
 
 				<button className='btn btn-primary' type='submit'>Add</button>
