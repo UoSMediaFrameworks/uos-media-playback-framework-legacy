@@ -11,7 +11,8 @@ module.exports = {
         HUB_LOGIN_RESULT: null,
         HUB_LOGOUT: null,
         UPLOAD_ASSET: null,
-        UPLOAD_ASSET_RESULT: null
+        UPLOAD_ASSET_RESULT: null,
+        UPLOAD_ASSET_RESULT_REMOVE: null
     }),
     PayloadSources: keymirror({
         VIEW_ACTION: null,

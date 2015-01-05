@@ -59,10 +59,10 @@ var Scene = React.createClass({
 
         return (
             <DropZone handler={this.fileHandler}>
+                <div className="file-upload-status">
+                    {fileUploads}
+                </div>
                 <div className="row">
-                    <div className="col-sm-12">
-                        {fileUploads}
-                    </div>
                     <div className="col-sm-12">
                         <MediaObjectTable scene={this.state.scene} />
                     </div>

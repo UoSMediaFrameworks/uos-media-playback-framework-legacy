@@ -54,6 +54,16 @@ var SceneActions = {
                 success: success,
                 msg: msg
             });
+
+            if (success) {
+                setTimeout(function() {
+                    AppDispatcher.handleServerAction({
+                        type: ActionTypes.UPLOAD_ASSET_RESULT_REMOVE,
+                        file: file
+                    });    
+                }, 1000);
+                
+            }
         }
 
         var data = new FormData();

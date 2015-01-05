@@ -27,3 +27,15 @@ textarea {
     max-height: 40px;
     width: auto;
 }
+
+.file-upload-status {
+    z-index: 1;
+    position: fixed;
+    bottom: 0;
+    margin: 0 auto;
+}
+
+.file-upload-status .alert {
+    margin: 0;
+    padding: 2px;
+}

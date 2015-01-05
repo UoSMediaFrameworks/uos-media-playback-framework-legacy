@@ -30,18 +30,26 @@ var FileUploadStore = assign({}, EventEmitter.prototype, {
         switch(action.type){
             case ActionTypes.UPLOAD_ASSET:
                 file = action.file;
-                _fileStates[file.name] = 'uploading';
+                _fileStates[file.name] = {state: 'info'};
                 FileUploadStore.emitChange();
                 break;
 
             case ActionTypes.UPLOAD_ASSET_RESULT:
                 file = action.file;
                 if (action.success) {
-                    _fileStates[file.name] = 'uploaded successfully';
+                    _fileStates[file.name].state = 'success';
                 } else {
-                    _fileStates[file.name] = 'upload failed: ' + action.msg || 'unknown error';
+                    var state = _fileStates[file.name];
+                    state.state = 'danger';
+                    state.message = 'upload failed: ' + action.msg || 'unknown error';
                 }
                 FileUploadStore.emitChange();
+                break;
+            
+            case ActionTypes.UPLOAD_ASSET_RESULT_REMOVE:
+                delete _fileStates[action.file.name];
+                FileUploadStore.emitChange();
+                break;
         }
         
         return true;
