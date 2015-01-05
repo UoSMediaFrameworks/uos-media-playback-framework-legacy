@@ -1,4 +1,5 @@
 'use strict';
+/*jshint browser: true */
 var SceneConstants = require('../constants/scene-constants');
 var AppDispatcher = require('../dispatchers/app-dispatcher');
 var HubClient = require('../utils/HubClient');
@@ -7,11 +8,19 @@ var ActionTypes = SceneConstants.ActionTypes;
 var _ = require('lodash');
 
 var SceneActions = {
+    updateScene: function(scene) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.SCENE_CHANGE,
+            scene: scene
+        });
+
+        HubClient.save(scene);        
+    },
+
     addMediaObject: function(scene, mediaType, url, tags) {
         scene.scene.push({
             mediaObject: {
                 url: url,
-                id: hat(),
                 type: mediaType,
                 tags: tags
             }
@@ -25,10 +34,7 @@ var SceneActions = {
         HubClient.save(scene);
     },
 
-    removeMediaObject: function(scene, mediaObjectId) {
-
-        
-        
+    removeMediaObject: function(scene, mediaObjectId) {     
         scene.scene.splice(_.findIndex(scene.scene, function(obj) {
             return obj.mediaObject.id === mediaObjectId;
         }), 1);    

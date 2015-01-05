@@ -2,7 +2,6 @@
 
 var React = require('react/addons');
 var SceneActions = require('../actions/scene-actions');
-var hat = require('hat');
 var _ = require('lodash');
 
 
@@ -36,15 +35,8 @@ var SceneJsonEditor = React.createClass({
             // make sure that something changed
             if (! _.isEqual(newScene, this.props.scene)) {
 
-                // add any new ids
-                _.forEach(newScene.scene, function(mediaObject) {
-                    if (! mediaObject.mediaObject.hasOwnProperty('id')) {
-                        mediaObject.mediaObject.id = hat();
-                    }
-                });
-
                 this.setState({error: false});
-                SceneActions.sceneChange(newScene);    
+                SceneActions.updateScene(newScene);    
             }
             
         } catch (e) {
