@@ -7,7 +7,6 @@ var SceneJsonEditor = require('../scene-json-editor.jsx');
 var SceneStore = require('../../stores/scene-store');
 var FileUploadStore = require('../../stores/file-upload-store');
 var Authentication = require('../../mixins/Authentication');
-var AddMediaObject = require('../scene-editor/add-media-object.jsx');
 var HubSendActions = require('../../actions/hub-send-actions');
 var SceneActions = require('../../actions/scene-actions');
 var MediaObjectTable = require('../scene-editor/media-object-table.jsx');
@@ -63,9 +62,6 @@ var Scene = React.createClass({
                 <div className="row">
                     <div className="col-sm-12">
                         {fileUploads}
-                    </div>
-                    <div className="col-sm-12">
-                        <AddMediaObject sceneId={this.state.scene._id} />
                     </div>
                     <div className="col-sm-12">
                         <MediaObjectTable scene={this.state.scene} />
