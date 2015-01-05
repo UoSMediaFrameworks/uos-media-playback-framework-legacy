@@ -9,7 +9,7 @@ var TableItem = React.createClass({
 
 	handleRemoveClick: function(event) {
 		event.preventDefault();
-		SceneActions.removeMediaObject(this.props.sceneId, this.props.mediaObject.id);
+		SceneActions.removeMediaObject(this.props.scene, this.props.mediaObject.id);
 	},
 
 	render: function() {
@@ -41,7 +41,7 @@ var MediaObjectTable = React.createClass({
 			rows = this.props.scene.scene.map(function(mediaObject, index) {
 				var obj = mediaObject.mediaObject;
 
-				return <TableItem key={obj.id} sceneId={this.props.scene._id} mediaObject={obj} />;
+				return <TableItem key={obj.id} scene={this.props.scene} mediaObject={obj} />;
 			}.bind(this));	
 		} else {
 			rows = [<tr key='empty'><td>Nothing in the scene yet</td></tr>];

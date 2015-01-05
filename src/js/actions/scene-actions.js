@@ -1,35 +1,44 @@
+'use strict';
 var SceneConstants = require('../constants/scene-constants');
 var AppDispatcher = require('../dispatchers/app-dispatcher');
 var HubClient = require('../utils/HubClient');
 var hat = require('hat');
 var ActionTypes = SceneConstants.ActionTypes;
+var _ = require('lodash');
 
 var SceneActions = {
-    sceneChange: function(scene) {
+    addMediaObject: function(scene, mediaType, url, tags) {
+        scene.scene.push({
+            mediaObject: {
+                url: url,
+                id: hat(),
+                type: mediaType,
+                tags: tags
+            }
+        });
+
         AppDispatcher.handleViewAction({
             type: ActionTypes.SCENE_CHANGE,
             scene: scene
         });
+
         HubClient.save(scene);
     },
 
-    addMediaObject: function(sceneId, mediaType, url, tags) {
-        AppDispatcher.handleViewAction({
-            type: ActionTypes.ADD_MEDIA_OBJECT,
-            sceneId: sceneId,
-            mediaType: mediaType,
-            mediaObjectId: hat(),
-            url: url,
-            tags: tags
-        });
-    },
+    removeMediaObject: function(scene, mediaObjectId) {
 
-    removeMediaObject: function(sceneId, mediaObjectId) {
+        
+        
+        scene.scene.splice(_.findIndex(scene.scene, function(obj) {
+            return obj.mediaObject.id === mediaObjectId;
+        }), 1);    
+        
         AppDispatcher.handleViewAction({
-            type: ActionTypes.REMOVE_MEDIA_OBJECT,
-            sceneId: sceneId,
-            mediaObjectId: mediaObjectId
+            type: ActionTypes.SCENE_CHANGE,
+            scene: scene
         });
+
+        HubClient.save(scene);
     },
 
     logout: function() {
@@ -41,7 +50,7 @@ var SceneActions = {
         location.reload();
     },
 
-    uploadAsset: function(sceneId, file) {
+    uploadAsset: function(scene, file) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.UPLOAD_ASSET,
             file: file
@@ -55,15 +64,14 @@ var SceneActions = {
                 msg: msg
             });
 
-            if (success) {
-                setTimeout(function() {
-                    AppDispatcher.handleServerAction({
-                        type: ActionTypes.UPLOAD_ASSET_RESULT_REMOVE,
-                        file: file
-                    });    
-                }, 1000);
-                
-            }
+            var msecs = success ? 1000 : 10000;
+            
+            setTimeout(function() {
+                AppDispatcher.handleServerAction({
+                    type: ActionTypes.UPLOAD_ASSET_RESULT_REMOVE,
+                    file: file
+                });    
+            }, msecs);
         }
 
         var data = new FormData();
@@ -73,7 +81,7 @@ var SceneActions = {
         xhr.onload = function() {
             var data = JSON.parse(xhr.responseText);
             if (xhr.status === 200) {
-                SceneActions.addMediaObject(sceneId, 'image', data.url, data.tags.join(', '));    
+                SceneActions.addMediaObject(scene, 'image', data.url, data.tags.join(', '));    
                 dispatchResult(true);
             } else {
                 dispatchResult(false, data.error);

@@ -46,7 +46,7 @@ var Scene = React.createClass({
 
     fileHandler: function(fileList) {
         for (var i = 0; i < fileList.length; i++) {
-            SceneActions.uploadAsset(this.getParams().id, fileList[i]);
+            SceneActions.uploadAsset(this.state.scene, fileList[i]);
         }
     },
 
