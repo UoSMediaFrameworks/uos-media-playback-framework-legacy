@@ -1,5 +1,5 @@
 'use strict'; 
-var Promise = require('es6-promise').Promise;
+var EPromise = require('es6-promise').Promise;
 var assign = require('object-assign');
 
 var _callbacks = [];
@@ -11,7 +11,7 @@ var _promises = [];
  * @param {object} payload The data from the Action.
  */
 var _addPromise = function(callback, payload) {
-  _promises.push(new Promise(function(resolve, reject) {
+  _promises.push(new EPromise(function(resolve, reject) {
     if (callback(payload)) {
       resolve(payload);
     } else {
@@ -48,7 +48,7 @@ Dispatcher.prototype = assign({}, Dispatcher.prototype, {
     _callbacks.forEach(function(callback) {
       _addPromise(callback, payload);
     });
-    Promise.all(_promises).then(_clearPromises);
+    EPromise.all(_promises).then(_clearPromises);
   }
 
 });

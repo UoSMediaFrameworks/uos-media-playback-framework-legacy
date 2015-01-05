@@ -39,7 +39,8 @@ var SceneActions = {
         HubClient.logout();
 
         var AppRouter = require('../app-router.jsx');
-        AppRouter.transitionTo('login');
+        location.reload();
+        // AppRouter.transitionTo('login');
     },
 
     uploadAsset: function(sceneId, file) {
@@ -75,7 +76,8 @@ var SceneActions = {
             dispatchResult(false);
         };
 
-        xhr.open('POST', 'http://smaassetstore.azurewebsites.net/upload/image');
+        xhr.open('POST', 'http://smaassetstore.azurewebsites.net/api/images');
+        //xhr.open('POST', 'http://localhost:4000/api/images');
         xhr.send(data);
     }
 };
