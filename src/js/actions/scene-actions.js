@@ -3,7 +3,6 @@
 var SceneConstants = require('../constants/scene-constants');
 var AppDispatcher = require('../dispatchers/app-dispatcher');
 var HubClient = require('../utils/HubClient');
-var hat = require('hat');
 var ActionTypes = SceneConstants.ActionTypes;
 var _ = require('lodash');
 
@@ -82,6 +81,7 @@ var SceneActions = {
 
         var data = new FormData();
         data.append('image', file);
+        data.append('filename', file.name);
         data.append('token', HubClient.getToken());
         var xhr = new XMLHttpRequest();
         xhr.onload = function() {
@@ -98,8 +98,8 @@ var SceneActions = {
             dispatchResult(false);
         };
 
-        //xhr.open('POST', 'http://smaassetstore.azurewebsites.net/api/images');
-        xhr.open('POST', 'http://localhost:4000/api/images');
+        xhr.open('POST', 'http://smaassetstore.azurewebsites.net/api/images');
+        //xhr.open('POST', 'http://localhost:4000/api/images');
         xhr.send(data);
     }
 };
