@@ -29,7 +29,7 @@ module.exports = {
     	};
 
     	HubClient.save(scene, function(newScene) {
-            SceneActions.sceneChange(newScene);
+            SceneActions.updateScene(newScene);
             // deffer the loading of AppRouter to prevent circular dependencies, 
             // this would be better done with dependency injection
             // http://tomkit.wordpress.com/2013/02/05/circular-dependencies-dependency-injection-in-node-js/
