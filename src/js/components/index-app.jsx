@@ -3,6 +3,7 @@ var React = require('react');
 var LoginPage = require('../pages/login-page.jsx');
 var ClientStore = require('../stores/client-store');
 var SceneActions = require('../actions/scene-actions');
+var NavLink = require('./nav-link.jsx');
 var Router = require('react-router'),
     RouteHandler = Router.RouteHandler,
     Link = Router.Link;
@@ -17,8 +18,6 @@ function _getState () {
 }
 
 var App = React.createClass({
-
-    mixins: [Router.Navigation],
     
     getInitialState: function() {
         return _getState();
@@ -41,7 +40,14 @@ var App = React.createClass({
     },
     
     render: function() {
-        var logout = this.state.loggedIn ? <button onClick={this.handleLogout} className='btn btn-link'>Log out</button> : null;
+        var nav;
+
+        if (this.state.loggedIn) {
+            nav = <ul role='navigation' className='nav nav-pills page-nav'>
+                <NavLink to='scenes'>Scene List</NavLink>
+                <li><a onClick={this.handleLogout} className='btn btn-link'>Log out</a></li>
+            </ul>;
+        }
 
         if (this.state.attemptingLogin) {
             return <h1>Logging in...</h1>;
@@ -52,7 +58,7 @@ var App = React.createClass({
                     <div key='row' className='row'>
                         <div className='col-md-12'>
                             <h1>Media Scene Editor</h1>
-                            {logout}
+                            {nav}       
                         </div>
                     </div>
                     <RouteHandler key='handler' />

@@ -39,3 +39,7 @@ textarea {
     margin: 0;
     padding: 2px;
 }
+
+.page-nav {
+    float: right;
+}
