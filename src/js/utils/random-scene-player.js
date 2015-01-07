@@ -4,6 +4,12 @@ var _ = require('lodash');
 
 function RandomScenePlayer (elementManager) {
     this._elementMananger = elementManager;
+    // holds tags assigned by setTagFilter
+    this._manualTagFilter = [];
+    // holds tags assigned by setThemeFilter
+    this._themeTagFilter = [];
+
+    // holds the unique'd version of both above, it's what actually gets checked
     this._tagFilter = [];
 }
 
@@ -22,7 +28,12 @@ function filterMediaScene(mediaScene, tagsArray, mediaType) {
 }
 
 function parseTagString (tagString) {
-    return _.map(tagString.split(','), function(s) { return s.trim(); });
+    return _.uniq(_.map(tagString.split(','), function(s) { return s.trim(); }));
+}
+
+function mergeFilters (self) {
+    self._tagFilter = _.uniq(self._manualTagFilter.concat(self._themeTagFilter));
+    console.dir(self._tagFilter);
 }
 
 RandomScenePlayer.prototype.setScene = function(newScene) {
@@ -37,7 +48,30 @@ RandomScenePlayer.prototype.setScene = function(newScene) {
 };
 
 RandomScenePlayer.prototype.setTagFilter = function(tagString) {
-    this._tagFilter = parseTagString(tagString);
+    tagString = tagString.trim();
+
+    if (tagString !== '') {
+        this._manualTagFilter = parseTagString(tagString);
+    } else {
+        this._manualTagFilter = [];
+    }
+    
+    mergeFilters(this);
+};
+
+RandomScenePlayer.prototype.setThemeFilter = function(themeArray) {
+    // concatenate the various tag strings of the themes
+    if (themeArray.length > 0) {
+        var themeTags = _.map(themeArray, function(theme) {
+            return this._scene.themes[theme];
+        }.bind(this)).join(',');
+
+        this._themeTagFilter = parseTagString(themeTags);
+    } else {
+        this._themeTagFilter = [];
+    }
+
+    mergeFilters(this);
 };
 
 RandomScenePlayer.prototype.start = function() {
