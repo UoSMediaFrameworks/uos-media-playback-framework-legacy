@@ -31,3 +31,12 @@ html, body {
     bottom: 0;
     left: 0;
 }
+
+.theme-selector .active {
+    background-color: rgb(192, 225, 192);
+}
+
+.theme-selector button:focus {
+    outline: none;
+    
+}
