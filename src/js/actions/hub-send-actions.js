@@ -42,5 +42,15 @@ module.exports = {
     },
     loadScene: HubClient.loadScene,
     subscribeScene: HubClient.subscribeScene,
+    deleteScene: function(sceneId) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.DELETE_SCENE,
+            sceneId: sceneId
+        });
+
+        HubClient.deleteScene(sceneId);
+        var AppRouter = require('../app-router.jsx');
+        AppRouter.transitionTo('scenes');
+    },
     unsubscribeScene: HubClient.unsubscribeScene
 };

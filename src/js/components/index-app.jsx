@@ -45,7 +45,7 @@ var App = React.createClass({
         if (this.state.loggedIn) {
             nav = <ul role='navigation' className='nav nav-pills page-nav'>
                 <NavLink to='scenes'>Scene List</NavLink>
-                <li><a onClick={this.handleLogout} className='btn btn-link'>Log out</a></li>
+                <li><a onClick={this.handleLogout}>Log out</a></li>
             </ul>;
         }
 

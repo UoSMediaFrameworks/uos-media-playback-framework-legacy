@@ -3,6 +3,7 @@ var keymirror = require('keymirror');
 module.exports = {
     ActionTypes: keymirror({
         SCENE_CHANGE: null,
+        DELETE_SCENE: null,
         ADD_MEDIA_OBJECT: null,
         REMOVE_MEDIA_OBJECT: null,
         RECIEVE_SCENE_LIST: null,

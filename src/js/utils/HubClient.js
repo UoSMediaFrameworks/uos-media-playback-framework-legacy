@@ -68,6 +68,10 @@ var HubClient = {
         });
     },
 
+    deleteScene: function(id) {
+        client.deleteScene(id);
+    },
+
     subscribeScene: function(id) {
         // no confirmation handler as of yet
         client.subScene(id, HubRecieveActions.recieveSceneUpdate);

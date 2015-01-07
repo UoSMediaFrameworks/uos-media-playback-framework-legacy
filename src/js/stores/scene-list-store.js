@@ -18,8 +18,13 @@ function _addScenes (scenes) {
 }
 
 function _updateSceneName (_id, name) {
-	if (_scenes.hasOwnProperty(_id) && _scenes[_id].name !== name) {
-		_scenes[_id].name = name;
+	if (_scenes.hasOwnProperty(_id)) {
+		if (_scenes[_id].name !== name) {
+			_scenes[_id].name = name;
+			return true;
+		}
+	} else {
+		_scenes[_id] = {name: name, _id: _id};
 		return true;
 	}
 }
@@ -49,17 +54,24 @@ var SceneListStore = assign({}, EventEmitter.prototype, {
 
 	dispatcherIndex: AppDispatcher.register(function(payload){
         var action = payload.action; // this is our action from handleViewAction
+        var scene;
         switch(action.type){
             case ActionTypes.RECIEVE_SCENE_LIST:
             	_addScenes(action.scenes);
                 SceneListStore.emitChange();
                 break;
+
             case ActionTypes.SCENE_CHANGE:
-            	var scene = action.scene;
+            	scene = action.scene;
             	if (_updateSceneName(scene._id, scene.name)) {
             		SceneListStore.emitChange();
             	}
             	break;
+
+            case ActionTypes.DELETE_SCENE:
+                delete _scenes[action.sceneId];
+                SceneListStore.emitChange();
+                break;
         }
         
 

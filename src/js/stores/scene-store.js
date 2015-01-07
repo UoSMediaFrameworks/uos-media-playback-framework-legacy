@@ -47,6 +47,11 @@ var SceneStore = assign({}, EventEmitter.prototype, {
                 _updateScene(action.scene);
                 SceneStore.emitChange();
                 break;
+
+            case ActionTypes.DELETE_SCENE:
+                delete _scenes[action.sceneId];
+                SceneStore.emitChange();
+                break;
         }
         
         return true;

@@ -1,5 +1,5 @@
 'use strict';
-
+/*jshint browser: true */
 var React = require('react');
 
 var ScenePlayer = require('../scene-player.jsx');
@@ -50,6 +50,13 @@ var Scene = React.createClass({
         }
     },
 
+    deleteSceneHandler: function(event) {
+        if (confirm('Deleting a scene will remove all associated images and tags.\n\nAre you sure?')) {
+            console.log('deleting');
+            HubSendActions.deleteScene(this.state.scene._id);
+        }
+    },
+
     render: function() {
         var uploads = this.state.uploads;
 
@@ -63,6 +70,9 @@ var Scene = React.createClass({
                     {fileUploads}
                 </div>
                 <div className="row">
+                    <div className='scene-controls'>
+                        <a className='btn' onClick={this.deleteSceneHandler}>Delete Scene</a>
+                    </div>
                     <div className="col-sm-12">
                         <MediaObjectTable scene={this.state.scene} />
                     </div>
