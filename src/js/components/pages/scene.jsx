@@ -1,5 +1,6 @@
 'use strict';
 /*jshint browser: true */
+
 var React = require('react');
 
 var ScenePlayer = require('../scene-player.jsx');

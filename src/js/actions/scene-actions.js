@@ -18,11 +18,9 @@ var SceneActions = {
 
     addMediaObject: function(scene, mediaType, url, tags) {
         scene.scene.push({
-            mediaObject: {
-                url: url,
-                type: mediaType,
-                tags: tags
-            }
+            url: url,
+            type: mediaType,
+            tags: tags
         });
 
         AppDispatcher.handleViewAction({
@@ -35,7 +33,7 @@ var SceneActions = {
 
     removeMediaObject: function(scene, mediaObjectId) {     
         scene.scene.splice(_.findIndex(scene.scene, function(obj) {
-            return obj.mediaObject.id === mediaObjectId;
+            return obj.id === mediaObjectId;
         }), 1);    
         
         AppDispatcher.handleViewAction({

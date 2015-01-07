@@ -39,9 +39,7 @@ var MediaObjectTable = React.createClass({
 		
 		if (this.props.scene.scene && this.props.scene.scene.length !== 0) {
 			rows = this.props.scene.scene.map(function(mediaObject, index) {
-				var obj = mediaObject.mediaObject;
-
-				return <TableItem key={index} index={index} scene={this.props.scene} mediaObject={obj} />;
+				return <TableItem key={index} index={index} scene={this.props.scene} mediaObject={mediaObject} />;
 			}.bind(this));	
 		} else {
 			rows = [<tr key='empty'><td>Nothing in the scene yet</td></tr>];

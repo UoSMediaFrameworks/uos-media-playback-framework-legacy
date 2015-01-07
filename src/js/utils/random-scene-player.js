@@ -14,8 +14,8 @@ function getRandomMediaObject(mediaScene, tagsArray, type) {
 
 function filterMediaScene(mediaScene, tagsArray, mediaType) {
     return _.filter(mediaScene.scene, function (obj) {
-        if ((tagsArray.length === 0 || _.intersection(obj.mediaObject.tags, tagsArray).length > 0 ) &&
-            (! mediaType || obj.mediaObject.type === mediaType)) {
+        if ((tagsArray.length === 0 || _.intersection(obj.tags, tagsArray).length > 0 ) &&
+            (! mediaType || obj.type === mediaType)) {
             return true;
         }
     });
@@ -30,7 +30,7 @@ RandomScenePlayer.prototype.setScene = function(newScene) {
 
     // best to parse the tag string up front, rather than every time a new media object is selected
     _.forEach(scene.scene, function(mediaObject) {
-        mediaObject.mediaObject.tags = parseTagString(mediaObject.mediaObject.tags);
+        mediaObject.tags = parseTagString(mediaObject.tags);
     });
 
     this._scene = scene;
@@ -44,7 +44,7 @@ RandomScenePlayer.prototype.start = function() {
     this._imageInterval = setInterval(function() {
         var obj = getRandomMediaObject(this._scene, this._tagFilter, 'image');
         if (obj) {
-            this._elementMananger.showImage(obj.mediaObject.url);    
+            this._elementMananger.showImage(obj.url);    
         }
         
     }.bind(this), 3000);
