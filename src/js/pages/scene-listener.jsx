@@ -9,10 +9,11 @@ var randomScenePlayer = require('../utils/random-scene-player');
 var scenePlayerElementManager = require('../utils/scene-player-element-manager');
 var FormHelper = require('../mixins/form-helper');
 var Router = require('react-router');
+var Authentication = require('../mixins/Authentication');
 
 var SceneListener = React.createClass({
 
-    mixins: [Router.State, FormHelper],
+    mixins: [Router.State, FormHelper, Authentication],
 
     statics: {
         willTransitionFrom: function(transition, component) {
