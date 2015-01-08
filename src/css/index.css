@@ -43,3 +43,7 @@ textarea {
 .page-nav {
     float: right;
 }
+
+.has-error textarea.form-control {
+    border: 3px solid #a94442;
+}
