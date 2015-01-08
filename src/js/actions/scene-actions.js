@@ -59,15 +59,15 @@ var SceneActions = {
             file: file
         });
 
-        function dispatchResult (success, msg) {
+        function dispatchResult (status, msg) {
             AppDispatcher.handleServerAction({
                 type: ActionTypes.UPLOAD_ASSET_RESULT,
                 file: file,
-                success: success,
+                status: status,
                 msg: msg
             });
 
-            var msecs = success ? 1000 : 10000;
+            var msecs = status === 'success' ? 1000 : 10000;
             
             setTimeout(function() {
                 AppDispatcher.handleServerAction({
@@ -85,15 +85,20 @@ var SceneActions = {
         xhr.onload = function() {
             var data = JSON.parse(xhr.responseText);
             if (xhr.status === 200) {
-                SceneActions.addMediaObject(scene, 'image', data.url, data.tags.join(', '));    
-                dispatchResult(true);
+                var tags = data.tags ? data.tags.join(', ') : '';
+                SceneActions.addMediaObject(scene, 'image', data.url, tags);    
+                if (tags === '') {
+                    dispatchResult('warning', 'No tags found');
+                } else {
+                    dispatchResult('success');
+                }
             } else {
-                dispatchResult(false, data.error);
+                dispatchResult('danger', data.error);
             }
         };
 
         xhr.onerror = function() {
-            dispatchResult(false);
+            dispatchResult('danger');
         };
 
         xhr.open('POST', 'http://smaassetstore.azurewebsites.net/api/images');

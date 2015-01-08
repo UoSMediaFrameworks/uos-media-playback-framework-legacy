@@ -36,13 +36,10 @@ var FileUploadStore = assign({}, EventEmitter.prototype, {
 
             case ActionTypes.UPLOAD_ASSET_RESULT:
                 file = action.file;
-                if (action.success) {
-                    _fileStates[file.name].state = 'success';
-                } else {
-                    var state = _fileStates[file.name];
-                    state.state = 'danger';
-                    state.message = 'upload failed: ' + action.msg || 'unknown error';
-                }
+
+                var state = _fileStates[file.name];
+                state.state = action.status;
+                state.message = action.msg;
                 FileUploadStore.emitChange();
                 break;
             
