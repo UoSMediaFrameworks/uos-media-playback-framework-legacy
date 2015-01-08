@@ -40,10 +40,19 @@ textarea {
     padding: 2px;
 }
 
-.page-nav {
+.has-error textarea.form-control {
+    border: 3px solid #a94442;
+}
+
+.session-nav {
+    margin-top: 20px;
     float: right;
 }
 
-.has-error textarea.form-control {
-    border: 3px solid #a94442;
+.page-nav {
+    float: left;
+}
+
+.scene-controls {
+    float: right;
 }
