@@ -14,6 +14,7 @@
     "connect": "^3.2.0",
     "connect-livereload": "^0.4.0",
     "deploy-azure-cdn": "^0.1.2",
+    "envify": "^3.2.0",
     "es6-promise": "^2.0.1",
     "es6-promises": "^1.0.8",
     "gulp": "^3.8.10",

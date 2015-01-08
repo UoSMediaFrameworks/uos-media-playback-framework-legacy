@@ -8,13 +8,13 @@ var mergeStream = require('merge-stream');
 var objectAssign = require('object-assign');
 var browserify = require('browserify');
 var reactify = require('reactify');
+var envify = require('envify');
 var concat = require('gulp-concat'),
     livereload = require('gulp-livereload'),
     dest = 'dist',
     lvPort = 35729;
 
 var static_server = require('./static_server');
-
 
 /*
 I don't want to have to define the browserify code twice.  Yet, I need it to run inside
@@ -28,6 +28,8 @@ var viewerBundler = bundlerBuilder('./src/js/viewer.jsx', 'viewer.js');
 function bundlerBuilder (startPath, finishName) {
     var bundler = watchify(browserify(startPath, objectAssign({debug: true}, watchify.args)));
     bundler.transform(reactify);
+    bundler.transform(envify);
+
     var rebundle = function() {
         return bundler.bundle()
             .on('error', gutil.log.bind(gutil, 'Browserify Error'))

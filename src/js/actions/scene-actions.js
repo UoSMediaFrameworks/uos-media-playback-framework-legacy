@@ -101,8 +101,11 @@ var SceneActions = {
             dispatchResult('danger');
         };
 
-        xhr.open('POST', 'http://smaassetstore.azurewebsites.net/api/images');
-        //xhr.open('POST', 'http://localhost:4000/api/images');
+        // envify replaces the process.env.NODE_ENV with the actual value
+        // at time when gulp runs.  This will have to be refactored when
+        // we deploy multiple instances accessing different asset stores
+        var assetStoreUrl = process.env.ASSET_STORE;
+        xhr.open('POST', assetStoreUrl + '/api/images');
         xhr.send(data);
     }
 };

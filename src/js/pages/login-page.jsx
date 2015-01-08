@@ -54,7 +54,7 @@ var LoginPage = React.createClass({
 
 	handleSubmit: function(e) {
 		e.preventDefault();
-		HubSendActions.tryLogin(this.getRefVal('url'), {password: this.getRefVal('password')});
+		HubSendActions.tryLogin({password: this.getRefVal('password')});
 	},
 
 	render: function() {
@@ -63,7 +63,7 @@ var LoginPage = React.createClass({
 
         if (this.state.error) {
             klass += ' has-error';    
-            alert = <div className='alert alert-danger'>Invalid URL or Password</div>;
+            alert = <div className='alert alert-danger'>Invalid Password</div>;
         }
         
 
@@ -73,11 +73,6 @@ var LoginPage = React.createClass({
 					<h1>Please Login</h1>
                     {alert}
 					<form onSubmit={this.handleSubmit} role="form">
-						<div className={klass}>
-						    <label>Url</label>
-						    <input ref="url" type="text" className="form-control" id="exampleInputEmail1" placeholder="Hub Url" />
-						  </div>
-
 						<div className={klass}>
 		    				<label>Password</label>
 		    				<input ref="password" type="password" className="form-control" id="exampleInputPassword1" placeholder="Password" />
