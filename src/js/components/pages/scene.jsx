@@ -12,9 +12,11 @@ var HubSendActions = require('../../actions/hub-send-actions');
 var SceneActions = require('../../actions/scene-actions');
 var MediaObjectTable = require('../scene-editor/media-object-table.jsx');
 var Router = require('react-router');
-var NavLink = require('../nav-link.jsx');
 var DropZone = require('../drop-zone.jsx');
 var FileUploadAlert = require('../file-upload-alert.jsx');
+var Router = require('react-router'),
+    Link = Router.Link;
+
 
 
 var Scene = React.createClass({
@@ -68,12 +70,19 @@ var Scene = React.createClass({
 
         return (
             <DropZone handler={this.fileHandler}>
-                <ul role='navigation' className='nav nav-pills page-nav'>
-                    <NavLink to='scenes'>&lt; Back to Scene List</NavLink>
-                </ul>
-                <div className='scene-controls'>
-                    <a className='btn' onClick={this.deleteSceneHandler}>Delete Scene</a>
+                <div className='row'>
+                    <div className='page-nav'>
+                        <Link className='btn' to='scenes'>&lt; Back to Scene List</Link>
+                    </div>
+
+                    <div className='scene-controls'>
+                        <a className='btn' onClick={this.deleteSceneHandler}>Delete Scene</a>
+                    </div>
+
+                    <h4 className='scene-name'>{this.state.scene.name}</h4>
                 </div>
+                
+                
                 <div className="file-upload-status">
                     {fileUploads}
                 </div>

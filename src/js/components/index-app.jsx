@@ -43,7 +43,7 @@ var App = React.createClass({
 
         if (this.state.loggedIn) {
             sessionNav = <div className='session-nav'>
-                <a onClick={this.handleLogout}>Log out</a>
+                <a className='btn' onClick={this.handleLogout}>Log out</a>
             </div>;
         }
 
@@ -56,7 +56,7 @@ var App = React.createClass({
                     <div key='row' className='row'>
                         <div className='col-md-12'>    
                             {sessionNav}                      
-                            <h4>Media Scene Editor</h4>
+                            <h4 className='title'>Media Scene Editor</h4>
                         </div>
                     </div>
                     <RouteHandler key='handler' />

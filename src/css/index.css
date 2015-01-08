@@ -45,14 +45,23 @@ textarea {
 }
 
 .session-nav {
-    margin-top: 20px;
-    float: right;
+    right: 10px;
+    position: absolute;
 }
 
 .page-nav {
     float: left;
+    width: 200px;
+    padding-left: 8px;
 }
 
 .scene-controls {
     float: right;
+    text-align: right;
+    padding-right: 8px;
+    width: 200px;
+}
+
+.scene-name, .title {
+    text-align: center;
 }
