@@ -1,5 +1,6 @@
 'use strict';
-/*jshint browser: true */
+/* jshint browser: true */
+/* global confirm: false */
 
 var React = require('react');
 
@@ -70,7 +71,7 @@ var Scene = React.createClass({
 
         return (
             <DropZone handler={this.fileHandler}>
-                <div className='row'>
+                <div className='row top-bar'>
                     <div className='page-nav'>
                         <Link className='btn' to='scenes'>&lt; Back to Scene List</Link>
                     </div>
@@ -82,16 +83,15 @@ var Scene = React.createClass({
                     <h4 className='scene-name'>{this.state.scene.name}</h4>
                 </div>
                 
-                
                 <div className="file-upload-status">
                     {fileUploads}
                 </div>
-                <div className="row">
-                    <div className="col-sm-12">
+                <div className="row thumbs-and-json">
+                    <div className="col-sm-6 fill-height">
                         <MediaObjectTable scene={this.state.scene} />
                     </div>
-                    <div className="col-sm-12">
-                        <SceneJsonEditor scene={this.state.scene} />
+                    <div className="col-sm-6 fill-height">
+                        <SceneJsonEditor className='fill-height' scene={this.state.scene} />
                     </div>
                 </div>
             </DropZone>

@@ -5,13 +5,25 @@
     overflow: hidden;
 }
 
+html, body, #main, .container, .fill-height { 
+    height: 100%;
+}
+
+.header, .top-bar {
+    height: 40px;
+}
+
+.dropzone, .thumbs-and-json {
+    height: calc(100% - 40px);
+}
+
 h1 {
     text-align: center;
 }
 
-textarea {
+.json-textarea {
     width: 100%;
-    height: 400px !important;
+    height: 100% !important;
 }
 
 .scene-selector {
@@ -40,7 +52,7 @@ textarea {
     padding: 2px;
 }
 
-.has-error textarea.form-control {
+textarea.form-control.has-error {
     border: 3px solid #a94442;
 }
 
@@ -49,19 +61,24 @@ textarea {
     position: absolute;
 }
 
+.page-nav, .scene-controls {
+    position: absolute;
+}
+
 .page-nav {
-    float: left;
-    width: 200px;
     padding-left: 8px;
 }
 
 .scene-controls {
-    float: right;
     text-align: right;
     padding-right: 8px;
-    width: 200px;
+    right: 0px;
 }
 
 .scene-name, .title {
     text-align: center;
+}
+
+.top-bar {
+    position: relative;
 }

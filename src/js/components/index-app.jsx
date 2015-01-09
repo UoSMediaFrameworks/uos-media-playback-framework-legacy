@@ -53,7 +53,7 @@ var App = React.createClass({
 
             return (
                 <div className='container'>
-                    <div key='row' className='row'>
+                    <div className='row header'>
                         <div className='col-md-12'>    
                             {sessionNav}                      
                             <h4 className='title'>Media Scene Editor</h4>

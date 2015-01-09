@@ -49,15 +49,15 @@ var SceneJsonEditor = React.createClass({
     },
 
     render: function() {
-        var groupClass = 'form-group' + (this.state.error ? ' has-error' : '');
+        var groupClass = this.props.className + ' form-control json-textarea' + (this.state.error ? ' has-error' : '');
         return (
-            <div className={groupClass}>
+            
                 <textarea
-                 className='form-control' 
+                 className={groupClass} 
                  onBlur={this.handleBlur}
                  valueLink={this.linkState('json')}>
                 </textarea>
-            </div>    
+            
         );
     }
 
