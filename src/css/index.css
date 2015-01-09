@@ -108,4 +108,5 @@ textarea.form-control.has-error {
 
 .CodeMirror {
     height: 100% !important;
+    border: 1px solid #ccc;
 }
