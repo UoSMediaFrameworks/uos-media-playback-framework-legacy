@@ -70,9 +70,9 @@ var SceneTextEditor = React.createClass({
 
                 // make sure that something changed
                 if (self.state.json !== newValue) {
-                    self.setState({error: false});
                     SceneActions.updateScene(newScene);    
                 }
+                self.setState({error: false});
                 
             } catch (e) {
                 if (e instanceof SyntaxError) {
@@ -118,8 +118,9 @@ var SceneTextEditor = React.createClass({
     },
 
     render: function() {
+        var klass = 'fill-height' + (this.state.error ? ' has-error' : '');
         return (
-            <div className='fill-height' />
+            <div className={klass} />
         );
     }
 

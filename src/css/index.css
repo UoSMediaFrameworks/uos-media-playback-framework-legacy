@@ -75,10 +75,6 @@ h1 {
     padding: 2px;
 }
 
-textarea.form-control.has-error {
-    border: 3px solid #a94442;
-}
-
 .session-nav {
     right: 10px;
     position: absolute;
@@ -109,4 +105,8 @@ textarea.form-control.has-error {
 .CodeMirror {
     height: 100% !important;
     border: 1px solid #ccc;
+}
+
+.has-error .CodeMirror {
+    border: 1px solid #ff0000;
 }
