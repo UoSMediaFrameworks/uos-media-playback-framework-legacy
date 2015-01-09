@@ -19,6 +19,7 @@ function setSelectionRange(input, selectionStart, selectionEnd) {
         range.moveEnd('character', selectionEnd);
         range.moveStart('character', selectionStart);
         range.select();
+        range.scrollIntoView(true);
     }
 }
 
