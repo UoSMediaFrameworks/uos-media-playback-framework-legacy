@@ -52,7 +52,7 @@ var App = React.createClass({
         } else {
 
             return (
-                <div className='container'>
+                <div className='container-fluid'>
                     <div className='row header'>
                         <div className='col-md-12'>    
                             {sessionNav}                      

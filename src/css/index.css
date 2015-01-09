@@ -5,7 +5,7 @@
     overflow: hidden;
 }
 
-html, body, #main, .container, .fill-height { 
+html, body, #main, .container-fluid, .fill-height { 
     height: 100%;
 }
 
@@ -35,9 +35,32 @@ h1 {
     border-color: #adadad;
 }
 
+.media-object-list {
+    padding: 0;
+    margin: 0;
+}
+
+.media-object-list li {
+    list-style: none;
+    margin-bottom: 10px;
+} 
+
+.media-object-column, .media-object-preview {
+    height: 70px;
+}
+
+.media-object-column {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
 .media-object-preview {
-    max-height: 40px;
-    width: auto;
+    background-position: center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    cursor: pointer;
 }
 
 .file-upload-status {

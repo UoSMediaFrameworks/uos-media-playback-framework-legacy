@@ -11,7 +11,7 @@ var FileUploadStore = require('../../stores/file-upload-store');
 var Authentication = require('../../mixins/Authentication');
 var HubSendActions = require('../../actions/hub-send-actions');
 var SceneActions = require('../../actions/scene-actions');
-var MediaObjectTable = require('../scene-editor/media-object-table.jsx');
+var MediaObjectList = require('../scene-editor/media-object-list.jsx');
 var Router = require('react-router');
 var DropZone = require('../drop-zone.jsx');
 var FileUploadAlert = require('../file-upload-alert.jsx');
@@ -27,7 +27,8 @@ var Scene = React.createClass({
     getStateFromStores: function() {
         return {
             scene: SceneStore.getScene(this.getParams().id),
-            uploads: FileUploadStore.getStates()
+            uploads: FileUploadStore.getStates(),
+            focusedMediaObject: null
         }; 
     },
 
@@ -62,6 +63,10 @@ var Scene = React.createClass({
         }
     },
 
+    thumbClickHandler: function(index) {
+        this.setState({focusedMediaObject: index});
+    },
+
     render: function() {
         var uploads = this.state.uploads;
 
@@ -88,10 +93,13 @@ var Scene = React.createClass({
                 </div>
                 <div className="row thumbs-and-json">
                     <div className="col-sm-6 fill-height">
-                        <MediaObjectTable scene={this.state.scene} />
+                        <MediaObjectList focusHandler={this.thumbClickHandler} 
+                         scene={this.state.scene} />
                     </div>
                     <div className="col-sm-6 fill-height">
-                        <SceneJsonEditor className='fill-height' scene={this.state.scene} />
+                        <SceneJsonEditor focusedMediaObject={this.state.focusedMediaObject} 
+                         className='fill-height' 
+                         scene={this.state.scene} />
                     </div>
                 </div>
             </DropZone>

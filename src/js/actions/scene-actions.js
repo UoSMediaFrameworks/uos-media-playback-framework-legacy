@@ -31,10 +31,8 @@ var SceneActions = {
         HubClient.save(scene);
     },
 
-    removeMediaObject: function(scene, mediaObjectId) {     
-        scene.scene.splice(_.findIndex(scene.scene, function(obj) {
-            return obj.id === mediaObjectId;
-        }), 1);    
+    removeMediaObject: function(scene, index) {     
+        scene.scene.splice(index, 1);    
         
         AppDispatcher.handleViewAction({
             type: ActionTypes.SCENE_CHANGE,
