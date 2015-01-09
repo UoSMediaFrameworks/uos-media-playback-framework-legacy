@@ -6,6 +6,7 @@ var React = require('react');
 
 var ScenePlayer = require('../scene-player.jsx');
 var SceneJsonEditor = require('../scene-json-editor.jsx');
+var SceneTextEditor = require('../scene-text-editor.jsx');
 var SceneStore = require('../../stores/scene-store');
 var FileUploadStore = require('../../stores/file-upload-store');
 var Authentication = require('../../mixins/Authentication');
@@ -97,7 +98,7 @@ var Scene = React.createClass({
                          scene={this.state.scene} />
                     </div>
                     <div className="col-sm-6 fill-height">
-                        <SceneJsonEditor focusedMediaObject={this.state.focusedMediaObject} 
+                        <SceneTextEditor focusedMediaObject={this.state.focusedMediaObject} 
                          className='fill-height' 
                          scene={this.state.scene} />
                     </div>

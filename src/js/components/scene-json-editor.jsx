@@ -3,6 +3,7 @@
 
 var React = require('react/addons');
 var SceneActions = require('../actions/scene-actions');
+var codeMirror = require('codemirror');
 var _ = require('lodash');
 
 // cross browser means of setting cursor position in a textarea
@@ -54,6 +55,13 @@ var SceneJsonEditor = React.createClass({
         this.setState({json: this.getSceneJson()});
     },
 
+    componentDidMount: function() {
+        codeMirror(this.getDOMNode(), {
+            value: "function myScript(){return 100;}\n",
+            mode:  "javascript"
+        });
+    },
+
     componentWillReceiveProps: function(nextProps) {
         this.setState({
             json: this.stringify(nextProps.scene),
@@ -101,16 +109,16 @@ var SceneJsonEditor = React.createClass({
 
     render: function() {
         // deduce position of cursor for 
-        var groupClass = this.props.className + ' form-control json-textarea' + (this.state.error ? ' has-error' : '');
-        return (
-            
-                <textarea
-                 className={groupClass} 
-                 onBlur={this.handleBlur}
-                 valueLink={this.linkState('json')}>
-                </textarea>
-            
-        );
+        // var groupClass = this.props.className + ' form-control json-textarea' + (this.state.error ? ' has-error' : '');
+        // return (
+        //     <textarea
+        //      className={groupClass} 
+        //      onBlur={this.handleBlur}
+        //      valueLink={this.linkState('json')}>
+        //     </textarea>
+        // );
+
+        return <div></div>;
     }
 
 });

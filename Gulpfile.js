@@ -14,6 +14,8 @@ var concat = require('gulp-concat'),
     dest = 'dist',
     lvPort = 35729;
 
+var cssGlobs = ['src/css/**/*.css', 'node_modules/codemirror/lib/*.css'];
+
 var static_server = require('./static_server');
 
 /*
@@ -49,7 +51,7 @@ gulp.task('watch', function () {
     gulp.watch('src/*.html', ['html']);
 
     // css changes
-    gulp.watch('src/css/**/*.css', ['css']);
+    gulp.watch(cssGlobs, ['css']);
 
     indexBundler.bundler.on('update', indexBundler.rebundle);
     viewerBundler.bundler.on('update', viewerBundler.rebundle);
@@ -61,7 +63,7 @@ gulp.task('html', function() {
 });
 
 gulp.task('css', function() {
-    return gulp.src('src/css/**/*.css')
+    return gulp.src(cssGlobs)
         .pipe(gulp.dest(dest + '/css'));
 });
 
