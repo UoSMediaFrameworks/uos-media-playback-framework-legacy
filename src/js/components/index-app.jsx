@@ -48,16 +48,14 @@ var App = React.createClass({
         }
 
         if (this.state.attemptingLogin) {
-            return <h1>Logging in...</h1>;
+            return <h1 className='logging-in-message'>Logging in...</h1>;
         } else {
 
             return (
-                <div className='container-fluid'>
-                    <div className='row header'>
-                        <div className='col-md-12'>    
-                            {sessionNav}                      
-                            <h4 className='title'>Media Scene Editor</h4>
-                        </div>
+                <div className='app'>
+                    <div className='header'>
+                        {sessionNav}                      
+                        <h4 className='title'>Media Scene Editor</h4>
                     </div>
                     <RouteHandler key='handler' />
                 </div>

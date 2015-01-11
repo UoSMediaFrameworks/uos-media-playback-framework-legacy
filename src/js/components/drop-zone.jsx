@@ -39,8 +39,9 @@ var Dropzone = React.createClass({
         }
     },
     render: function() {
+        var klass = 'dropzone ' + this.props.className;
         return (
-            <div className="dropzone" 
+            <div className={klass}
              onDragLeave={this.handleDragLeave} 
              onDragOver={this.handleDragOver} 
              onDrop={this.handleDrop}>

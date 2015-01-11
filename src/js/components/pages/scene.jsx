@@ -76,8 +76,8 @@ var Scene = React.createClass({
         });        
 
         return (
-            <DropZone handler={this.fileHandler}>
-                <div className='row top-bar'>
+            <DropZone className='flex-container' handler={this.fileHandler}>
+                <div className='top-bar'>
                     <div className='page-nav'>
                         <Link className='btn' to='scenes'>&lt; Back to Scene List</Link>
                     </div>
@@ -92,16 +92,14 @@ var Scene = React.createClass({
                 <div className="file-upload-status">
                     {fileUploads}
                 </div>
-                <div className="row thumbs-and-json">
-                    <div className="col-sm-6 fill-height">
-                        <MediaObjectList focusHandler={this.thumbClickHandler} 
-                         scene={this.state.scene} />
-                    </div>
-                    <div className="col-sm-6 fill-height">
-                        <SceneTextEditor focusedMediaObject={this.state.focusedMediaObject} 
-                         className='fill-height' 
-                         scene={this.state.scene} />
-                    </div>
+                <div className="thumbs-and-json">
+                    <MediaObjectList focusHandler={this.thumbClickHandler} 
+                     scene={this.state.scene} />
+                    <SceneTextEditor focusedMediaObject={this.state.focusedMediaObject} 
+                     scene={this.state.scene} />
+                </div>
+                <div className='tagList'>
+                    <p>Tags: </p>
                 </div>
             </DropZone>
         );

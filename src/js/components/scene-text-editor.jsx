@@ -126,7 +126,7 @@ var SceneTextEditor = React.createClass({
     },
 
     render: function() {
-        var klass = 'fill-height' + (this.state.error ? ' has-error' : '');
+        var klass = 'scene-text-editor ' + (this.state.error ? ' has-error' : '');
         return (
             <div className={klass} />
         );
