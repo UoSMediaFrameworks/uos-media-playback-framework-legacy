@@ -26,7 +26,7 @@ var MediaObjectList = React.createClass({
                 );
             }.bind(this));  
         } else {
-            items = [<li key='empty'>Nothing in the scene yet</li>];
+            items = [<li key='empty' className='empty-media-object-item '>Nothing in the scene yet</li>];
         }
 
         return (

@@ -57,6 +57,15 @@ h1 {
     list-style: none;
 } 
 
+.empty-media-object-item {
+    line-height: 16px;
+    display: block;
+    text-align: center;
+    color: #ccc;
+    margin-top: 30px;
+    font-size: 30px;
+}
+
 .media-object-item {
     height: 70px;
     display: inline-block;
