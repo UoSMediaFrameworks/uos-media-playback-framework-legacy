@@ -1,11 +1,26 @@
 'use strict';
 
 var React = require('react');
+var Glyphicon = require('../glyphicon.jsx');
+var SceneActions = require('../../actions/scene-actions');
 
 var MediaObjectList = React.createClass({
-    handleClick: function(index) {
+    getInitialState: function() {
+        return {
+            selectedIndex: null 
+        };
+    },
+
+    handleSelect: function(index) {
         return function(e) {
             this.props.focusHandler(index);
+            this.setState({selectedIndex: index});
+        }.bind(this);
+    },
+
+    handleDelete: function (scene, index) {
+        return function (e) {
+            SceneActions.removeMediaObject(scene, index);
         }.bind(this);
     },
 
@@ -17,11 +32,17 @@ var MediaObjectList = React.createClass({
                 var style = {
                     backgroundImage: 'url(' + mediaObject.url + ')' 
                 };
+                var klass = 'media-object-item' + (this.state.selectedIndex === index ? ' selected' : '');
                 return (
-                    <li className='media-object-item' 
+                    <li className={klass}
                      key={index}
-                     onClick={this.handleClick(index)} 
-                     style={style}>
+                     onClick={this.handleSelect(index)} 
+                     >
+                        <div className='media-object-item-preview' style={style}>
+                            <button className='btn' onClick={this.handleDelete(this.props.scene, index)}>
+                                <Glyphicon icon='remove-circle' />
+                            </button>
+                        </div>
                     </li>
                 );
             }.bind(this));  

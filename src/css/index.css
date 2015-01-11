@@ -66,17 +66,50 @@ h1 {
     font-size: 30px;
 }
 
+.media-object-item:hover {
+    background-color: #eee;
+}
+
+.media-object-item.selected {
+    background-color: #ccc;
+}
+
 .media-object-item {
     height: 70px;
     display: inline-block;
     width: 70px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.media-object-item-preview {
     background-position: center;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
-    cursor: pointer;
-    margin: 5px;
+    width: 60px;
+    height: 60px;
+    position: relative;
+}
+
+
+
+.media-object-item-preview button {
+    display: none;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    line-height: 0;
+    padding: 0;
+}
+
+.media-object-item-preview button:hover {
+    color: #cc0000;
+}
+
+.media-object-item-preview:hover button {
+    display: inherit;
 }
 
 .file-upload-status {
