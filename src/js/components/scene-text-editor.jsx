@@ -62,8 +62,6 @@ var SceneTextEditor = React.createClass({
             mode:  'application/json',
             styleActiveLine: true
         });
-
-        window.cmDoc = this.document;
         
         var self = this;
         this.document.on('blur', function (argument) {
