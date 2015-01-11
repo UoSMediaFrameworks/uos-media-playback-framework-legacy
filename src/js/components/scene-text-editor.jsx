@@ -4,6 +4,7 @@ var React = require('react');
 var SceneActions = require('../actions/scene-actions');
 var _ = require('lodash');
 require('codemirror/mode/javascript/javascript');
+require('codemirror/addon/selection/active-line');
 var codemirror = require('codemirror');
 
 
@@ -58,8 +59,11 @@ var SceneTextEditor = React.createClass({
         this.document = codemirror(this.getDOMNode(), {
             value: this.state.json,
             lineWrapping: true,
-            mode:  'application/json'
+            mode:  'application/json',
+            styleActiveLine: true
         });
+
+        window.cmDoc = this.document;
         
         var self = this;
         this.document.on('blur', function (argument) {
@@ -93,11 +97,8 @@ var SceneTextEditor = React.createClass({
 
         }
 
-        if (! this.document.hasFocus()) this.document.focus();
-
         if (this.props.focusedMediaObject !== prevProps.focusedMediaObject) {
             var jsonStr = this.document.getValue();
-            console.log('running update to ' + this.props.focusedMediaObject);
             // get index of scene property in json
             var sceneStr = '"scene": [';
             var startSearch = jsonStr.indexOf(sceneStr);
@@ -114,6 +115,8 @@ var SceneTextEditor = React.createClass({
             var lines = occurrences(jsonStr, '\n');
 
             this.document.setCursor(lines + 1, 3);
+
+            if (! this.document.hasFocus()) this.document.focus();  
         }
     },
 

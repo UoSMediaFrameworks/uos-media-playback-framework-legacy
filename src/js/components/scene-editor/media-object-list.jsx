@@ -18,11 +18,10 @@ var MediaObjectList = React.createClass({
                     backgroundImage: 'url(' + mediaObject.url + ')' 
                 };
                 return (
-                    <li className='col-lg-2 col-md-2 col-sm-3 col-xs-4 media-object-column' 
-                     key={index}>
-                        <div onClick={this.handleClick(index)} 
-                             className='media-object-preview' 
-                             style={style}></div>
+                    <li className='media-object-item' 
+                     key={index}
+                     onClick={this.handleClick(index)} 
+                     style={style}>
                     </li>
                 );
             }.bind(this));  
@@ -31,7 +30,7 @@ var MediaObjectList = React.createClass({
         }
 
         return (
-            <ul className='row media-object-list'>{items}</ul>
+            <ul className='media-object-list fill-height'>{items}</ul>
         );
     }
 

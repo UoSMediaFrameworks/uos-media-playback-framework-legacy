@@ -17,6 +17,10 @@ html, body, #main, .container-fluid, .fill-height {
     height: calc(100% - 40px);
 }
 
+.thumbs-and-json {
+    padding-bottom: 10px;
+}
+
 h1 {
     text-align: center;
 }
@@ -38,29 +42,25 @@ h1 {
 .media-object-list {
     padding: 0;
     margin: 0;
+    overflow-y: scroll;
+    line-height: 0;
 }
 
 .media-object-list li {
     list-style: none;
-    margin-bottom: 10px;
 } 
 
-.media-object-column, .media-object-preview {
+.media-object-item {
     height: 70px;
-}
-
-.media-object-column {
-    padding-left: 5px;
-    padding-right: 5px;
-}
-
-.media-object-preview {
+    display: inline-block;
+    width: 70px;
     background-position: center;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
     cursor: pointer;
+    margin: 5px;
 }
 
 .file-upload-status {
@@ -102,9 +102,13 @@ h1 {
     position: relative;
 }
 
+.media-object-list, .CodeMirror {
+    border: 1px solid #ccc;
+}
+
 .CodeMirror {
     height: 100% !important;
-    border: 1px solid #ccc;
+    
 }
 
 .has-error .CodeMirror {
