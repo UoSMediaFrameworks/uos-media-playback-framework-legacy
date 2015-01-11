@@ -18,7 +18,14 @@ html, body, #main, .container-fluid, .fill-height {
 }
 
 .thumbs-and-json {
-    padding-bottom: 10px;
+    padding-bottom: 5px;
+    padding-right: 2.5px;
+    padding-left: 2.5px;
+}
+
+.thumbs-and-json > div {
+    padding-right: 2.5px;
+    padding-left: 2.5px;
 }
 
 h1 {
@@ -42,7 +49,7 @@ h1 {
 .media-object-list {
     padding: 0;
     margin: 0;
-    overflow-y: scroll;
+    overflow-y: auto;
     line-height: 0;
 }
 
@@ -109,6 +116,14 @@ h1 {
 .CodeMirror {
     height: 100% !important;
     
+}
+
+.CodeMirror-activeline-background {
+    background: #eee;
+}
+
+.CodeMirror-focused .CodeMirror-activeline-background {
+    background: #e8f2ff;
 }
 
 .has-error .CodeMirror {

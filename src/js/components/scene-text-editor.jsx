@@ -56,11 +56,18 @@ var SceneTextEditor = React.createClass({
     },
 
     componentDidMount: function() {
+        var saveJson = function (cm) {
+            console.log('saving');
+        };
         this.document = codemirror(this.getDOMNode(), {
             value: this.state.json,
             lineWrapping: true,
             mode:  'application/json',
-            styleActiveLine: true
+            styleActiveLine: true,
+            extraKeys: {
+                'Ctrl-S': saveJson,
+                'Cmd-S': saveJson
+            }
         });
         
         var self = this;
