@@ -13,6 +13,7 @@ var Authentication = require('../../mixins/Authentication');
 var HubSendActions = require('../../actions/hub-send-actions');
 var SceneActions = require('../../actions/scene-actions');
 var MediaObjectList = require('../scene-editor/media-object-list.jsx');
+var TagUnion = require('../tag-union.jsx');
 var Router = require('react-router');
 var DropZone = require('../drop-zone.jsx');
 var FileUploadAlert = require('../file-upload-alert.jsx');
@@ -98,9 +99,7 @@ var Scene = React.createClass({
                     <SceneTextEditor focusedMediaObject={this.state.focusedMediaObject} 
                      scene={this.state.scene} />
                 </div>
-                <div className='tagList'>
-                    <p>Tags: </p>
-                </div>
+                <TagUnion scene={this.state.scene} />
             </DropZone>
         );
     }

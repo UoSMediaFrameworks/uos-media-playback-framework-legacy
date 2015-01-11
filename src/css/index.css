@@ -146,6 +146,16 @@ html, body, #main, .app {
     padding: 2px;
 }
 
+
+.tag-union {
+    list-style-type: none;
+}
+
+.tag-union li {
+    float: left;
+    margin-right: 3px;
+}
+
 .session-nav {
     right: 10px;
     position: absolute;
