@@ -14,7 +14,9 @@ html, body {
 
 .image-media-object {
     position: absolute;
-    width: 50%;
+    width: auto;
+    height: auto;
+    max-width: 50%;
     opacity: 0;
 }
 
