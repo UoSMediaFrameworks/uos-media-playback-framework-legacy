@@ -60,7 +60,6 @@ var Scene = React.createClass({
 
     deleteSceneHandler: function(event) {
         if (confirm('Deleting a scene will remove all associated images and tags.\n\nAre you sure?')) {
-            console.log('deleting');
             HubSendActions.deleteScene(this.state.scene._id);
         }
     },

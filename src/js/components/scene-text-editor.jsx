@@ -51,55 +51,60 @@ var SceneTextEditor = React.createClass({
 
     getInitialState: function() {
         return {
-            json: this.getSceneString() 
+            error: false
         };
     },
 
-    componentDidMount: function() {
-        var saveJson = function (cm) {
-            console.log('saving');
-        };
-        this.document = codemirror(this.getDOMNode(), {
-            value: this.state.json,
-            lineWrapping: true,
-            mode:  'application/json',
-            styleActiveLine: true,
-            extraKeys: {
-                'Ctrl-S': saveJson,
-                'Cmd-S': saveJson
-            }
-        });
-        
-        var self = this;
-        this.document.on('blur', function (argument) {
+    saveJSON: function() {
+        return function() {
             try {
-                var newValue = self.document.getValue();
+                var newValue = this.document.getValue();
                 // parse it and see if it blows up
                 var newScene = JSON.parse(newValue);
 
                 // make sure that something changed
-                if (self.state.json !== newValue) {
+                if (this.getSceneString() !== newValue) {
                     SceneActions.updateScene(newScene);    
-                }
-                self.setState({error: false});
+                } 
+                this.setState({error: false});
                 
             } catch (e) {
                 if (e instanceof SyntaxError) {
-                    self.setState({error: true});
+                    this.setState({error: true});
                 } else {
                     throw e;
                 }
             }
+        }.bind(this);
+    },
+
+    componentDidMount: function() {
+        this.document = codemirror(this.getDOMNode(), {
+            value: this.getSceneString(),
+            lineWrapping: true,
+            mode:  'application/json',
+            styleActiveLine: true
         });
+        
+        this.document.on('blur', this.saveJSON(true));
+
+        var saveTimeout;
+        this.document.on('change', function(cm, changeObj) {
+            // change gets called for anychange, so ignore programatic changes
+            if (changeObj.origin !== 'setValue') {
+                if (saveTimeout) clearTimeout(saveTimeout);
+
+                saveTimeout = setTimeout(this.saveJSON(false), 1000);    
+            }
+        }.bind(this));
     },
 
     componentDidUpdate: function(prevProps, prevState) {
         var newString = this.getSceneString();
-        var oldString = this.state.json;
-        if (newString !== oldString) {
+        var oldString = this.document.getValue();
+        if (! this.state.error && newString !== oldString) {
             this.document.setValue(this.getSceneString());
             this.setState({json: newString});
-
         }
 
         if (this.props.focusedMediaObject !== prevProps.focusedMediaObject) {

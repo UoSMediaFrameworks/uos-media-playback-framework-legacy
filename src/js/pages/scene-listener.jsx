@@ -21,12 +21,15 @@ var SceneListener = React.createClass({
         }
     },
 
-    _getState: function() {
-        return {scene: SceneStore.getScene(this.getParams().id)};
+    _getScene: function() {
+        return SceneStore.getScene(this.getParams().id);
     },
 
     getInitialState: function() {
-        return this._getState();
+        return {
+            scene: this._getScene(),
+            activeThemes: []
+        };
     },
 
     componentDidMount: function() {
@@ -41,6 +44,11 @@ var SceneListener = React.createClass({
     
     componentWillUnmount: function() {
         SceneStore.removeChangeListener(this._onChange);
+    },
+
+    componentDidUpdate: function(prevProps, prevState) {
+        this.player.setScene(this.state.scene);
+        this.player.setThemeFilter(this.state.activeThemes);
     },
 
     updateTags: function(event) {
@@ -58,12 +66,11 @@ var SceneListener = React.createClass({
     },
     
     _onChange: function() {
-        this.setState(this._getState());
-        this.player.setScene(this.state.scene);
+        this.setState({scene: this._getScene()});
     },
 
     handleThemeChange: function(newThemes) {
-        this.player.setThemeFilter(newThemes);
+        this.setState({activeThemes: newThemes});
     },
 
     render: function() {

@@ -70,7 +70,6 @@ var SceneJsonEditor = React.createClass({
 
     componentDidUpdate: function(prevProps, prevState) {
         if (this.props.focusedMediaObject !== prevProps.focusedMediaObject) {
-            console.log('running update to ' + this.props.focusedMediaObject);
             // get index of scene property in json
             var sceneStr = '"scene": [';
             var startSearch = this.state.json.indexOf(sceneStr);
