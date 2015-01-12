@@ -8,7 +8,7 @@ var _ = require('lodash');
 var CHANGE_EVENT = 'CHANGE_EVENT';
 
 var _loggedIn = false;
-var _failedAttempt = false;
+var _errorMessage = false;
 var _attemptingLogin = false;
 
 var ClientStore = assign({}, EventEmitter.prototype, {
@@ -16,8 +16,8 @@ var ClientStore = assign({}, EventEmitter.prototype, {
 		return _loggedIn;
 	},
 
-    failedAttempt: function() {
-        return _failedAttempt;
+    errorMessage: function() {
+        return _errorMessage;
     },
 
     attemptingLogin: function() {
@@ -42,19 +42,21 @@ var ClientStore = assign({}, EventEmitter.prototype, {
             case ActionTypes.HUB_LOGIN_RESULT:
             	_loggedIn = action.result;
                 _attemptingLogin = false;
-                if (! _loggedIn && action.authType === 'user') {
-                    _failedAttempt = true;
+                if (! _loggedIn) {
+                    _errorMessage = action.errorMessage;
                 }
                 ClientStore.emitChange();
                 break;
 
             case ActionTypes.HUB_LOGOUT:
-                _loggedIn = _failedAttempt = _attemptingLogin = false;
+                _loggedIn = _attemptingLogin = false;
+                _errorMessage = null;
                 ClientStore.emitChange();
                 break;
 
             case ActionTypes.HUB_LOGIN_ATTEMPT:
                 _attemptingLogin = true;
+                _errorMessage = null;
                 ClientStore.emitChange();
                 break;
         }        

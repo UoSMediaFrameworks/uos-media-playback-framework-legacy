@@ -20,7 +20,7 @@ module.exports = {
             type: ActionTypes.HUB_LOGIN_ATTEMPT,
             authType: 'token'
         });
-        HubClient.login();
+        HubClient.login(process.env.MEDIA_HUB);
     },
 
     tryCreateScene: function(name, cb) {

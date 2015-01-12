@@ -9,6 +9,14 @@ html, body, #main, .app {
     height: 100%;
 }
 
+
+/* dirtay css! Forces the loader div to flex down */
+.app > div:last-child {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
 .app {
     display: flex;
     flex-direction: column;

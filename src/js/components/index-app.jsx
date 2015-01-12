@@ -3,6 +3,7 @@ var React = require('react');
 var LoginPage = require('../pages/login-page.jsx');
 var ClientStore = require('../stores/client-store');
 var SceneActions = require('../actions/scene-actions');
+var Loader = require('react-loader');
 var Router = require('react-router'),
     RouteHandler = Router.RouteHandler,
     Link = Router.Link;
@@ -11,7 +12,6 @@ var Router = require('react-router'),
 function _getState () {
     return {
         loggedIn: ClientStore.loggedIn(),
-        error: ClientStore.failedAttempt(),
         attemptingLogin: ClientStore.attemptingLogin()
     };
 }
@@ -47,20 +47,17 @@ var App = React.createClass({
             </div>;
         }
 
-        if (this.state.attemptingLogin) {
-            return <h1 className='logging-in-message'>Logging in...</h1>;
-        } else {
-
-            return (
-                <div className='app'>
-                    <div className='header'>
-                        {sessionNav}                      
-                        <h4 className='title'>Media Scene Editor</h4>
-                    </div>
-                    <RouteHandler key='handler' />
+        return (
+            <div className='app'>
+                <div className='header'>
+                    {sessionNav}                      
+                    <h4 className='title'>Media Scene Editor</h4>
                 </div>
-            );    
-        }   
+                <Loader loaded={! this.state.attemptingLogin}>
+                    <RouteHandler key='handler' />
+                </Loader>
+            </div>
+        );       
 
         
     }

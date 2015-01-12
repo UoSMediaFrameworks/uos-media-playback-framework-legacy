@@ -15,36 +15,34 @@ function _cleanLocalStorage () {
 var HubClient = {
     login: function(url, creds) {
         var type;
-        if (arguments.length === 0) {
-            type = 'token';
-            url = localStorage.getItem(HUB_URL);
-            creds = {token: HubClient.getToken()};
+        switch (arguments.length) {
+            case 1:
+                type = 'token';
+                creds = {token: HubClient.getToken()};
 
-            if (! url || ! creds) {
-                // bad localstorage, or nothing in it, so just return
-                _cleanLocalStorage();
-                HubRecieveActions.recieveLoginResult(false, type);
-                return;
-            }
-        } else {
-            localStorage.setItem(HUB_URL, url);
+                if (! url || ! creds.token) {
+                    // bad localstorage, or nothing in it, so just return
+                    _cleanLocalStorage();
+                    HubRecieveActions.recieveLoginResult(false);
+                    return;
+                }
+                break;
+            case 2:
+                localStorage.setItem(HUB_URL, url);
+                break;
+            default:
+                throw 'url and creds must be provided for login to function';
         }
 
-        if (! url || ! creds) {
-            throw 'url and creds must be provided for login to function';
-        }
-
-        if (url) {
-            client = hubClient({forceNew: true});
-            client.connect(url, creds).then(function(token) {
-                localStorage.setItem(HUB_TOKEN, token);
-                HubRecieveActions.recieveLoginResult(true, type);
-                client.listScenes().then(HubRecieveActions.recieveSceneList);
-            }, function(error) {
-                client.disconnect();
-                HubRecieveActions.recieveLoginResult(false, type);
-            });    
-        }
+        client = hubClient({forceNew: true});
+        client.connect(url, creds).then(function(token) {
+            localStorage.setItem(HUB_TOKEN, token);
+            HubRecieveActions.recieveLoginResult(true);
+            client.listScenes().then(HubRecieveActions.recieveSceneList);
+        }, function(error) {
+            client.disconnect();
+            HubRecieveActions.recieveLoginResult(false, error.toString());
+        });    
     },
 
     logout: function() {

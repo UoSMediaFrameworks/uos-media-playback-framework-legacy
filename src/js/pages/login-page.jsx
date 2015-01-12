@@ -6,10 +6,12 @@ var ClientStore = require('../stores/client-store');
 var FormHelper = require('../mixins/form-helper');
 var Router = require('react-router');
 
+
 function _getState () {
     return {
         loggedIn: ClientStore.loggedIn(),
-        error: ClientStore.failedAttempt()
+        attemptingLogin: ClientStore.attemptingLogin(),
+        errorMessage: ClientStore.errorMessage()
     };
 }
 
@@ -58,12 +60,10 @@ var LoginPage = React.createClass({
 	},
 
 	render: function() {
-        var klass = 'form-group';
         var alert;
 
-        if (this.state.error) {
-            klass += ' has-error';    
-            alert = <div className='alert alert-danger'>Invalid Password</div>;
+        if (this.state.errorMessage) {
+            alert = <div className='alert alert-danger'>{this.state.errorMessage}</div>;
         }
         
 
@@ -73,13 +73,13 @@ var LoginPage = React.createClass({
 					<h1>Please Login</h1>
                     {alert}
 					<form onSubmit={this.handleSubmit} role="form">
-						<div className={klass}>
+						<div className='form-group'>
 		    				<label>Password</label>
 		    				<input ref="password" type="password" className="form-control" id="exampleInputPassword1" placeholder="Password" />
 		  				</div>
 
-		  				<div className={klass}>
-		  					<button type="submit" className="btn btn-primary">Login</button>
+		  				<div className='form-group'>
+                            <button type="submit" className="btn btn-primary">Login</button>
 		  				</div>
 		  				
 					</form>
