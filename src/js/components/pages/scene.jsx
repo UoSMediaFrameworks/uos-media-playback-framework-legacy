@@ -75,11 +75,14 @@ var Scene = React.createClass({
             return <FileUploadAlert key={name} name={name} state={uploads[name]} />;
         });        
 
+        var viewerUrl = '/viewer.html#/scenes/' + this.getParams().id;
+
         return (
             <DropZone className='flex-container' handler={this.fileHandler}>
                 <div className='top-bar'>
                     <div className='page-nav'>
                         <Link className='btn' to='scenes'>&lt; Back to Scene List</Link>
+                        <a className='btn' href={viewerUrl}>Open in Scene Viewer</a>
                     </div>
 
                     <div className='scene-controls'>
