@@ -30,7 +30,7 @@ var MediaObjectList = React.createClass({
         if (this.props.scene.scene && this.props.scene.scene.length !== 0) {
             items = this.props.scene.scene.map(function(mediaObject, index) {
                 var style = {
-                    backgroundImage: 'url(' + mediaObject.url + ')' 
+                    backgroundImage: 'url(\'' + mediaObject.url + '\')' 
                 };
                 var klass = 'media-object-item' + (this.state.selectedIndex === index ? ' selected' : '');
                 return (
