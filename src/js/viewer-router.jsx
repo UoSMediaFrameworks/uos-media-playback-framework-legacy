@@ -19,7 +19,7 @@ var routes = (
         <Route name='scenes' path='/scenes' handler={SceneSelector} />
         <Route name='scene' path='/scenes/:id' handler={SceneListener} />
     </Route>
-);
+); 
 
 var ViewerRouter = Router.create({routes: routes});
 
