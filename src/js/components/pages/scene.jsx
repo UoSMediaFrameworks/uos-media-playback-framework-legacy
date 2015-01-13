@@ -13,6 +13,7 @@ var Authentication = require('../../mixins/Authentication');
 var HubSendActions = require('../../actions/hub-send-actions');
 var SceneActions = require('../../actions/scene-actions');
 var MediaObjectList = require('../scene-editor/media-object-list.jsx');
+var Loader = require('../loader.jsx');
 var TagUnion = require('../tag-union.jsx');
 var Router = require('react-router');
 var DropZone = require('../drop-zone.jsx');
@@ -89,8 +90,9 @@ var Scene = React.createClass({
                     <div className='scene-controls'>
                         <a className='btn' onClick={this.deleteSceneHandler}>Delete Scene</a>
                     </div>
-
-                    <h4 className='scene-name'>{this.state.scene.name}</h4>
+                    <Loader loaded={this.state.scene ? true: false} message='Loading Scene...'>
+                        <h4 className='scene-name'>{this.state.scene ? this.state.scene.name : ''}</h4>
+                    </Loader>
                 </div>
                 
                 <div className="file-upload-status">
@@ -100,7 +102,8 @@ var Scene = React.createClass({
                     <MediaObjectList focusHandler={this.thumbClickHandler} 
                      scene={this.state.scene} />
                     <SceneTextEditor focusedMediaObject={this.state.focusedMediaObject} 
-                     scene={this.state.scene} />
+                     scene={this.state.scene || {} } />
+                    
                 </div>
                 <TagUnion scene={this.state.scene} />
             </DropZone>

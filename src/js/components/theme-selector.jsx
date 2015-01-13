@@ -47,9 +47,10 @@ var ThemeSelector = React.createClass({
 	},
 
 	render: function() {
+		var scene = this.props.scene || {};
 		return (
 			<div className='theme-selector'>
-			{_.keys(this.props.scene.themes).map(function(key) {
+			{_.keys(scene.themes).map(function(key) {
 				return <ThemeButton onClick={this.handleClick} theme={key} selected={this.state.selected[key]} key={key} />;
 			}.bind(this))}
 			</div>

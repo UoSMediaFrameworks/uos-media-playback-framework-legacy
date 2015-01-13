@@ -32,14 +32,22 @@ var SceneListener = React.createClass({
         };
     },
 
+    _maybeUpdatePlayer: function() {
+        if (this.state.scene) {
+            this.player.setScene(this.state.scene);
+            this.player.start();
+        }
+    },
+
     componentDidMount: function() {
         HubSendActions.subscribeScene(this.getParams().id);
         SceneStore.addChangeListener(this._onChange);
+        HubSendActions.loadScene(this.getParams().id);
 
         var playerElem = this.getDOMNode().querySelector('.player');
         this.player = randomScenePlayer(scenePlayerElementManager(playerElem));
-        this.player.setScene(this.state.scene);
-        this.player.start();
+
+        this._maybeUpdatePlayer();
     },
     
     componentWillUnmount: function() {
@@ -47,7 +55,7 @@ var SceneListener = React.createClass({
     },
 
     componentDidUpdate: function(prevProps, prevState) {
-        this.player.setScene(this.state.scene);
+        this._maybeUpdatePlayer();
         this.player.setThemeFilter(this.state.activeThemes);
     },
 

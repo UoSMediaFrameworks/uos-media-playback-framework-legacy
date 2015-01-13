@@ -27,7 +27,7 @@ var MediaObjectList = React.createClass({
     render: function() {
         var items = null;
         
-        if (this.props.scene.scene && this.props.scene.scene.length !== 0) {
+        if (this.props.scene && this.props.scene.scene && this.props.scene.scene.length !== 0) {
             items = this.props.scene.scene.map(function(mediaObject, index) {
                 var style = {
                     backgroundImage: 'url(\'' + mediaObject.url + '\')' 

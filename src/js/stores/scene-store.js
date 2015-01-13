@@ -16,10 +16,7 @@ var SceneStore = assign({}, EventEmitter.prototype, {
     getScene: function(id) {
         if (_scenes.hasOwnProperty(id)) {
             return _scenes[id];    
-        } else {
-            return {};
-        }
-        
+        } 
     },
     emitChange: function(){
         this.emit(CHANGE_EVENT);

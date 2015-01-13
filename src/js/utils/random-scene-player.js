@@ -3,6 +3,8 @@
 var _ = require('lodash');
 
 function RandomScenePlayer (elementManager) {
+    this._playing = false;
+
     this._elementMananger = elementManager;
     // holds tags assigned by setTagFilter
     this._manualTagFilter = [];
@@ -75,13 +77,17 @@ RandomScenePlayer.prototype.setThemeFilter = function(themeArray) {
 };
 
 RandomScenePlayer.prototype.start = function() {
-    this._imageInterval = setInterval(function() {
-        var obj = getRandomMediaObject(this._scene, this._tagFilter, 'image');
-        if (obj) {
-            this._elementMananger.showImage(obj.url);    
-        }
+    if (! this._playing) {
+        this._playing = true;
         
-    }.bind(this), 3000);
+        this._imageInterval = setInterval(function() {
+            var obj = getRandomMediaObject(this._scene, this._tagFilter, 'image');
+            if (obj) {
+                this._elementMananger.showImage(obj.url);    
+            }
+            
+        }.bind(this), 3000);
+    }
 };
 
 module.exports = function(elementManager) {
