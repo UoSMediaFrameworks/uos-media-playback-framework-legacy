@@ -9,6 +9,7 @@ var scenePlayerElementManager = require('../utils/scene-player-element-manager')
 var FormHelper = require('../mixins/form-helper');
 var Router = require('react-router');
 var Authentication = require('../mixins/Authentication');
+var Loader = require('../components/loader.jsx');
 
 var SceneListener = React.createClass({
 
@@ -83,11 +84,13 @@ var SceneListener = React.createClass({
     render: function() {
         return (
             <div className='scene-listener'>
+                <Loader loaded={this.state.scene ? true : false}></Loader>
                 <div className='player'></div>
                 <ThemeSelector themeChange={this.handleThemeChange} scene={this.state.scene} />
                 <form onSubmit={this.updateTags}>
                     <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...' className='form-control scene-listener-tag-input' />
                 </form>
+
             </div>
         );
     }
