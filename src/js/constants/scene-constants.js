@@ -6,6 +6,7 @@ module.exports = {
         DELETE_SCENE: null,
         ADD_MEDIA_OBJECT: null,
         REMOVE_MEDIA_OBJECT: null,
+        LIST_SCENES_ATTEMPT: null,
         RECIEVE_SCENE_LIST: null,
         RECIEVE_SCENE: null,
         HUB_LOGIN_ATTEMPT: null,

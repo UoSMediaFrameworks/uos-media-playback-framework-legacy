@@ -3,6 +3,7 @@
 
 var hubClient = require('media-hub-client');
 var HubRecieveActions = require('../actions/hub-recieve-actions');
+var HubSendActions = require('../actions/hub-send-actions');
 var client,
     HUB_TOKEN = 'HUB_TOKEN',
     HUB_URL = 'HUB_URL';
@@ -38,6 +39,7 @@ var HubClient = {
         client.connect(url, creds).then(function(token) {
             localStorage.setItem(HUB_TOKEN, token);
             HubRecieveActions.recieveLoginResult(true);
+            HubRecieveActions.tryListScenes();
             client.listScenes().then(HubRecieveActions.recieveSceneList);
         }, function(error) {
             client.disconnect();

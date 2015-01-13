@@ -7,6 +7,7 @@ var assign = require('object-assign');
 var _ = require('lodash');
 var CHANGE_EVENT = 'CHANGE_EVENT';
 
+var _loadingScenes = false;
 var _scenes = {};
 
 function _addScenes (scenes) {
@@ -34,6 +35,10 @@ var SceneListStore = assign({}, EventEmitter.prototype, {
 		return _.values(_scenes);
 	},
 
+	loadingScenes: function() {
+		return _loadingScenes;
+	},
+
 	emitChange: function() {
 		this.emit(CHANGE_EVENT);
 	},
@@ -58,8 +63,14 @@ var SceneListStore = assign({}, EventEmitter.prototype, {
         switch(action.type){
             case ActionTypes.RECIEVE_SCENE_LIST:
             	_addScenes(action.scenes);
+            	_loadingScenes = false;
                 SceneListStore.emitChange();
                 break;
+
+            case ActionTypes.LIST_SCENES_ATTEMPT:
+            	_loadingScenes = true;
+            	SceneListStore.emitChange();
+            	break;
 
             case ActionTypes.SCENE_CHANGE:
             	scene = action.scene;

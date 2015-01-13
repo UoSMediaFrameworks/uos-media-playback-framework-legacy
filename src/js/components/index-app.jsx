@@ -3,7 +3,7 @@ var React = require('react');
 var LoginPage = require('../pages/login-page.jsx');
 var ClientStore = require('../stores/client-store');
 var SceneActions = require('../actions/scene-actions');
-var Loader = require('react-loader');
+var Loader = require('./loader.jsx');
 var Router = require('react-router'),
     RouteHandler = Router.RouteHandler,
     Link = Router.Link;
@@ -53,7 +53,7 @@ var App = React.createClass({
                     {sessionNav}                      
                     <h4 className='title'>Media Scene Editor</h4>
                 </div>
-                <Loader loaded={! this.state.attemptingLogin}>
+                <Loader message='Logging in...' loaded={! this.state.attemptingLogin}>
                     <RouteHandler key='handler' />
                 </Loader>
             </div>

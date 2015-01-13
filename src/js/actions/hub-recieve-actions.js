@@ -3,6 +3,13 @@ var AppDispatcher = require('../dispatchers/app-dispatcher');
 var ActionTypes = SceneConstants.ActionTypes;
 
 var HubRecieveActions = {
+
+    tryListScenes: function() {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.LIST_SCENES_ATTEMPT,
+        });
+    },
+
     recieveSceneList: function(scenes) {
         AppDispatcher.handleServerAction({
         	type: ActionTypes.RECIEVE_SCENE_LIST,

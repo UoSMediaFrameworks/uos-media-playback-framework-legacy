@@ -3,10 +3,14 @@
 var React = require('react');
 var Router = require('react-router');
 var SceneListStore = require('../stores/scene-list-store');
+var Loader = require('./loader.jsx');
 var Link = require('react-router').Link;
 
 function _getState () {
-    return {scenes: SceneListStore.getAll()};
+    return {
+        scenes: SceneListStore.getAll(),
+        loading: SceneListStore.loadingScenes()
+    };
 }
 
 
@@ -38,9 +42,11 @@ var SceneList = React.createClass({
         });
 
         return (
-            <ul>
-                {links}
-            </ul>
+            <Loader message='Retrieving Scene list...' loaded={! this.state.loading}>
+                <ul>
+                    {links}
+                </ul>
+            </Loader>
         );
     }
 

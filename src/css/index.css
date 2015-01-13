@@ -210,3 +210,11 @@ html, body, #main, .app {
 .logging-in-message {
     text-align: center;
 }
+
+.loader {
+    height: 100px;
+}
+
+.loader-text {
+    text-align: center;
+}
