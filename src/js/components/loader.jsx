@@ -78,12 +78,14 @@ var Loader = React.createClass({
     },
 
     render: function () {
+      var klass = this.props.className + ' loader';
+
       if (this.state.loaded) {
-        return ( <div className={this.props.className} key="content">{this.props.children}</div> );
+        return ( <div className={klass} key="content">{this.props.children}</div> );
       } else {
         return ( 
         	<div>
-        		<div key="loader" ref="loader" className={this.props.className + ' loader'}></div>
+        		<div key="loader" ref="loader" className={klass}></div>
         		<p className='loader-text'>{this.props.message}</p>
         	</div> 
         );
