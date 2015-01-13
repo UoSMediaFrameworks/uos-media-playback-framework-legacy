@@ -4,7 +4,6 @@ var AppDispatcher = require('../dispatchers/app-dispatcher');
 var assign = require('object-assign');
 var EventEmitter = require('events').EventEmitter;
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
-var HubSendActions = require('../actions/hub-send-actions');
 
 var CHANGE_EVENT = "change";
 var _scenes = {};
@@ -18,7 +17,6 @@ var SceneStore = assign({}, EventEmitter.prototype, {
         if (_scenes.hasOwnProperty(id)) {
             return _scenes[id];    
         } else {
-            HubSendActions.loadScene(id);
             return {};
         }
         

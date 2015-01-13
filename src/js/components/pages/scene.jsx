@@ -37,6 +37,7 @@ var Scene = React.createClass({
     componentDidMount:function(){
         SceneStore.addChangeListener(this._onChange);
         FileUploadStore.addChangeListener(this._onChange);
+        HubSendActions.loadScene(this.getParams().id);
     },
 
     componentWillUnmount: function() {
