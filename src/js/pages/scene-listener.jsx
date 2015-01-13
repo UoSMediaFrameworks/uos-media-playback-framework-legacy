@@ -2,7 +2,6 @@
 
 var React = require('react');
 var SceneStore = require('../stores/scene-store');
-var ScenePlayer = require('../components/scene-player.jsx');
 var ThemeSelector = require('../components/theme-selector.jsx');
 var HubSendActions = require('../actions/hub-send-actions');
 var randomScenePlayer = require('../utils/random-scene-player');

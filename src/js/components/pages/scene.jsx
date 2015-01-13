@@ -4,7 +4,6 @@
 
 var React = require('react');
 
-var ScenePlayer = require('../scene-player.jsx');
 var SceneJsonEditor = require('../scene-json-editor.jsx');
 var SceneTextEditor = require('../scene-text-editor.jsx');
 var SceneStore = require('../../stores/scene-store');
