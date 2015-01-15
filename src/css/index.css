@@ -218,3 +218,7 @@ html, body, #main, .app {
 .loader-text {
     text-align: center;
 }
+
+.highlight {
+    background-color: #ff4;
+}

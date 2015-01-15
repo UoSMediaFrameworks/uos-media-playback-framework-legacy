@@ -104,7 +104,8 @@ var Scene = React.createClass({
                      scene={this.state.scene || {} } />
                     
                 </div>
-                <TagUnion scene={this.state.scene} />
+                <TagUnion scene={this.state.scene} 
+                 focusedMediaObject={this.state.focusedMediaObject}/>
             </DropZone>
         );
     }
