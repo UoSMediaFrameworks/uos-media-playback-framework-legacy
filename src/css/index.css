@@ -212,7 +212,7 @@ html, body, #main, .app {
 }
 
 .loader {
-    height: 100px;
+    /*height: 100px;*/
 }
 
 .loader-text {
