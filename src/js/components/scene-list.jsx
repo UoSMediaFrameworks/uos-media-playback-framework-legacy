@@ -42,7 +42,7 @@ var SceneList = React.createClass({
         });
 
         return (
-            <Loader message='Retrieving Scene list...' loaded={! this.state.loading}>
+            <Loader className='scene-list-loader' message='Retrieving Scene list...' loaded={! this.state.loading}>
                 <ul>
                     {links}
                 </ul>

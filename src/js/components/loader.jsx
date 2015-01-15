@@ -78,7 +78,7 @@ var Loader = React.createClass({
     },
 
     render: function () {
-      var klass = this.props.className + ' loader';
+      var klass = 'loader ' + (this.props.className || '');
 
       if (this.state.loaded) {
         return ( <div className={klass} key="content">{this.props.children}</div> );

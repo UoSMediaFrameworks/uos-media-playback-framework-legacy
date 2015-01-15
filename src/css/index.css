@@ -211,8 +211,8 @@ html, body, #main, .app {
     text-align: center;
 }
 
-.loader {
-    /*height: 100px;*/
+.scene-list-loader {
+    height: 100px;
 }
 
 .loader-text {
