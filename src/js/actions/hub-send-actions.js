@@ -26,6 +26,7 @@ module.exports = {
     tryCreateScene: function(name, cb) {
     	var scene = {
     		'name': name,
+            'themes': {},
     		'scene': []
     	};
 
