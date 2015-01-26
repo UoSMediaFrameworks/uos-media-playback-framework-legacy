@@ -5,7 +5,7 @@ var _ = require('lodash');
 function RandomScenePlayer (elementManager) {
     this._playing = false;
 
-    this._elementMananger = elementManager;
+    this._elementManager = elementManager;
     // holds tags assigned by setTagFilter
     this._manualTagFilter = [];
     // holds tags assigned by setThemeFilter
@@ -76,17 +76,29 @@ RandomScenePlayer.prototype.setThemeFilter = function(themeArray) {
     mergeFilters(this);
 };
 
+RandomScenePlayer.prototype.getRandomMediaObject = function(type) {
+    return getRandomMediaObject(this._scene, this._tagFilter, type);
+};
+
 RandomScenePlayer.prototype.start = function() {
     if (! this._playing) {
         this._playing = true;
         
         this._imageInterval = setInterval(function() {
-            var obj = getRandomMediaObject(this._scene, this._tagFilter, 'image');
+            var obj = this.getRandomMediaObject('image');
             if (obj) {
-                this._elementMananger.showImage(obj.url);    
+                this._elementManager.showImage(obj.url);    
             }
-            
         }.bind(this), 3000);
+
+        var showRandVideo = function() {
+            var obj = this.getRandomMediaObject('video');
+            if (obj) {
+                this._elementManager.showVideo(obj.url, showRandVideo);    
+            }
+        }.bind(this);
+
+        showRandVideo();
     }
 };
 

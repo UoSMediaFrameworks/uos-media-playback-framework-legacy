@@ -61,7 +61,6 @@ var SceneTextEditor = React.createClass({
                 var newValue = this.document.getValue();
                 // parse it and see if it blows up
                 var newScene = JSON.parse(newValue);
-
                 // make sure that something changed
                 if (this.getSceneString() !== newValue) {
                     SceneActions.updateScene(newScene);    
