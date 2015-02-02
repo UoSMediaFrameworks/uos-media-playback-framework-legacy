@@ -62,7 +62,7 @@ var SceneTextEditor = React.createClass({
                 // parse it and see if it blows up
                 var newScene = JSON.parse(newValue);
                 // make sure that something changed
-                if (this.getSceneString() !== newValue) {
+                if (! _.isEqual(this.props.scene, newScene)) {
                     SceneActions.updateScene(newScene);    
                 } 
                 this.setState({error: false});
@@ -99,13 +99,20 @@ var SceneTextEditor = React.createClass({
     },
 
     componentDidUpdate: function(prevProps, prevState) {
-        var newString = this.getSceneString();
-        var oldString = this.document.getValue();
-        if (! this.state.error && newString !== oldString) {
-            this.document.setValue(this.getSceneString());
-            this.setState({json: newString});
-        }
 
+        if (! this.state.error) {
+            try {
+                var curScene = JSON.parse(this.document.getValue());
+                if (! _.isEqual(curScene, this.props.scene)) {
+                    this.document.setValue(this.getSceneString());
+                }
+
+            } catch(e) {
+                // do nothing, just ignore updates when we have bad json
+            }    
+        }
+        
+        
         if (this.props.focusedMediaObject !== prevProps.focusedMediaObject) {
             var jsonStr = this.document.getValue();
             // get index of scene property in json
