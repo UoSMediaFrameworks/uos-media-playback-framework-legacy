@@ -57,7 +57,8 @@ html, body, #main, .app {
     text-align: right;
     padding: 0 20px 2px 0;
     background-color: rgba(255, 0, 0, .5);
-    z-index: 1;
+    font-weight: bold;
+    z-index: 3;
 }
 
 .scene-text-editor.has-error > .error-message {
