@@ -94,9 +94,13 @@ html, body, #main, .app {
 }
 
 .media-object-list {
+    overflow-y: auto;
+    
+}
+
+.media-object-list ul {
     padding: 0;
     margin: 0;
-    overflow-y: auto;
     line-height: 0;
 }
 
@@ -242,4 +246,5 @@ html, body, #main, .app {
 
 .dos-donts {
     float: left;
+    padding: 6px 12px;
 }

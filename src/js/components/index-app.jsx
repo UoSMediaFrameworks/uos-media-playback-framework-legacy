@@ -51,7 +51,9 @@ var App = React.createClass({
             <div className='app'>
                 <div className='header'>
                     {sessionNav}                      
-                    <a className='btn dos-donts' href='https://docs.google.com/document/d/1B25gvDRob576KPsgusEhhUY3GI_XF6guHIBpLPrn9U0/edit?usp=sharing'>Do's &amp; Don'ts of Media Frameworks</a> 
+                    <a target='_blank' className='dos-donts' href='https://docs.google.com/document/d/1B25gvDRob576KPsgusEhhUY3GI_XF6guHIBpLPrn9U0/edit?usp=sharing'>
+                        Do's &amp; Don'ts of Media Frameworks
+                    </a> 
                     <h4 className='title'>Media Scene Editor</h4>
                 </div>
                 <Loader message='Logging in...' loaded={! this.state.attemptingLogin}>

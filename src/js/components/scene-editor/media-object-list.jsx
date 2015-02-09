@@ -51,7 +51,9 @@ var MediaObjectList = React.createClass({
         }
 
         return (
-            <ul className='media-object-list'>{items}</ul>
+            <div className='media-object-list'>
+                <ul className=''>{items}</ul>
+            </div>
         );
     }
 
