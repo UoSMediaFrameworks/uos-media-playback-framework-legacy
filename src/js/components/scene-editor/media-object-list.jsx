@@ -51,7 +51,7 @@ var MediaObjectList = React.createClass({
         }
 
         return (
-            <ul className='media-object-list fill-height'>{items}</ul>
+            <ul className='media-object-list'>{items}</ul>
         );
     }
 
