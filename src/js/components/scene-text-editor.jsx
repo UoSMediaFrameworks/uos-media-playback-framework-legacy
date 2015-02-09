@@ -140,7 +140,7 @@ var SceneTextEditor = React.createClass({
         var klass = 'scene-text-editor ' + (this.state.error ? ' has-error' : '');
         return (
             <div className={klass}>
-                <div className='error-message'>{this.state.error}</div>
+                <div className='error-message'>Error: {this.state.error}</div>
             </div>
         );
     }
