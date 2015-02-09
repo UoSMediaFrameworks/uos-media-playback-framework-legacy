@@ -51,7 +51,7 @@ var SceneTextEditor = React.createClass({
 
     getInitialState: function() {
         return {
-            error: false
+            error: null
         };
     },
 
@@ -65,11 +65,11 @@ var SceneTextEditor = React.createClass({
                 if (! _.isEqual(this.props.scene, newScene)) {
                     SceneActions.updateScene(newScene);    
                 } 
-                this.setState({error: false});
+                this.setState({error: null});
                 
             } catch (e) {
                 if (e instanceof SyntaxError) {
-                    this.setState({error: true});
+                    this.setState({error: e.message});
                 } else {
                     throw e;
                 }
@@ -139,7 +139,9 @@ var SceneTextEditor = React.createClass({
     render: function() {
         var klass = 'scene-text-editor ' + (this.state.error ? ' has-error' : '');
         return (
-            <div className={klass} />
+            <div className={klass}>
+                <div className='error-message'>{this.state.error}</div>
+            </div>
         );
     }
 
