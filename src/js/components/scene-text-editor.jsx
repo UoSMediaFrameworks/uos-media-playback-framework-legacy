@@ -46,7 +46,7 @@ function occurrences(string, subString, allowOverlapping){
 var SceneTextEditor = React.createClass({
 
     getSceneString: function() {
-        return stringify(this.props.scene);
+        return stringify(_.omit(this.props.scene, '_id'));
     },
 
     getInitialState: function() {
@@ -61,6 +61,8 @@ var SceneTextEditor = React.createClass({
                 var newValue = this.document.getValue();
                 // parse it and see if it blows up
                 var newScene = JSON.parse(newValue);
+                // add back the id from the scene
+                newScene._id = this.props.scene._id;
                 // make sure that something changed
                 if (! _.isEqual(this.props.scene, newScene)) {
                     SceneActions.updateScene(newScene);    
