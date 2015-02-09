@@ -204,7 +204,7 @@ html, body, #main, .app {
 }
 
 .has-error .CodeMirror {
-    border: 1px solid #ff0000;
+    border: 3px solid #ff0000;
 }
 
 .logging-in-message {
