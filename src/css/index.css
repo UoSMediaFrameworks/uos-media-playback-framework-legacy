@@ -239,3 +239,7 @@ html, body, #main, .app {
 .highlight {
     background-color: #ff4;
 }
+
+.dos-donts {
+    float: left;
+}
