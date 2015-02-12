@@ -95,7 +95,17 @@ html, body, #main, .app {
 
 .media-object-list {
     overflow-y: auto;
-    
+    position: relative;
+}
+
+.media-object-list-instructions {
+    position: absolute;
+    bottom: 50%;
+    right: 0px;
+    left: 0px;
+    text-align: center;
+    font-size: 20px;
+    color: #ccc;
 }
 
 .media-object-list ul {
@@ -244,7 +254,11 @@ html, body, #main, .app {
     background-color: #ff4;
 }
 
+.header {
+    position: relative;
+}
+
 .dos-donts {
-    float: left;
+    position: absolute;
     padding: 6px 12px;
 }

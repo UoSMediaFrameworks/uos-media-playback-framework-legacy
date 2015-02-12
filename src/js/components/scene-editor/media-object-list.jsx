@@ -52,6 +52,7 @@ var MediaObjectList = React.createClass({
 
         return (
             <div className='media-object-list'>
+                <p className='media-object-list-instructions'>Drag and drop images here to add to scene</p>
                 <ul className=''>{items}</ul>
             </div>
         );
