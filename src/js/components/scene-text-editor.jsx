@@ -131,8 +131,9 @@ var SceneTextEditor = React.createClass({
             
             jsonStr = jsonStr.substring(0, openBracketIndex);
             var lines = occurrences(jsonStr, '\n');
-
-            this.document.setCursor(lines + 1, 3);
+            var targetLine = lines + 1;
+            this.document.setCursor(targetLine, 3);
+            this.document.scrollIntoView({line: targetLine}, 50);
 
             if (! this.document.hasFocus()) this.document.focus();  
         }
