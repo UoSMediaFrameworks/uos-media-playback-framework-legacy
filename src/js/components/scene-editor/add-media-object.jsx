@@ -1,4 +1,5 @@
 'use strict';
+/*jshint browser: true */
 
 var React = require('react');
 var MediaButton = require('./media-button.jsx');
@@ -21,42 +22,33 @@ var SceneEditor = React.createClass({
 
 	handleSubmit: function(event) {
 		event.preventDefault();
-		var url = this.getRefNode('url'),
-			tags = this.getRefNode('tags');
+		var content = this.getRefNode('content'),
+			data = content.value,
+			mediaObject;
 
-		SceneActions.addMediaObject(this.props.sceneId, this.state.mediaType, url.value, tags.value);		
-		url.value = tags.value = '';
+		// check and see if it's a vimeo url.  Use a regex because I'm only detecting a specific
+		// case of a vimeo url.  Everything else is interpretted as text
+		if (data.match('^https?://vimeo\\.com')) {
+			mediaObject = {type: 'video', url: data};
+		} else {
+			mediaObject = {type: 'text', text: data};
+		}
+
+		var parser = document.createElement('a');
+		parser.href = content.value;
+
+		SceneActions.addMediaObject(this.props.scene, mediaObject);		
+		content.value = '';
 	},
 
 	render: function() {
-		var urlPlaceholder = this.state.mediaType + ' url';
-
 		return (
-			<form onSubmit={this.handleSubmit} className='form-inline'>
-				<div className='form-group'>
-					<div className='input-group'>
-						<div className='btn-group'>
-							<MediaButton onClick={this.handleMediaButtonClick} switch={this.state.mediaType} val='image' glyphicon='picture' />
-							<MediaButton onClick={this.handleMediaButtonClick} switch={this.state.mediaType} val='video' glyphicon='facetime-video' />
-							<MediaButton onClick={this.handleMediaButtonClick} switch={this.state.mediaType} val='audio' glyphicon='volume-up' />
-						</div>
-					</div>
-				</div>
-
-				<div className='form-group'>
-					<input ref='url' 
-						   type='url' 
-					       className='form-control' 
-					       placeholder={urlPlaceholder} 
-					       required />
-				</div>
-
-				<div className='form-group'>
-					<input ref='tags' 
-						   type='text' 
-						   className='form-control' 
-					 	   placeholder='tag, tag, ...' />
-				</div>
+			<form onSubmit={this.handleSubmit} className='add-media-object'>
+				
+				<input ref='content' 
+				       className='form-control' 
+				       placeholder='vimeo url or text' 
+				       required />
 
 				<button className='btn btn-primary' type='submit'>Add</button>
 			</form>

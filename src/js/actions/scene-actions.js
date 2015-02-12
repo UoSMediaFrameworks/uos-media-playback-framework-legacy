@@ -3,6 +3,7 @@
 var SceneConstants = require('../constants/scene-constants');
 var AppDispatcher = require('../dispatchers/app-dispatcher');
 var HubClient = require('../utils/HubClient');
+var objectAssign = require('object-assign');
 var ActionTypes = SceneConstants.ActionTypes;
 var _ = require('lodash');
 
@@ -16,12 +17,9 @@ var SceneActions = {
         HubClient.save(scene);        
     },
 
-    addMediaObject: function(scene, mediaType, url, tags) {
-        scene.scene.push({
-            url: url,
-            type: mediaType,
-            tags: tags
-        });
+    addMediaObject: function(scene, mediaObject) {
+        // add a default empty tags attribute incase someone isn't specifying it
+        scene.scene.push(objectAssign({tags: ''}, mediaObject));
 
         AppDispatcher.handleViewAction({
             type: ActionTypes.SCENE_CHANGE,
@@ -84,7 +82,13 @@ var SceneActions = {
             var data = JSON.parse(xhr.responseText);
             if (xhr.status === 200) {
                 var tags = data.tags ? data.tags.join(', ') : '';
-                SceneActions.addMediaObject(scene, 'image', data.url, tags);    
+                
+                SceneActions.addMediaObject(scene, {
+                    type: 'image', 
+                    url: data.url, 
+                    tags: tags
+                });    
+
                 if (tags === '') {
                     dispatchResult('warning', 'No tags found');
                 } else {
