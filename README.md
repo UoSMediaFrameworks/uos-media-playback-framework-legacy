@@ -31,7 +31,9 @@ Now you may access the editor at [http://localhost:3000](http://localhost:3000) 
 
 ## Deployment
 
-This whole repo is currently setup to be deployed as an [Azure Website](http://azure.microsoft.com).  However, you can easily deploy it else where.  Just run the `build-dist` gulp command:
+This whole repo is currently setup to be deployed as an [Azure Website](http://azure.microsoft.com).  The [deploy.sh](deploy.sh) file is used by [KuduSync](https://github.com/projectkudu/KuduSync).
+
+However, you can easily deploy it elsewhere.  Just run the `build-dist` gulp command:
 
 ```
 env.sh gulp build-dist
