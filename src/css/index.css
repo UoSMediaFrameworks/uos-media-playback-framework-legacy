@@ -256,9 +256,14 @@ html, body, #main, .app {
 
 .header {
     position: relative;
+    background-color: #ddd;
+}
+
+.header a {
+    padding: 10px 12px;
 }
 
 .dos-donts {
     position: absolute;
-    padding: 6px 12px;
+    
 }
