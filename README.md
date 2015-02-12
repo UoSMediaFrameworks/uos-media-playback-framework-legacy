@@ -1,82 +1,40 @@
 # MediaPlaybackFramework
 
+This is the currently the only front end for creating scenes and playing scenes.  For this to work you'll also need a running copy of a [MediaHub](https://github.com/Colum-SMA-Dev/MediaHub), and an [AssetStore](https://github.com/Colum-SMA-Dev/AssetStore).  
 
-## HTMLMediaPlayer
+## Development
 
-Front end media player creating and previewing MediaScene JSON.
+Setup your [MediaHub](https://github.com/Colum-SMA-Dev/MediaHub) and [AssetStore](https://github.com/Colum-SMA-Dev/AssetStore) first if you haven't done so already.
 
-### Usage
-A fully functional version of the HTMLMediaPlayer is included in `dist/` directory.  Open up `dist/index.html` in your browser and start editing a scene.
+Copy the file [env-example.sh](env-example.sh) to `env.sh`.  Set the `ASSET_STORE` and `MEDIA_HUB` exports to the url's of where those are running (if you're developing locally then just leave the defaults, as those services should default to those ports when running).  
 
-### Directory/File Structure
-
-- __app/__ Contains source code for development.  Development should happen in here.
-- __dist/__ Version of app working and ready to go.
-- __docs/__ Various documentation files from planning stages.
-
-### Development
-For contributing you'll want to have [npm](https://www.npmjs.org/) installed.
-
-Install [yeoman](http://yeoman.io/), this'll give us some handy tools development and deployment.  If you're unfamiliar with yeoman, read their [getting started page](http://yeoman.io/gettingstarted.html).
-```
-npm install -g yo
-```
-
-Checkout the repo and cd into the folder
-```
-git clone git@github.com:Colum-SMA-Dev/MediaPlaybackFramework.git
-cd MediaPlaybackFramework
-```
-
-Install our required packages for development
+Install the needed npm packages:
 ```
 npm install
 ```
 
-Install our client side libraries
+Start the local development server:
 ```
-bower install
-```
-
-
-Launch the local webserver
-```
-grunt serve
+env.sh gulp
 ```
 
-### Deployment
+The shell script merely provides the appropriate environment variables for whatever is specified after it.
 
-Using [Grunt](http://gruntjs.com/) (which was installed when we install yeoman above), packaging for deployment is one command
+The default gulp task handles a number of things for us:
+- bundling the javascript 
+- copying the js/html/css to a `dist/` directory
+- starting up a local webserver to serve it with
+- watching filesystem for changes, then bundling and copying again
+
+Now you may access the editor at [http://localhost:3000](http://localhost:3000) and the viewer at [http://localhost:3000/viewer.html](http://localhost:3000/viewer.html)
+
+
+## Deployment
+
+This whole repo is currently setup to be deployed as an [Azure Website](http://azure.microsoft.com).  However, you can easily deploy it else where.  Just run the `build-dist` gulp command:
+
 ```
-grunt build
+env.sh gulp build-dist
 ```
 
-All files inside of `dist/` will be updated to reflect any changes made to files in `app`.
-
-
-
-
-
-
-
-
-
-
-
-Old notes Layers for Media Framework
----------------------
-
-
-- MediaPlayers : display media request responding to a MediaPlayerController or MediaHub
-  - HTMLCanvasMediaPlayer (priority 1)
-  - HTMLWebGLMediaPlater (priority 2)
-  - UnityGameEngineMediaPlayer (priority 3)
-  - EpicGameEngineMediaPlayer (priority 3)
-- MediaPlayerController : UI (staring with html) for building media scenes for playback on a hub or player
-  - HTML interface
-  - Saves MediaScene to JSON to local storage for testing or direct real-time control over a media Controller
-  - Saves MediaScene to PlayerPlayerController
-- MediaController : interacts with MediaHubs to control MediaPlayers by a MediaPlayerContoller of files using the MediaConrollerAPI
-- MediaHub : Media Players subscribe to a media hub. MediaHub directly control players though a websocket
-- MediaControllerAPI : API used to control MediaPlayers and Hubs JSON XML
-- ServerPlayerController : Server that plays MediaScenes to MediaControllers uses HTTP Websockets
+The copy the contents of `dist/` to whereever you'd like to host the files.
