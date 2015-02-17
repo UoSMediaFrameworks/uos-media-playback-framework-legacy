@@ -3,6 +3,7 @@
 var React = require('react');
 var Glyphicon = require('../glyphicon.jsx');
 var SceneActions = require('../../actions/scene-actions');
+var MediaObjectPreview = require('./media-object-preview.jsx');
 
 var MediaObjectList = React.createClass({
     getInitialState: function() {
@@ -29,20 +30,19 @@ var MediaObjectList = React.createClass({
         
         if (this.props.scene && this.props.scene.scene && this.props.scene.scene.length !== 0) {
             items = this.props.scene.scene.map(function(mediaObject, index) {
-                var style = {
-                    backgroundImage: 'url(\'' + mediaObject.url + '\')' 
-                };
+                
                 var klass = 'media-object-item' + (this.state.selectedIndex === index ? ' selected' : '');
                 return (
                     <li className={klass}
                      key={index}
                      onClick={this.handleSelect(index)} 
                      >
-                        <div className='media-object-item-preview' style={style}>
+                        <MediaObjectPreview mediaObject={mediaObject}>
                             <button className='btn' onClick={this.handleDelete(this.props.scene, index)}>
                                 <Glyphicon icon='remove-circle' />
                             </button>
-                        </div>
+                        </MediaObjectPreview>
+                        
                     </li>
                 );
             }.bind(this));  
