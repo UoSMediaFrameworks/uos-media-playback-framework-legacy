@@ -45,14 +45,15 @@ ScenePlayerElementManager.prototype.showVideo = function(vimeoUrl, doneCb) {
     var player = new EmbeddedVimeoPlayer(getVimeoId(vimeoUrl), SCENE_PLAYER_VIDEO_ID);
     
     player.onReady(function() {
-        $(this.videoPlayerEl).animate({'opacity': 1}, 1400);
+        this.videoPlayerEl.addClass('show');
     }.bind(this));
 
     player.onFinish(function() {
-        this.videoPlayerEl.animate({'opacity': 0}, 1400, function() {
+        this.videoPlayerEl.removeClass('show');
+        window.setTimeout(function() {
             this.videoPlayerEl[0].removeChild(player.element);
             doneCb();
-        }.bind(this));
+        }.bind(this), 1000);
         
     }.bind(this));
     
