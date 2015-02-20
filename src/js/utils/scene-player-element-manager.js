@@ -2,10 +2,8 @@
 /*jshint browser:true */
 
 var $ = require('jquery');
-var createYouTubePlayer = require('./create-youtube-player');
-var getYouTubeID = require('get-youtube-id');
+var getVimeoId = require('./get-vimeo-id');
 var SCENE_PLAYER_VIDEO_ID = 'scenePlayerVideoID';
-var EPromise = require('es6-promise').Promise;
 
 function _animateInImage (el, img) {
     el.append(img);
@@ -36,40 +34,14 @@ function ScenePlayerElementManager (element) {
     $el.append(this.el);
     this.videoPlayerEl =  $('<div id="' + SCENE_PLAYER_VIDEO_ID + '"></div>');
     $el.append(this.videoPlayerEl);
-
-    this._youtubeLoadPromise = new EPromise(function(resolve, reject) {    
-        createYouTubePlayer(SCENE_PLAYER_VIDEO_ID, function(player) {
-            player.addEventListener('onReady', function(event) {
-                player.mute();
-                resolve(player);
-            }.bind(this));
-
-            player.addEventListener('onStateChange', function(event) {
-                this._handleStateChange(event);
-            }.bind(this));
-        }.bind(this));
-    }.bind(this));
 }
 
-ScenePlayerElementManager.prototype._handleStateChange = function(event) {
-    switch(event.data) {
 
-        case window.YT.PlayerState.ENDED: 
-            this._videoDoneCb();
-            break;
+ScenePlayerElementManager.prototype.showVideo = function(url, doneCb) {
+    var vid =  $('<iframe src="//player.vimeo.com/video/' + getVimeoId(url) + 
+        '" width="450" height="300" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>');  
 
-        default: 
-            return;
-    }
-};
-
-ScenePlayerElementManager.prototype.showVideo = function(url, cb) {
-    this._videoDoneCb = cb;
-    // show after the first one
-    this.videoPlayerEl.css({'opacity': 1});
-    this._youtubeLoadPromise.then(function(player) {
-        player.loadVideoById(getYouTubeID(url));
-    });
+    this.videoPlayerEl.append(vid);
 };
 
 ScenePlayerElementManager.prototype.showImage = function(url) {

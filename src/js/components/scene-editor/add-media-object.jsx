@@ -6,6 +6,7 @@ var MediaButton = require('./media-button.jsx');
 var SceneActions = require('../../actions/scene-actions');
 var FormHelper = require('../../mixins/form-helper');
 var HubClient = require('../../utils/HubClient');
+var getVimeoId = require('../../utils/get-vimeo-id');
 var _ = require('lodash');
 
 var SceneEditor = React.createClass({
@@ -32,10 +33,9 @@ var SceneEditor = React.createClass({
 			content.value = '';	
 		}.bind(this);
 
-		// check and see if it's a vimeo url.  Use a regex because I'm only detecting a specific
-		// case of a vimeo url.  Everything else is interpretted as text
-		var match = data.match('^https?://vimeo\\.com.*?(\\d+)$');
-		if (match) {
+		
+		var vimeoId =  getVimeoId(data); 
+		if (vimeoId) {
 			var xhr = new XMLHttpRequest();
 			xhr.onload = function() {
 			    if (xhr.status === 200) {
@@ -54,7 +54,7 @@ var SceneEditor = React.createClass({
 			    console.log('tasg request failed');
 			};
 
-			xhr.open('GET', process.env.MEDIA_HUB + '/api/vimeo-tags?token=' + HubClient.getToken() + '&vimeoId=' + match[1]);
+			xhr.open('GET', process.env.MEDIA_HUB + '/api/vimeo-tags?token=' + HubClient.getToken() + '&vimeoId=' + vimeoId);
 			xhr.send();
 		} else {
 			addMediaObject({type: 'text', text: data});
