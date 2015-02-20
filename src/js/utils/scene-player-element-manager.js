@@ -17,15 +17,16 @@ function _animateInImage (el, img) {
     });
 
     // and show
-    img.animate({'opacity': 1}, 1400);
+    img.addClass('show-media-object');
 }
 
 
 
 function _animateOutImage (el, img) {
-    img.animate({'opacity': 0}, 1400, function () {
+    img.removeClass('show-media-object');
+    window.setTimeout(function () {
         img.remove();
-    });
+    }, 1400);
 }
 
 function ScenePlayerElementManager (element) {
@@ -45,11 +46,11 @@ ScenePlayerElementManager.prototype.showVideo = function(vimeoUrl, doneCb) {
     var player = new EmbeddedVimeoPlayer(getVimeoId(vimeoUrl), SCENE_PLAYER_VIDEO_ID);
     
     player.onReady(function() {
-        this.videoPlayerEl.addClass('show');
+        this.videoPlayerEl.addClass('show-media-object');
     }.bind(this));
 
     player.onFinish(function() {
-        this.videoPlayerEl.removeClass('show');
+        this.videoPlayerEl.removeClass('show-media-object');
         window.setTimeout(function() {
             this.videoPlayerEl[0].removeChild(player.element);
             doneCb();
