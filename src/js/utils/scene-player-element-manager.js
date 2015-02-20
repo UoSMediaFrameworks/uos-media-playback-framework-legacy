@@ -3,7 +3,9 @@
 
 var $ = require('jquery');
 var getVimeoId = require('./get-vimeo-id');
+var EmbeddedVimeoPlayer = require('./embedded-vimeo-player');
 var SCENE_PLAYER_VIDEO_ID = 'scenePlayerVideoID';
+
 
 function _animateInImage (el, img) {
     el.append(img);
@@ -17,6 +19,8 @@ function _animateInImage (el, img) {
     // and show
     img.animate({'opacity': 1}, 1400);
 }
+
+
 
 function _animateOutImage (el, img) {
     img.animate({'opacity': 0}, 1400, function () {
@@ -37,11 +41,22 @@ function ScenePlayerElementManager (element) {
 }
 
 
-ScenePlayerElementManager.prototype.showVideo = function(url, doneCb) {
-    var vid =  $('<iframe src="//player.vimeo.com/video/' + getVimeoId(url) + 
-        '" width="450" height="300" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>');  
+ScenePlayerElementManager.prototype.showVideo = function(vimeoUrl, doneCb) {
+    var player = new EmbeddedVimeoPlayer(getVimeoId(vimeoUrl), SCENE_PLAYER_VIDEO_ID);
+    
+    player.onReady(function() {
+        $(this.videoPlayerEl).animate({'opacity': 1}, 1400);
+    }.bind(this));
 
-    this.videoPlayerEl.append(vid);
+    player.onFinish(function() {
+        this.videoPlayerEl.animate({'opacity': 0}, 1400, function() {
+            this.videoPlayerEl[0].removeChild(player.element);
+            doneCb();
+        }.bind(this));
+        
+    }.bind(this));
+    
+    this.videoPlayerEl.append(player.element);
 };
 
 ScenePlayerElementManager.prototype.showImage = function(url) {
