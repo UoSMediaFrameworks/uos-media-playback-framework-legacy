@@ -30,14 +30,14 @@ html, body, #main, .app {
     flex: 1;
     display: flex;
     flex-direction: column;
+    padding-right: 2.5px;
+    padding-left: 2.5px;
 }
 
 
 .thumbs-and-json {
     display: flex;
     padding-bottom: 5px;
-    padding-right: 2.5px;
-    padding-left: 2.5px;
 }
 
 .media-object-list, .scene-text-editor {
@@ -139,6 +139,7 @@ html, body, #main, .app {
     height: 70px;
     display: inline-block;
     width: 70px;
+    vertical-align: top;
     cursor: pointer;
     padding: 5px;
 }
@@ -151,6 +152,7 @@ html, body, #main, .app {
     background-size: cover;
     width: 60px;
     height: 60px;
+    font-size: 60px;
     position: relative;
 }
 
@@ -188,6 +190,7 @@ html, body, #main, .app {
 
 .tag-union {
     list-style-type: none;
+    padding: 0;
 }
 
 .tag-union li {
@@ -204,9 +207,6 @@ html, body, #main, .app {
     position: absolute;
 }
 
-.page-nav {
-    padding-left: 8px;
-}
 
 .scene-controls {
     text-align: right;
@@ -264,6 +264,19 @@ html, body, #main, .app {
 }
 
 .dos-donts {
-    position: absolute;
-    
+    position: absolute;   
+}
+
+.add-media-object {
+    padding: 10px 0;
+    text-align: center; 
+}
+
+.add-media-object input {
+    display: inline-block;
+    width: 80%;
+}
+
+.add-media-object button, .add-media-object input {
+    border-radius: 0;   
 }

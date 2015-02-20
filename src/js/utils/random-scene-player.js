@@ -35,7 +35,6 @@ function parseTagString (tagString) {
 
 function mergeFilters (self) {
     self._tagFilter = _.uniq(self._manualTagFilter.concat(self._themeTagFilter));
-    console.dir(self._tagFilter);
 }
 
 RandomScenePlayer.prototype.setScene = function(newScene) {
@@ -94,7 +93,9 @@ RandomScenePlayer.prototype.start = function() {
         var showRandVideo = function() {
             var obj = this.getRandomMediaObject('video');
             if (obj) {
-                this._elementManager.showVideo(obj.url, showRandVideo);    
+                this._elementManager.showVideo(obj.url, function() {
+                    showRandVideo();
+                });    
             }
         }.bind(this);
 

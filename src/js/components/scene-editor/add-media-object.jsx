@@ -1,9 +1,14 @@
 'use strict';
+/*jshint browser: true */
 
 var React = require('react');
 var MediaButton = require('./media-button.jsx');
 var SceneActions = require('../../actions/scene-actions');
 var FormHelper = require('../../mixins/form-helper');
+var HubClient = require('../../utils/HubClient');
+var getVimeoId = require('../../utils/get-vimeo-id');
+var Loader = require('../loader.jsx');
+var _ = require('lodash');
 
 var SceneEditor = React.createClass({
 
@@ -11,7 +16,8 @@ var SceneEditor = React.createClass({
 
 	getInitialState: function() {
 		return {
-			mediaType: 'image'
+			mediaType: 'image',
+			loading: false
 		};
 	},
 
@@ -21,44 +27,60 @@ var SceneEditor = React.createClass({
 
 	handleSubmit: function(event) {
 		event.preventDefault();
-		var url = this.getRefNode('url'),
-			tags = this.getRefNode('tags');
+		var content = this.getRefNode('content'),
+			data = content.value;
 
-		SceneActions.addMediaObject(this.props.sceneId, this.state.mediaType, url.value, tags.value);		
-		url.value = tags.value = '';
+		var addMediaObject = function (obj) {
+			SceneActions.addMediaObject(this.props.scene, obj);	
+			content.value = '';	
+		}.bind(this);
+
+		
+		var vimeoId =  getVimeoId(data); 
+		if (vimeoId) {
+			var xhr = new XMLHttpRequest();
+			xhr.onload = function() {
+			    if (xhr.status === 200) {
+			    	var tags = _.map(JSON.parse(xhr.responseText), function(tag) { return tag.trim(); });
+			    	addMediaObject({
+			    		type: 'video', 
+			    		url: data,
+			    		tags: tags.join(', ')
+			    	});
+			    } else {
+			    	console.log('failed ' + xhr.status);
+			    }
+
+			    this.setState({loading: false});
+			}.bind(this);
+
+			xhr.onerror = function() {
+			    console.log('tasg request failed');
+			    this.setState({loading: false});
+			}.bind(this);
+			this.setState({loading: true});
+			xhr.open('GET', process.env.MEDIA_HUB + '/api/vimeo-tags?token=' + HubClient.getToken() + '&vimeoId=' + vimeoId);
+			xhr.send();
+		} else {
+			addMediaObject({type: 'text', text: data});
+		}
 	},
 
 	render: function() {
-		var urlPlaceholder = this.state.mediaType + ' url';
+		var text = this.state.loading ? 'Loading...' : 'Add';
 
 		return (
-			<form onSubmit={this.handleSubmit} className='form-inline'>
-				<div className='form-group'>
-					<div className='input-group'>
-						<div className='btn-group'>
-							<MediaButton onClick={this.handleMediaButtonClick} switch={this.state.mediaType} val='image' glyphicon='picture' />
-							<MediaButton onClick={this.handleMediaButtonClick} switch={this.state.mediaType} val='video' glyphicon='facetime-video' />
-							<MediaButton onClick={this.handleMediaButtonClick} switch={this.state.mediaType} val='audio' glyphicon='volume-up' />
-						</div>
-					</div>
-				</div>
-
-				<div className='form-group'>
-					<input ref='url' 
-						   type='url' 
-					       className='form-control' 
-					       placeholder={urlPlaceholder} 
-					       required />
-				</div>
-
-				<div className='form-group'>
-					<input ref='tags' 
-						   type='text' 
-						   className='form-control' 
-					 	   placeholder='tag, tag, ...' />
-				</div>
-
-				<button className='btn btn-primary' type='submit'>Add</button>
+			<form onSubmit={this.handleSubmit} className='add-media-object'>
+				
+				<input ref='content' 
+				       className='form-control' 
+				       placeholder='vimeo url or text' 
+				       required />
+				
+				<button className='btn btn-primary' type='submit' 
+				 disabled={this.state.loading}>
+				 	{text}
+				</button>
 			</form>
 		);
 	}

@@ -2,10 +2,10 @@
 /*jshint browser:true */
 
 var $ = require('jquery');
-var createYouTubePlayer = require('./create-youtube-player');
-var getYouTubeID = require('get-youtube-id');
+var getVimeoId = require('./get-vimeo-id');
+var EmbeddedVimeoPlayer = require('./embedded-vimeo-player');
 var SCENE_PLAYER_VIDEO_ID = 'scenePlayerVideoID';
-var EPromise = require('es6-promise').Promise;
+
 
 function _animateInImage (el, img) {
     el.append(img);
@@ -17,13 +17,16 @@ function _animateInImage (el, img) {
     });
 
     // and show
-    img.animate({'opacity': 1}, 1400);
+    img.addClass('show-media-object');
 }
 
+
+
 function _animateOutImage (el, img) {
-    img.animate({'opacity': 0}, 1400, function () {
+    img.removeClass('show-media-object');
+    window.setTimeout(function () {
         img.remove();
-    });
+    }, 1400);
 }
 
 function ScenePlayerElementManager (element) {
@@ -36,40 +39,26 @@ function ScenePlayerElementManager (element) {
     $el.append(this.el);
     this.videoPlayerEl =  $('<div id="' + SCENE_PLAYER_VIDEO_ID + '"></div>');
     $el.append(this.videoPlayerEl);
-
-    this._youtubeLoadPromise = new EPromise(function(resolve, reject) {    
-        createYouTubePlayer(SCENE_PLAYER_VIDEO_ID, function(player) {
-            player.addEventListener('onReady', function(event) {
-                player.mute();
-                resolve(player);
-            }.bind(this));
-
-            player.addEventListener('onStateChange', function(event) {
-                this._handleStateChange(event);
-            }.bind(this));
-        }.bind(this));
-    }.bind(this));
 }
 
-ScenePlayerElementManager.prototype._handleStateChange = function(event) {
-    switch(event.data) {
 
-        case window.YT.PlayerState.ENDED: 
-            this._videoDoneCb();
-            break;
+ScenePlayerElementManager.prototype.showVideo = function(vimeoUrl, doneCb) {
+    var player = new EmbeddedVimeoPlayer(getVimeoId(vimeoUrl), SCENE_PLAYER_VIDEO_ID);
+    
+    player.onReady(function() {
+        this.videoPlayerEl.addClass('show-media-object');
+    }.bind(this));
 
-        default: 
-            return;
-    }
-};
-
-ScenePlayerElementManager.prototype.showVideo = function(url, cb) {
-    this._videoDoneCb = cb;
-    // show after the first one
-    this.videoPlayerEl.css({'opacity': 1});
-    this._youtubeLoadPromise.then(function(player) {
-        player.loadVideoById(getYouTubeID(url));
-    });
+    player.onFinish(function() {
+        this.videoPlayerEl.removeClass('show-media-object');
+        window.setTimeout(function() {
+            this.videoPlayerEl[0].removeChild(player.element);
+            doneCb();
+        }.bind(this), 1000);
+        
+    }.bind(this));
+    
+    this.videoPlayerEl.append(player.element);
 };
 
 ScenePlayerElementManager.prototype.showImage = function(url) {

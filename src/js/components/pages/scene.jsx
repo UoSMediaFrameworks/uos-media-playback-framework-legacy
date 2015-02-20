@@ -16,6 +16,7 @@ var TagUnion = require('../tag-union.jsx');
 var Router = require('react-router');
 var DropZone = require('../drop-zone.jsx');
 var FileUploadAlert = require('../file-upload-alert.jsx');
+var AddMediaObject = require('../scene-editor/add-media-object.jsx');
 var Router = require('react-router'),
     Link = Router.Link;
 
@@ -92,10 +93,9 @@ var Scene = React.createClass({
                         <h4 className='scene-name'>{this.state.scene ? this.state.scene.name : ''}</h4>
                     </Loader>
                 </div>
-                
-                <div className="file-upload-status">
-                    {fileUploads}
-                </div>
+
+                <AddMediaObject scene={this.state.scene} />
+
                 <div className="thumbs-and-json">
                     <MediaObjectList focusHandler={this.thumbClickHandler} 
                      scene={this.state.scene} />
@@ -105,6 +105,10 @@ var Scene = React.createClass({
                 </div>
                 <TagUnion scene={this.state.scene} 
                  focusedMediaObject={this.state.focusedMediaObject}/>
+
+                <div className="file-upload-status">
+                    {fileUploads}
+                </div>
             </DropZone>
         );
     }
