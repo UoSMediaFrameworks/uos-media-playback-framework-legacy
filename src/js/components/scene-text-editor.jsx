@@ -85,6 +85,7 @@ var SceneTextEditor = React.createClass({
         this.document = codemirror(this.getDOMNode(), {
             value: this.getSceneString(),
             lineWrapping: true,
+            identUnit: 4,
             mode:  'application/json',
             styleActiveLine: true
         });
