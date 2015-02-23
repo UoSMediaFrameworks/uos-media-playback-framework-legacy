@@ -21,7 +21,11 @@ var TagUnion = React.createClass({
             // get tags to highlight
             var selectedTags = [];
             if (selectedIndex !== undefined && selectedIndex !== null) {
-                selectedTags = splitTrim(mediaScene.scene[selectedIndex].tags);  
+                var mediaObject = mediaScene.scene[selectedIndex];
+                if (mediaObject) {
+                    selectedTags = splitTrim(mediaObject.tags); 
+                }
+                
             } 
 
             var union = _.union.apply(null, mediaScene.scene.map(function (mo) {

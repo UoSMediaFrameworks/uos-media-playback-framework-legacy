@@ -30,14 +30,15 @@ var SceneActions = {
     },
 
     removeMediaObject: function(scene, index) {     
-        scene.scene.splice(index, 1);    
+        var copy = _.cloneDeep(scene);
+        copy.scene.splice(index, 1);    
         
         AppDispatcher.handleViewAction({
             type: ActionTypes.SCENE_CHANGE,
-            scene: scene
+            scene: copy
         });
 
-        HubClient.save(scene);
+        HubClient.save(copy);
     },
 
     logout: function() {
