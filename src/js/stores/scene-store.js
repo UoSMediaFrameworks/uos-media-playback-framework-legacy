@@ -2,6 +2,7 @@
 
 var AppDispatcher = require('../dispatchers/app-dispatcher');
 var assign = require('object-assign');
+var _ = require('lodash');
 var EventEmitter = require('events').EventEmitter;
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
 
@@ -15,7 +16,7 @@ function _updateScene (scene) {
 var SceneStore = assign({}, EventEmitter.prototype, {
     getScene: function(id) {
         if (_scenes.hasOwnProperty(id)) {
-            return _scenes[id];    
+            return _.cloneDeep(_scenes[id]);    
         } 
     },
     emitChange: function(){

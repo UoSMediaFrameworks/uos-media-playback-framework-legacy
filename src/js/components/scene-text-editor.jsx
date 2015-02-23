@@ -1,7 +1,6 @@
 'use strict';
 
 var React = require('react');
-var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 var SceneActions = require('../actions/scene-actions');
 var _ = require('lodash');
 require('codemirror/mode/javascript/javascript');
@@ -45,7 +44,7 @@ function occurrences(string, subString, allowOverlapping){
 }
 
 var SceneTextEditor = React.createClass({
-    mixins: [PureRenderMixin],
+    
     
     getSceneString: function() {
         return stringify(_.omit(this.props.scene, '_id'));
@@ -101,6 +100,10 @@ var SceneTextEditor = React.createClass({
                 saveTimeout = setTimeout(this.saveJSON(false), 1000);    
             }
         }.bind(this));
+    },
+
+    shouldComponentUpdate: function(nextProps, nextState) {
+        return ! _.isEqual(this.state, nextState) || ! _.isEqual(this.props, nextProps);
     },
 
     componentDidUpdate: function(prevProps, prevState) {
