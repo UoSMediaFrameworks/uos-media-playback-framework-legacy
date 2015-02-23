@@ -1,6 +1,7 @@
 'use strict';
 
 var React = require('react');
+var PureRenderMixin = require('react/addons').addons.PureRenderMixin;
 var SceneActions = require('../actions/scene-actions');
 var _ = require('lodash');
 require('codemirror/mode/javascript/javascript');
@@ -44,7 +45,8 @@ function occurrences(string, subString, allowOverlapping){
 }
 
 var SceneTextEditor = React.createClass({
-
+    mixins: [PureRenderMixin],
+    
     getSceneString: function() {
         return stringify(_.omit(this.props.scene, '_id'));
     },
