@@ -7,12 +7,10 @@ var MediaObjectPreview = React.createClass({
 
 	render: function() {
 		var type = this.props.mediaObject.type,
-			style, extra;
+			extra;
 		 switch(type) {
 		 	case 'image':
-		 		style = {
-		 		    backgroundImage: 'url(\'' + this.props.mediaObject.url + '\')' 
-		 		};
+		 		extra = <img src={this.props.mediaObject.url} />;
 		 		break;
 		 	case 'video': 
 		 		extra = <Glyphicon icon='facetime-video' />;
@@ -22,7 +20,7 @@ var MediaObjectPreview = React.createClass({
 		 		break;
 		 }
 
-		return <div className='media-object-item-preview' style={style}>
+		return <div className='media-object-item-preview'>
 			{extra}
 			{this.props.children}
 		</div>;
