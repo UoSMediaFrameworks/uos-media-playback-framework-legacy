@@ -101,7 +101,7 @@ var SceneActions = {
         location.reload();
     },
 
-    uploadAsset: function(scene, file) {
+    uploadAsset: function(sceneId, file) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.UPLOAD_ASSET,
             file: file
@@ -135,7 +135,7 @@ var SceneActions = {
             if (xhr.status === 200) {
                 var tags = data.tags ? data.tags.join(', ') : '';
                 
-                SceneActions.addMediaObject(scene, {
+                SceneActions.addMediaObject(sceneId, {
                     type: 'image', 
                     url: data.url, 
                     tags: tags
