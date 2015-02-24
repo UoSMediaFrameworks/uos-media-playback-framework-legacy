@@ -73,6 +73,7 @@ var SceneListStore = assign({}, EventEmitter.prototype, {
             	break;
 
             case ActionTypes.SCENE_CHANGE:
+            case ActionTypes.RECIEVE_SCENE:
             	scene = action.scene;
             	if (_updateSceneName(scene._id, scene.name)) {
             		SceneListStore.emitChange();

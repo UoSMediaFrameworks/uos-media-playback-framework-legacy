@@ -22,12 +22,6 @@ var HubRecieveActions = {
             scene: scene
         });
     },
-    recieveSceneUpdate: function(scene) {
-        AppDispatcher.handleServerAction({
-            type: ActionTypes.SCENE_CHANGE,
-            scene: scene
-        });
-    },
     recieveLoginResult: function(success, errorMessage) {
         AppDispatcher.handleServerAction({
             type: ActionTypes.HUB_LOGIN_RESULT,

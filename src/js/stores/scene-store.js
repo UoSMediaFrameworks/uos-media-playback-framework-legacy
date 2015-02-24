@@ -5,6 +5,7 @@ var assign = require('object-assign');
 var _ = require('lodash');
 var EventEmitter = require('events').EventEmitter;
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
+var HubClient = require('../utils/HubClient');
 
 var CHANGE_EVENT = "change";
 var _scenes = {};
@@ -36,20 +37,29 @@ var SceneStore = assign({}, EventEmitter.prototype, {
         switch(action.type){
             case ActionTypes.SCENE_CHANGE:
                 _updateScene(action.scene);
-                SceneStore.emitChange();
-                break;
-
-            case ActionTypes.RECIEVE_SCENE:
-                _updateScene(action.scene);
-                SceneStore.emitChange();
+                HubClient.save(action.scene);
                 break;
 
             case ActionTypes.DELETE_SCENE:
-                delete _scenes[action.sceneId];
-                SceneStore.emitChange();
+                var sceneId = action.sceneId;
+                delete _scenes[sceneId];                
+                HubClient.deleteScene(sceneId);
+                break;
+
+            case ActionTypes.ADD_MEDIA_OBJECT:
+                var scene = _scenes[action.sceneId];
+                scene.scene.push(action.mediaObject);
+                HubClient.save(scene);
+                break;
+
+            // should only be triggered when server sends data back, so no need to save
+            case ActionTypes.RECIEVE_SCENE:
+                _updateScene(action.scene);
                 break;
         }
         
+        SceneStore.emitChange();
+
         return true;
     })
 });
