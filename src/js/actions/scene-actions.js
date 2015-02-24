@@ -3,6 +3,7 @@
 var SceneConstants = require('../constants/scene-constants');
 var AppDispatcher = require('../dispatchers/app-dispatcher');
 var HubClient = require('../utils/HubClient');
+var getVimeoId = require('../utils/get-vimeo-id');
 var objectAssign = require('object-assign');
 var ActionTypes = SceneConstants.ActionTypes;
 var _ = require('lodash');
@@ -17,16 +18,66 @@ var SceneActions = {
         HubClient.save(scene);        
     },
 
-    addMediaObject: function(scene, mediaObject) {
+    addMediaObject: function(sceneId, mediaObject) {
         // add a default empty tags attribute incase someone isn't specifying it
-        scene.scene.push(objectAssign({tags: ''}, mediaObject));
+        var obj = objectAssign({tags: ''}, mediaObject);
 
         AppDispatcher.handleViewAction({
-            type: ActionTypes.SCENE_CHANGE,
-            scene: scene
+            type: ActionTypes.ADD_MEDIA_OBJECT,
+            sceneId: sceneId,
+            mediaObject: obj
+        });
+    },
+
+    addText: function(sceneId, text) {
+        SceneActions.addMediaObject(sceneId, {
+            tags: '',
+            type: 'text',
+            text: text
         });
 
-        HubClient.save(scene);
+        AppDispatcher.handleServerAction({
+            type: ActionTypes.ADD_MEDIA_SUCCESS
+        });
+    },
+
+    addVimeo: function(sceneId, vimeoUrl) {
+        var xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+            var actionType;
+            if (xhr.status === 200) {
+                var tags = _.map(JSON.parse(xhr.responseText), function(tag) { return tag.trim(); });
+                SceneActions.addMediaObject(sceneId, {
+                    type: 'video', 
+                    url: vimeoUrl,
+                    tags: tags.join(', ')
+                });
+                actionType = ActionTypes.ADD_MEDIA_SUCCESS;
+            } else {
+                actionType = ActionTypes.ADD_MEDIA_FAILED;
+            }
+
+            AppDispatcher.handleServerAction({
+                type: actionType
+            });
+        };
+
+        xhr.onerror = function() {
+            console.log('tag request failed');
+            AppDispatcher.handleServerAction({
+                type: ActionTypes.ADD_MEDIA_FAILED
+            });
+        };
+
+        AppDispatcher.handleServerAction({
+            type: ActionTypes.ADD_MEDIA_ATTEMPT,
+            value: vimeoUrl
+        });
+        
+        var xhrUrl = process.env.MEDIA_HUB + '/api/vimeo-tags?token=' + 
+            HubClient.getToken() + '&vimeoId=' + getVimeoId(vimeoUrl);
+        xhr.open('GET', xhrUrl);
+        xhr.send();
     },
 
     removeMediaObject: function(scene, index) {     
@@ -50,7 +101,7 @@ var SceneActions = {
         location.reload();
     },
 
-    uploadAsset: function(scene, file) {
+    uploadAsset: function(sceneId, file) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.UPLOAD_ASSET,
             file: file
@@ -84,7 +135,7 @@ var SceneActions = {
             if (xhr.status === 200) {
                 var tags = data.tags ? data.tags.join(', ') : '';
                 
-                SceneActions.addMediaObject(scene, {
+                SceneActions.addMediaObject(sceneId, {
                     type: 'image', 
                     url: data.url, 
                     tags: tags

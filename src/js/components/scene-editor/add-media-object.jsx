@@ -6,6 +6,7 @@ var MediaButton = require('./media-button.jsx');
 var SceneActions = require('../../actions/scene-actions');
 var FormHelper = require('../../mixins/form-helper');
 var HubClient = require('../../utils/HubClient');
+var AddMediaObjectStore = require('../../stores/add-media-object-store');
 var getVimeoId = require('../../utils/get-vimeo-id');
 var Loader = require('../loader.jsx');
 var _ = require('lodash');
@@ -15,14 +16,30 @@ var SceneEditor = React.createClass({
 	mixins: [FormHelper],
 
 	getInitialState: function() {
+		return this.getStateFromStore();
+	},
+
+	getStateFromStore: function() {
 		return {
-			mediaType: 'image',
-			loading: false
+			loading: AddMediaObjectStore.loading(),
+			inputValue: AddMediaObjectStore.inputValue()
 		};
 	},
 
-	handleMediaButtonClick: function(mediaType) {
-		this.setState({mediaType: mediaType});
+	componentDidMount:function(){
+	    AddMediaObjectStore.addChangeListener(this._onChange);
+	},
+
+	componentWillUnmount: function() {
+	    AddMediaObjectStore.removeChangeListener(this._onChange);
+	},
+
+	_onChange:function(){
+	    this.setState(this.getStateFromStore());
+	},
+
+	handleInputChange: function(event) {
+		this.setState({inputValue: event.target.value});
 	},
 
 	handleSubmit: function(event) {
@@ -38,31 +55,9 @@ var SceneEditor = React.createClass({
 		
 		var vimeoId =  getVimeoId(data); 
 		if (vimeoId) {
-			var xhr = new XMLHttpRequest();
-			xhr.onload = function() {
-			    if (xhr.status === 200) {
-			    	var tags = _.map(JSON.parse(xhr.responseText), function(tag) { return tag.trim(); });
-			    	addMediaObject({
-			    		type: 'video', 
-			    		url: data,
-			    		tags: tags.join(', ')
-			    	});
-			    } else {
-			    	console.log('failed ' + xhr.status);
-			    }
-
-			    this.setState({loading: false});
-			}.bind(this);
-
-			xhr.onerror = function() {
-			    console.log('tasg request failed');
-			    this.setState({loading: false});
-			}.bind(this);
-			this.setState({loading: true});
-			xhr.open('GET', process.env.MEDIA_HUB + '/api/vimeo-tags?token=' + HubClient.getToken() + '&vimeoId=' + vimeoId);
-			xhr.send();
+			SceneActions.addVimeo(this.props.scene._id, data);
 		} else {
-			addMediaObject({type: 'text', text: data});
+			SceneActions.addText(this.props.scene._id, data);
 		}
 	},
 
@@ -72,7 +67,9 @@ var SceneEditor = React.createClass({
 		return (
 			<form onSubmit={this.handleSubmit} className='add-media-object'>
 				
-				<input ref='content' 
+				<input ref='content'
+					   value={this.state.inputValue}
+					   onChange={this.handleInputChange}
 				       className='form-control' 
 				       placeholder='vimeo url or text' 
 				       required />

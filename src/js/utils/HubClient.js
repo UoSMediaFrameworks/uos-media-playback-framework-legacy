@@ -74,7 +74,7 @@ var HubClient = {
 
     subscribeScene: function(id) {
         // no confirmation handler as of yet
-        client.subScene(id, HubRecieveActions.recieveSceneUpdate);
+        client.subScene(id, HubRecieveActions.recieveScene);
     },
 
     unsubscribeScene: function(id) {
