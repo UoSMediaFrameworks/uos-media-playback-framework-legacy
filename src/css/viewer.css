@@ -2,7 +2,7 @@ html, body {
 	height: 100%;
 }
 
-#main, .player, .scene-listener, .login-loader, .image-wrapper {
+#main, .player, .scene-listener, .login-loader, .media-object-wrapper {
     height: 100%;
 }
 
@@ -48,7 +48,8 @@ html, body {
      transition: opacity 1.4s ease-in-out;
 }
 
-#scenePlayerVideoID {
+.embedded-vimeo-player {
+    z-index: 1;
     position: absolute;
     /* exact center video */
     top: 50%;
@@ -62,7 +63,6 @@ html, body {
      transition: opacity 1.4s ease-in-out;
 }
 
-.show-media-object,
-#scenePlayerVideoID.show-media-object {
+.show-media-object {
     opacity: 1;
 }

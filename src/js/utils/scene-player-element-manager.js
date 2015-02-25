@@ -4,7 +4,6 @@
 var $ = require('jquery');
 var getVimeoId = require('./get-vimeo-id');
 var EmbeddedVimeoPlayer = require('./embedded-vimeo-player');
-var SCENE_PLAYER_VIDEO_ID = 'scenePlayerVideoID';
 
 
 function _animateInImage (el, img) {
@@ -34,12 +33,12 @@ function ScenePlayerElementManager (element) {
 
     this._timeouts = [];
     this._videoDoneCb = null;
-    // total number of active images being displayed
+    // total number of active items being displayed
     this._imageCount = 0;
+    this._textCount = 0;
     
-    this.el = $('<div class="image-wrapper"></div>');
+    this.el = $('<div class="media-object-wrapper"></div>');
     $el.append(this.el);
-    this.videoPlayerEl =  $('<div id="' + SCENE_PLAYER_VIDEO_ID + '"></div>');
     $el.append(this.videoPlayerEl);
 }
 
@@ -48,23 +47,27 @@ ScenePlayerElementManager.prototype.getImageCount = function() {
     return this._imageCount;
 };
 
+ScenePlayerElementManager.prototype.getTextCount = function() {
+    return this._textCount;
+};
+
 ScenePlayerElementManager.prototype.showVideo = function(vimeoUrl, doneCb) {
-    var player = new EmbeddedVimeoPlayer(getVimeoId(vimeoUrl), SCENE_PLAYER_VIDEO_ID);
+    var player = new EmbeddedVimeoPlayer(getVimeoId(vimeoUrl));
     
     player.onReady(function() {
-        this.videoPlayerEl.addClass('show-media-object');
+        $(player.element).addClass('show-media-object');
     }.bind(this));
 
     player.onFinish(function() {
-        this.videoPlayerEl.removeClass('show-media-object');
+        $(player.element).removeClass('show-media-object');
         window.setTimeout(function() {
-            this.videoPlayerEl[0].removeChild(player.element);
+            this.el[0].removeChild(player.element);
             doneCb();
         }.bind(this), 1000);
         
     }.bind(this));
     
-    this.videoPlayerEl.append(player.element);
+    this.el.append(player.element);
 };
 
 ScenePlayerElementManager.prototype.showImage = function(url, duration, doneCb) {
@@ -82,6 +85,11 @@ ScenePlayerElementManager.prototype.showImage = function(url, duration, doneCb) 
     }.bind(this);
 
     imgEl.src = url;
+};
+
+ScenePlayerElementManager.prototype.showText = function(text, duration, doneCb) {
+    this._textCount++;
+    // left 
 };
 
 module.exports = function(element) {

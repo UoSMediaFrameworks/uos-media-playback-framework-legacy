@@ -14,6 +14,8 @@ function RandomScenePlayer (elementManager) {
     // holds the unique'd version of both above, it's what actually gets checked
     this._tagFilter = [];
 
+    // is there a video playing.  We track this here rather than in the _elementManager because
+    // there's just one to keep tabs on, so easier to do it here.
     this._videoPlaying = false;
 }
 
@@ -85,26 +87,34 @@ RandomScenePlayer.prototype.getRandomMediaObject = function(type) {
     return getRandomMediaObject(this._scene, this._tagFilter, type);
 };
 
-// returns true if there is 1 less than the maximum number of images currently
-// being displayed
-RandomScenePlayer.prototype.canShowImage = function() {
-    var maxImages;
+
+RandomScenePlayer.prototype._getMaximum = function(attribute, defaultCount) {
+    var maximum;
     // wrap in try catch incase attribute is missing from the json
     try {
-        maxImages = this._scene.maximumOnScreen.images;
+        maximum = this._scene.maximumOnScreen[attribute];
     } catch (e) {
         if (e instanceof TypeError) {
-            console.log('missing maximumOnScreen.image in scene JSON, defaulting to 3');
+            console.log('missing maximumOnScreen.' + attribute + ' in scene JSON, defaulting to ' + defaultCount);
         } else {
             throw e;
         }
     } finally {
-        if (maxImages === null || maxImages === undefined || isNaN(maxImages)){
-            maxImages = 3;
+        if (maximum === null || maximum === undefined || isNaN(maximum)){
+            maximum = defaultCount;
         }
+        return maximum;
     }
-    
-    return this._elementManager.getImageCount() < maxImages;
+};
+
+// returns true if there is 1 less than the maximum number of images currently
+// being displayed
+RandomScenePlayer.prototype._canShowImage = function() {
+    return this._elementManager.getImageCount() < this._getMaximum('images', 3);
+};
+
+RandomScenePlayer.prototype._canShowText = function() {
+    return this._elementManager.getTextCount() < this._getMaximum('text', 1);
 };
 
 // returns the appropriate display duration (ms) for the passed in mediaObject
@@ -114,7 +124,7 @@ RandomScenePlayer.prototype._getDisplayDuration = function(mediaObject) {
 
 RandomScenePlayer.prototype._showNewImages = function() {
     var obj = this.getRandomMediaObject('image');
-    if (obj && this.canShowImage()) {
+    if (obj && this._canShowImage()) {
         this._elementManager.showImage(obj.url, this._getDisplayDuration(obj), function() {
             this._showNewImages();
         }.bind(this)); 
@@ -138,7 +148,14 @@ RandomScenePlayer.prototype._showNewVideo = function() {
 };
 
 RandomScenePlayer.prototype._showNewText = function() {
-    
+    var obj = this.getRandomMediaObject('text');
+    if (obj && this._canShowText()) {
+        this._elementManager.showText(obj.text, this._getDisplayDuration(obj), function() {
+            this._showNewText();
+        }.bind(this)); 
+
+        this._showNewText();
+    }
 };
 
 RandomScenePlayer.prototype._showNewMedia = function() {

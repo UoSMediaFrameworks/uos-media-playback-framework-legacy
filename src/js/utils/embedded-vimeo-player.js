@@ -42,7 +42,7 @@ if (window.addEventListener) {
     window.attachEvent('onmessage', onMessageRecieved, false);
 }
 
-function EmbeddedVimeoPlayer (vimeoId, finishCb) {
+function EmbeddedVimeoPlayer (vimeoId) {
     this.id = hat();
 
     registerPlayer(this.id, this);
@@ -60,16 +60,11 @@ function EmbeddedVimeoPlayer (vimeoId, finishCb) {
         id: this.id,
         width: 640,
         height: 360,
-        frameborder: 0
+        frameborder: 0,
+        class: 'embedded-vimeo-player'
     });
 
     this.url = window.location.protocol + this.element.attributes.src.value.split('?')[0];
-
-    var handler = function(event) {
-        finishCb();
-        this.remove();
-
-    }.bind(this);
 }
 
 EmbeddedVimeoPlayer.prototype.postMessage = function(action, value) {
