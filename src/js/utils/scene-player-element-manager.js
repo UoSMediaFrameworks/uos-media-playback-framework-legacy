@@ -34,6 +34,8 @@ function ScenePlayerElementManager (element) {
 
     this._timeouts = [];
     this._videoDoneCb = null;
+    // total number of active images being displayed
+    this._imageCount = 0;
     
     this.el = $('<div class="image-wrapper"></div>');
     $el.append(this.el);
@@ -41,6 +43,10 @@ function ScenePlayerElementManager (element) {
     $el.append(this.videoPlayerEl);
 }
 
+
+ScenePlayerElementManager.prototype.getImageCount = function() {
+    return this._imageCount;
+};
 
 ScenePlayerElementManager.prototype.showVideo = function(vimeoUrl, doneCb) {
     var player = new EmbeddedVimeoPlayer(getVimeoId(vimeoUrl), SCENE_PLAYER_VIDEO_ID);
@@ -61,7 +67,8 @@ ScenePlayerElementManager.prototype.showVideo = function(vimeoUrl, doneCb) {
     this.videoPlayerEl.append(player.element);
 };
 
-ScenePlayerElementManager.prototype.showImage = function(url) {
+ScenePlayerElementManager.prototype.showImage = function(url, duration, doneCb) {
+    this._imageCount++;
     var imgEl = new Image();
     var img = $(imgEl);
     imgEl.onload = function() {
@@ -69,7 +76,9 @@ ScenePlayerElementManager.prototype.showImage = function(url) {
         _animateInImage(this.el, img);
         this._timeouts.push(setTimeout(function() {
             _animateOutImage(this.el, img);
-        }, 6000));
+            this._imageCount--;
+            doneCb();
+        }.bind(this), duration));
     }.bind(this);
 
     imgEl.src = url;

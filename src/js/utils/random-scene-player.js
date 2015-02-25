@@ -13,6 +13,8 @@ function RandomScenePlayer (elementManager) {
 
     // holds the unique'd version of both above, it's what actually gets checked
     this._tagFilter = [];
+
+    this._videoPlaying = false;
 }
 
 function getRandomMediaObject(mediaScene, tagsArray, type) {
@@ -46,6 +48,10 @@ RandomScenePlayer.prototype.setScene = function(newScene) {
     });
 
     this._scene = scene;
+
+    if (this._playing) {
+        this.showNewMedia();
+    }
 };
 
 RandomScenePlayer.prototype.setTagFilter = function(tagString) {
@@ -79,27 +85,69 @@ RandomScenePlayer.prototype.getRandomMediaObject = function(type) {
     return getRandomMediaObject(this._scene, this._tagFilter, type);
 };
 
+// returns true if there is 1 less than the maximum number of images currently
+// being displayed
+RandomScenePlayer.prototype.canShowImage = function() {
+    var maxImages;
+    // wrap in try catch incase attribute is missing from the json
+    try {
+        maxImages = this._scene.maximumOnScreen.images;
+    } catch (e) {
+        if (e instanceof TypeError) {
+            console.log('missing maximumOnScreen.image in scene JSON, defaulting to 3');
+        } else {
+            throw e;
+        }
+    } finally {
+        if (maxImages === null || maxImages === undefined || isNaN(maxImages)){
+            maxImages = 3;
+        }
+    }
+    
+    return this._elementManager.getImageCount() < maxImages;
+};
+
+// returns the appropriate display duration (ms) for the passed in mediaObject
+RandomScenePlayer.prototype.getDisplayDuration = function(mediaObject) {
+    return 3000;
+};
+
+RandomScenePlayer.prototype.showNewImages = function() {
+    var obj = this.getRandomMediaObject('image');
+    if (obj && this.canShowImage()) {
+        this._elementManager.showImage(obj.url, this.getDisplayDuration(obj), function() {
+            this.showNewImages();
+        }.bind(this)); 
+
+        this.showNewImages();
+    }
+};
+
+RandomScenePlayer.prototype.showNewVideo = function() {
+    if (! this._videoPlaying) {
+        var obj = this.getRandomMediaObject('video');
+        if (obj) {
+            this._videoPlaying = true;
+            this._elementManager.showVideo(obj.url, function() {
+                this._videoPlaying = false;
+                this.showNewVideo();
+            }.bind(this));    
+        }    
+    }
+    
+};
+
+RandomScenePlayer.prototype.showNewMedia = function() {
+    this.showNewImages();
+    this.showNewVideo();
+
+};
+
 RandomScenePlayer.prototype.start = function() {
     if (! this._playing) {
         this._playing = true;
         
-        this._imageInterval = setInterval(function() {
-            var obj = this.getRandomMediaObject('image');
-            if (obj) {
-                this._elementManager.showImage(obj.url);    
-            }
-        }.bind(this), 3000);
-
-        var showRandVideo = function() {
-            var obj = this.getRandomMediaObject('video');
-            if (obj) {
-                this._elementManager.showVideo(obj.url, function() {
-                    showRandVideo();
-                });    
-            }
-        }.bind(this);
-
-        showRandVideo();
+        this.showNewMedia();
     }
 };
 
