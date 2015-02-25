@@ -50,7 +50,7 @@ RandomScenePlayer.prototype.setScene = function(newScene) {
     this._scene = scene;
 
     if (this._playing) {
-        this.showNewMedia();
+        this._showNewMedia();
     }
 };
 
@@ -108,46 +108,50 @@ RandomScenePlayer.prototype.canShowImage = function() {
 };
 
 // returns the appropriate display duration (ms) for the passed in mediaObject
-RandomScenePlayer.prototype.getDisplayDuration = function(mediaObject) {
+RandomScenePlayer.prototype._getDisplayDuration = function(mediaObject) {
     return 3000;
 };
 
-RandomScenePlayer.prototype.showNewImages = function() {
+RandomScenePlayer.prototype._showNewImages = function() {
     var obj = this.getRandomMediaObject('image');
     if (obj && this.canShowImage()) {
-        this._elementManager.showImage(obj.url, this.getDisplayDuration(obj), function() {
-            this.showNewImages();
+        this._elementManager.showImage(obj.url, this._getDisplayDuration(obj), function() {
+            this._showNewImages();
         }.bind(this)); 
 
-        this.showNewImages();
+        this._showNewImages();
     }
 };
 
-RandomScenePlayer.prototype.showNewVideo = function() {
+RandomScenePlayer.prototype._showNewVideo = function() {
     if (! this._videoPlaying) {
         var obj = this.getRandomMediaObject('video');
         if (obj) {
             this._videoPlaying = true;
             this._elementManager.showVideo(obj.url, function() {
                 this._videoPlaying = false;
-                this.showNewVideo();
+                this._showNewVideo();
             }.bind(this));    
         }    
     }
     
 };
 
-RandomScenePlayer.prototype.showNewMedia = function() {
-    this.showNewImages();
-    this.showNewVideo();
+RandomScenePlayer.prototype._showNewText = function() {
+    
+};
 
+RandomScenePlayer.prototype._showNewMedia = function() {
+    this._showNewImages();
+    this._showNewVideo();
+    this._showNewText();
 };
 
 RandomScenePlayer.prototype.start = function() {
     if (! this._playing) {
         this._playing = true;
         
-        this.showNewMedia();
+        this._showNewMedia();
     }
 };
 
