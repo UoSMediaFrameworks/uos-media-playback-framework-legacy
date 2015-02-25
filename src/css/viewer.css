@@ -35,6 +35,10 @@ html, body {
     
 }
 
+.text-media-object {
+    opacity: 0;
+}
+
 .image-media-object {
     position: absolute;
     width: auto;
