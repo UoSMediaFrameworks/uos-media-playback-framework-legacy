@@ -16,7 +16,7 @@ var routes = (
     <Route handler={ViewerApp}>
         <DefaultRoute handler={SceneSelector} />
         <Route name='login' handler={LoginPage} />
-        <Route name='scenes' path='/scenes' handler={SceneSelector} />
+        <Route name='scenes' path='/scenes/?' handler={SceneSelector} />
         <Route name='scene' path='/scenes/:id' handler={SceneListener} />
     </Route>
 ); 
