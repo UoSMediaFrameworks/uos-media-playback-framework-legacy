@@ -66,7 +66,6 @@ var SceneListener = React.createClass({
 
         var tagNode = this.getRefNode('tags');
         this.player.setTagFilter(tagNode.value);
-        tagNode.blur();
     },
 
     handleBlur: function(event) {

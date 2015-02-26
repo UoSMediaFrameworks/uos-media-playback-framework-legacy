@@ -24,11 +24,19 @@ function RandomScenePlayer (elementManager) {
     // is there a video playing.  We track this here rather than in the _elementManager because
     // there's just one to keep tabs on, so easier to do it here.
     this._videoPlaying = false;
+
+    this._scene = undefined;
 }
 
-function getRandomMediaObject(mediaScene, tagsArray, type) {
+function removeRandomMediaObject(mediaScene, tagsArray, type) {
     var objs = filterMediaScene(mediaScene, tagsArray, type);
-    return objs[Math.floor(Math.random() * objs.length)];
+    var obj = objs[Math.floor(Math.random() * objs.length)];
+
+    if (obj) {
+        mediaScene.scene.splice(mediaScene.scene.indexOf(obj), 1);
+    }
+
+    return obj;
 }
 
 function filterMediaScene(mediaScene, tagsArray, mediaType) {
@@ -45,7 +53,12 @@ function parseTagString (tagString) {
 }
 
 function mergeFilters (self) {
-    self._tagFilter = _.uniq(self._manualTagFilter.concat(self._themeTagFilter));
+    var newVal = _.uniq(self._manualTagFilter.concat(self._themeTagFilter));
+    if (! _.isEqual(self._tagFilter, newVal)) {
+        self._tagFilter = newVal;
+        self._showNewMedia();    
+    }
+    
 }
 
 RandomScenePlayer.prototype.setScene = function(newScene) {
@@ -131,11 +144,13 @@ function getStaticMediaTypeDisplayDuration (scene, mediaObject) {
 
 function showNewVideo(self) {
     if (! self._videoPlaying) {
-        var obj = getRandomMediaObject(self._scene, self._tagFilter, 'video');
+        var obj = removeRandomMediaObject(self._scene, self._tagFilter, 'video');
         if (obj) {
             self._videoPlaying = true;
             self._elementManager.showVideo(obj.url, function() {
                 self._videoPlaying = false;
+                // add it back
+                self._scene.scene.push(obj);
                 self._showNewVideo();
             });    
         }    
@@ -147,30 +162,33 @@ function canShowMediaType(self, type) {
 }
 
 function showStaticElements (self, mediaObjectType) {
-    var obj = getRandomMediaObject(self._scene, self._tagFilter, mediaObjectType);
+    if (canShowMediaType(self, mediaObjectType)) {
 
-    var value;
-    switch(mediaObjectType) {
-        case 'image':
-            value = obj.url;
-            break;
+        var obj = removeRandomMediaObject(self._scene, self._tagFilter, mediaObjectType);
+        if (obj) {
+            var value;
+            switch(mediaObjectType) {
+                case 'image':
+                    value = obj.url;
+                    break;
 
-        case 'text':
-            value = obj.text;
-            break;
-    }
+                case 'text':
+                    value = obj.text;
+                    break;
+            }
 
-    if (obj && canShowMediaType(self, mediaObjectType)) {
-        var displayDuration = getStaticMediaTypeDisplayDuration(self._scene, obj) * 1000;
-        self._elementManager.showStaticType(mediaObjectType, value, displayDuration, function() {
-            showStaticElements(self, mediaObjectType);    
-        }); 
+            var displayDuration = getStaticMediaTypeDisplayDuration(self._scene, obj) * 1000;
+            self._elementManager.showStaticType(mediaObjectType, value, displayDuration, function() {
+                self._scene.scene.push(obj);
+                showStaticElements(self, mediaObjectType);    
+            }); 
 
-        // guess the duration to wait based on how many could be shown and for how long
-        var wait = displayDuration / getMaximumTypeCount(self._scene, mediaObjectType);
-        setTimeout(function() {
-            showStaticElements(self, mediaObjectType);    
-        }, wait);
+            // guess the duration to wait based on how many could be shown and for how long
+            var wait = displayDuration / getMaximumTypeCount(self._scene, mediaObjectType);
+            setTimeout(function() {
+                showStaticElements(self, mediaObjectType);    
+            }, wait);
+        }    
     }
 }
 
