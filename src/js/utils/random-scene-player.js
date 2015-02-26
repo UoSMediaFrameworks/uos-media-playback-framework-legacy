@@ -151,7 +151,7 @@ function showNewVideo(self) {
                 self._videoPlaying = false;
                 // add it back
                 self._scene.scene.push(obj);
-                self._showNewVideo();
+                showNewVideo(self);
             });    
         }    
     }
