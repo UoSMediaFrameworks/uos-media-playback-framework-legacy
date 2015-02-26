@@ -87,7 +87,7 @@ var SceneListener = React.createClass({
                 <Loader loaded={this.state.scene ? true : false}></Loader>
                 <div className='player'></div>
                 <ThemeSelector themeChange={this.handleThemeChange} scene={this.state.scene} />
-                <form onSubmit={this.updateTags}>
+                <form className='tag-filter' onSubmit={this.updateTags}>
                     <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...' className='form-control scene-listener-tag-input' />
                 </form>
 

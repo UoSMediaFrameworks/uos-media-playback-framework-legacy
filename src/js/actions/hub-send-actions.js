@@ -28,9 +28,10 @@ module.exports = {
     	var scene = {
     		'name': name,
             'maximumOnScreen': {
-                'images': 2,
+                'image': 2,
                 'text': 1,
             },
+            'displayDuration': 3,
             'themes': {},
     		'scene': []
     	};

@@ -21,9 +21,14 @@ html, body {
 }
 
 .theme-selector {
+    z-index: 3;
     position: absolute;
     bottom: 0;
     left: 0;
+}
+
+.tag-filter {
+    z-index: 3;
 }
 
 .theme-selector .active {

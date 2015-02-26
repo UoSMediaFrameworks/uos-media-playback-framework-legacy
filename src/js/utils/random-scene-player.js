@@ -2,6 +2,13 @@
 
 var _ = require('lodash');
 
+var DEFAULT_MEDIA_TYPE_COUNTS = {
+    image: 3,
+    text: 1
+};
+
+var DEFAULT_STATIC_DISPLAY_DURATION = 6;
+
 function RandomScenePlayer (elementManager) {
     this._playing = false;
 
@@ -83,85 +90,94 @@ RandomScenePlayer.prototype.setThemeFilter = function(themeArray) {
     mergeFilters(this);
 };
 
-RandomScenePlayer.prototype.getRandomMediaObject = function(type) {
-    return getRandomMediaObject(this._scene, this._tagFilter, type);
-};
-
-
-RandomScenePlayer.prototype._getMaximum = function(attribute, defaultCount) {
-    var maximum;
+function getMaximumTypeCount(scene, type) {
+    var maximum,
+        defaultCount = DEFAULT_MEDIA_TYPE_COUNTS[type];
     // wrap in try catch incase attribute is missing from the json
     try {
-        maximum = this._scene.maximumOnScreen[attribute];
+        maximum = parseInt(scene.maximumOnScreen[type]);
     } catch (e) {
         if (e instanceof TypeError) {
-            console.log('missing maximumOnScreen.' + attribute + ' in scene JSON, defaulting to ' + defaultCount);
+            // do nothing, this just means there is no specified maximumOnScreen object in the scene
+            // we just go with the default then
         } else {
             throw e;
         }
     } finally {
-        if (maximum === null || maximum === undefined || isNaN(maximum)){
+        if (isNaN(maximum)){
             maximum = defaultCount;
         }
         return maximum;
     }
-};
+}
 
-// returns true if there is 1 less than the maximum number of images currently
-// being displayed
-RandomScenePlayer.prototype._canShowImage = function() {
-    return this._elementManager.getImageCount() < this._getMaximum('images', 3);
-};
-
-RandomScenePlayer.prototype._canShowText = function() {
-    return this._elementManager.getTextCount() < this._getMaximum('text', 1);
-};
 
 // returns the appropriate display duration (ms) for the passed in mediaObject
 RandomScenePlayer.prototype._getDisplayDuration = function(mediaObject) {
     return 6000;
 };
 
-RandomScenePlayer.prototype._showNewImages = function() {
-    var obj = this.getRandomMediaObject('image');
-    if (obj && this._canShowImage()) {
-        this._elementManager.showImage(obj.url, this._getDisplayDuration(obj), function() {
-            this._showNewImages();
-        }.bind(this)); 
+function getStaticMediaTypeDisplayDuration (scene, mediaObject) {
+    // be gentle on the poor user, parse their ints
+    var duration = parseInt(scene.displayDuration);
 
-        this._showNewImages();
+    if (isNaN(duration)) {
+        duration = DEFAULT_STATIC_DISPLAY_DURATION;
     }
-};
 
-RandomScenePlayer.prototype._showNewVideo = function() {
-    if (! this._videoPlaying) {
-        var obj = this.getRandomMediaObject('video');
+    return duration;
+}
+
+
+function showNewVideo(self) {
+    if (! self._videoPlaying) {
+        var obj = getRandomMediaObject(self._scene, self._tagFilter, 'video');
         if (obj) {
-            this._videoPlaying = true;
-            this._elementManager.showVideo(obj.url, function() {
-                this._videoPlaying = false;
-                this._showNewVideo();
-            }.bind(this));    
+            self._videoPlaying = true;
+            self._elementManager.showVideo(obj.url, function() {
+                self._videoPlaying = false;
+                self._showNewVideo();
+            });    
         }    
     }
-    
-};
+}
 
-RandomScenePlayer.prototype._showNewText = function() {
-    var obj = this.getRandomMediaObject('text');
-    if (obj && this._canShowText()) {
-        this._elementManager.showText(obj.text, this._getDisplayDuration(obj), function() {
-            this._showNewText();
-        }.bind(this)); 
+function canShowMediaType(self, type) {
+    return self._elementManager.getStaticTypeCount(type) < getMaximumTypeCount(self._scene, type);
+}
 
-        this._showNewText();
+function showStaticElements (self, mediaObjectType) {
+    var obj = getRandomMediaObject(self._scene, self._tagFilter, mediaObjectType);
+
+    var value;
+    switch(mediaObjectType) {
+        case 'image':
+            value = obj.url;
+            break;
+
+        case 'text':
+            value = obj.text;
+            break;
     }
-};
+
+    if (obj && canShowMediaType(self, mediaObjectType)) {
+        var displayDuration = getStaticMediaTypeDisplayDuration(self._scene, obj) * 1000;
+        self._elementManager.showStaticType(mediaObjectType, value, displayDuration, function() {
+            showStaticElements(self, mediaObjectType);    
+        }); 
+
+        // guess the duration to wait based on how many could be shown and for how long
+        var wait = displayDuration / getMaximumTypeCount(self._scene, mediaObjectType);
+        setTimeout(function() {
+            showStaticElements(self, mediaObjectType);    
+        }, wait);
+    }
+}
 
 RandomScenePlayer.prototype._showNewMedia = function() {
-    this._showNewImages();
-    this._showNewVideo();
-    this._showNewText();
+    showStaticElements(this, 'image');
+    showStaticElements(this, 'text');
+    showNewVideo(this);
 };
 
 RandomScenePlayer.prototype.start = function() {

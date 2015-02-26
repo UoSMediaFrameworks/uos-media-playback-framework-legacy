@@ -7,7 +7,24 @@ var _ = require('lodash');
 var EmbeddedVimeoPlayer = require('./embedded-vimeo-player');
 
 
-function _animateInElement (parentEl, element) {
+
+function ScenePlayerElementManager (element) {
+    var $el = $(element);
+
+    this._videoDoneCb = null;
+    // total number of active items being displayed
+    this._imageCount = 0;
+    this._textCount = 0;
+    this._staticTypeCounts = {};
+    
+    this._el = $('<div class="media-object-wrapper"></div>');
+    $el.append(this._el);
+    $el.append(this.videoPlayerEl);
+}
+
+
+
+function animateInElement (parentEl, element) {
     parentEl.append(element);
 
     // random start position
@@ -22,9 +39,7 @@ function _animateInElement (parentEl, element) {
     });
 }
 
-
-
-function _animateOutElement (element) {
+function animateOutElement (element) {
     element.removeClass('show-media-object');
     window.setTimeout(function () {
         element.remove();
@@ -33,30 +48,20 @@ function _animateOutElement (element) {
 
 
 
-/**********************************************************\
-  ScenePlayerElementManager 
-\**********************************************************/
-
-function ScenePlayerElementManager (element) {
-    var $el = $(element);
-
-    this._videoDoneCb = null;
-    // total number of active items being displayed
-    this._imageCount = 0;
-    this._textCount = 0;
-    
-    this.el = $('<div class="media-object-wrapper"></div>');
-    $el.append(this.el);
-    $el.append(this.videoPlayerEl);
+function incrementStaticTypeCount (self, type) {
+    if (self._staticTypeCounts[type]) {
+        self._staticTypeCounts[type] += 1;
+    } else {
+        self._staticTypeCounts[type] = 1;
+    }
 }
 
+function decrementStaticTypeCount (self, type) {
+    self._staticTypeCounts[type] -= 1;
+}
 
-ScenePlayerElementManager.prototype.getImageCount = function() {
-    return this._imageCount;
-};
-
-ScenePlayerElementManager.prototype.getTextCount = function() {
-    return this._textCount;
+ScenePlayerElementManager.prototype.getStaticTypeCount = function(type) {
+    return this._staticTypeCounts[type] || 0;
 };
 
 ScenePlayerElementManager.prototype.showVideo = function(vimeoUrl, doneCb) {
@@ -69,43 +74,46 @@ ScenePlayerElementManager.prototype.showVideo = function(vimeoUrl, doneCb) {
     player.onFinish(function() {
         $(player.element).removeClass('show-media-object');
         window.setTimeout(function() {
-            this.el[0].removeChild(player.element);
+            this._el[0].removeChild(player.element);
             doneCb();
         }.bind(this), 1000);
         
     }.bind(this));
     
-    this.el.append(player.element);
+    this._el.append(player.element);
 };
 
-ScenePlayerElementManager.prototype.showImage = function(url, duration, doneCb) {
-    this._imageCount++;
-    var imgEl = new Image();
-    var img = $(imgEl);
-    imgEl.onload = function() {
-        img.addClass('image-media-object').addClass('media-object');
-        _animateInElement(this.el, img);
-        setTimeout(function() {
-            _animateOutElement(img);
-            this._imageCount--;
-            doneCb();
-        }.bind(this), duration);
-    }.bind(this);
-
-    imgEl.src = url;
-};
-
-ScenePlayerElementManager.prototype.showText = function(text, duration, doneCb) {
-    this._textCount++;
-    var el = $('<p class="media-object text-media-object">' + text + '</p>');
-    _animateInElement(this.el, el);
-    
+function showStaticElement (manager, element, type, duration, doneCb) {
+    animateInElement(manager._el, element);
     setTimeout(function() {
-        _animateOutElement(el);
-        this._textCount--;
+        animateOutElement(element);
+        decrementStaticTypeCount(manager, type);
         doneCb();
-    }.bind(this), duration);
+    }, duration);
+}
+
+ScenePlayerElementManager.prototype.showStaticType = function(type, value, duration, doneCb) {
+    incrementStaticTypeCount(this, type);
+
+    var element;
+    switch(type) {
+        case 'image':
+            var imgEl = new Image();
+            element = $(imgEl);
+            element.addClass('image-media-object').addClass('media-object');
+            imgEl.onload = function() {
+                showStaticElement(this, element, type, duration, doneCb);   
+            }.bind(this);
+            imgEl.src = value;
+            break;
+
+        case 'text':
+            element = $('<p class="media-object text-media-object">' + value + '</p>');
+            showStaticElement(this, element, type, duration, doneCb);
+            break;
+    }
 };
+
 
 module.exports = function(element) {
     return new ScenePlayerElementManager(element);
