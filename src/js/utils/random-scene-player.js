@@ -119,7 +119,7 @@ RandomScenePlayer.prototype._canShowText = function() {
 
 // returns the appropriate display duration (ms) for the passed in mediaObject
 RandomScenePlayer.prototype._getDisplayDuration = function(mediaObject) {
-    return 3000;
+    return 6000;
 };
 
 RandomScenePlayer.prototype._showNewImages = function() {

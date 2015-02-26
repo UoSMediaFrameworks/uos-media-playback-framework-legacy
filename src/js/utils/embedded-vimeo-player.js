@@ -61,7 +61,7 @@ function EmbeddedVimeoPlayer (vimeoId) {
         width: 640,
         height: 360,
         frameborder: 0,
-        class: 'embedded-vimeo-player'
+        class: 'media-object embedded-vimeo-player'
     });
 
     this.url = window.location.protocol + this.element.attributes.src.value.split('?')[0];

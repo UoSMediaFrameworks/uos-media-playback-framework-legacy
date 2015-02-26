@@ -35,38 +35,38 @@ html, body {
     
 }
 
-.text-media-object {
-    opacity: 0;
-}
-
-.image-media-object {
+.media-object {
     position: absolute;
-    width: auto;
-    height: auto;
-    max-width: 50%;
     opacity: 0;
     -webkit-transition: opacity 1.4s ease-in-out;
-     -moz-transition: opacity 1.4s ease-in-out;
-     -ms-transition: opacity 1.4s ease-in-out;
-     -o-transition: opacity 1.4s ease-in-out;
-     transition: opacity 1.4s ease-in-out;
-}
-
-.embedded-vimeo-player {
-    z-index: 1;
-    position: absolute;
-    /* exact center video */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0;
-    -webkit-transition: opacity 1.4s ease-in-out;
-     -moz-transition: opacity 1.4s ease-in-out;
-     -ms-transition: opacity 1.4s ease-in-out;
-     -o-transition: opacity 1.4s ease-in-out;
-     transition: opacity 1.4s ease-in-out;
+    -moz-transition: opacity 1.4s ease-in-out;
+    -ms-transition: opacity 1.4s ease-in-out;
+    -o-transition: opacity 1.4s ease-in-out;
+    transition: opacity 1.4s ease-in-out;
 }
 
 .show-media-object {
     opacity: 1;
+}
+
+.image-media-object { 
+    width: auto;
+    height: auto;
+    max-width: 50%;
+}
+
+.embedded-vimeo-player {
+    z-index: 1;
+    /* exact center video */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.text-media-object {
+    background-color: rgba(0, 0, 0, .7);
+    padding: 10px;
+    border-radius: 3px;
+    color: white;
+    z-index: 2;
 }

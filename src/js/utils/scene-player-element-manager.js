@@ -3,30 +3,39 @@
 
 var $ = require('jquery');
 var getVimeoId = require('./get-vimeo-id');
+var _ = require('lodash');
 var EmbeddedVimeoPlayer = require('./embedded-vimeo-player');
 
 
-function _animateInImage (el, img) {
-    el.append(img);
+function _animateInElement (parentEl, element) {
+    parentEl.append(element);
 
     // random start position
-    img.css({
-        left: Math.random() * (el.width() - img.width()),
-        top: Math.random() * (el.height() - img.height())
+    element.css({
+        left: Math.random() * (parentEl.width() - element.width()),
+        top: Math.random() * (parentEl.height() - element.height())
     });
 
-    // and show
-    img.addClass('show-media-object');
+    // and show - use defer to make sure callstack clears and image get's added to screen prior to adding class
+    _.defer(function() {
+        element.addClass('show-media-object');
+    });
 }
 
 
 
-function _animateOutElement (el, img) {
-    img.removeClass('show-media-object');
+function _animateOutElement (element) {
+    element.removeClass('show-media-object');
     window.setTimeout(function () {
-        img.remove();
+        element.remove();
     }, 1400);
 }
+
+
+
+/**********************************************************\
+  ScenePlayerElementManager 
+\**********************************************************/
 
 function ScenePlayerElementManager (element) {
     var $el = $(element);
@@ -74,10 +83,10 @@ ScenePlayerElementManager.prototype.showImage = function(url, duration, doneCb) 
     var imgEl = new Image();
     var img = $(imgEl);
     imgEl.onload = function() {
-        img.addClass('image-media-object');
-        _animateInImage(this.el, img);
+        img.addClass('image-media-object').addClass('media-object');
+        _animateInElement(this.el, img);
         setTimeout(function() {
-            _animateOutElement(this.el, img);
+            _animateOutElement(img);
             this._imageCount--;
             doneCb();
         }.bind(this), duration);
@@ -88,11 +97,11 @@ ScenePlayerElementManager.prototype.showImage = function(url, duration, doneCb) 
 
 ScenePlayerElementManager.prototype.showText = function(text, duration, doneCb) {
     this._textCount++;
-    var el = $('<p>' + text + '</p>');
-    this.el.append(el);
-    el.addClass('show-media-object');
+    var el = $('<p class="media-object text-media-object">' + text + '</p>');
+    _animateInElement(this.el, el);
+    
     setTimeout(function() {
-        _animateOutElement(this.el, el);
+        _animateOutElement(el);
         this._textCount--;
         doneCb();
     }.bind(this), duration);
