@@ -27,7 +27,7 @@ html, body {
     left: 0;
 }
 
-.tag-filter {
+.tag-filter input {
     z-index: 3;
 }
 
