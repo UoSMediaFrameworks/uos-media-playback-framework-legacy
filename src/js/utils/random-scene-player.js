@@ -26,18 +26,12 @@ function RandomScenePlayer (elementManager) {
     this._videoPlaying = false;
 
     this._scene = undefined;
+
+    // contains arrays keyed by mediaObject type.  These are the random
+    // generated lists of assets to display
+    this._displayQueue = {};
 }
 
-function removeRandomMediaObject(mediaScene, tagsArray, type) {
-    var objs = filterMediaScene(mediaScene, tagsArray, type);
-    var obj = objs[Math.floor(Math.random() * objs.length)];
-
-    if (obj) {
-        mediaScene.scene.splice(mediaScene.scene.indexOf(obj), 1);
-    }
-
-    return obj;
-}
 
 function filterMediaScene(mediaScene, tagsArray, mediaType) {
     return _.filter(mediaScene.scene, function (obj) {
@@ -56,10 +50,113 @@ function mergeFilters (self) {
     var newVal = _.uniq(self._manualTagFilter.concat(self._themeTagFilter));
     if (! _.isEqual(self._tagFilter, newVal)) {
         self._tagFilter = newVal;
+        // clearing existing queues will force it to regenerate with new tags
+        self._displayQueue = {};
         self._showNewMedia();    
     }
     
 }
+
+
+function getMaximumTypeCount(scene, type) {
+    var maximum,
+        defaultCount = DEFAULT_MEDIA_TYPE_COUNTS[type];
+    // wrap in try catch incase attribute is missing from the json
+    try {
+        maximum = parseInt(scene.maximumOnScreen[type]);
+    } catch (e) {
+        if (e instanceof TypeError) {
+            // do nothing, this just means there is no specified maximumOnScreen object in the scene
+            // we just go with the default then
+        } else {
+            throw e;
+        }
+    } finally {
+        if (isNaN(maximum)){
+            maximum = defaultCount;
+        }
+        return maximum;
+    }
+}
+
+function getStaticMediaTypeDisplayDuration (scene, mediaObject) {
+    // be gentle on the poor user, parse their ints
+    var duration = parseInt(scene.displayDuration);
+
+    if (isNaN(duration)) {
+        duration = DEFAULT_STATIC_DISPLAY_DURATION;
+    }
+
+    return duration;
+}
+
+
+function showNewVideo(self) {
+    if (! self._videoPlaying) {
+        var obj = nextMediaObject(self, 'video');
+        if (obj) {
+            self._videoPlaying = true;
+            self._elementManager.showVideo(obj.url, function() {
+                self._videoPlaying = false;
+                // add it back
+                self._scene.scene.push(obj);
+                showNewVideo(self);
+            });    
+        }    
+    }
+}
+
+function canShowMediaType(self, type) {
+    return self._elementManager.getStaticTypeCount(type) < getMaximumTypeCount(self._scene, type);
+}
+
+function showStaticElements (self, mediaObjectType) {
+    if (canShowMediaType(self, mediaObjectType)) {
+
+        var obj = nextMediaObject(self, mediaObjectType);
+        if (obj) {
+            var value;
+            switch(mediaObjectType) {
+                case 'image':
+                    value = obj.url;
+                    break;
+
+                case 'text':
+                    value = obj.text;
+                    break;
+            }
+
+            var displayDuration = getStaticMediaTypeDisplayDuration(self._scene, obj) * 1000;
+            self._elementManager.showStaticType(mediaObjectType, value, displayDuration, function() {
+                showStaticElements(self, mediaObjectType);    
+            }); 
+
+            // guess the duration to wait based on how many could be shown and for how long
+            var wait = displayDuration / getMaximumTypeCount(self._scene, mediaObjectType);
+            setTimeout(function() {
+                showStaticElements(self, mediaObjectType);    
+            }, wait);
+        }    
+    }
+}
+
+// return the next media object from the _displayQueue.  Refill the queue if needed
+function nextMediaObject (self, type) {
+    var value = self._displayQueue[type];
+    if (Array.isArray(value) && value.length > 0) {
+        return value.pop();
+    } else {
+        // regenerate the list
+        regenerateDisplayQueue(self, type);
+        return self._displayQueue[type].pop();
+    }
+}
+
+function regenerateDisplayQueue (self, type) {
+    // body...
+    self._displayQueue[type] = filterMediaScene(self._scene, self._tagFilter, type);
+}
+
 
 RandomScenePlayer.prototype.setScene = function(newScene) {
     var scene = _.cloneDeep(newScene);
@@ -102,89 +199,6 @@ RandomScenePlayer.prototype.setThemeFilter = function(themeArray) {
 
     mergeFilters(this);
 };
-
-function getMaximumTypeCount(scene, type) {
-    var maximum,
-        defaultCount = DEFAULT_MEDIA_TYPE_COUNTS[type];
-    // wrap in try catch incase attribute is missing from the json
-    try {
-        maximum = parseInt(scene.maximumOnScreen[type]);
-    } catch (e) {
-        if (e instanceof TypeError) {
-            // do nothing, this just means there is no specified maximumOnScreen object in the scene
-            // we just go with the default then
-        } else {
-            throw e;
-        }
-    } finally {
-        if (isNaN(maximum)){
-            maximum = defaultCount;
-        }
-        return maximum;
-    }
-}
-
-function getStaticMediaTypeDisplayDuration (scene, mediaObject) {
-    // be gentle on the poor user, parse their ints
-    var duration = parseInt(scene.displayDuration);
-
-    if (isNaN(duration)) {
-        duration = DEFAULT_STATIC_DISPLAY_DURATION;
-    }
-
-    return duration;
-}
-
-
-function showNewVideo(self) {
-    if (! self._videoPlaying) {
-        var obj = removeRandomMediaObject(self._scene, self._tagFilter, 'video');
-        if (obj) {
-            self._videoPlaying = true;
-            self._elementManager.showVideo(obj.url, function() {
-                self._videoPlaying = false;
-                // add it back
-                self._scene.scene.push(obj);
-                showNewVideo(self);
-            });    
-        }    
-    }
-}
-
-function canShowMediaType(self, type) {
-    return self._elementManager.getStaticTypeCount(type) < getMaximumTypeCount(self._scene, type);
-}
-
-function showStaticElements (self, mediaObjectType) {
-    if (canShowMediaType(self, mediaObjectType)) {
-
-        var obj = removeRandomMediaObject(self._scene, self._tagFilter, mediaObjectType);
-        if (obj) {
-            var value;
-            switch(mediaObjectType) {
-                case 'image':
-                    value = obj.url;
-                    break;
-
-                case 'text':
-                    value = obj.text;
-                    break;
-            }
-
-            var displayDuration = getStaticMediaTypeDisplayDuration(self._scene, obj) * 1000;
-            self._elementManager.showStaticType(mediaObjectType, value, displayDuration, function() {
-                self._scene.scene.push(obj);
-                showStaticElements(self, mediaObjectType);    
-            }); 
-
-            // guess the duration to wait based on how many could be shown and for how long
-            var wait = displayDuration / getMaximumTypeCount(self._scene, mediaObjectType);
-            setTimeout(function() {
-                showStaticElements(self, mediaObjectType);    
-            }, wait);
-        }    
-    }
-}
 
 RandomScenePlayer.prototype._showNewMedia = function() {
     showStaticElements(this, 'image');
