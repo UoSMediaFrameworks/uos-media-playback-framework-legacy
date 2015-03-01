@@ -7,7 +7,7 @@ var DEFAULT_MEDIA_TYPE_COUNTS = {
     text: 1
 };
 
-var DEFAULT_STATIC_DISPLAY_DURATION = 6;
+var DEFAULT_STATIC_DISPLAY_DURATION = 10;
 
 function RandomScenePlayer (elementManager) {
     this._playing = false;
