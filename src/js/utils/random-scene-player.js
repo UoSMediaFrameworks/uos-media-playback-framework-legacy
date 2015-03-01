@@ -124,12 +124,6 @@ function getMaximumTypeCount(scene, type) {
     }
 }
 
-
-// returns the appropriate display duration (ms) for the passed in mediaObject
-RandomScenePlayer.prototype._getDisplayDuration = function(mediaObject) {
-    return 6000;
-};
-
 function getStaticMediaTypeDisplayDuration (scene, mediaObject) {
     // be gentle on the poor user, parse their ints
     var duration = parseInt(scene.displayDuration);
