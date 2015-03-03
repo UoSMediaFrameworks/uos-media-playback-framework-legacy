@@ -8,7 +8,9 @@
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {},
+  "devDependencies": {
+    "mocha": "^2.1.0"
+  },
   "dependencies": {
     "browserify": "^7.0.0",
     "codemirror": "^4.11.0",
@@ -34,6 +36,7 @@
     "main-bower-files": "^2.0.0",
     "media-hub-client": "git+https://git@github.com/Colum-SMA-Dev/MediaHubClient.git",
     "merge-stream": "^0.1.6",
+    
     "object-assign": "^2.0.0",
     "react": "^0.12.2",
     "react-router": "^0.11.4",
