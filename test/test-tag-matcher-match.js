@@ -261,3 +261,13 @@ testRule(
 		['duck', 'pig'],
 	]
 );
+
+testRule(
+	[
+		'(motivational, success, leadership) AND (depressing OR success)'
+	],
+	[
+		['success']
+	],
+	[]
+);

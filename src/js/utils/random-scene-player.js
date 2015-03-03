@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
+var TagMatcher = require('./tag-matcher');
 
 var DEFAULT_MEDIA_TYPE_COUNTS = {
     image: 3,
@@ -13,13 +14,9 @@ function RandomScenePlayer (elementManager) {
     this._playing = false;
 
     this._elementManager = elementManager;
-    // holds tags assigned by setTagFilter
-    this._manualTagFilter = [];
-    // holds tags assigned by setThemeFilter
-    this._themeTagFilter = [];
-
-    // holds the unique'd version of both above, it's what actually gets checked
-    this._tagFilter = [];
+    
+    // default tag matching to all
+    this._tagMatcher = new TagMatcher();
 
     // is there a video playing.  We track this here rather than in the _elementManager because
     // there's just one to keep tabs on, so easier to do it here.
@@ -33,30 +30,15 @@ function RandomScenePlayer (elementManager) {
 }
 
 
-function filterMediaScene(mediaScene, tagsArray, mediaType) {
+function filterMediaScene(mediaScene, tagMatcher, mediaType) {
     return _.filter(mediaScene.scene, function (obj) {
-        if ((tagsArray.length === 0 || _.intersection(obj.tags, tagsArray).length > 0 ) &&
-            (! mediaType || obj.type === mediaType)) {
-            return true;
-        }
+        return (! mediaType || obj.type === mediaType) && tagMatcher.match(obj.tags);
     });
 }
 
 function parseTagString (tagString) {
     return _.uniq(_.map(tagString.split(','), function(s) { return s.trim(); }));
 }
-
-function mergeFilters (self) {
-    var newVal = _.uniq(self._manualTagFilter.concat(self._themeTagFilter));
-    if (! _.isEqual(self._tagFilter, newVal)) {
-        self._tagFilter = newVal;
-        // clearing existing queues will force it to regenerate with new tags
-        self._displayQueue = {};
-        self._showNewMedia();    
-    }
-    
-}
-
 
 function getMaximumTypeCount(scene, type) {
     var maximum,
@@ -154,7 +136,7 @@ function nextMediaObject (self, type) {
 
 function regenerateDisplayQueue (self, type) {
     // body...
-    self._displayQueue[type] = filterMediaScene(self._scene, self._tagFilter, type);
+    self._displayQueue[type] = filterMediaScene(self._scene, self._tagMatcher, type);
 }
 
 
@@ -173,31 +155,13 @@ RandomScenePlayer.prototype.setScene = function(newScene) {
     }
 };
 
-RandomScenePlayer.prototype.setTagFilter = function(tagString) {
-    tagString = tagString.trim();
-
-    if (tagString !== '') {
-        this._manualTagFilter = parseTagString(tagString);
-    } else {
-        this._manualTagFilter = [];
+RandomScenePlayer.prototype.setTagMatcher = function(newTagMatcher) {
+    if (! this._tagMatcher.equalTo(newTagMatcher) ) {
+        this._tagMatcher = newTagMatcher;
+        // clearing existing queues will force it to regenerate with new tags
+        this._displayQueue = {};
+        this._showNewMedia();    
     }
-    
-    mergeFilters(this);
-};
-
-RandomScenePlayer.prototype.setThemeFilter = function(themeArray) {
-    // concatenate the various tag strings of the themes
-    if (themeArray.length > 0) {
-        var themeTags = _.map(themeArray, function(theme) {
-            return this._scene.themes[theme];
-        }.bind(this)).join(',');
-
-        this._themeTagFilter = parseTagString(themeTags);
-    } else {
-        this._themeTagFilter = [];
-    }
-
-    mergeFilters(this);
 };
 
 RandomScenePlayer.prototype._showNewMedia = function() {

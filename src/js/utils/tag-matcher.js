@@ -20,6 +20,10 @@ EmptyRule.prototype.match = function(tagList) {
 	return true;
 };
 
+EmptyRule.prototype.equalTo = function(emptyRule) {
+	return emptyRule instanceof EmptyRule;
+};
+
 
 function TagRule (tag) {
 	this._value = tag;
@@ -27,6 +31,10 @@ function TagRule (tag) {
 
 TagRule.prototype.match = function(tagList) {
 	return tagList.indexOf(this._value) !== -1 ? true : false;
+};
+
+TagRule.prototype.equalTo = function(tagRule) {
+	return tagRule instanceof TagRule && this._value === tagRule._value;
 };
 
 
@@ -39,6 +47,11 @@ AndRule.prototype.match = function(tagList) {
 	return this._left.match(tagList) && this._right.match(tagList);
 };
 
+AndRule.prototype.equalTo = function(andRule) {
+	return andRule instanceof AndRule && 
+		this._left.equalTo(andRule._left) && 
+		this._right.equalTo(andRule._right);
+};
 
 function OrRule (leftRule, rightRule) {
 	this._left = leftRule;
@@ -49,6 +62,13 @@ OrRule.prototype.match = function(tagList) {
 	return this._left.match(tagList) || this._right.match(tagList);
 };
 
+OrRule.prototype.equalTo = function(orRule) {
+	return orRule instanceof OrRule && 
+		this._left.equalTo(orRule._left) && 
+		this._right.equalTo(orRule._right);
+};
+
+
 
 function ParethesisRule (rule) {
 	this._rule = rule;
@@ -58,12 +78,18 @@ ParethesisRule.prototype.match = function(tagList) {
 	return this._rule.match(tagList);
 };
 
+ParethesisRule.prototype.equalTo = function(rule) {
+	return rule instanceof ParethesisRule && 
+		this._rule.equalTo(rule._rule);
+};
+
+
 /****************************************************\
         TagMatcher
 \****************************************************/
 
 function TagMatcher (query) {
-	this._query = parseQuery(tokenizeQuery(query));
+	this._query = parseQuery(tokenizeQuery(query || ''));
 }
 
 function parseQuery (tokens) {
@@ -173,6 +199,10 @@ function tokenizeQuery (query) {
 
 TagMatcher.prototype.match = function(tagList) {
 	return this._query.match(tagList);
+};
+
+TagMatcher.prototype.equalTo = function(tagMatcher) {
+	return this._query.equalTo(tagMatcher._query);
 };
 
 module.exports = TagMatcher;

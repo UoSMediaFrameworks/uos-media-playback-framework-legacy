@@ -10,6 +10,8 @@ var FormHelper = require('../mixins/form-helper');
 var Router = require('react-router');
 var Authentication = require('../mixins/Authentication');
 var Loader = require('../components/loader.jsx');
+var _ = require('lodash');
+var TagMatcher = require('../utils/tag-matcher');
 
 var SceneListener = React.createClass({
 
@@ -56,7 +58,19 @@ var SceneListener = React.createClass({
 
     componentDidUpdate: function(prevProps, prevState) {
         this._maybeUpdatePlayer();
-        this.player.setThemeFilter(this.state.activeThemes);
+        this.player.setTagMatcher(this.mergeTagAndThemeFilters());
+    },
+
+    mergeTagAndThemeFilters: function() {
+        var themeQueries = _.map(this.state.activeThemes, function(themeName) {
+            return this.state.scene.themes[themeName];
+        }.bind(this));
+        
+        var mergedString = _.map(themeQueries.concat([this.getRefVal('tags')]), function(v) {
+            return '(' + v + ')';
+        }).join(' AND ');
+
+        return new TagMatcher(mergedString);
     },
 
     updateTags: function(event) {
@@ -64,8 +78,7 @@ var SceneListener = React.createClass({
             event.preventDefault();
         }
 
-        var tagNode = this.getRefNode('tags');
-        this.player.setTagFilter(tagNode.value);
+        this.player.setTagMatcher(this.mergeTagAndThemeFilters());
     },
 
     handleBlur: function(event) {
