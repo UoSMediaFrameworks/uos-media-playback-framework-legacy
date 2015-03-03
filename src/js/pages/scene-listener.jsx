@@ -4,7 +4,7 @@ var React = require('react');
 var SceneStore = require('../stores/scene-store');
 var ThemeSelector = require('../components/theme-selector.jsx');
 var HubSendActions = require('../actions/hub-send-actions');
-var randomScenePlayer = require('../utils/random-scene-player');
+var RandomScenePlayer = require('../utils/random-scene-player');
 var scenePlayerElementManager = require('../utils/scene-player-element-manager');
 var FormHelper = require('../mixins/form-helper');
 var Router = require('react-router');
@@ -45,7 +45,7 @@ var SceneListener = React.createClass({
         HubSendActions.loadScene(this.getParams().id);
 
         var playerElem = this.getDOMNode().querySelector('.player');
-        this.player = randomScenePlayer(scenePlayerElementManager(playerElem));
+        this.player =  new RandomScenePlayer(scenePlayerElementManager(playerElem));
 
         this._maybeUpdatePlayer();
     },

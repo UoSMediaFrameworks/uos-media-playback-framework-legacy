@@ -214,6 +214,4 @@ RandomScenePlayer.prototype.start = function() {
     }
 };
 
-module.exports = function(elementManager) {
-    return new RandomScenePlayer(elementManager);
-};
+module.exports = RandomScenePlayer;
