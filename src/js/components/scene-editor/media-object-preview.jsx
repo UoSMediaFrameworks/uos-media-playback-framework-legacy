@@ -15,7 +15,7 @@ var MediaObjectPreview = React.createClass({
 	loadSoundCloudWaveform: function(url) {
 		var mo = this.props.mediaObject;
 		if (mo.type === 'audio' && ! this.state.waveformUrl) {
-			soundCloud.getInfo(mo.url, function(info) {
+			soundCloud.resolve(mo.url, function(info) {
 				// triggers invariant violation sometimes
 				this.setState({waveformUrl: info.waveform_url});
 			}.bind(this));
