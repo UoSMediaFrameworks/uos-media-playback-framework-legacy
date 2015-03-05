@@ -89,7 +89,7 @@ function showNewVideo(self) {
 }
 
 function canShowMediaType(self, type) {
-    return self._elementManager.getStaticTypeCount(type) < getMaximumTypeCount(self._scene, type);
+    return self._elementManager.getTypeCount(type) < getMaximumTypeCount(self._scene, type);
 }
 
 function showStaticElements (self, mediaObjectType) {
@@ -120,6 +120,10 @@ function showStaticElements (self, mediaObjectType) {
             }, wait);
         }    
     }
+}
+
+function showTimeBasedElements (self, mediaObjectType) {
+    // body...
 }
 
 // return the next media object from the _displayQueue.  Refill the queue if needed

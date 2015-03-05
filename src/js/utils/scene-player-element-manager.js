@@ -13,7 +13,7 @@ function ScenePlayerElementManager (element) {
 
     this._videoDoneCb = null;
     // total number of active items being displayed
-    this._staticTypeCounts = {};
+    this._typeCounts = {};
     
     this._el = $('<div class="media-object-wrapper"></div>');
     $el.append(this._el);
@@ -46,20 +46,20 @@ function animateOutElement (element) {
 
 
 
-function incrementStaticTypeCount (self, type) {
-    if (self._staticTypeCounts[type]) {
-        self._staticTypeCounts[type] += 1;
+function incrementTypeCount (self, type) {
+    if (self._typeCounts[type]) {
+        self._typeCounts[type] += 1;
     } else {
-        self._staticTypeCounts[type] = 1;
+        self._typeCounts[type] = 1;
     }
 }
 
-function decrementStaticTypeCount (self, type) {
-    self._staticTypeCounts[type] -= 1;
+function decrementTypeCount (self, type) {
+    self._typeCounts[type] -= 1;
 }
 
-ScenePlayerElementManager.prototype.getStaticTypeCount = function(type) {
-    return this._staticTypeCounts[type] || 0;
+ScenePlayerElementManager.prototype.getTypeCount = function(type) {
+    return this._typeCounts[type] || 0;
 };
 
 ScenePlayerElementManager.prototype.showVideo = function(vimeoUrl, doneCb) {
@@ -85,13 +85,13 @@ function showStaticElement (manager, element, type, duration, doneCb) {
     animateInElement(manager._el, element);
     setTimeout(function() {
         animateOutElement(element);
-        decrementStaticTypeCount(manager, type);
+        decrementTypeCount(manager, type);
         doneCb();
     }, duration);
 }
 
 ScenePlayerElementManager.prototype.showStaticType = function(type, value, duration, doneCb) {
-    incrementStaticTypeCount(this, type);
+    incrementTypeCount(this, type);
 
     var element;
     switch(type) {
