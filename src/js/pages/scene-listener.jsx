@@ -11,7 +11,6 @@ var Router = require('react-router');
 var Authentication = require('../mixins/Authentication');
 var Loader = require('../components/loader.jsx');
 var _ = require('lodash');
-var styleElement = require('../utils/style-element');
 var TagMatcher = require('../utils/tag-matcher');
 
 var SceneListener = React.createClass({
