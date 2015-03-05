@@ -35,6 +35,9 @@ module.exports = {
             },
             'displayDuration': 10,
             'themes': {},
+            'style': {
+                'backgroundColor': 'black'
+            },
     		'scene': []
     	};
 

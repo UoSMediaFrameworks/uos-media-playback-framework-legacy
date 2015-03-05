@@ -5,12 +5,13 @@ var SceneStore = require('../stores/scene-store');
 var ThemeSelector = require('../components/theme-selector.jsx');
 var HubSendActions = require('../actions/hub-send-actions');
 var RandomScenePlayer = require('../utils/random-scene-player');
-var scenePlayerElementManager = require('../utils/scene-player-element-manager');
+var ScenePlayerElementManager = require('../utils/scene-player-element-manager');
 var FormHelper = require('../mixins/form-helper');
 var Router = require('react-router');
 var Authentication = require('../mixins/Authentication');
 var Loader = require('../components/loader.jsx');
 var _ = require('lodash');
+var styleElement = require('../utils/style-element');
 var TagMatcher = require('../utils/tag-matcher');
 
 var SceneListener = React.createClass({
@@ -36,6 +37,7 @@ var SceneListener = React.createClass({
 
     _maybeUpdatePlayer: function() {
         if (this.state.scene) {
+            this.elementManager.setSceneStyle(this.state.scene.style);
             this.player.setScene(this.state.scene);
             this.player.start();
         }
@@ -47,7 +49,9 @@ var SceneListener = React.createClass({
         HubSendActions.loadScene(this.getParams().id);
 
         var playerElem = this.getDOMNode().querySelector('.player');
-        this.player =  new RandomScenePlayer(scenePlayerElementManager(playerElem));
+
+        this.elementManager = new ScenePlayerElementManager(playerElem);
+        this.player =  new RandomScenePlayer(this.elementManager);
 
         this._maybeUpdatePlayer();
     },

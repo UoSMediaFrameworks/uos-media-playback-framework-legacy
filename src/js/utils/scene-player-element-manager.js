@@ -99,7 +99,8 @@ ScenePlayerElementManager.prototype.showText = function(text, duration, doneCb) 
     showStaticElement(this, element, 'text', duration, doneCb); 
 };
 
-
-module.exports = function(element) {
-    return new ScenePlayerElementManager(element);
+ScenePlayerElementManager.prototype.setSceneStyle = function(styleObj) {
+    this._el.css(styleObj);
 };
+
+module.exports = ScenePlayerElementManager;
