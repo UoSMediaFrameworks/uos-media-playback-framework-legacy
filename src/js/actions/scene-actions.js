@@ -8,6 +8,7 @@ var objectAssign = require('object-assign');
 var ActionTypes = SceneConstants.ActionTypes;
 var _ = require('lodash');
 var soundCloud = require('../utils/sound-cloud');
+var vimeoApi = require('../utils/vimeo-api');
 
 var SceneActions = {
     updateScene: function(scene) {
@@ -43,42 +44,30 @@ var SceneActions = {
     },
 
     addVimeo: function(sceneId, vimeoUrl) {
-        var xhr = new XMLHttpRequest();
-        xhr.onload = function() {
-            var actionType;
-            if (xhr.status === 200) {
-                var tags = _.map(JSON.parse(xhr.responseText), function(tag) { return tag.trim(); });
-                SceneActions.addMediaObject(sceneId, {
-                    type: 'video', 
-                    url: vimeoUrl,
-                    tags: tags.join(', ')
-                });
-                actionType = ActionTypes.ADD_MEDIA_SUCCESS;
-            } else {
-                actionType = ActionTypes.ADD_MEDIA_FAILED;
-            }
-
-            AppDispatcher.handleServerAction({
-                type: actionType
-            });
-        };
-
-        xhr.onerror = function() {
-            console.log('tag request failed');
-            AppDispatcher.handleServerAction({
-                type: ActionTypes.ADD_MEDIA_FAILED
-            });
-        };
-
+        
         AppDispatcher.handleServerAction({
             type: ActionTypes.ADD_MEDIA_ATTEMPT,
             value: vimeoUrl
         });
-        
-        var xhrUrl = process.env.MEDIA_HUB + '/api/vimeo-tags?token=' + 
-            HubClient.getToken() + '&vimeoId=' + getVimeoId(vimeoUrl);
-        xhr.open('GET', xhrUrl);
-        xhr.send();
+
+        vimeoApi.video(getVimeoId(vimeoUrl), function(err, data) {
+            if (err) {
+                AppDispatcher.handleServerAction({
+                    type: ActionTypes.ADD_MEDIA_FAILED
+                });
+            } else {
+                var tags = _(data.tags).pluck('tag').map(function(x) { return x.trim(); }).value().join(', ');
+                SceneActions.addMediaObject(sceneId, {
+                    type: 'video', 
+                    url: vimeoUrl,
+                    tags: tags
+                });
+
+                AppDispatcher.handleServerAction({
+                    type: ActionTypes.ADD_MEDIA_SUCCESS
+                });
+            }
+        });
     },
 
     addSoundCloud: function(sceneId, soundCloudUrl) {

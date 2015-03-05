@@ -36,7 +36,10 @@ var SceneListener = React.createClass({
 
     _maybeUpdatePlayer: function() {
         if (this.state.scene) {
-            this.elementManager.setSceneStyle(this.state.scene.style);
+            if (this.state.scene.style) {
+                this.elementManager.setSceneStyle(this.state.scene.style);    
+            }
+            
             this.player.setScene(this.state.scene);
             this.player.start();
         }
