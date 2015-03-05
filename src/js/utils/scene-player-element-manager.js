@@ -13,8 +13,6 @@ function ScenePlayerElementManager (element) {
 
     this._videoDoneCb = null;
     // total number of active items being displayed
-    this._imageCount = 0;
-    this._textCount = 0;
     this._staticTypeCounts = {};
     
     this._el = $('<div class="media-object-wrapper"></div>');
