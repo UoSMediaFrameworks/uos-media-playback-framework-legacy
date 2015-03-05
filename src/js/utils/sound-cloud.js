@@ -16,12 +16,12 @@ module.exports = {
 	getInfo: function(soundCloudUrl, callback) {
 		if (infoCache.hasOwnProperty(soundCloudUrl)) {
 			callback(infoCache[soundCloudUrl]);
+		} else {
+			SC.get('/resolve?url=' + soundCloudUrl, function(data) {
+				infoCache[soundCloudUrl] = data;
+				callback(data);
+			});	
 		}
-
-		SC.get('/resolve?url=' + soundCloudUrl, function(data) {
-			infoCache[soundCloudUrl] = data;
-			callback(data);
-		});
 	}
 };
 
