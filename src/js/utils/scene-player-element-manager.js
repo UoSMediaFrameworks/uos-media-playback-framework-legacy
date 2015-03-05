@@ -5,6 +5,8 @@ var $ = require('jquery');
 var getVimeoId = require('./get-vimeo-id');
 var _ = require('lodash');
 var EmbeddedVimeoPlayer = require('./embedded-vimeo-player');
+var Audio5 = require('audio5');
+var soundCloud = require('./sound-cloud');
 
 function ScenePlayerElementManager (element) {
     var $el = $(element);
@@ -47,7 +49,7 @@ function showStaticElement (manager, element, type, duration, doneCb) {
     }, duration);
 }
 
-ScenePlayerElementManager.prototype.showVideo = function(vimeoUrl, doneCb) {
+ScenePlayerElementManager.prototype.playVideo = function(vimeoUrl, volume, doneCb) {
     var player = new EmbeddedVimeoPlayer(getVimeoId(vimeoUrl));
     
     player.onReady(function() {
@@ -64,6 +66,22 @@ ScenePlayerElementManager.prototype.showVideo = function(vimeoUrl, doneCb) {
     }.bind(this));
     
     this._el.append(player.element);
+};
+
+// volume comes in on 0-100 scale
+ScenePlayerElementManager.prototype.playAudio = function(url, volume, doneCb) {
+    soundCloud.streamUrl(url, function(streamUrl) {
+        console.log('playing ' + streamUrl); 
+
+        var audio = new Audio5({
+            ready: function(player) {
+                this.load(streamUrl);
+                this.play();
+                this.volume(volume / 100);
+                this.on('ended', doneCb);
+            }
+        });
+    });
 };
 
 ScenePlayerElementManager.prototype.showImage = function(url, duration, doneCb) {

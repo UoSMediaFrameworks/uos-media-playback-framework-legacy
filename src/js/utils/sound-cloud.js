@@ -10,7 +10,11 @@ if (! process.env.SOUNDCLOUD_CLIENT_ID) {
 }
 
 
-
+var urlParams = function(obj) {
+	return _.map(obj, function(val, key) {
+		return encodeURI(key) + '=' + encodeURI(val);
+	}).join('&');
+};
 
 var makeRequest	= function (method, args, onLoad, onError) {
 	var xhr = new XMLHttpRequest();
@@ -36,10 +40,7 @@ var makeRequest	= function (method, args, onLoad, onError) {
 		errorHandler(xhr.status);
 	};
 
-	var mergedArgs = objectAssign({client_id: process.env.SOUNDCLOUD_CLIENT_ID}, args);
-	var argsString = _.map(mergedArgs, function(val, key) {
-		return encodeURI(key) + '=' + encodeURI(val);
-	}).join('&');
+	var argsString = urlParams(objectAssign({client_id: process.env.SOUNDCLOUD_CLIENT_ID}, args));
 	var url = API_URL + method + '.json?' + argsString;
 	
 	xhr.open('GET', url);
@@ -49,16 +50,26 @@ var makeRequest	= function (method, args, onLoad, onError) {
 
 var resolveCache = {};
 
-module.exports = {
-	resolve: function(soundCloudUrl, callback) {
-		if (resolveCache.hasOwnProperty(soundCloudUrl)) {
-			callback(resolveCache[soundCloudUrl]);
-		} else {
-			makeRequest('resolve', {url: soundCloudUrl}, function(data) {
-				resolveCache[soundCloudUrl] = data;
-				callback(data);
-			});
-		}
+var resolveAttribute = function(soundCloudUrl, attr, callback) {
+	if (resolveCache.hasOwnProperty(soundCloudUrl)) {
+		callback(resolveCache[soundCloudUrl][attr]);
+	} else {
+		makeRequest('resolve', {url: soundCloudUrl}, function(data) {
+			resolveCache[soundCloudUrl] = data;
+			callback(data[attr]);
+		});
 	}
+};
+
+module.exports = {
+	waveformUrl: function(soundCloudUrl, callback) {
+		resolveAttribute(soundCloudUrl, 'waveform_url', callback);
+	},
+	streamUrl: function(soundCloudUrl, callback) {
+		resolveAttribute(soundCloudUrl, 'stream_url', function(url) {
+			callback(url + '?' + urlParams({client_id: process.env.SOUNDCLOUD_CLIENT_ID}));
+		});
+	}
+
 };
 

@@ -30,6 +30,8 @@ module.exports = {
             'maximumOnScreen': {
                 'image': 3,
                 'text': 1,
+                'video': 1,
+                'audio': 1
             },
             'displayDuration': 10,
             'themes': {},

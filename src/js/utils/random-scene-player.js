@@ -116,11 +116,18 @@ function showElementsOfType (self, mediaObjectType) {
 
             case 'video':
                 displayDuration = 3 * 1000;
-                self._elementManager.showVideo(obj.url, function() {
+                self._elementManager.playVideo(obj.url, obj.volume || 0, function() {
                     decrementTypeCount(self, mediaObjectType);
                     showElementsOfType(self, mediaObjectType);
                 });
                 break;
+
+            case 'audio':
+                displayDuration = 3 * 1000;
+                self._elementManager.playAudio(obj.url, obj.volume || 100, function() {
+                    decrementTypeCount(self, mediaObjectType);
+                    showElementsOfType(self, mediaObjectType);
+                });
         }
 
         

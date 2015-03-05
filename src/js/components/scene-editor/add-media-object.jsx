@@ -48,23 +48,26 @@ var SceneEditor = React.createClass({
 		var content = this.getRefNode('content'),
 			data = content.value;
 
-		var addMediaObject = function (obj) {
-			SceneActions.addMediaObject(this.props.scene, obj);	
-			content.value = '';	
-		}.bind(this);
+		if (data.match(/https?:\/\//i)) {
+			switch (getHostname(data)) {
+				case 'soundcloud.com':
+					SceneActions.addSoundCloud(this.props.scene._id, data);
+					break;
 
-		switch (getHostname(data)) {
-			case 'soundcloud.com':
-				SceneActions.addSoundCloud(this.props.scene._id, data);
-				break;
+				case 'vimeo.com':
+					SceneActions.addVimeo(this.props.scene._id, data);
+					break;
 
-			case 'vimeo.com':
-				SceneActions.addVimeo(this.props.scene._id, data);
-				break;
-
-			default:
-				SceneActions.addText(this.props.scene._id, data);	
+				// assume it's an image
+				default:
+					SceneActions.addMediaObject(this.props.scene._id, {type: 'image', url: data});
+					
+			}	
+		} else {
+			SceneActions.addText(this.props.scene._id, data);	
 		}
+
+		
 	},
 
 	render: function() {
@@ -77,7 +80,7 @@ var SceneEditor = React.createClass({
 					   value={this.state.inputValue}
 					   onChange={this.handleInputChange}
 				       className='form-control' 
-				       placeholder='vimeo url or text' 
+				       placeholder='vimeo url, soundcloud url or text' 
 				       required />
 				
 				<button className='btn btn-primary' type='submit' 
