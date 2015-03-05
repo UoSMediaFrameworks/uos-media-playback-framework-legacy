@@ -5,24 +5,19 @@ var $ = require('jquery');
 var getVimeoId = require('./get-vimeo-id');
 var _ = require('lodash');
 var EmbeddedVimeoPlayer = require('./embedded-vimeo-player');
-
-
+var Audio5 = require('audio5');
+var soundCloud = require('./sound-cloud');
 
 function ScenePlayerElementManager (element) {
     var $el = $(element);
 
     this._videoDoneCb = null;
-    // total number of active items being displayed
-    this._imageCount = 0;
-    this._textCount = 0;
-    this._staticTypeCounts = {};
+    
     
     this._el = $('<div class="media-object-wrapper"></div>');
     $el.append(this._el);
     $el.append(this.videoPlayerEl);
 }
-
-
 
 function animateInElement (parentEl, element) {
     parentEl.append(element);
@@ -46,25 +41,15 @@ function animateOutElement (element) {
     }, 1400);
 }
 
-
-
-function incrementStaticTypeCount (self, type) {
-    if (self._staticTypeCounts[type]) {
-        self._staticTypeCounts[type] += 1;
-    } else {
-        self._staticTypeCounts[type] = 1;
-    }
+function showStaticElement (manager, element, type, duration, doneCb) {
+    animateInElement(manager._el, element);
+    setTimeout(function() {
+        animateOutElement(element);
+        doneCb();
+    }, duration);
 }
 
-function decrementStaticTypeCount (self, type) {
-    self._staticTypeCounts[type] -= 1;
-}
-
-ScenePlayerElementManager.prototype.getStaticTypeCount = function(type) {
-    return this._staticTypeCounts[type] || 0;
-};
-
-ScenePlayerElementManager.prototype.showVideo = function(vimeoUrl, doneCb) {
+ScenePlayerElementManager.prototype.playVideo = function(vimeoUrl, volume, doneCb) {
     var player = new EmbeddedVimeoPlayer(getVimeoId(vimeoUrl));
     
     player.onReady(function() {
@@ -83,35 +68,35 @@ ScenePlayerElementManager.prototype.showVideo = function(vimeoUrl, doneCb) {
     this._el.append(player.element);
 };
 
-function showStaticElement (manager, element, type, duration, doneCb) {
-    animateInElement(manager._el, element);
-    setTimeout(function() {
-        animateOutElement(element);
-        decrementStaticTypeCount(manager, type);
-        doneCb();
-    }, duration);
-}
+// volume comes in on 0-100 scale
+ScenePlayerElementManager.prototype.playAudio = function(url, volume, doneCb) {
+    soundCloud.streamUrl(url, function(streamUrl) {
+        console.log('playing ' + streamUrl); 
 
-ScenePlayerElementManager.prototype.showStaticType = function(type, value, duration, doneCb) {
-    incrementStaticTypeCount(this, type);
+        var audio = new Audio5({
+            ready: function(player) {
+                this.load(streamUrl);
+                this.play();
+                this.volume(volume / 100);
+                this.on('ended', doneCb);
+            }
+        });
+    });
+};
 
-    var element;
-    switch(type) {
-        case 'image':
-            var imgEl = new Image();
-            element = $(imgEl);
-            element.addClass('image-media-object').addClass('media-object');
-            imgEl.onload = function() {
-                showStaticElement(this, element, type, duration, doneCb);   
-            }.bind(this);
-            imgEl.src = value;
-            break;
+ScenePlayerElementManager.prototype.showImage = function(url, duration, doneCb) {
+    var imgEl = new Image();
+    var element = $(imgEl);
+    element.addClass('image-media-object').addClass('media-object');
+    imgEl.onload = function() {
+        showStaticElement(this, element, 'image', duration, doneCb);   
+    }.bind(this);
+    imgEl.src = url;
+};
 
-        case 'text':
-            element = $('<p class="media-object text-media-object">' + value + '</p>');
-            showStaticElement(this, element, type, duration, doneCb);
-            break;
-    }
+ScenePlayerElementManager.prototype.showText = function(text, duration, doneCb) {
+    var element = $('<p class="media-object text-media-object">' + text + '</p>');
+    showStaticElement(this, element, 'text', duration, doneCb); 
 };
 
 

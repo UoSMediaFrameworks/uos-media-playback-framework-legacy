@@ -282,3 +282,7 @@ html, body, #main, .app {
 .add-media-object button, .add-media-object input {
     border-radius: 0;   
 }
+
+.waveform-url {
+    background-color: black;
+}

@@ -3,9 +3,12 @@
 var _ = require('lodash');
 var TagMatcher = require('./tag-matcher');
 
-var DEFAULT_MEDIA_TYPE_COUNTS = {
+// types and their default display counts
+var MEDIA_TYPES = {
     image: 3,
-    text: 1
+    text: 1,
+    video: 1,
+    audio: 1
 };
 
 var DEFAULT_STATIC_DISPLAY_DURATION = 10;
@@ -18,17 +21,31 @@ function RandomScenePlayer (elementManager) {
     // default tag matching to all
     this._tagMatcher = new TagMatcher();
 
-    // is there a video playing.  We track this here rather than in the _elementManager because
-    // there's just one to keep tabs on, so easier to do it here.
-    this._videoPlaying = false;
-
     this._scene = undefined;
 
     // contains arrays keyed by mediaObject type.  These are the random
     // generated lists of assets to display
     this._displayQueue = {};
+
+    // total number of active items being displayed
+    this._typeCounts = {};
 }
 
+function incrementTypeCount (self, type) {
+    if (self._typeCounts[type]) {
+        self._typeCounts[type] += 1;
+    } else {
+        self._typeCounts[type] = 1;
+    }
+}
+
+function decrementTypeCount (self, type) {
+    self._typeCounts[type] -= 1;
+}
+
+function getTypeCount(self, type) {
+    return self._typeCounts[type] || 0;
+}
 
 function filterMediaScene(mediaScene, tagMatcher, mediaType) {
     return _.filter(mediaScene.scene, function (obj) {
@@ -42,7 +59,7 @@ function parseTagString (tagString) {
 
 function getMaximumTypeCount(scene, type) {
     var maximum,
-        defaultCount = DEFAULT_MEDIA_TYPE_COUNTS[type];
+        defaultCount = MEDIA_TYPES[type];
     // wrap in try catch incase attribute is missing from the json
     try {
         maximum = parseInt(scene.maximumOnScreen[type]);
@@ -72,66 +89,71 @@ function getStaticMediaTypeDisplayDuration (scene, mediaObject) {
     return duration;
 }
 
+// handles intelligent per type behavior for mediaObjects, dispatching to the proper methods for 
+// their display
+function showElementsOfType (self, mediaObjectType) {
+    var displayDuration;
+    var obj = nextMediaObject(self, mediaObjectType);
 
-function showNewVideo(self) {
-    if (! self._videoPlaying) {
-        var obj = nextMediaObject(self, 'video');
-        if (obj) {
-            self._videoPlaying = true;
-            self._elementManager.showVideo(obj.url, function() {
-                self._videoPlaying = false;
-                // add it back
-                self._scene.scene.push(obj);
-                showNewVideo(self);
-            });    
-        }    
-    }
+    if (obj) {
+        incrementTypeCount(self, mediaObjectType);
+        switch(mediaObjectType) {
+            case 'image':
+                displayDuration = getStaticMediaTypeDisplayDuration(self._scene, obj) * 1000;
+                self._elementManager.showImage(obj.url, displayDuration, function() {
+                    decrementTypeCount(self, mediaObjectType);
+                    showElementsOfType(self, mediaObjectType);
+                });
+                break;
+
+            case 'text':
+                displayDuration = getStaticMediaTypeDisplayDuration(self._scene, obj) * 1000;
+                self._elementManager.showText(obj.text, displayDuration, function() {
+                    decrementTypeCount(self, mediaObjectType);
+                    showElementsOfType(self, mediaObjectType);
+                });
+                break;
+
+            case 'video':
+                displayDuration = 3 * 1000;
+                self._elementManager.playVideo(obj.url, obj.volume || 0, function() {
+                    decrementTypeCount(self, mediaObjectType);
+                    showElementsOfType(self, mediaObjectType);
+                });
+                break;
+
+            case 'audio':
+                displayDuration = 3 * 1000;
+                self._elementManager.playAudio(obj.url, obj.volume || 100, function() {
+                    decrementTypeCount(self, mediaObjectType);
+                    showElementsOfType(self, mediaObjectType);
+                });
+        }
+
+        
+        // guess the duration to wait based on how many could be shown and for how long
+        var wait = displayDuration / getMaximumTypeCount(self._scene, mediaObjectType);
+        setTimeout(function() {
+            showElementsOfType(self, mediaObjectType);    
+        }, wait);
+    }    
 }
 
-function canShowMediaType(self, type) {
-    return self._elementManager.getStaticTypeCount(type) < getMaximumTypeCount(self._scene, type);
-}
 
-function showStaticElements (self, mediaObjectType) {
-    if (canShowMediaType(self, mediaObjectType)) {
-
-        var obj = nextMediaObject(self, mediaObjectType);
-        if (obj) {
-            var value;
-            switch(mediaObjectType) {
-                case 'image':
-                    value = obj.url;
-                    break;
-
-                case 'text':
-                    value = obj.text;
-                    break;
-            }
-
-            var displayDuration = getStaticMediaTypeDisplayDuration(self._scene, obj) * 1000;
-            self._elementManager.showStaticType(mediaObjectType, value, displayDuration, function() {
-                showStaticElements(self, mediaObjectType);    
-            }); 
-
-            // guess the duration to wait based on how many could be shown and for how long
-            var wait = displayDuration / getMaximumTypeCount(self._scene, mediaObjectType);
-            setTimeout(function() {
-                showStaticElements(self, mediaObjectType);    
-            }, wait);
-        }    
-    }
-}
-
+// if there's room in the scene, 
 // return the next media object from the _displayQueue.  Refill the queue if needed
 function nextMediaObject (self, type) {
-    var value = self._displayQueue[type];
-    if (Array.isArray(value) && value.length > 0) {
-        return value.pop();
-    } else {
-        // regenerate the list
-        regenerateDisplayQueue(self, type);
-        return self._displayQueue[type].pop();
+    if (getTypeCount(self, type) < getMaximumTypeCount(self._scene, type)) {
+        var value = self._displayQueue[type];
+        if (Array.isArray(value) && value.length > 0) {
+            return value.pop();
+        } else {
+            // regenerate the list
+            regenerateDisplayQueue(self, type);
+            return self._displayQueue[type].pop();
+        }    
     }
+    
 }
 
 function regenerateDisplayQueue (self, type) {
@@ -160,14 +182,16 @@ RandomScenePlayer.prototype.setTagMatcher = function(newTagMatcher) {
         this._tagMatcher = newTagMatcher;
         // clearing existing queues will force it to regenerate with new tags
         this._displayQueue = {};
-        this._showNewMedia();    
     }
 };
 
 RandomScenePlayer.prototype._showNewMedia = function() {
-    showStaticElements(this, 'image');
-    showStaticElements(this, 'text');
-    showNewVideo(this);
+    _.chain(MEDIA_TYPES).keys().forEach(function(type) {
+        showElementsOfType(this, type);
+    }.bind(this));
+    // showStaticElements(this, 'image');
+    // showStaticElements(this, 'text');
+    // showNewVideo(this);
 };
 
 RandomScenePlayer.prototype.start = function() {
