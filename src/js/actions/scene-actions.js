@@ -7,6 +7,7 @@ var getVimeoId = require('../utils/get-vimeo-id');
 var objectAssign = require('object-assign');
 var ActionTypes = SceneConstants.ActionTypes;
 var _ = require('lodash');
+var soundCloud = require('../utils/sound-cloud');
 
 var SceneActions = {
     updateScene: function(scene) {
@@ -78,6 +79,27 @@ var SceneActions = {
             HubClient.getToken() + '&vimeoId=' + getVimeoId(vimeoUrl);
         xhr.open('GET', xhrUrl);
         xhr.send();
+    },
+
+    addSoundCloud: function(sceneId, soundCloudUrl) {
+        // so far keep it easy
+        AppDispatcher.handleServerAction({
+            type: ActionTypes.ADD_MEDIA_ATTEMPT,
+            value: soundCloudUrl
+        });
+
+        soundCloud.getInfo(soundCloudUrl, function(data) {
+            
+            AppDispatcher.handleServerAction({
+                type: ActionTypes.ADD_MEDIA_SUCCESS
+            });
+
+            SceneActions.addMediaObject(sceneId, {
+                type: 'audio',
+                url: soundCloudUrl
+            });
+
+        });
     },
 
     removeMediaObject: function(scene, index) {     

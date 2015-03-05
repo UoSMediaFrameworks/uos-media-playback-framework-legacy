@@ -10,6 +10,7 @@ var AddMediaObjectStore = require('../../stores/add-media-object-store');
 var getVimeoId = require('../../utils/get-vimeo-id');
 var Loader = require('../loader.jsx');
 var _ = require('lodash');
+var getHostname = require('../../utils/get-hostname');
 
 var SceneEditor = React.createClass({
 
@@ -52,12 +53,17 @@ var SceneEditor = React.createClass({
 			content.value = '';	
 		}.bind(this);
 
-		
-		var vimeoId =  getVimeoId(data); 
-		if (vimeoId) {
-			SceneActions.addVimeo(this.props.scene._id, data);
-		} else {
-			SceneActions.addText(this.props.scene._id, data);
+		switch (getHostname(data)) {
+			case 'soundcloud.com':
+				SceneActions.addSoundCloud(this.props.scene._id, data);
+				break;
+
+			case 'vimeo.com':
+				SceneActions.addVimeo(this.props.scene._id, data);
+				break;
+
+			default:
+				SceneActions.addText(this.props.scene._id, data);	
 		}
 	},
 
