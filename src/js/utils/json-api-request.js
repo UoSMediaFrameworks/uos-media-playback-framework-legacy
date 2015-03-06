@@ -9,8 +9,7 @@ var urlParams = function(obj) {
 	}).join('&');
 };
 
-
-module.exports = function(ops) {
+var makeRequest = function(ops) {
 	var xhr = new XMLHttpRequest();
 	var url = ops.url;
 	var onLoad = ops.onLoad;
@@ -40,4 +39,9 @@ module.exports = function(ops) {
 	});
 	xhr.send();
 	return xhr;
+};
+
+module.exports = {
+	makeRequest: makeRequest,
+	urlParams: urlParams
 };

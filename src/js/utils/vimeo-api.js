@@ -1,6 +1,6 @@
 'use strict';
 
-var jsonApiRequest = require('./json-api-request');
+var makeRequest = require('./json-api-request').makeRequest;
 
 var API_URL = 'https://api.vimeo.com/';
 
@@ -13,7 +13,7 @@ if (! process.env.VIMEO_ACCESS_TOKEN) {
 module.exports = {
 	// callback in node style
 	video: function(vimeoId, callback) {
-		jsonApiRequest({
+		makeRequest({
 			url: API_URL + 'videos/' + vimeoId,
 			onLoad: function(data) {
 				callback(null, data);
