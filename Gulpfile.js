@@ -2,13 +2,19 @@
 
 var gulp = require('gulp');
 var gutil = require('gulp-util');
+var path = require('path');
+var gulpif = require('gulp-if');
 var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
 var watchify = require('watchify');
+var sourcemaps = require('gulp-sourcemaps');
 var mergeStream = require('merge-stream');
 var objectAssign = require('object-assign');
 var browserify = require('browserify');
 var reactify = require('reactify');
 var envify = require('envify');
+var streamify = require('gulp-streamify');
+var uglify = require('gulp-uglify');
 var concat = require('gulp-concat'),
     livereload = require('gulp-livereload'),
     dest = 'dist',
@@ -17,7 +23,7 @@ var concat = require('gulp-concat'),
 var cssGlobs = ['src/css/**/*.css', 'node_modules/codemirror/lib/*.css'];
 
 var static_server = require('./static_server');
-
+var production = process.env.NODE_ENV === 'production';
 /*
 I don't want to have to define the browserify code twice.  Yet, I need it to run inside
 of watchify, and then I also want to run it manually for the 'build' task.  So I have to 
@@ -31,12 +37,25 @@ function bundlerBuilder (startPath, finishName) {
     var bundler = watchify(browserify(startPath, objectAssign({debug: true}, watchify.args)));
     bundler.transform(reactify);
     bundler.transform(envify);
+    bundler.on('log', gutil.log);
 
     var rebundle = function() {
-        return bundler.bundle()
+        var flow = bundler.bundle()
             .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-            .pipe(source(finishName))
-            .pipe(gulp.dest('dist/js'));
+            .pipe(source(finishName));
+
+        // only uglify in production.  Since chrome inspector doesn't support source map
+        // variable names, debugging sucks when minified
+        // https://code.google.com/p/chromium/issues/detail?id=327092
+
+        if (production) {
+            flow = flow.pipe(buffer())
+                .pipe(sourcemaps.init({loadMaps: true}))
+                .pipe(uglify())
+                .pipe(sourcemaps.write('./'));
+        }
+            
+        return flow.pipe(gulp.dest('dist/js'));
     };
 
     return {bundler: bundler, rebundle: rebundle};
