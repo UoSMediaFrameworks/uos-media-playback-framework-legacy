@@ -44,7 +44,7 @@ function animateOutElement (element) {
 function showStaticElement (manager, element, type, duration, doneCb) {
     animateInElement(manager._el, element);
     setTimeout(function() {
-        //animateOutElement(element);
+        animateOutElement(element);
         doneCb();
     }, duration);
 }
