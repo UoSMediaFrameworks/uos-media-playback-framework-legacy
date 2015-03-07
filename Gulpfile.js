@@ -23,13 +23,22 @@ var concat = require('gulp-concat'),
 var cssGlobs = ['src/css/**/*.css', 'node_modules/codemirror/lib/*.css'];
 
 var static_server = require('./static_server');
-var production = process.env.NODE_ENV === 'production';
-/*
-I don't want to have to define the browserify code twice.  Yet, I need it to run inside
-of watchify, and then I also want to run it manually for the 'build' task.  So I have to 
-abstract out the process of making a bundler, and then leave it open to manual triggering
-*/
 
+/*
+ only uglify in production.  Since chrome inspector doesn't support source map
+ variable names, debugging sucks when minified
+ https://code.google.com/p/chromium/issues/detail?id=327092
+*/
+var production = process.env.NODE_ENV === 'production';
+if (production) {
+    gutil.log('making production build');
+}
+
+/*
+  I don't want to have to define the browserify code twice.  Yet, I need it to run inside
+  of watchify, and then I also want to run it manually for the 'build' task.  So I have to 
+  abstract out the process of making a bundler, and then leave it open to manual triggering
+*/
 var indexBundler = bundlerBuilder('./src/js/index.jsx', 'index.js');
 var viewerBundler = bundlerBuilder('./src/js/viewer.jsx', 'viewer.js');
 
@@ -40,22 +49,14 @@ function bundlerBuilder (startPath, finishName) {
     bundler.on('log', gutil.log);
 
     var rebundle = function() {
-        var flow = bundler.bundle()
+        return bundler.bundle()
             .on('error', gutil.log.bind(gutil, 'Browserify Error'))
-            .pipe(source(finishName));
-
-        // only uglify in production.  Since chrome inspector doesn't support source map
-        // variable names, debugging sucks when minified
-        // https://code.google.com/p/chromium/issues/detail?id=327092
-
-        if (production) {
-            flow = flow.pipe(buffer())
-                .pipe(sourcemaps.init({loadMaps: true}))
-                .pipe(uglify())
-                .pipe(sourcemaps.write('./'));
-        }
-            
-        return flow.pipe(gulp.dest('dist/js'));
+            .pipe(source(finishName))
+            .pipe(gulpif(production, buffer()))
+            .pipe(gulpif(production, sourcemaps.init({loadMaps: true})))
+            .pipe(gulpif(production, uglify()))
+            .pipe(gulpif(production, sourcemaps.write('./')))
+            .pipe(gulp.dest('dist/js'));
     };
 
     return {bundler: bundler, rebundle: rebundle};
