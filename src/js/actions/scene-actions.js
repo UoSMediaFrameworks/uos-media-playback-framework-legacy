@@ -9,6 +9,7 @@ var ActionTypes = SceneConstants.ActionTypes;
 var _ = require('lodash');
 var soundCloud = require('../utils/sound-cloud');
 var vimeoApi = require('../utils/vimeo-api');
+var assetStore = require('../utils/asset-store');
 
 var SceneActions = {
     updateScene: function(scene) {
@@ -93,7 +94,10 @@ var SceneActions = {
 
     removeMediaObject: function(scene, index) {     
         var copy = _.cloneDeep(scene);
-        copy.scene.splice(index, 1);    
+        var removedObject = copy.scene.splice(index, 1);    
+        if (removedObject.length === 0) {
+            throw "attempted to remove mediaObject not found in scene";
+        }
         
         AppDispatcher.handleViewAction({
             type: ActionTypes.SCENE_CHANGE,
@@ -118,7 +122,9 @@ var SceneActions = {
             file: file
         });
 
-        function dispatchResult (status, msg) {
+        assetStore.create(file, function(status, data) {
+            var msg = (status === 'warning' ? 'No tags found' : '');
+
             AppDispatcher.handleServerAction({
                 type: ActionTypes.UPLOAD_ASSET_RESULT,
                 file: file,
@@ -134,44 +140,15 @@ var SceneActions = {
                     file: file
                 });    
             }, msecs);
-        }
 
-        var data = new FormData();
-        data.append('image', file);
-        data.append('filename', file.name);
-        data.append('token', HubClient.getToken());
-        var xhr = new XMLHttpRequest();
-        xhr.onload = function() {
-            var data = JSON.parse(xhr.responseText);
-            if (xhr.status === 200) {
-                var tags = data.tags ? data.tags.join(', ') : '';
-                
+            if (status !== 'danger') {
                 SceneActions.addMediaObject(sceneId, {
-                    type: 'image', 
-                    url: data.url, 
-                    tags: tags
-                });    
-
-                if (tags === '') {
-                    dispatchResult('warning', 'No tags found');
-                } else {
-                    dispatchResult('success');
-                }
-            } else {
-                dispatchResult('danger', data.error);
+                    type: 'image',
+                    url: data.url,
+                    tags: data.tags
+                });
             }
-        };
-
-        xhr.onerror = function() {
-            dispatchResult('danger');
-        };
-
-        // envify replaces the process.env.NODE_ENV with the actual value
-        // at time when gulp runs.  This will have to be refactored when
-        // we deploy multiple instances accessing different asset stores
-        var assetStoreUrl = process.env.ASSET_STORE;
-        xhr.open('POST', assetStoreUrl + '/api/images');
-        xhr.send(data);
+        });
     }
 };
 

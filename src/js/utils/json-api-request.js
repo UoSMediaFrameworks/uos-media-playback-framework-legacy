@@ -13,8 +13,10 @@ var makeRequest = function(ops) {
 	var xhr = new XMLHttpRequest();
 	var url = ops.url;
 	var onLoad = ops.onLoad;
+	var method = ops.method || 'GET';
 	var headers = ops.headers || {};
 	var query = ops.query || {};
+	var formData = ops.formData || null;
 
 	var errorHandler = ops.onError ||  function(status) {
 		throw 'XMLHttpRequest failed to "' + url + '"';
@@ -33,11 +35,11 @@ var makeRequest = function(ops) {
 		errorHandler(xhr.status);
 	};
 	
-	xhr.open('GET', url + '?' + urlParams(query));
+	xhr.open(method, url + '?' + urlParams(query));
 	_.forEach(headers, function(value, key) {
 		xhr.setRequestHeader(key, value);
 	});
-	xhr.send();
+	xhr.send(formData);
 	return xhr;
 };
 
