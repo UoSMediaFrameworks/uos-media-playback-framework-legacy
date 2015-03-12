@@ -4,14 +4,9 @@
 var hubClient = require('media-hub-client');
 var HubRecieveActions = require('../actions/hub-recieve-actions');
 var HubSendActions = require('../actions/hub-send-actions');
-var client,
-    HUB_TOKEN = 'HUB_TOKEN',
-    HUB_URL = 'HUB_URL';
-
-function _cleanLocalStorage () {
-    localStorage.removeItem(HUB_TOKEN);
-    localStorage.removeItem(HUB_URL);  
-}
+var assetStore = require('./asset-store');
+var connectionCache = require('./connection-cache');
+var client;
 
 var HubClient = {
     login: function(url, creds) {
@@ -19,17 +14,17 @@ var HubClient = {
         switch (arguments.length) {
             case 1:
                 type = 'token';
-                creds = {token: HubClient.getToken()};
+                creds = {token: connectionCache.getToken()};
 
                 if (! url || ! creds.token) {
                     // bad localstorage, or nothing in it, so just return
-                    _cleanLocalStorage();
+                    connectionCache.clear();
                     HubRecieveActions.recieveLoginResult(false);
                     return;
                 }
                 break;
             case 2:
-                localStorage.setItem(HUB_URL, url);
+                connectionCache.setHubUrl(url);
                 break;
             default:
                 throw 'url and creds must be provided for login to function';
@@ -37,7 +32,7 @@ var HubClient = {
 
         client = hubClient({forceNew: true});
         client.connect(url, creds).then(function(token) {
-            localStorage.setItem(HUB_TOKEN, token);
+            connectionCache.setHubToken(token);
             HubRecieveActions.recieveLoginResult(true);
             HubRecieveActions.tryListScenes();
             client.listScenes().then(HubRecieveActions.recieveSceneList);
@@ -48,12 +43,8 @@ var HubClient = {
     },
 
     logout: function() {
-        _cleanLocalStorage();
+        connectionCache.clear();
         client.disconnect();
-    },
-
-    getToken: function() {
-        return localStorage.getItem(HUB_TOKEN);
     },
 
     loadScene: function(id) {
@@ -69,7 +60,9 @@ var HubClient = {
     },
 
     deleteScene: function(id) {
-        client.deleteScene(id);
+        client.deleteScene(id).then(function() {
+            assetStore.removeUnusedImages();
+        });
     },
 
     subscribeScene: function(id) {

@@ -3,7 +3,8 @@
 
 var API_URL = 'http://api.soundcloud.com/';
 var objectAssign = require('object-assign');
-var jsonApiRequest = require('./json-api-request');
+var apiRequest = require('./api-request');
+var jsonParser = require('./json-parser');
 var _ = require('lodash');
 
 if (! process.env.SOUNDCLOUD_CLIENT_ID) {
@@ -21,8 +22,9 @@ var resolveAttribute = function(soundCloudUrl, attr, callback) {
 			url: soundCloudUrl
 		};
 		
-		jsonApiRequest.makeRequest({
+		apiRequest.makeRequest({
 			url: API_URL + 'resolve.json',
+			responseParser: jsonParser,
 			query: query,
 			onLoad: function(data) {
 				resolveCache[soundCloudUrl] = data;
@@ -38,7 +40,7 @@ module.exports = {
 	},
 	streamUrl: function(soundCloudUrl, callback) {
 		resolveAttribute(soundCloudUrl, 'stream_url', function(url) {
-			callback(url + '?' + jsonApiRequest.urlParams({client_id: process.env.SOUNDCLOUD_CLIENT_ID}));
+			callback(url + '?' + apiRequest.urlParams({client_id: process.env.SOUNDCLOUD_CLIENT_ID}));
 		});
 	}
 

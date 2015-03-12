@@ -1,19 +1,23 @@
 'use strict';
 /*jshint browser: true */
 var HubClient = require('./HubClient');
-var jsonApiRequest = require('./json-api-request');
+var apiRequest = require('./api-request');
+var jsonParser = require('./json-parser');
 
+var connectionCache = require('./connection-cache');
 var imageApiUrl = process.env.ASSET_STORE + '/api/images';
+var removeUnusedImagesUrl = process.env.ASSET_STORE + '/api/remove-unused-images';
 
 module.exports = {
 	create: function(file, callback) {
         var data = new FormData();
         data.append('image', file);
         data.append('filename', file.name);
-        data.append('token', HubClient.getToken());
+        data.append('token', connectionCache.getToken());
         
-        var xhr = jsonApiRequest.makeRequest({
+        var xhr = apiRequest.makeRequest({
         	url: imageApiUrl,
+        	responseParser: jsonParser,
         	method: 'POST',
         	formData: data,
         	onLoad: function(data) {
@@ -33,11 +37,14 @@ module.exports = {
 
   
     },
-	delete: function(url, callback) {
-		var xhr = jsonApiRequest.makeRequest({
-			url: imageApiUrl,
-			method: 'DELETE',
-			query: {url: url},
+	removeUnusedImages: function(callback) {
+		var data = new FormData();
+		data.append('token', connectionCache.getToken());
+
+		var xhr = apiRequest.makeRequest({
+			url: removeUnusedImagesUrl,
+			method: 'POST',
+			formData: data,
 			onLoad: callback,
 		});
 	}
