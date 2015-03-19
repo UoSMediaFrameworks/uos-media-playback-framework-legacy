@@ -27,6 +27,17 @@ function RandomScenePlayer (stageElement) {
         });
     }
 
+    function calcDimension(dim, element) {
+        return Math.round(Math.random() * (stageElement[dim] - element[dim])) + 'px';
+    }
+
+    function getRandomPosition(element) {
+        return {
+            left: calcDimension('clientWidth', element),
+            top: calcDimension('clientHeight', element)
+        };
+    }
+
     // handles intelligent per type behavior for mediaObjects, dispatching to the proper methods for 
     // their display
     function showElementsOfType (mediaObjectType) {
@@ -41,7 +52,14 @@ function RandomScenePlayer (stageElement) {
                     case 'image':
                         displayDuration = getStaticMediaTypeDisplayDuration(scene, obj) * 1000;
                         obj.makeElement(function(el) {
+
                             stageElement.appendChild(el);
+
+                            var randPos = getRandomPosition(el);
+                            el.style.left = randPos.left;
+                            el.style.top = randPos.top;
+
+                            
 
                             window.setTimeout(function() {
                                 el.classList.add('show-media-object');

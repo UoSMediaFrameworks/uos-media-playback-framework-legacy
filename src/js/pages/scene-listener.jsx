@@ -11,6 +11,7 @@ var Router = require('react-router');
 var Authentication = require('../mixins/Authentication');
 var Loader = require('../components/loader.jsx');
 var _ = require('lodash');
+var $ = require('jquery');
 var TagMatcher = require('../utils/tag-matcher');
 var MediaObjectQueue = require('../utils/media-object/media-object-queue');
 
@@ -35,10 +36,14 @@ var SceneListener = React.createClass({
         };
     },
 
+    getPlayerElem: function() {
+        return this.getDOMNode().querySelector('.player');
+    },
+
     _maybeUpdatePlayer: function() {
         if (this.state.scene) {
             if (this.state.scene.style) {
-                //this.elementManager.setSceneStyle(this.state.scene.style);    
+                $(this.getPlayerElem()).css(this.state.scene.style);
             }
         
             this.mediaObjectQueue.setScene(this.state.scene);    
@@ -52,11 +57,9 @@ var SceneListener = React.createClass({
         SceneStore.addChangeListener(this._onChange);
         HubSendActions.loadScene(this.getParams().id);
 
-        var playerElem = this.getDOMNode().querySelector('.player');
-
         //this.elementManager = new ScenePlayerElementManager(playerElem);
         this.mediaObjectQueue = new MediaObjectQueue();
-        this.player = new RandomScenePlayer(playerElem);
+        this.player = new RandomScenePlayer(this.getPlayerElem());
         this.player.setMediaObjectQueue(this.mediaObjectQueue);
 
         this._maybeUpdatePlayer();
