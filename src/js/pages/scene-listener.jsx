@@ -38,7 +38,7 @@ var SceneListener = React.createClass({
     _maybeUpdatePlayer: function() {
         if (this.state.scene) {
             if (this.state.scene.style) {
-                this.elementManager.setSceneStyle(this.state.scene.style);    
+                //this.elementManager.setSceneStyle(this.state.scene.style);    
             }
         
             this.mediaObjectQueue.setScene(this.state.scene);    
@@ -54,9 +54,9 @@ var SceneListener = React.createClass({
 
         var playerElem = this.getDOMNode().querySelector('.player');
 
-        this.elementManager = new ScenePlayerElementManager(playerElem);
+        //this.elementManager = new ScenePlayerElementManager(playerElem);
         this.mediaObjectQueue = new MediaObjectQueue();
-        this.player = new RandomScenePlayer(this.elementManager);
+        this.player = new RandomScenePlayer(playerElem);
         this.player.setMediaObjectQueue(this.mediaObjectQueue);
 
         this._maybeUpdatePlayer();

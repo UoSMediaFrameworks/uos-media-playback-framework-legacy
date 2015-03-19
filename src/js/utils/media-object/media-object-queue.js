@@ -1,14 +1,19 @@
 'use strict';
 
 var _ = require('lodash');
+var TagMatcher = require('../tag-matcher');
 var ImageMediaObject = require('./image-media-object');
 
-function MediaObjectQueue () {
-    var queue = [],
-        mediaObjectList = [];
+function MediaObjectQueue() {
+    // MediaObjects keyed by type
+    var queue = {},
+        mediaObjectList = {},
+        tagMatcher = new TagMatcher();
 
-    function refreshQueue () {
-        queue = _.clone(mediaObjectList);
+    function refreshQueue(type) {
+        queue[type] = _.filter(mediaObjectList, function(mo) {
+            return mo.type === type && tagMatcher.match(mo.tags);
+        });
     }
 
     this.setScene = function(newScene) {
@@ -19,14 +24,22 @@ function MediaObjectQueue () {
             }
         }).filter(function(v) { return v !== undefined; }).valueOf();
 
+        refreshQueue();
     };
 
-    this.nextWithAttrs = function () {
-        if (queue.length === 0) { 
-            refreshQueue(); 
+    this.setTagMatcher = function(newTagMatcher) {
+        if (! tagMatcher.equalTo(newTagMatcher) ) {
+            tagMatcher = newTagMatcher;
+            refreshQueue();
+        }
+    };
+
+    this.nextByType = function(type) {
+        if (! queue[type] || queue[type].length === 0) { 
+            refreshQueue(type); 
         }
 
-        return queue.pop();
+        return queue[type].pop();
     };
 
 }

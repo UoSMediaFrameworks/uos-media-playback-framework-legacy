@@ -1,5 +1,5 @@
 'use strict';
-
+/* jshint browser:true */
 var _ = require('lodash');
 var TagMatcher = require('./tag-matcher');
 
@@ -13,13 +13,11 @@ var MEDIA_TYPES = {
 
 var DEFAULT_STATIC_DISPLAY_DURATION = 10;
 
-function RandomScenePlayer (newElementManager) {
+function RandomScenePlayer (stageElement) {
     var queue, 
         scene,
         playing = false,
-        elementManager = newElementManager,
         tagMatcher = new TagMatcher(),
-        displayQueue = {},
         // total number of active items being displayed
         typeCounts = {};
 
@@ -33,50 +31,73 @@ function RandomScenePlayer (newElementManager) {
     // their display
     function showElementsOfType (mediaObjectType) {
         var displayDuration;
-        var obj = nextMediaObject(mediaObjectType);
-
-        if (obj) {
-            incrementTypeCount(mediaObjectType);
-            switch(mediaObjectType) {
-                case 'image':
-                    displayDuration = getStaticMediaTypeDisplayDuration(scene, obj) * 1000;
-                    elementManager.showImage(obj.url, displayDuration, function() {
-                        decrementTypeCount(mediaObjectType);
-                        showElementsOfType(mediaObjectType);
-                    });
-                    break;
-
-                case 'text':
-                    displayDuration = getStaticMediaTypeDisplayDuration(scene, obj) * 1000;
-                    elementManager.showText(obj.text, displayDuration, function() {
-                        decrementTypeCount(mediaObjectType);
-                        showElementsOfType(mediaObjectType);
-                    });
-                    break;
-
-                case 'video':
-                    displayDuration = 3 * 1000;
-                    elementManager.playVideo(obj.url, obj.volume || 0, function() {
-                        decrementTypeCount(mediaObjectType);
-                        showElementsOfType(mediaObjectType);
-                    });
-                    break;
-
-                case 'audio':
-                    displayDuration = 3 * 1000;
-                    elementManager.playAudio(obj.url, obj.volume || 100, function() {
-                        decrementTypeCount(mediaObjectType);
-                        showElementsOfType(mediaObjectType);
-                    });
-            }
-
+        if (getTypeCount(mediaObjectType) < getMaximumTypeCount(mediaObjectType)) {
             
-            // guess the duration to wait based on how many could be shown and for how long
-            var wait = displayDuration / getMaximumTypeCount(mediaObjectType);
-            setTimeout(function() {
-                showElementsOfType(mediaObjectType);    
-            }, wait);
-        }    
+            var obj = queue.nextByType(mediaObjectType);
+
+            if (obj) {
+                incrementTypeCount(mediaObjectType);
+                switch(mediaObjectType) {
+                    case 'image':
+                        displayDuration = getStaticMediaTypeDisplayDuration(scene, obj) * 1000;
+                        obj.makeElement(function(el) {
+                            stageElement.appendChild(el);
+
+                            window.setTimeout(function() {
+                                el.classList.add('show-media-object');
+                            }, 0);
+
+                            window.setTimeout(function() {
+                                el.classList.remove('show-media-object');
+                                decrementTypeCount(mediaObjectType);
+                                showElementsOfType(mediaObjectType);
+
+                                window.setTimeout(function () {
+                                    stageElement.removeChild(el);
+                                }, 1400);
+                            }, displayDuration);
+                        });
+
+
+                        // elementManager.showImage(obj.url, displayDuration, function() {
+                        //     decrementTypeCount(mediaObjectType);
+                        //     showElementsOfType(mediaObjectType);
+                        // });
+                        break;
+
+                    case 'text':
+                        // displayDuration = getStaticMediaTypeDisplayDuration(scene, obj) * 1000;
+                        // elementManager.showText(obj.text, displayDuration, function() {
+                        //     decrementTypeCount(mediaObjectType);
+                        //     showElementsOfType(mediaObjectType);
+                        // });
+                        break;
+
+                    case 'video':
+                        // displayDuration = 3 * 1000;
+                        // elementManager.playVideo(obj.url, obj.volume || 0, function() {
+                        //     decrementTypeCount(mediaObjectType);
+                        //     showElementsOfType(mediaObjectType);
+                        // });
+                        break;
+
+                    case 'audio':
+                        // displayDuration = 3 * 1000;
+                        // elementManager.playAudio(obj.url, obj.volume || 100, function() {
+                        //     decrementTypeCount(mediaObjectType);
+                        //     showElementsOfType(mediaObjectType);
+                        // });
+                        break;
+                }
+
+                
+                // guess the duration to wait based on how many could be shown and for how long
+                var wait = displayDuration / getMaximumTypeCount(mediaObjectType);
+                setTimeout(function() {
+                    showElementsOfType(mediaObjectType);    
+                }, wait);
+            }  
+        }  
     }
 
     function incrementTypeCount (type) {
@@ -105,20 +126,8 @@ function RandomScenePlayer (newElementManager) {
     // return the next media object from the _displayQueue.  Refill the queue if needed
     function nextMediaObject (type) {
         if (getTypeCount(type) < getMaximumTypeCount(type)) {
-            var value = displayQueue[type];
-            if (Array.isArray(value) && value.length > 0) {
-                return value.pop();
-            } else {
-                // regenerate the list
-                regenerateDisplayQueue(type);
-                return displayQueue[type].pop();
-            }    
+            return queue.nextByType(type);
         }
-        
-    }
-
-    function regenerateDisplayQueue (type) {
-        displayQueue[type] = filterMediaScene(tagMatcher, type);
     }
 
     function parseTagString (tagString) {
@@ -173,14 +182,6 @@ function RandomScenePlayer (newElementManager) {
 
         if (playing) {
             showNewMedia();
-        }
-    };
-
-    this.setTagMatcher = function(newTagMatcher) {
-        if (! tagMatcher.equalTo(newTagMatcher) ) {
-            tagMatcher = newTagMatcher;
-            // clearing existing queues will force it to regenerate with new tags
-            displayQueue = {};
         }
     };
 
