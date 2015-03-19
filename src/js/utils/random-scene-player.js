@@ -14,6 +14,8 @@ var MEDIA_TYPES = {
 var DEFAULT_STATIC_DISPLAY_DURATION = 10;
 
 function RandomScenePlayer (elementManager) {
+    var queue;
+
     this._playing = false;
 
     this._elementManager = elementManager;
@@ -29,6 +31,10 @@ function RandomScenePlayer (elementManager) {
 
     // total number of active items being displayed
     this._typeCounts = {};
+
+    this.setMediaObjectQueue = function(newQueue) {
+        queue = newQueue;
+    }
 }
 
 function incrementTypeCount (self, type) {

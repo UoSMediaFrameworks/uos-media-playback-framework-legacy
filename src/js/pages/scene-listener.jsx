@@ -12,6 +12,7 @@ var Authentication = require('../mixins/Authentication');
 var Loader = require('../components/loader.jsx');
 var _ = require('lodash');
 var TagMatcher = require('../utils/tag-matcher');
+var MediaObjectQueue = require('../utils/media-object/media-object-queue');
 
 var SceneListener = React.createClass({
 
@@ -39,7 +40,8 @@ var SceneListener = React.createClass({
             if (this.state.scene.style) {
                 this.elementManager.setSceneStyle(this.state.scene.style);    
             }
-            
+        
+            this.mediaObjectQueue.setScene(this.state.scene);    
             this.player.setScene(this.state.scene);
             this.player.start();
         }
@@ -53,7 +55,9 @@ var SceneListener = React.createClass({
         var playerElem = this.getDOMNode().querySelector('.player');
 
         this.elementManager = new ScenePlayerElementManager(playerElem);
-        this.player =  new RandomScenePlayer(this.elementManager);
+        this.mediaObjectQueue = new MediaObjectQueue();
+        this.player = new RandomScenePlayer(this.elementManager);
+        this.player.setMediaObjectQueue(this.mediaObjectQueue);
 
         this._maybeUpdatePlayer();
     },
