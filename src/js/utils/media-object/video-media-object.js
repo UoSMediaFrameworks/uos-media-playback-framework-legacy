@@ -1,13 +1,13 @@
 'use strict';
 /*jshint browser:true */
 
-var MediaObject = require('./media-object');
+var TemporalMediaObject = require('./temporal-media-object');
 
 function VideoMediaObject (obj) {
-    MediaObject.call(this, obj);
+    TemporalMediaObject.call(this, obj);
 }
 
-VideoMediaObject.prototype = Object.create(MediaObject.prototype);
+VideoMediaObject.prototype = Object.create(TemporalMediaObject.prototype);
 VideoMediaObject.prototype.constructor = VideoMediaObject;
 
 module.exports = VideoMediaObject;

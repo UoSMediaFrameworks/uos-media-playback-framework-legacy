@@ -1,13 +1,13 @@
 'use strict';
 /*jshint browser:true */
 
-var MediaObject = require('./media-object');
+var AtemporalMediaObject = require('./atemporal-media-object');
 
 function TextMediaObject (obj) {
-    MediaObject.call(this, obj);
+    AtemporalMediaObject.call(this, obj);
 }
 
-TextMediaObject.prototype = Object.create(MediaObject.prototype);
+TextMediaObject.prototype = Object.create(AtemporalMediaObject.prototype);
 TextMediaObject.prototype.constructor = TextMediaObject;
 
 // trigger callback with preloaded element

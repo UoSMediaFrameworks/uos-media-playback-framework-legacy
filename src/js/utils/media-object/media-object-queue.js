@@ -5,11 +5,13 @@ var TagMatcher = require('../tag-matcher');
 var ImageMediaObject = require('./image-media-object');
 var VideoMediaObject = require('./video-media-object');
 var TextMediaObject = require('./text-media-object');
+var AudioMediaObject = require('./audio-media-object');
 
 var typeMappings = {
     video: VideoMediaObject,
     image: ImageMediaObject,
-    text: TextMediaObject
+    text: TextMediaObject,
+    audio: AudioMediaObject
 };
 
 function MediaObjectQueue() {

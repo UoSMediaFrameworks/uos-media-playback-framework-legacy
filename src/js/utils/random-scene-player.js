@@ -2,6 +2,8 @@
 /* jshint browser:true */
 var _ = require('lodash');
 var TagMatcher = require('./tag-matcher');
+var TemporalMediaObject = require('./media-object/temporal-media-object');
+var AtemporalMediaObject = require('./media-object/atemporal-media-object');
 
 // types and their default display counts
 var MEDIA_TYPES = {
@@ -51,7 +53,7 @@ function RandomScenePlayer (stageElement) {
                 incrementTypeCount(mediaObjectType);
                 switch(mediaObjectType) {
                     case 'image':
-                        displayDuration = getStaticMediaTypeDisplayDuration(scene, obj) * 1000;
+                        displayDuration = getDisplayDuration(scene, obj) * 1000;
                         obj.makeElement(function(el) {
 
                             stageElement.appendChild(el);
@@ -85,7 +87,7 @@ function RandomScenePlayer (stageElement) {
                         break;
 
                     case 'text':
-                        // displayDuration = getStaticMediaTypeDisplayDuration(scene, obj) * 1000;
+                        // displayDuration = getDisplayDuration(scene, obj) * 1000;
                         // elementManager.showText(obj.text, displayDuration, function() {
                         //     decrementTypeCount(mediaObjectType);
                         //     showElementsOfType(mediaObjectType);
@@ -109,9 +111,16 @@ function RandomScenePlayer (stageElement) {
                         break;
                 }
 
+                var delay;
+                if (obj instanceof AtemporalMediaObject) {
+                    delay = getDisplayDuration() / getMaximumTypeCount(mediaObjectType);
+                } else if (obj instanceof TemporalMediaObject) {
+                    delay = getDisplayInterval();
+                }
+
                 setTimeout(function() {
                     showElementsOfType(mediaObjectType);    
-                }, getDisplayInterval() * 1000);
+                }, delay * 1000);
             }  
         }  
     }
@@ -150,14 +159,7 @@ function RandomScenePlayer (stageElement) {
         return _.uniq(_.map(tagString.split(','), function(s) { return s.trim(); }));
     }
 
-    function getDisplayInterval () {
-        if (scene.hasOwnProperty('displayInterval')) {
-            var val = parseFloat(scene.displayInterval);
-            return isNaN(val) ? DEFAULT_DISPLAY_INTERVAL : val;
-        } else {
-            return DEFAULT_DISPLAY_INTERVAL;
-        }
-    }
+    
 
     function getMaximumTypeCount(type) {
         var maximum,
@@ -180,9 +182,19 @@ function RandomScenePlayer (stageElement) {
         }
     }
 
-    function getStaticMediaTypeDisplayDuration (mediaObject) {
-        // be gentle on the poor user, parse their ints
-        var duration = parseInt(scene.displayDuration);
+    function getDisplayInterval () {    
+        var val = parseFloat(scene.displayInterval);
+        
+        if (isNaN(val)) {
+            val = DEFAULT_DISPLAY_INTERVAL;
+        }
+        
+        return val;
+    }
+
+    function getDisplayDuration () {
+        // be gentle on the poor user, parse if needed
+        var duration = parseFloat(scene.displayDuration);
 
         if (isNaN(duration)) {
             duration = DEFAULT_STATIC_DISPLAY_DURATION;

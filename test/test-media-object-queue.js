@@ -4,6 +4,9 @@ var MediaObjectQueue = require('../src/js/utils/media-object/media-object-queue'
 var assert = require('chai').assert;
 var chance = require('chance').Chance();
 var ImageMediaObject = require('../src/js/utils/media-object/image-media-object');
+var VideoMediaObject = require('../src/js/utils/media-object/video-media-object');
+var TextMediaObject = require('../src/js/utils/media-object/text-media-object');
+var AudioMediaObject = require('../src/js/utils/media-object/audio-media-object');
 
 
 function makeScene (ops) {
@@ -13,12 +16,18 @@ function makeScene (ops) {
         for (var i = 0; i < ops[type] || 0; i++) {
             scene.push({
                 type: type,
-                url: chance.url
+                url: chance.url()
             });
         }    
     });
-    
 
+    for (var i = 0; i < ops.text || 0; i++) {
+        scene.push({
+            type: 'text',
+            text: chance.string()
+        });
+    }
+    
     return {
         name: chance.string(),
         _id: chance.string(),
@@ -33,7 +42,22 @@ describe('MediaObjectQueue', function () {
         this.queue = new MediaObjectQueue();
     });
 
-    describe('filtering behavior with only 1 image', function () {
+    describe('instantation of MediaObject sub types', function () {
+        beforeEach(function () {
+            this.queue.setScene(makeScene({image: 1, video: 1, text: 1, audio: 1}));
+        });
+
+        describe('nextByType()', function () {
+            it('should return proper sub types', function () {
+                assert.instanceOf(this.queue.nextByType('image'), ImageMediaObject);
+                assert.instanceOf(this.queue.nextByType('video'), VideoMediaObject);
+                assert.instanceOf(this.queue.nextByType('text'), TextMediaObject);
+                assert.instanceOf(this.queue.nextByType('audio'), AudioMediaObject);
+            });
+        });
+    });
+
+    describe('filtering by type behavior with only 1 image', function () {
         beforeEach(function () {
             this.queue.setScene(makeScene({image: 1}));
         });
@@ -62,7 +86,7 @@ describe('MediaObjectQueue', function () {
                 assert.strictEqual(mo1, mo2);
             });
 
-            it('should return both videos then a duplicate video when called three times', function () {
+            it('should return both images then a duplicate when called three times', function () {
                 var mo1 = this.queue.nextByType('image'),
                     mo2 = this.queue.nextByType('image'),
                     mo3 = this.queue.nextByType('image');
@@ -72,6 +96,10 @@ describe('MediaObjectQueue', function () {
             });
         });
 
+    });
+
+    describe('tagFiltering behavior', function () {
+        
     });
 
     describe('edge cases', function () {
