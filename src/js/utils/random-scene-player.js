@@ -12,6 +12,7 @@ var MEDIA_TYPES = {
 };
 
 var DEFAULT_STATIC_DISPLAY_DURATION = 10;
+var DEFAULT_DISPLAY_INTERVAL = 3;
 
 function RandomScenePlayer (stageElement) {
     var queue, 
@@ -108,12 +109,9 @@ function RandomScenePlayer (stageElement) {
                         break;
                 }
 
-                
-                // guess the duration to wait based on how many could be shown and for how long
-                var wait = displayDuration / getMaximumTypeCount(mediaObjectType);
                 setTimeout(function() {
                     showElementsOfType(mediaObjectType);    
-                }, wait);
+                }, getDisplayInterval() * 1000);
             }  
         }  
     }
@@ -150,6 +148,15 @@ function RandomScenePlayer (stageElement) {
 
     function parseTagString (tagString) {
         return _.uniq(_.map(tagString.split(','), function(s) { return s.trim(); }));
+    }
+
+    function getDisplayInterval () {
+        if (scene.hasOwnProperty('displayInterval')) {
+            var val = parseFloat(scene.displayInterval);
+            return isNaN(val) ? DEFAULT_DISPLAY_INTERVAL : val;
+        } else {
+            return DEFAULT_DISPLAY_INTERVAL;
+        }
     }
 
     function getMaximumTypeCount(type) {
