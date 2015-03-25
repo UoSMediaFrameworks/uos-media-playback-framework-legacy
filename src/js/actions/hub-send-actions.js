@@ -34,6 +34,7 @@ module.exports = {
                 'audio': 1
             },
             'displayDuration': 10,
+            'displayInterval': 3,
             'themes': {},
             'style': {
                 'backgroundColor': 'black'
