@@ -3,6 +3,14 @@
 var _ = require('lodash');
 var TagMatcher = require('../tag-matcher');
 var ImageMediaObject = require('./image-media-object');
+var VideoMediaObject = require('./video-media-object');
+var TextMediaObject = require('./text-media-object');
+
+var typeMappings = {
+    video: VideoMediaObject,
+    image: ImageMediaObject,
+    text: TextMediaObject
+};
 
 function MediaObjectQueue() {
     // MediaObjects keyed by type
@@ -17,10 +25,10 @@ function MediaObjectQueue() {
     }
 
     this.setScene = function(newScene) {
+
         mediaObjectList = _(newScene.scene).map(function(mo) {
-            switch(mo.type) {
-                case 'image': 
-                    return new ImageMediaObject(mo);
+            if (typeMappings.hasOwnProperty(mo.type)) {
+                return new typeMappings[mo.type](mo);    
             }
         }).filter(function(v) { return v !== undefined; }).valueOf();
 

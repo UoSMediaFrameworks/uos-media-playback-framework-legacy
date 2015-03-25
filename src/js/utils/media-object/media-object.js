@@ -5,7 +5,7 @@ var _ = require('lodash');
 function MediaObject (obj) {
     this._obj = obj;
 
-    this.tags = parseTagString(obj.tags);
+    this.tags = obj.tags ? parseTagString(obj.tags) : [];
     this.type = obj.type;
 }
 
