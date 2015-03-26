@@ -36,10 +36,13 @@ function onMessageRecieved (event) {
     players[data.player_id].handleEvent(data);
 }
 
-if (window && window.addEventListener) {
-    window.addEventListener('message', onMessageRecieved, false);
-} else {
-    window.attachEvent('onmessage', onMessageRecieved, false);
+// check for window, we won't have it if we are running headless tests
+if (typeof window !== 'undefined') {
+    if (window.addEventListener) {
+        window.addEventListener('message', onMessageRecieved, false);
+    } else {
+        window.attachEvent('onmessage', onMessageRecieved, false);
+    }
 }
 
 function EmbeddedVimeoPlayer (vimeoId) {
