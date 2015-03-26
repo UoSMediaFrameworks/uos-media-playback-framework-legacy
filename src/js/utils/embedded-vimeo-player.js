@@ -59,7 +59,7 @@ function EmbeddedVimeoPlayer (vimeoId) {
         }),
         playerUrl = '//player.vimeo.com/video/' + vimeoId + '?' + urlAttrsStr;
 
-    this.element = makeElement('iframe', {
+    this._element = makeElement('iframe', {
         src: playerUrl,
         id: this.id,
         width: 640,
@@ -68,7 +68,16 @@ function EmbeddedVimeoPlayer (vimeoId) {
         class: 'media-object embedded-vimeo-player'
     });
 
-    this.url = window.location.protocol + this.element.attributes.src.value.split('?')[0];
+    if (! EmbeddedVimeoPlayer.sandbox) {
+        throw 'EmbeddedVimeoPlayer.sandbox must be set with a DOM element.' + 
+              'It is necessary for videos to preload in.';
+    }
+
+    document.body.appendChild(this._element);
+    //EmbeddedVimeoPlayer.sandbox.appendChild(this._element);
+
+
+    this.url = window.location.protocol + this._element.attributes.src.value;//.split('?')[0];
 }
 
 EmbeddedVimeoPlayer.prototype.postMessage = function(action, value) {
@@ -81,8 +90,8 @@ EmbeddedVimeoPlayer.prototype.postMessage = function(action, value) {
     }
 
     var msg = JSON.stringify(data);
-    console.log(this.url);
-    this.element.contentWindow.postMessage(data, this.url);
+
+    this._element.contentWindow.postMessage(data, this.url);
 };
 
 EmbeddedVimeoPlayer.prototype.onFinish = function(cb) {
@@ -100,7 +109,7 @@ EmbeddedVimeoPlayer.prototype.handleEvent = function(data) {
     switch(data.event) {
         case 'ready':
             this.postMessage('addEventListener', 'finish');
-            this._readyHandler();    
+            this._readyHandler(this._element);    
             break;
         case 'finish':
             this._finishHandler();

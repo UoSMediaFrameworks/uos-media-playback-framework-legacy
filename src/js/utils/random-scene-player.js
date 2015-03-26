@@ -89,6 +89,8 @@ function RandomScenePlayer (stageElement) {
 
                                 obj.onFinish(function() {
                                     el.classList.remove('show-media-object');
+                                    decrementTypeCount(mediaObjectType);
+                                    showElementsOfType(mediaObjectType);
                                     
                                     window.setTimeout(function() {
                                         stageElement.removeChild(el);

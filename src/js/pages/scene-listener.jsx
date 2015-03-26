@@ -14,6 +14,7 @@ var _ = require('lodash');
 var $ = require('jquery');
 var TagMatcher = require('../utils/tag-matcher');
 var MediaObjectQueue = require('../utils/media-object/media-object-queue');
+var EmbeddedVimeoPlayer = require('../utils/embedded-vimeo-player');
 
 var SceneListener = React.createClass({
 
@@ -57,10 +58,13 @@ var SceneListener = React.createClass({
         SceneStore.addChangeListener(this._onChange);
         HubSendActions.loadScene(this.getParams().id);
 
+        var playerElem = this.getPlayerElem();
         //this.elementManager = new ScenePlayerElementManager(playerElem);
         this.mediaObjectQueue = new MediaObjectQueue();
-        this.player = new RandomScenePlayer(this.getPlayerElem());
+        this.player = new RandomScenePlayer(playerElem);
         this.player.setMediaObjectQueue(this.mediaObjectQueue);
+
+        EmbeddedVimeoPlayer.sandbox = playerElem;
 
         this._maybeUpdatePlayer();
     },
