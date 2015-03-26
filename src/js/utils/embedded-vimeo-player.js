@@ -36,7 +36,7 @@ function onMessageRecieved (event) {
     players[data.player_id].handleEvent(data);
 }
 
-if (window.addEventListener) {
+if (window && window.addEventListener) {
     window.addEventListener('message', onMessageRecieved, false);
 } else {
     window.attachEvent('onmessage', onMessageRecieved, false);
