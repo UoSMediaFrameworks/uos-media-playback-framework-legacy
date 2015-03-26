@@ -34,11 +34,9 @@ function RandomScenePlayer (stageElement) {
         return Math.round(Math.random() * (stageElement[dim] - element[dim])) + 'px';
     }
 
-    function getRandomPosition(element) {
-        return {
-            left: calcDimension('clientWidth', element),
-            top: calcDimension('clientHeight', element)
-        };
+    function placeAtRandomPosition(element) {
+        element.style.left = calcDimension('clientWidth', element);
+        element.style.top = calcDimension('clientHeight', element);
     }
 
     // handles intelligent per type behavior for mediaObjects, dispatching to the proper methods for 
@@ -57,13 +55,8 @@ function RandomScenePlayer (stageElement) {
                         obj.makeElement(function(el) {
 
                             stageElement.appendChild(el);
-
-                            var randPos = getRandomPosition(el);
-                            el.style.left = randPos.left;
-                            el.style.top = randPos.top;
-
+                            placeAtRandomPosition(el);
                             
-
                             window.setTimeout(function() {
                                 el.classList.add('show-media-object');
                             }, 0);
@@ -78,12 +71,6 @@ function RandomScenePlayer (stageElement) {
                                 }, 1400);
                             }, displayDuration);
                         });
-
-
-                        // elementManager.showImage(obj.url, displayDuration, function() {
-                        //     decrementTypeCount(mediaObjectType);
-                        //     showElementsOfType(mediaObjectType);
-                        // });
                         break;
 
                     case 'text':
@@ -95,6 +82,24 @@ function RandomScenePlayer (stageElement) {
                         break;
 
                     case 'video':
+                        obj.makeElement(function(el) {
+                            obj.onReady(function() {
+                                el.classList.add('show-media-object');
+                                obj.play();
+
+                                obj.onFinish(function() {
+                                    el.classList.remove('show-media-object');
+                                    
+                                    window.setTimeout(function() {
+                                        stageElement.removeChild(el);
+                                    }, 1400);
+                                });
+                            });
+
+                            stageElement.appendChild(el);
+                            placeAtRandomPosition(el);
+
+                        });
                         // displayDuration = 3 * 1000;
                         // elementManager.playVideo(obj.url, obj.volume || 0, function() {
                         //     decrementTypeCount(mediaObjectType);

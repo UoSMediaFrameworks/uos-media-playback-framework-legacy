@@ -64,10 +64,11 @@ html, body {
 
 .embedded-vimeo-player {
     z-index: 1;
-    /* exact center video */
+    /* exact center video 
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    */
 }
 
 .text-media-object {

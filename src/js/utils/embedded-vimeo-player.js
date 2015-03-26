@@ -43,6 +43,7 @@ if (window.addEventListener) {
 }
 
 function EmbeddedVimeoPlayer (vimeoId) {
+    this._ready = false;
     this.id = hat();
 
     registerPlayer(this.id, this);
@@ -51,7 +52,7 @@ function EmbeddedVimeoPlayer (vimeoId) {
             api: 1,
             player_id: this.id,
             title: 0,
-            autoplay: 1
+            autoplay: 0
         }),
         playerUrl = '//player.vimeo.com/video/' + vimeoId + '?' + urlAttrsStr;
 
@@ -77,6 +78,7 @@ EmbeddedVimeoPlayer.prototype.postMessage = function(action, value) {
     }
 
     var msg = JSON.stringify(data);
+    console.log(this.url);
     this.element.contentWindow.postMessage(data, this.url);
 };
 
@@ -95,7 +97,7 @@ EmbeddedVimeoPlayer.prototype.handleEvent = function(data) {
     switch(data.event) {
         case 'ready':
             this.postMessage('addEventListener', 'finish');
-            this._readyHandler();
+            this._readyHandler();    
             break;
         case 'finish':
             this._finishHandler();
