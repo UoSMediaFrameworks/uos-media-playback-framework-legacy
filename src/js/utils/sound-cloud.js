@@ -34,15 +34,23 @@ var resolveAttribute = function(soundCloudUrl, attr, callback) {
 	}
 };
 
-module.exports = {
-	waveformUrl: function(soundCloudUrl, callback) {
-		resolveAttribute(soundCloudUrl, 'waveform_url', callback);
-	},
-	streamUrl: function(soundCloudUrl, callback) {
-		resolveAttribute(soundCloudUrl, 'stream_url', function(url) {
-			callback(url + '?' + apiRequest.urlParams({client_id: process.env.SOUNDCLOUD_CLIENT_ID}));
-		});
-	}
+function identity (val) { return val; }
 
+function apiHandler (attribute, transform) {
+	var trans = transform || identity;
+
+	return function(soundCloudUrl, callback) {
+		resolveAttribute(soundCloudUrl, attribute, function(attributeValue) {
+			callback(trans(attributeValue));	
+		});
+	};
+}
+
+module.exports = {
+	waveformUrl: apiHandler('waveform_url'),
+	tags: apiHandler('tag_list'),
+	streamUrl: apiHandler('stream_url', function(url) {
+		return url + '?' + apiRequest.urlParams({client_id: process.env.SOUNDCLOUD_CLIENT_ID});
+	})
 };
 
