@@ -78,18 +78,19 @@ var SceneActions = {
             value: soundCloudUrl
         });
 
-        
+                
+        soundCloud.tags(soundCloudUrl, function(tags) {
+            AppDispatcher.handleServerAction({
+                type: ActionTypes.ADD_MEDIA_SUCCESS
+            });
 
-        AppDispatcher.handleServerAction({
-            type: ActionTypes.ADD_MEDIA_SUCCESS
+            SceneActions.addMediaObject(sceneId, {
+                type: 'audio',
+                volume: 100,
+                url: soundCloudUrl,
+                tags: tags
+            });    
         });
-
-        SceneActions.addMediaObject(sceneId, {
-            type: 'audio',
-            url: soundCloudUrl
-        });
-
-        
     },
 
     removeMediaObject: function(scene, index) {     
