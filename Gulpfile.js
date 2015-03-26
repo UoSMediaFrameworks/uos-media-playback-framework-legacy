@@ -4,6 +4,7 @@ var gulp = require('gulp');
 var gutil = require('gulp-util');
 var path = require('path');
 var gulpif = require('gulp-if');
+var template = require('gulp-template');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var watchify = require('watchify');
@@ -79,6 +80,7 @@ gulp.task('watch', function () {
 
 gulp.task('html', function() {
     return gulp.src('src/*.html')
+        .pipe(template({polyfillFeatures: 'Element.prototype.classList,Object.create'}))
         .pipe(gulp.dest('dist'));
 });
 

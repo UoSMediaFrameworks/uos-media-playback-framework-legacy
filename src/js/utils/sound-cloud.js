@@ -34,15 +34,51 @@ var resolveAttribute = function(soundCloudUrl, attr, callback) {
 	}
 };
 
-module.exports = {
-	waveformUrl: function(soundCloudUrl, callback) {
-		resolveAttribute(soundCloudUrl, 'waveform_url', callback);
-	},
-	streamUrl: function(soundCloudUrl, callback) {
-		resolveAttribute(soundCloudUrl, 'stream_url', function(url) {
-			callback(url + '?' + apiRequest.urlParams({client_id: process.env.SOUNDCLOUD_CLIENT_ID}));
+function identity (val) { return val; }
+
+function apiHandler (attribute, transform) {
+	var trans = transform || identity;
+
+	return function(soundCloudUrl, callback) {
+		resolveAttribute(soundCloudUrl, attribute, function(attributeValue) {
+			callback(trans(attributeValue));	
 		});
+	};
+}
+
+var tagRegexp = /\s*?(?:"([^"]+)"|([^\s]+))\s*?/;
+
+function convertTags (tagString) {
+	// sound cloud has it's tags space seperated, and multi word tags
+	// are enclosed in quotes
+	// this is a quick little tokenizer/parser to make them match our 
+	// comma seperated format
+	var tags = [],
+		match,
+		matchString = tagString;
+	
+	while (matchString !== '') {
+		match = tagRegexp.exec(matchString);
+
+		if (! match) {
+			tags.push(matchString.trim());
+			break;
+		} else {
+			tags.push(match[1] || match[2]);
+			// remove the match from the matchString
+			matchString = matchString.substring(match[0].length);
+		}
 	}
 
+	return tags.join(', ');
+}
+
+module.exports = {
+	waveformUrl: apiHandler('waveform_url'),
+	tags: apiHandler('tag_list', convertTags),
+	streamUrl: apiHandler('stream_url', function(url) {
+		return url + '?' + apiRequest.urlParams({client_id: process.env.SOUNDCLOUD_CLIENT_ID});
+	}),
+	convertTags: convertTags
 };
 
