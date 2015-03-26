@@ -7,7 +7,9 @@ describe('soundCloud.convertTags()', function () {
     var matches = [
         ["\"Creative Culture Music Group\" \"Creative CultureMG\" @Eskvr @JRossRossedUp",
         "Creative Culture Music Group, Creative CultureMG, @Eskvr, @JRossRossedUp"],
-        ["birds cats #dogs", "birds, cats, #dogs"]
+        ["birds cats #dogs", "birds, cats, #dogs"],
+        ["birds", "birds"],
+        ['"birds and cats" cats', 'birds and cats, cats']
     ];
 
     matches.forEach(function(data) {
