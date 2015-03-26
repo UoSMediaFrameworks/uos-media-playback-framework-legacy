@@ -43,6 +43,7 @@ html, body {
 .media-object {
     position: absolute;
     opacity: 0;
+
     -webkit-transition: opacity 1.4s ease-in-out;
     -moz-transition: opacity 1.4s ease-in-out;
     -ms-transition: opacity 1.4s ease-in-out;
@@ -64,11 +65,6 @@ html, body {
 
 .embedded-vimeo-player {
     z-index: 1;
-    /* exact center video 
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    */
 }
 
 .text-media-object {
