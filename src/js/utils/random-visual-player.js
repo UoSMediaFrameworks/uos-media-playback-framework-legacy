@@ -5,13 +5,7 @@ var TagMatcher = require('./tag-matcher');
 var TemporalMediaObject = require('./media-object/temporal-media-object');
 var AtemporalMediaObject = require('./media-object/atemporal-media-object');
 
-// types and their default display counts
-var MEDIA_TYPES = {
-    image: 3,
-    text: 1,
-    video: 1,
-    audio: 1
-};
+
 
 
 function RandomVisualPlayer (stageElement) {
@@ -23,7 +17,7 @@ function RandomVisualPlayer (stageElement) {
         typeCounts = {};
 
     function showNewMedia () {
-        _.chain(MEDIA_TYPES).keys().forEach(function(type) {
+        _.forEach(['video', 'image', 'text', 'audio'], function(type) {
             showElementsOfType(type);
         });
     }
@@ -41,7 +35,7 @@ function RandomVisualPlayer (stageElement) {
     // their display
     function showElementsOfType (mediaObjectType) {
         var displayDuration;
-        if (getTypeCount(mediaObjectType) < getMaximumTypeCount(mediaObjectType)) {
+        if (getTypeCount(mediaObjectType) < queue.maximumTypeCounts[mediaObjectType]) {
             
             var obj = queue.nextByType(mediaObjectType);
 
@@ -82,7 +76,7 @@ function RandomVisualPlayer (stageElement) {
 
                 var delay;
                 if (obj instanceof AtemporalMediaObject) {
-                    delay = queue.displayDuration / getMaximumTypeCount(mediaObjectType);
+                    delay = queue.displayDuration / queue.maximumTypeCounts[mediaObjectType];
                 } else if (obj instanceof TemporalMediaObject) {
                     delay = queue.displayInterval;
                 }
@@ -181,45 +175,16 @@ function RandomVisualPlayer (stageElement) {
         return typeCounts[type] || 0;
     }
 
-    function filterMediaScene(tagMatcher, mediaType) {
-        return _.filter(scene.scene, function (obj) {
-            return (! mediaType || obj.type === mediaType) && tagMatcher.match(obj.tags);
-        });
-    }
-
     // if there's room in the scene, 
     // return the next media object from the _displayQueue.  Refill the queue if needed
     function nextMediaObject (type) {
-        if (getTypeCount(type) < getMaximumTypeCount(type)) {
+        if (getTypeCount(type) < queue.maximumTypeCounts[type]) {
             return queue.nextByType(type);
         }
     }
 
     function parseTagString (tagString) {
         return _.uniq(_.map(tagString.split(','), function(s) { return s.trim(); }));
-    }
-
-    
-
-    function getMaximumTypeCount(type) {
-        var maximum,
-            defaultCount = MEDIA_TYPES[type];
-        // wrap in try catch incase attribute is missing from the json
-        try {
-            maximum = parseInt(scene.maximumOnScreen[type]);
-        } catch (e) {
-            if (e instanceof TypeError) {
-                // do nothing, this just means there is no specified maximumOnScreen object in the scene
-                // we just go with the default then
-            } else {
-                throw e;
-            }
-        } finally {
-            if (isNaN(maximum)){
-                maximum = defaultCount;
-            }
-            return maximum;
-        }
     }
 
     this.setMediaObjectQueue = function(newQueue) {
