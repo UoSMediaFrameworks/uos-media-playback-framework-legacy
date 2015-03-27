@@ -76,6 +76,7 @@ html, body {
     background-color: rgba(0, 0, 0, .7);
     padding: 10px;
     border-radius: 3px;
+    border: none;
     color: white;
     z-index: 2;
 }

@@ -6,7 +6,6 @@ var ThemeSelector = require('../components/theme-selector.jsx');
 var HubSendActions = require('../actions/hub-send-actions');
 var RandomVisualPlayer = require('../utils/random-visual-player');
 var RandomAudioPlayer = require('../utils/random-audio-player');
-var ScenePlayerElementManager = require('../utils/scene-player-element-manager');
 var FormHelper = require('../mixins/form-helper');
 var Router = require('react-router');
 var Authentication = require('../mixins/Authentication');
