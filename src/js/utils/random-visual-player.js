@@ -183,7 +183,7 @@ function RandomVisualPlayer (stageElement, queue) {
     };
 
     this.start = function() {
-        _.forEach(['video', 'image', 'text', 'audio'], function(type) {
+        _.forEach(['video', 'image', 'text'], function(type) {
             showElementsOfType(type);
         });
     };
