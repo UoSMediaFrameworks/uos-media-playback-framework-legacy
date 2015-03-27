@@ -4,7 +4,7 @@ var React = require('react');
 var SceneStore = require('../stores/scene-store');
 var ThemeSelector = require('../components/theme-selector.jsx');
 var HubSendActions = require('../actions/hub-send-actions');
-var RandomScenePlayer = require('../utils/random-scene-player');
+var RandomVisualPlayer = require('../utils/random-visual-player');
 var ScenePlayerElementManager = require('../utils/scene-player-element-manager');
 var FormHelper = require('../mixins/form-helper');
 var Router = require('react-router');
@@ -48,8 +48,8 @@ var SceneListener = React.createClass({
             }
         
             this.mediaObjectQueue.setScene(this.state.scene);    
-            this.player.setScene(this.state.scene);
-            this.player.start();
+            this.randomVisualPlayer.setScene(this.state.scene);
+            this.randomVisualPlayer.start();
         }
     },
 
@@ -61,8 +61,8 @@ var SceneListener = React.createClass({
         var playerElem = this.getPlayerElem();
         //this.elementManager = new ScenePlayerElementManager(playerElem);
         this.mediaObjectQueue = new MediaObjectQueue();
-        this.player = new RandomScenePlayer(playerElem);
-        this.player.setMediaObjectQueue(this.mediaObjectQueue);
+        this.randomVisualPlayer = new RandomVisualPlayer(playerElem);
+        this.randomVisualPlayer.setMediaObjectQueue(this.mediaObjectQueue);
 
         this._maybeUpdatePlayer();
     },
