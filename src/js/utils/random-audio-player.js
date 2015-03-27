@@ -1,7 +1,9 @@
 'use strict';
 
 function RandomAudioPlayer () {
-    // body...
+    this.start = function() {
+
+    };
 }
 
 module.exports = RandomAudioPlayer;

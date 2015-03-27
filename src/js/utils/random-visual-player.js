@@ -8,19 +8,10 @@ var AtemporalMediaObject = require('./media-object/atemporal-media-object');
 
 
 
-function RandomVisualPlayer (stageElement) {
-    var queue, 
-        scene,
-        playing = false,
-        tagMatcher = new TagMatcher(),
+function RandomVisualPlayer (stageElement, queue) {
+    var tagMatcher = new TagMatcher(),
         // total number of active items being displayed
         typeCounts = {};
-
-    function showNewMedia () {
-        _.forEach(['video', 'image', 'text', 'audio'], function(type) {
-            showElementsOfType(type);
-        });
-    }
 
     function calcDimension(dim, element) {
         return Math.round(Math.random() * (stageElement[dim] - element[dim])) + 'px';
@@ -191,27 +182,10 @@ function RandomVisualPlayer (stageElement) {
         queue = newQueue;
     };
 
-    this.setScene = function(newScene) {
-        scene = _.cloneDeep(newScene);
-
-        // best to parse the tag string up front, rather than every time a new media object is selected
-        _.forEach(scene.scene, function(mediaObject) {
-            mediaObject.tags = parseTagString(mediaObject.tags);
-        });
-
-        
-
-        if (playing) {
-            showNewMedia();
-        }
-    };
-
     this.start = function() {
-        if (! playing) {
-            playing = true;
-            
-            showNewMedia();
-        }
+        _.forEach(['video', 'image', 'text', 'audio'], function(type) {
+            showElementsOfType(type);
+        });
     };
 
 }
