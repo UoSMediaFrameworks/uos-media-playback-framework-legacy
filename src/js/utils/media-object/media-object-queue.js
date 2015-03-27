@@ -97,27 +97,6 @@ function MediaObjectQueue() {
 
         return queue[type].pop();
     };
-
-    this.getMaximumTypeCount = function(type) {
-        var maximum,
-            defaultCount = MEDIA_TYPES[type];
-        // wrap in try catch incase attribute is missing from the json
-        try {
-            maximum = parseInt(scene.maximumOnScreen[type]);
-        } catch (e) {
-            if (e instanceof TypeError) {
-                // do nothing, this just means there is no specified maximumOnScreen object in the scene
-                // we just go with the default then
-            } else {
-                throw e;
-            }
-        } finally {
-            if (isNaN(maximum)){
-                maximum = defaultCount;
-            }
-            return maximum;
-        }
-    };
 }
 
 module.exports = MediaObjectQueue;
