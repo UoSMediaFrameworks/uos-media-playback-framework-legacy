@@ -13,8 +13,6 @@ var MEDIA_TYPES = {
     audio: 1
 };
 
-var DEFAULT_STATIC_DISPLAY_DURATION = 10;
-var DEFAULT_DISPLAY_INTERVAL = 3;
 
 function RandomVisualPlayer (stageElement) {
     var queue, 
@@ -68,7 +66,7 @@ function RandomVisualPlayer (stageElement) {
                                 el.classList.add('show-media-object');
                             }, 0);
 
-                            window.setTimeout(cleanUp, getDisplayDuration(scene, obj) * 1000);
+                            window.setTimeout(cleanUp, queue.displayDuration * 1000);
                         } else if (obj instanceof TemporalMediaObject) {
                             obj.play();
                             el.classList.add('show-media-object');
@@ -84,9 +82,9 @@ function RandomVisualPlayer (stageElement) {
 
                 var delay;
                 if (obj instanceof AtemporalMediaObject) {
-                    delay = getDisplayDuration() / getMaximumTypeCount(mediaObjectType);
+                    delay = queue.displayDuration / getMaximumTypeCount(mediaObjectType);
                 } else if (obj instanceof TemporalMediaObject) {
-                    delay = getDisplayInterval();
+                    delay = queue.displayInterval;
                 }
 
                 setTimeout(function() {
@@ -95,7 +93,7 @@ function RandomVisualPlayer (stageElement) {
                 /*
                 switch(mediaObjectType) {
                     case 'image':
-                        displayDuration = getDisplayDuration(scene, obj) * 1000;
+                        displayDuration = queue.displayDuration * 1000;
                         obj.makeElement(function(el) {
 
                             stageElement.appendChild(el);
@@ -118,7 +116,7 @@ function RandomVisualPlayer (stageElement) {
                         break;
 
                     case 'text':
-                        // displayDuration = getDisplayDuration(scene, obj) * 1000;
+                        // displayDuration = queue.displayDuration * 1000;
                         // elementManager.showText(obj.text, displayDuration, function() {
                         //     decrementTypeCount(mediaObjectType);
                         //     showElementsOfType(mediaObjectType);
@@ -222,27 +220,6 @@ function RandomVisualPlayer (stageElement) {
             }
             return maximum;
         }
-    }
-
-    function getDisplayInterval () {    
-        var val = parseFloat(scene.displayInterval);
-        
-        if (isNaN(val)) {
-            val = DEFAULT_DISPLAY_INTERVAL;
-        }
-        
-        return val;
-    }
-
-    function getDisplayDuration () {
-        // be gentle on the poor user, parse if needed
-        var duration = parseFloat(scene.displayDuration);
-
-        if (isNaN(duration)) {
-            duration = DEFAULT_STATIC_DISPLAY_DURATION;
-        }
-
-        return duration;
     }
 
     this.setMediaObjectQueue = function(newQueue) {

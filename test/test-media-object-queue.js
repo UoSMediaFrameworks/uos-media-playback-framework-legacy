@@ -1,5 +1,7 @@
 'use strict';
 
+var _ = require('lodash');
+_.mixin(require('lodash-deep'));
 var MediaObjectQueue = require('../src/js/utils/media-object/media-object-queue');
 var assert = require('chai').assert;
 var chance = require('chance').Chance();
@@ -96,6 +98,57 @@ describe('MediaObjectQueue', function () {
             });
         });
 
+    });
+
+    describe('scene attributes', function () {
+        function checkAttributes (expectedValues) {
+            _.forEach(expectedValues, function(value, key) {
+                it('should default queue.' + key + ' to ' + value, function () {
+                    assert.strictEqual(_.deepGet(this.queue, key), value);
+                });
+            });
+        }
+
+        describe('using defaults', function () {
+            beforeEach(function () {
+                this.queue.setScene({});
+            });
+
+            checkAttributes({
+                displayInterval: 3,
+                displayDuration: 10,
+                'maximumTypeCounts.image': 3,
+                'maximumTypeCounts.video': 1, 
+                'maximumTypeCounts.audio': 1,
+                'maximumTypeCounts.text': 1
+            });
+        });
+
+        describe('overridding defaults', function () {
+            beforeEach(function () {
+                this.queue.setScene({
+                    displayInterval: 4,
+                    displayDuration: 13,
+                    maximumOnScreen: {
+                        image: 4,
+                        text: 5,
+                        video: 6,
+                        audio: 7
+                    }
+                });
+            });
+
+            checkAttributes({
+                displayInterval: 4,
+                displayDuration: 13,
+                'maximumTypeCounts.image': 4,
+                'maximumTypeCounts.video': 6, 
+                'maximumTypeCounts.audio': 7,
+                'maximumTypeCounts.text': 5
+            }); 
+
+        });
+        
     });
 
     describe('tagFiltering behavior', function () {
