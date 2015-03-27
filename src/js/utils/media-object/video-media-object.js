@@ -23,8 +23,13 @@ VideoMediaObject.prototype.makeElement = function(callback) {
 };
 
 VideoMediaObject.prototype.play = function() {
-    var volume = (this._obj.volume || 100) / 100;
-    this._player.postMessage('setVolume', volume);
+    var volume = this._obj.volume;
+    if (isNaN(volume)) {
+        volume = 100;
+    }
+    volume = volume / 100;
+    // vimeo player complains if you pass it 0, so we pass it just above zero
+    this._player.postMessage('setVolume', volume || 0.00001);
     this._player.postMessage('play');
 };
 

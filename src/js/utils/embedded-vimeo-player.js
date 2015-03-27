@@ -68,16 +68,9 @@ function EmbeddedVimeoPlayer (vimeoId) {
         class: 'media-object embedded-vimeo-player'
     });
 
-    if (! EmbeddedVimeoPlayer.sandbox) {
-        throw 'EmbeddedVimeoPlayer.sandbox must be set with a DOM element.' + 
-              'It is necessary for videos to preload in.';
-    }
-
     document.body.appendChild(this._element);
-    //EmbeddedVimeoPlayer.sandbox.appendChild(this._element);
-
-
-    this.url = window.location.protocol + this._element.attributes.src.value;//.split('?')[0];
+    
+    this.url = window.location.protocol + this._element.attributes.src.value.split('?')[0];
 }
 
 EmbeddedVimeoPlayer.prototype.postMessage = function(action, value) {

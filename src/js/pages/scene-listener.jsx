@@ -64,8 +64,6 @@ var SceneListener = React.createClass({
         this.player = new RandomScenePlayer(playerElem);
         this.player.setMediaObjectQueue(this.mediaObjectQueue);
 
-        EmbeddedVimeoPlayer.sandbox = playerElem;
-
         this._maybeUpdatePlayer();
     },
     

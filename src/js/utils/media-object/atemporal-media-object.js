@@ -10,4 +10,8 @@ function AtemporalMediaObject (obj) {
 AtemporalMediaObject.prototype = Object.create(MediaObject.prototype);
 AtemporalMediaObject.prototype.constructor = AtemporalMediaObject;
 
+AtemporalMediaObject.prototype.onReady = function(callback) {
+    callback();
+};
+
 module.exports = AtemporalMediaObject;

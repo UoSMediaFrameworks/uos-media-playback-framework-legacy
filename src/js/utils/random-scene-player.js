@@ -49,6 +49,51 @@ function RandomScenePlayer (stageElement) {
 
             if (obj) {
                 incrementTypeCount(mediaObjectType);
+
+                obj.makeElement(function(el) {
+                    obj.onReady(function() {
+                        el.classList.add('show-media-object');
+                        
+                        var cleanUp = function() {
+                            el.classList.remove('show-media-object');
+                            decrementTypeCount(mediaObjectType);
+                            showElementsOfType(mediaObjectType);
+                            
+                            window.setTimeout(function() {
+                                stageElement.removeChild(el);
+                            }, 1400);
+                        };
+
+                        if (obj instanceof AtemporalMediaObject) {
+                            // window.setTimeout(function() {
+                                el.classList.add('show-media-object');
+                            // }, 0);
+
+                            window.setTimeout(cleanUp, getDisplayDuration(scene, obj) * 1000);
+                        } else if (obj instanceof TemporalMediaObject) {
+                            obj.play();
+
+                            obj.onFinish(cleanUp);
+                        }
+
+
+                    });
+
+                    stageElement.appendChild(el);
+                    placeAtRandomPosition(el);
+                });
+
+                var delay;
+                if (obj instanceof AtemporalMediaObject) {
+                    delay = getDisplayDuration() / getMaximumTypeCount(mediaObjectType);
+                } else if (obj instanceof TemporalMediaObject) {
+                    delay = getDisplayInterval();
+                }
+
+                setTimeout(function() {
+                    showElementsOfType(mediaObjectType);    
+                }, delay * 1000);
+                /*
                 switch(mediaObjectType) {
                     case 'image':
                         displayDuration = getDisplayDuration(scene, obj) * 1000;
@@ -116,18 +161,9 @@ function RandomScenePlayer (stageElement) {
                         //     showElementsOfType(mediaObjectType);
                         // });
                         break;
-                }
+                }*/
 
-                var delay;
-                if (obj instanceof AtemporalMediaObject) {
-                    delay = getDisplayDuration() / getMaximumTypeCount(mediaObjectType);
-                } else if (obj instanceof TemporalMediaObject) {
-                    delay = getDisplayInterval();
-                }
-
-                setTimeout(function() {
-                    showElementsOfType(mediaObjectType);    
-                }, delay * 1000);
+                
             }  
         }  
     }
