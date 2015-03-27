@@ -73,7 +73,7 @@ var SceneListener = React.createClass({
 
     componentDidUpdate: function(prevProps, prevState) {
         this._maybeUpdatePlayer();
-        this.mediaObjectQueue.setTagMatcher(this.mergeTagAndThemeFilters());
+        this.updateTags();
     },
 
     mergeTagAndThemeFilters: function() {
@@ -92,8 +92,9 @@ var SceneListener = React.createClass({
         if (event) {
             event.preventDefault();
         }
-
-        this.mediaObjectQueue.setTagMatcher(this.mergeTagAndThemeFilters());
+        var tagFilter = this.mergeTagAndThemeFilters();
+        this.mediaObjectQueue.setTagMatcher(tagFilter);
+        this.randomAudioPlayer.setTagMatcher(tagFilter);
     },
 
     handleBlur: function(event) {

@@ -1,24 +1,44 @@
 'use strict';
 
+var _ = require('lodash');
+var TagMatcher = require('./tag-matcher');
+
 function RandomAudioPlayer (queue) {
-    var playingCount = 0;
+    var activeAudio = [];
 
-    this.start = function playAudio () {
-        if (playingCount < queue.maximumTypeCounts.audio) {
-            var obj = queue.nextByType('audio');
+    function stopAudio(obj) {
+        obj.stop();
+        activeAudio.splice(activeAudio.indexOf(obj), 1);
+    }
 
-            if (obj) {
-                playingCount++;
-                obj.play(function() {
-                    playingCount--;
+    function playAudio () {
+            if (activeAudio.length < queue.maximumTypeCounts.audio) {
+                var obj = queue.nextByType('audio');
+
+                if (obj) {
+                    activeAudio.push(obj);
+                    obj.play(function() {
+                        stopAudio(obj);
+                        playAudio();
+                    });  
+                }
+
+                setTimeout(function() {
                     playAudio();
-                });  
+                }, queue.displayInterval);
             }
-
-            setTimeout(function() {
-                playAudio();
-            }, queue.displayInterval);
         }
+
+    this.start = playAudio;
+
+    this.setTagMatcher = function(tagMatcher) {
+        // verify that all currently playing audio tracks match the tagMatcher,
+        // if not cancel them and start new ones
+        var obs = _(activeAudio)
+            .filter(function(obj) { return ! tagMatcher.match(obj.tags); })
+            .forEach(stopAudio);
+
+        playAudio();
     };
 }
 

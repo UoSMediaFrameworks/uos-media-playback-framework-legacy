@@ -12,16 +12,19 @@ AudioMediaObject.prototype = Object.create(TemporalMediaObject.prototype);
 AudioMediaObject.prototype.constructor = AudioMediaObject;
 
 AudioMediaObject.prototype.play = function(callback) {
-    var Audio5 = require('audio5');
-
-    var volume = this._obj.volume;
-    if (isNaN(volume)) {
-        volume = 100;
-    }
-    volume = volume / 100;
+    var self = this,
+        // hide inside of play() because Audio5 library bombs when loaded 
+        // in a headless environment
+        Audio5 = require('audio5');
 
     soundCloud.streamUrl(this._obj.url, function(streamUrl) {
-        var audio = new Audio5({
+        var volume = self._obj.volume;
+        if (isNaN(volume)) {
+            volume = 100;
+        }
+        volume = volume / 100;
+
+        self._player = new Audio5({
             ready: function(player) {
                 this.load(streamUrl);
                 this.play();
@@ -31,6 +34,15 @@ AudioMediaObject.prototype.play = function(callback) {
         });
     });
     
+};
+
+AudioMediaObject.prototype.stop = function() {
+    if (this._player.playing) {
+        this._player.pause();    
+        console.log('called stop on ', this);
+    } else {
+        throw 'stopping already stopped audio';
+    }
 };
 
 module.exports = AudioMediaObject;
