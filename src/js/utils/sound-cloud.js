@@ -14,8 +14,19 @@ if (! process.env.SOUNDCLOUD_CLIENT_ID) {
 var resolveCache = {};
 
 var resolveAttribute = function(soundCloudUrl, attr, callback) {
+
+	var finish = function() {
+		if (Array.isArray(attr)) {
+			callback(_.map(attr, function(a) {
+				return resolveCache[soundCloudUrl][a];
+			}));
+		} else {
+			callback(resolveCache[soundCloudUrl][attr]);	
+		}
+	};
+
 	if (resolveCache.hasOwnProperty(soundCloudUrl)) {
-		callback(resolveCache[soundCloudUrl][attr]);
+		finish();
 	} else {
 		var query = {
 			client_id: process.env.SOUNDCLOUD_CLIENT_ID, 
@@ -28,7 +39,7 @@ var resolveAttribute = function(soundCloudUrl, attr, callback) {
 			query: query,
 			onLoad: function(data) {
 				resolveCache[soundCloudUrl] = data;
-				callback(data[attr]);
+				finish();
 			}
 		});
 	}
@@ -75,7 +86,11 @@ function convertTags (tagString) {
 
 module.exports = {
 	waveformUrl: apiHandler('waveform_url'),
-	tags: apiHandler('tag_list', convertTags),
+	tags: apiHandler(['genre', 'tag_list'], function(data) {
+		// concat the genre and tag_list together since soundcloud assigns
+		// the first tag as the genre
+		return convertTags(data[0] + ' ' + data[1]);
+	}),
 	streamUrl: apiHandler('stream_url', function(url) {
 		return url + '?' + apiRequest.urlParams({client_id: process.env.SOUNDCLOUD_CLIENT_ID});
 	}),
