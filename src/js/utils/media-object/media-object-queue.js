@@ -44,6 +44,10 @@ function MediaObjectQueue() {
         });
     }
 
+    function clearQueue () {
+        queue = [];
+    }
+
     this.setScene = function(newScene) {
         // fill the queue
         mediaObjectList = _(newScene.scene).map(function(mo) {
@@ -52,7 +56,7 @@ function MediaObjectQueue() {
             }
         }).filter(function(v) { return v !== undefined; }).valueOf();
 
-        refreshQueue();
+        clearQueue();
 
         // default scene properties
         var sceneVal;
@@ -86,7 +90,7 @@ function MediaObjectQueue() {
     this.setTagMatcher = function(newTagMatcher) {
         if (! tagMatcher.equalTo(newTagMatcher) ) {
             tagMatcher = newTagMatcher;
-            refreshQueue();
+            clearQueue();
         }
     };
 

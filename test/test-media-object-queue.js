@@ -9,32 +9,44 @@ var ImageMediaObject = require('../src/js/utils/media-object/image-media-object'
 var VideoMediaObject = require('../src/js/utils/media-object/video-media-object');
 var TextMediaObject = require('../src/js/utils/media-object/text-media-object');
 var AudioMediaObject = require('../src/js/utils/media-object/audio-media-object');
+var TagMatcher = require('../src/js/utils/tag-matcher');
 
 
 function makeScene (ops) {
     var scene = [];
 
-    ['image', 'video', 'audio'].forEach(function(type) {
-        for (var i = 0; i < ops[type] || 0; i++) {
-            scene.push({
-                type: type,
-                url: chance.url()
-            });
-        }    
-    });
-
-    for (var i = 0; i < ops.text || 0; i++) {
-        scene.push({
-            type: 'text',
-            text: chance.string()
+    if (ops) {
+        ['image', 'video', 'audio'].forEach(function(type) {
+            for (var i = 0; i < ops[type] || 0; i++) {
+                scene.push({
+                    type: type,
+                    url: chance.url()
+                });
+            }    
         });
+
+        for (var i = 0; i < ops.text || 0; i++) {
+            scene.push({
+                type: 'text',
+                text: chance.string()
+            });
+        }
     }
+    
     
     return {
         name: chance.string(),
         _id: chance.string(),
         themes: {},
         scene: scene
+    };
+}
+
+function moWithTags (type, tags) {
+    return {
+        type: type,
+        url: chance.string(),
+        tags: tags
     };
 }
 
@@ -152,7 +164,41 @@ describe('MediaObjectQueue', function () {
     });
 
     describe('tagFiltering behavior', function () {
-        
+        beforeEach(function () {
+            var scene = makeScene();
+            scene.scene = [
+                moWithTags('image', 'apples, bananas'),
+                moWithTags('image', ''),
+                moWithTags('audio', 'apples')
+            ];
+
+            this.queue.setScene(scene);
+        });
+
+        describe('setTagMatcher called with non-matching expression', function () {
+            beforeEach(function () {
+                this.queue.setTagMatcher(new TagMatcher('carrots'));
+            });
+
+            it('should return nothing from any type', function () {
+                assert.isUndefined(this.queue.nextByType('audio'));
+                assert.isUndefined(this.queue.nextByType('image'));
+            });
+        });
+
+        describe('nextByType called, then non-matching expression set', function () {
+            beforeEach(function () {
+                this.queue.nextByType('image');
+                this.queue.nextByType('audio');
+                this.queue.setTagMatcher(new TagMatcher('carrots'));
+            });
+
+            it('nextByType return nothing for any type', function () {
+                assert.isUndefined(this.queue.nextByType('audio'));
+                assert.isUndefined(this.queue.nextByType('image'));
+            }); 
+        });
+
     });
 
     describe('edge cases', function () {

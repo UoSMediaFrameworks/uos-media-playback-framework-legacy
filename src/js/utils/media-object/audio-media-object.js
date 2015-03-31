@@ -16,6 +16,8 @@ AudioMediaObject.prototype.play = function(callback) {
         // hide inside of play() because Audio5 library bombs when loaded 
         // in a headless environment
         Audio5 = require('audio5');
+    
+    console.log('playing ' + this._obj.url, this._obj.tags);
 
     soundCloud.streamUrl(this._obj.url, function(streamUrl) {
         var volume = self._obj.volume;
@@ -39,9 +41,9 @@ AudioMediaObject.prototype.play = function(callback) {
 AudioMediaObject.prototype.stop = function() {
     if (this._player.playing) {
         this._player.pause();    
-        console.log('called stop on ', this);
+        console.log('stopping ', this._obj.url);
     } else {
-        throw 'stopping already stopped audio';
+        throw 'stopping already stopped audio ' + this._obj.url;
     }
 };
 
