@@ -1,6 +1,11 @@
 'use strict';
 
+var EventEmitter = require('events').EventEmitter;
+var inherits = require('inherits');
 var _ = require('lodash');
+
+inherits(MediaObject, EventEmitter);
+module.exports = MediaObject;
 
 function MediaObject (obj) {
     this._obj = obj;
@@ -14,11 +19,10 @@ function parseTagString (tagString) {
 }
 
 MediaObject.prototype.play = function(parent, doneCb) {
-    throw 'Not implemented!';
+    this.emit('play');
 };
 
 MediaObject.prototype.stop = function() {
-    throw 'not implemented!';
+    this.emit('stop');
 };
 
-module.exports = MediaObject;

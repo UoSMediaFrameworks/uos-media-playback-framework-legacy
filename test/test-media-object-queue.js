@@ -56,17 +56,24 @@ describe('MediaObjectQueue', function () {
         this.queue = new MediaObjectQueue();
     });
 
-    describe('instantation of MediaObject sub types', function () {
+    var emptyMatch = new TagMatcher('');
+
+    describe('take/return behavior', function () {
         beforeEach(function () {
             this.queue.setScene(makeScene({image: 1, video: 1, text: 1, audio: 1}));
         });
 
-        describe('nextByType()', function () {
-            it('should return proper sub types', function () {
-                assert.instanceOf(this.queue.nextByType('image'), ImageMediaObject);
-                assert.instanceOf(this.queue.nextByType('video'), VideoMediaObject);
-                assert.instanceOf(this.queue.nextByType('text'), TextMediaObject);
-                assert.instanceOf(this.queue.nextByType('audio'), AudioMediaObject);
+        describe('take(type)', function () {
+            it('should return an object of type if one is available', function () {
+                assert.instanceOf(this.queue.take('image', emptyMatch), ImageMediaObject);
+                assert.instanceOf(this.queue.take('video', emptyMatch), VideoMediaObject);
+                assert.instanceOf(this.queue.take('text', emptyMatch), TextMediaObject);
+                assert.instanceOf(this.queue.take('audio', emptyMatch), AudioMediaObject);
+            });
+
+            it('should not return an object if all of that type have been taken', function () {
+                assert.instanceOf(this.queue.take('image', emptyMatch), ImageMediaObject);
+                assert.isUndefined(this.queue.take('image', emptyMatch));
             });
         });
     });
@@ -76,13 +83,13 @@ describe('MediaObjectQueue', function () {
             this.queue.setScene(makeScene({image: 1}));
         });
 
-        describe('nextByType()', function () {
+        describe('take()', function () {
             it('should return an ImageMediaObject when called with "image"', function () {
-                assert.instanceOf(this.queue.nextByType('image'), ImageMediaObject);
+                assert.instanceOf(this.queue.take('image', emptyMatch), ImageMediaObject);
             });
 
             it('should return undefined when called with "video"', function () {
-                assert.isUndefined(this.queue.nextByType('video'));
+                assert.isUndefined(this.queue.take('video', emptyMatch));
             });
         });
     });
@@ -92,21 +99,24 @@ describe('MediaObjectQueue', function () {
             this.queue.setScene(makeScene({video: 1, image: 2}));
         });
 
-        describe('nextByType()', function () {
-            it('should return the same video when called twice', function () {
-                var mo1 = this.queue.nextByType('video');
-                var mo2 = this.queue.nextByType('video');
+        describe('take()', function () {
+            it('should return the same video after it is put back using give()', function () {
+                var mo1 = this.queue.take('video', emptyMatch);
+                this.queue.give(mo1);
+                var mo2 = this.queue.take('video', emptyMatch);
 
                 assert.strictEqual(mo1, mo2);
             });
 
-            it('should return both images then a duplicate when called three times', function () {
-                var mo1 = this.queue.nextByType('image'),
-                    mo2 = this.queue.nextByType('image'),
-                    mo3 = this.queue.nextByType('image');
+            it('should return all objects for a type and then what ever one is given back', function () {
+                var mo1 = this.queue.take('image', emptyMatch),
+                    mo2 = this.queue.take('image', emptyMatch);
+                
+                this.queue.give(mo1);
+                var mo3 = this.queue.take('image', emptyMatch);
 
                 assert.notStrictEqual(mo1, mo2);
-                assert(mo3 === mo1 || mo3 === mo2, 'queue did not return a duplicate');
+                assert.strictEqual(mo3, mo1);
             });
         });
 
@@ -129,6 +139,7 @@ describe('MediaObjectQueue', function () {
             checkAttributes({
                 displayInterval: 3,
                 displayDuration: 10,
+                transitionDuration: 1,
                 'maximumTypeCounts.image': 3,
                 'maximumTypeCounts.video': 1, 
                 'maximumTypeCounts.audio': 1,
@@ -141,6 +152,7 @@ describe('MediaObjectQueue', function () {
                 this.queue.setScene({
                     displayInterval: 4,
                     displayDuration: 13,
+                    transitionDuration: 3,
                     maximumOnScreen: {
                         image: 4,
                         text: 5,
@@ -153,6 +165,7 @@ describe('MediaObjectQueue', function () {
             checkAttributes({
                 displayInterval: 4,
                 displayDuration: 13,
+                transitionDuration: 3,
                 'maximumTypeCounts.image': 4,
                 'maximumTypeCounts.video': 6, 
                 'maximumTypeCounts.audio': 7,
@@ -175,27 +188,31 @@ describe('MediaObjectQueue', function () {
             this.queue.setScene(scene);
         });
 
-        describe('setTagMatcher called with non-matching expression', function () {
-            beforeEach(function () {
-                this.queue.setTagMatcher(new TagMatcher('carrots'));
-            });
+        var carrotsMatcher = new TagMatcher('carrots');
 
-            it('should return nothing from any type', function () {
-                assert.isUndefined(this.queue.nextByType('audio'));
-                assert.isUndefined(this.queue.nextByType('image'));
+        describe('take()ing an object, setting the tagMatcher, and take()ing another of the same type', function () {
+            it('should not refill the queue with elements that have been taken but not replaced', function () {
+                this.queue.take('audio', emptyMatch);
+                assert.isUndefined(this.queue.take('audio', new TagMatcher('apples')));
             });
         });
 
-        describe('nextByType called, then non-matching expression set', function () {
+        describe('setTagMatcher called with non-matching expression', function () {
+            it('should return nothing from any type', function () {
+                assert.isUndefined(this.queue.take('audio', carrotsMatcher));
+                assert.isUndefined(this.queue.take('image', carrotsMatcher));
+            });
+        });
+
+        describe('take called, then non-matching expression set', function () {
             beforeEach(function () {
-                this.queue.nextByType('image');
-                this.queue.nextByType('audio');
-                this.queue.setTagMatcher(new TagMatcher('carrots'));
+                this.queue.take('image', emptyMatch);
+                this.queue.take('audio', emptyMatch);
             });
 
-            it('nextByType return nothing for any type', function () {
-                assert.isUndefined(this.queue.nextByType('audio'));
-                assert.isUndefined(this.queue.nextByType('image'));
+            it('take return nothing for any type', function () {
+                assert.isUndefined(this.queue.take('audio', carrotsMatcher));
+                assert.isUndefined(this.queue.take('image', carrotsMatcher));
             }); 
         });
 
@@ -205,9 +222,9 @@ describe('MediaObjectQueue', function () {
         
         describe('no scene set', function () {
         
-            describe('nextByType()', function () {
+            describe('take()', function () {
                 it('should return undefined', function () {
-                    assert.isUndefined(this.queue.nextByType('image'));
+                    assert.isUndefined(this.queue.take('image'), emptyMatch);
                 });
             });
         });    

@@ -27,21 +27,38 @@ AudioMediaObject.prototype.play = function(callback) {
         volume = volume / 100;
 
         self._player = new Audio5({
-            ready: function(player) {
+            throw_errors: false,
+            ready: function() {
                 this.load(streamUrl);
                 this.play();
                 this.volume(volume);
                 this.on('ended', callback);
+                this.on('error', callback);
             }
         });
     });
     
 };
 
-AudioMediaObject.prototype.stop = function() {
+AudioMediaObject.prototype.stop = function(fadeOutTime) {
     if (this._player.playing) {
-        this._player.pause();    
-        console.log('stopping ', this._obj.url);
+        var fadeOutMs = fadeOutTime * 1000,
+            resolution = 10,
+            units = fadeOutMs / resolution,
+            fadeAmount = this._player.volume() / units;
+        console.log('fading ' + this._obj.url);
+
+        var fadeOutInterval = window.setInterval(function() {
+            if (this._player.volume() <= 0) {
+                window.clearInterval(fadeOutInterval);
+                this._player.pause();    
+                console.log('stopping ', this._obj.url);
+            } else {
+                this._player.volume(this._player.volume() - fadeAmount);
+            }
+        }.bind(this), resolution);
+
+        
     } else {
         throw 'stopping already stopped audio ' + this._obj.url;
     }

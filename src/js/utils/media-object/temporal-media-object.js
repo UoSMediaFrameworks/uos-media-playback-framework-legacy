@@ -2,12 +2,11 @@
 /*jshint browser:true */
 
 var MediaObject = require('./media-object');
+var inherits = require('inherits');
+
+module.exports = TemporalMediaObject;
+inherits(TemporalMediaObject, MediaObject);
 
 function TemporalMediaObject (obj) {
     MediaObject.call(this, obj);
 }
-
-TemporalMediaObject.prototype = Object.create(MediaObject.prototype);
-TemporalMediaObject.prototype.constructor = TemporalMediaObject;
-
-module.exports = TemporalMediaObject;

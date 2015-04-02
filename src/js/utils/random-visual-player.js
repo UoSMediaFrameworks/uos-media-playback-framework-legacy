@@ -6,12 +6,11 @@ var TemporalMediaObject = require('./media-object/temporal-media-object');
 var AtemporalMediaObject = require('./media-object/atemporal-media-object');
 
 
-
-
 function RandomVisualPlayer (stageElement, queue) {
     var tagMatcher = new TagMatcher(),
         // total number of active items being displayed
-        typeCounts = {};
+        typeCounts = {},
+        activeTemporalElements = [];
 
     function calcDimension(dim, element) {
         return Math.round(Math.random() * (stageElement[dim] - element[dim])) + 'px';
@@ -28,7 +27,7 @@ function RandomVisualPlayer (stageElement, queue) {
         var displayDuration;
         if (getTypeCount(mediaObjectType) < queue.maximumTypeCounts[mediaObjectType]) {
             
-            var obj = queue.nextByType(mediaObjectType);
+            var obj = queue.take(mediaObjectType, tagMatcher);
 
             if (obj) {
                 incrementTypeCount(mediaObjectType);
@@ -39,6 +38,7 @@ function RandomVisualPlayer (stageElement, queue) {
                         var cleanUp = function() {
                             el.classList.remove('show-media-object');
                             decrementTypeCount(mediaObjectType);
+                            queue.give(obj);
                             showElementsOfType(mediaObjectType);
                             
                             window.setTimeout(function() {
@@ -55,7 +55,10 @@ function RandomVisualPlayer (stageElement, queue) {
                         } else if (obj instanceof TemporalMediaObject) {
                             obj.play();
                             el.classList.add('show-media-object');
-                            obj.onFinish(cleanUp);
+                            obj.onFinish(function() {
+                                activeTemporalElements.splice(activeTemporalElements.indexOf(obj), 1);
+                                cleanUp();
+                            });
                         }
 
 
@@ -70,6 +73,7 @@ function RandomVisualPlayer (stageElement, queue) {
                     delay = queue.displayDuration / queue.maximumTypeCounts[mediaObjectType];
                 } else if (obj instanceof TemporalMediaObject) {
                     delay = queue.displayInterval;
+                    activeTemporalElements.push(obj);
                 }
 
                 setTimeout(function() {
@@ -166,18 +170,6 @@ function RandomVisualPlayer (stageElement, queue) {
         return typeCounts[type] || 0;
     }
 
-    // if there's room in the scene, 
-    // return the next media object from the _displayQueue.  Refill the queue if needed
-    function nextMediaObject (type) {
-        if (getTypeCount(type) < queue.maximumTypeCounts[type]) {
-            return queue.nextByType(type);
-        }
-    }
-
-    function parseTagString (tagString) {
-        return _.uniq(_.map(tagString.split(','), function(s) { return s.trim(); }));
-    }
-
     this.setMediaObjectQueue = function(newQueue) {
         queue = newQueue;
     };
@@ -186,6 +178,15 @@ function RandomVisualPlayer (stageElement, queue) {
         _.forEach(['video', 'image', 'text'], function(type) {
             showElementsOfType(type);
         });
+    };
+
+    this.setTagMatcher = function(newTagMatcher) {
+        // verify that all currently playing audio tracks match the tagMatcher,
+        // if not cancel them and start new ones
+        if (! tagMatcher.equalTo(newTagMatcher) ) {
+            tagMatcher = newTagMatcher;
+            
+        }
     };
 
 }

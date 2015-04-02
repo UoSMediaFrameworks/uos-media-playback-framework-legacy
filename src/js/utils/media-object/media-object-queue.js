@@ -16,7 +16,8 @@ var TYPE_MAPPINGS = {
 
 var SCENE_PROP_DEFAULTS = {
     displayInterval: 3,
-    displayDuration: 10
+    displayDuration: 10,
+    transitionDuration: 1
 };
 
 // types and their default display counts
@@ -33,30 +34,22 @@ Handles maintaining the list of objects to display and also access to various
 defaults of scene properties like displayInterval etc...
 */
 function MediaObjectQueue() {
-    // MediaObjects keyed by type
-    var queue = {},
-        mediaObjectList = {},
+    // active queue of objects to shift/push from
+    var queue = [],
+    // list of objects that belong to the current scene
+        masterList = [],
         tagMatcher = new TagMatcher();
 
-    function refreshQueue(type) {
-        queue[type] = _.filter(mediaObjectList, function(mo) {
-            return mo.type === type && tagMatcher.match(mo.tags);
-        });
-    }
-
-    function clearQueue () {
-        queue = [];
-    }
 
     this.setScene = function(newScene) {
-        // fill the queue
-        mediaObjectList = _(newScene.scene).map(function(mo) {
+        // fill the masterList queue
+        masterList = _(newScene.scene).map(function(mo) {
             if (TYPE_MAPPINGS.hasOwnProperty(mo.type)) {
                 return new TYPE_MAPPINGS[mo.type](mo);    
             }
         }).filter(function(v) { return v !== undefined; }).valueOf();
 
-        clearQueue();
+        queue = _.clone(masterList);
 
         // default scene properties
         var sceneVal;
@@ -87,19 +80,19 @@ function MediaObjectQueue() {
         }, {});
     };
 
-    this.setTagMatcher = function(newTagMatcher) {
-        if (! tagMatcher.equalTo(newTagMatcher) ) {
-            tagMatcher = newTagMatcher;
-            clearQueue();
-        }
+    this.take = function(type, tagMatcher) {
+        var index = _.findIndex(queue, function(mo) { return mo.type === type && tagMatcher.match(mo.tags); });
+        if (index !== -1) {
+            return queue.splice(index, 1)[0];    
+        } 
     };
 
-    this.nextByType = function(type) {
-        if (! queue[type] || queue[type].length === 0) { 
-            refreshQueue(type); 
-        }
-
-        return queue[type].pop();
+    this.give = function(mediaObject) {
+        // only add it back to the queue if it's found in the current masterList.
+        // it wouldn't be found if the scene had changed.
+        if (_.find(masterList, function(mo) { return mo === mediaObject; })) {
+            queue.push(mediaObject);
+        }    
     };
 }
 

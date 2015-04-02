@@ -93,8 +93,8 @@ var SceneListener = React.createClass({
             event.preventDefault();
         }
         var tagFilter = this.mergeTagAndThemeFilters();
-        this.mediaObjectQueue.setTagMatcher(tagFilter);
         this.randomAudioPlayer.setTagMatcher(tagFilter);
+        this.randomVisualPlayer.setTagMatcher(tagFilter);
     },
 
     handleBlur: function(event) {
