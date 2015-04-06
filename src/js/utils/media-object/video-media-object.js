@@ -1,16 +1,16 @@
 'use strict';
 /*jshint browser:true */
 
-var TemporalMediaObject = require('./temporal-media-object');
+var MediaObject = require('./media-object');
 var EmbeddedVimeoPlayer = require('../embedded-vimeo-player');
 var getVimeoId = require('../get-vimeo-id');
 
-function VideoMediaObject (obj) {
+function VideoMediaObject (obj, ops) {
     this._loading = false;
-    TemporalMediaObject.call(this, obj);
+    MediaObject.call(this, obj, ops);
 }
 
-VideoMediaObject.prototype = Object.create(TemporalMediaObject.prototype);
+VideoMediaObject.prototype = Object.create(MediaObject.prototype);
 VideoMediaObject.prototype.constructor = VideoMediaObject;
 
 VideoMediaObject.typeName = 'video';
@@ -47,7 +47,7 @@ VideoMediaObject.prototype.play = function() {
     this._player.postMessage('setVolume', volume || 0.00001);
     this._player.postMessage('play');
 
-    TemporalMediaObject.prototype.play.call(this);
+    MediaObject.prototype.play.call(this);
 };
 
 VideoMediaObject.prototype.stop = function() {

@@ -5,6 +5,8 @@ var TagMatcher = require('./tag-matcher');
 var TemporalMediaObject = require('./media-object/temporal-media-object');
 var AtemporalMediaObject = require('./media-object/atemporal-media-object');
 var VideoMediaObject = require('./media-object/video-media-object');
+var ImageMediaObject = require('./media-object/image-media-object');
+var TextMediaObject = require('./media-object/temporal-media-object');
 
 
 function RandomVisualPlayer (stageElement, queue) {
@@ -161,43 +163,49 @@ function RandomVisualPlayer (stageElement, queue) {
     function moDoneHandler (mediaObject) {
         mediaObject.removeListener('done', moDoneHandler);
         stageElement.removeChild(mediaObject.element);
-        showVideo();
+        showMedia();
     }
 
     function moTransitionHandler (mediaObject) {
         mediaObject.removeListener('transition', moTransitionHandler);
         mediaObject.element.classList.remove('show-media-object');
-        showVideo();
+        showMedia();
     }
 
-    var showVideo = _.throttle(function () {
-        console.log('showVideo');
-        var obj = queue.take([VideoMediaObject]);
+    var showMedia = _.throttle(function () {
+        var obj = queue.take([VideoMediaObject, ImageMediaObject]);
         if (obj) {
             obj.on('done', moDoneHandler);
             obj.on('transition', moTransitionHandler);
 
             obj.makeElement(function() {
                 obj.onReady(function() {
+                    if (obj instanceof ImageMediaObject || obj instanceof TextMediaObject) {
+                        stageElement.appendChild(obj.element);
+                        placeAtRandomPosition(obj.element);
+                    }
 
                     obj.play();
                     obj.element.classList.add('show-media-object');
                 });
 
-                stageElement.appendChild(obj.element);
-                placeAtRandomPosition(obj.element);
+                if (obj instanceof VideoMediaObject) {
+                    stageElement.appendChild(obj.element);
+                    placeAtRandomPosition(obj.element);    
+                }
+                
             });
         }
-    }, queue.displayInterval * 1000,{trailing: true});
+    }, queue.displayInterval,{trailing: true});
 
     this.start = function() {
         // _.forEach(['video', 'image', 'text'], function(type) {
         //     showElementsOfType(type);
         // });
-        showVideo();
+        showMedia();
 
         if (queue.displayInterval) {
-            window.setInterval(showVideo, queue.displayInterval * 1000);
+            window.setInterval(showMedia, queue.displayInterval);
         }
     };
 }

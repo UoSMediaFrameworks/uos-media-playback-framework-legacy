@@ -1,28 +1,36 @@
 'use strict';
 /*jshint browser:true */
 
-var AtemporalMediaObject = require('./atemporal-media-object');
+var MediaObject = require('./media-object');
+var inherits = require('inherits');
 
-function ImageMediaObject (obj) {
-    AtemporalMediaObject.call(this, obj);
+module.exports = ImageMediaObject;
+inherits(ImageMediaObject, MediaObject);
+
+function ImageMediaObject (obj, ops) {
+    MediaObject.call(this, obj, ops);
 }
-
-ImageMediaObject.prototype = Object.create(AtemporalMediaObject.prototype);
-ImageMediaObject.prototype.constructor = ImageMediaObject;
 
 ImageMediaObject.typeName = 'image';
 
 // trigger callback with preloaded element
 ImageMediaObject.prototype.makeElement = function(callback) {
     var el = new Image();
-
-    el.classList.add('image-media-object', 'media-object');
     
-    el.onload = function() {
-        callback(el);
-    };
+    el.classList.add('image-media-object', 'media-object');
 
     el.src = this._obj.url;
+
+    this.element = el;
+
+    callback();
+
 };
 
-module.exports = ImageMediaObject;
+ImageMediaObject.prototype.onReady = function(callback) {
+    if (this.element.complete) {
+        callback();
+    } else {
+        this.element.onload = callback;    
+    }
+};

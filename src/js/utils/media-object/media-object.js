@@ -7,8 +7,9 @@ var _ = require('lodash');
 inherits(MediaObject, EventEmitter);
 module.exports = MediaObject;
 
-function MediaObject (obj) {
+function MediaObject (obj, ops) {
     this._obj = obj || {};
+    this._ops = ops || {};
 
     this.tags = this._obj.tags ? parseTagString(this._obj.tags) : [];
     this.type = this._obj.type;
@@ -21,6 +22,7 @@ function parseTagString (tagString) {
 
 MediaObject.prototype.play = function(parent, doneCb) {
     this._playing = true;
+    setTimeout(this.transition.bind(this), this._ops.displayDuration);
 };
 
 // triggers a hard stop
@@ -31,7 +33,7 @@ MediaObject.prototype.transition = function() {
 
         setTimeout(function() {
             this.emit('done', this);    
-        }.bind(this), 1400);    
+        }.bind(this), this._ops.transitionDuration);    
     }    
 };
 

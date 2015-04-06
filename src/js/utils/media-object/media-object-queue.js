@@ -7,27 +7,11 @@ var VideoMediaObject = require('./video-media-object');
 var TextMediaObject = require('./text-media-object');
 var AudioMediaObject = require('./audio-media-object');
 
-// var TYPE_MAPPINGS = {
-//     video: VideoMediaObject,
-//     image: ImageMediaObject,
-//     text: TextMediaObject,
-//     audio: AudioMediaObject
-// };
-
 var SCENE_PROP_DEFAULTS = {
     displayInterval: 3,
     displayDuration: 10,
-    transitionDuration: 1
+    transitionDuration: 1.4
 };
-
-// types and their default display counts
-// var MEDIA_TYPES = {
-//     image: 3,
-//     text: 1,
-//     video: 1,
-//     audio: 1
-// };
-
 
 /* 
     types - Array of constructors
@@ -80,7 +64,7 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
         var sceneVal;
         _.forEach(SCENE_PROP_DEFAULTS, function(defaultVal, prop) {
             sceneVal = parseFloat(newScene[prop]);
-            this[prop] = isNaN(sceneVal) ? defaultVal : sceneVal;
+            this[prop] = isNaN(sceneVal) ? defaultVal * 1000 : sceneVal * 1000;
         }.bind(this));
 
         // default type counts
@@ -119,12 +103,15 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
                 masterList.push(oldMo);
             } else {
                 var TypeConstructor = getTypeByName(mo.type);
-                newMo = new TypeConstructor(mo);
+                newMo = new TypeConstructor(mo, {
+                    displayDuration: this.displayDuration,
+                    transitionDuration: this.transitionDuration
+                });
                 newMo.on('transition', moTransitionHandler);
                 newMo.on('done', moDoneHandler);
                 masterList.push(newMo);
             }
-        });
+        }.bind(this));
 
         // unhook events from mediaobjects that aren't in the new scene
         _.forEach(oldMasterList, function(mo) {
