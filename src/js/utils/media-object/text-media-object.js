@@ -10,6 +10,8 @@ function TextMediaObject (obj) {
 TextMediaObject.prototype = Object.create(AtemporalMediaObject.prototype);
 TextMediaObject.prototype.constructor = TextMediaObject;
 
+TextMediaObject.typeName = 'text';
+
 // trigger callback with preloaded element
 TextMediaObject.prototype.makeElement = function(callback) {
     var el = document.createElement('p');

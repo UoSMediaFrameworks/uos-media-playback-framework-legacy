@@ -4,13 +4,10 @@ var _ = require('lodash');
 var TagMatcher = require('./tag-matcher');
 var TemporalMediaObject = require('./media-object/temporal-media-object');
 var AtemporalMediaObject = require('./media-object/atemporal-media-object');
+var VideoMediaObject = require('./media-object/video-media-object');
 
 
 function RandomVisualPlayer (stageElement, queue) {
-    var tagMatcher = new TagMatcher(),
-        // total number of active items being displayed
-        typeCounts = {},
-        activeTemporalElements = [];
 
     function calcDimension(dim, element) {
         return Math.round(Math.random() * (stageElement[dim] - element[dim])) + 'px';
@@ -21,13 +18,14 @@ function RandomVisualPlayer (stageElement, queue) {
         element.style.top = calcDimension('clientHeight', element);
     }
 
+    /*
     // handles intelligent per type behavior for mediaObjects, dispatching to the proper methods for 
     // their display
     function showElementsOfType (mediaObjectType) {
         var displayDuration;
         if (getTypeCount(mediaObjectType) < queue.maximumTypeCounts[mediaObjectType]) {
             
-            var obj = queue.take(mediaObjectType, tagMatcher);
+            var obj = queue.take(mediaObjectType);
 
             if (obj) {
                 incrementTypeCount(mediaObjectType);
@@ -56,7 +54,7 @@ function RandomVisualPlayer (stageElement, queue) {
                             obj.play();
                             el.classList.add('show-media-object');
                             obj.onFinish(function() {
-                                activeTemporalElements.splice(activeTemporalElements.indexOf(obj), 1);
+                                // activeTemporalElements.splice(activeTemporalElements.indexOf(obj), 1);
                                 cleanUp();
                             });
                         }
@@ -73,13 +71,13 @@ function RandomVisualPlayer (stageElement, queue) {
                     delay = queue.displayDuration / queue.maximumTypeCounts[mediaObjectType];
                 } else if (obj instanceof TemporalMediaObject) {
                     delay = queue.displayInterval;
-                    activeTemporalElements.push(obj);
+                    // activeTemporalElements.push(obj);
                 }
 
                 setTimeout(function() {
                     showElementsOfType(mediaObjectType);    
                 }, delay * 1000);
-                /*
+                
                 switch(mediaObjectType) {
                     case 'image':
                         displayDuration = queue.displayDuration * 1000;
@@ -147,48 +145,61 @@ function RandomVisualPlayer (stageElement, queue) {
                         //     showElementsOfType(mediaObjectType);
                         // });
                         break;
-                }*/
+                }
 
                 
             }  
         }  
     }
-
-    function incrementTypeCount (type) {
-        if (typeCounts[type]) {
-            typeCounts[type] += 1;
-        } else {
-            typeCounts[type] = 1;
-        }
-    }
-
-    function decrementTypeCount (type) {
-        typeCounts[type] -= 1;
-    }
-
-    function getTypeCount(type) {
-        return typeCounts[type] || 0;
-    }
+    */
+  
 
     this.setMediaObjectQueue = function(newQueue) {
         queue = newQueue;
     };
 
-    this.start = function() {
-        _.forEach(['video', 'image', 'text'], function(type) {
-            showElementsOfType(type);
-        });
-    };
+    function moDoneHandler (mediaObject) {
+        mediaObject.removeListener('done', moDoneHandler);
+        stageElement.removeChild(mediaObject.element);
+        showVideo();
+    }
 
-    this.setTagMatcher = function(newTagMatcher) {
-        // verify that all currently playing audio tracks match the tagMatcher,
-        // if not cancel them and start new ones
-        if (! tagMatcher.equalTo(newTagMatcher) ) {
-            tagMatcher = newTagMatcher;
-            
+    function moTransitionHandler (mediaObject) {
+        mediaObject.removeListener('transition', moTransitionHandler);
+        mediaObject.element.classList.remove('show-media-object');
+        showVideo();
+    }
+
+    var showVideo = _.throttle(function () {
+        console.log('showVideo');
+        var obj = queue.take([VideoMediaObject]);
+        if (obj) {
+            obj.on('done', moDoneHandler);
+            obj.on('transition', moTransitionHandler);
+
+            obj.makeElement(function() {
+                obj.onReady(function() {
+
+                    obj.play();
+                    obj.element.classList.add('show-media-object');
+                });
+
+                stageElement.appendChild(obj.element);
+                placeAtRandomPosition(obj.element);
+            });
+        }
+    }, queue.displayInterval * 1000,{trailing: true});
+
+    this.start = function() {
+        // _.forEach(['video', 'image', 'text'], function(type) {
+        //     showElementsOfType(type);
+        // });
+        showVideo();
+
+        if (queue.displayInterval) {
+            window.setInterval(showVideo, queue.displayInterval * 1000);
         }
     };
-
 }
 
 module.exports = RandomVisualPlayer;

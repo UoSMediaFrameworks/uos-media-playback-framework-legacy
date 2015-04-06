@@ -87,12 +87,10 @@ EmbeddedVimeoPlayer.prototype.postMessage = function(action, value) {
     this._element.contentWindow.postMessage(data, this.url);
 };
 
-EmbeddedVimeoPlayer.prototype.onFinish = function(cb) {
-    this._finishHandler = function() {
-        this.remove();
-        cb();
-    }.bind(this);
+EmbeddedVimeoPlayer.prototype.onPlayProgress = function(cb) {
+    this._playProgressHandler = cb;
 };
+
 
 EmbeddedVimeoPlayer.prototype.onReady = function(cb) {
     this._readyHandler = cb;
@@ -101,11 +99,13 @@ EmbeddedVimeoPlayer.prototype.onReady = function(cb) {
 EmbeddedVimeoPlayer.prototype.handleEvent = function(data) {
     switch(data.event) {
         case 'ready':
-            this.postMessage('addEventListener', 'finish');
+            this.postMessage('addEventListener', 'playProgress');
             this._readyHandler(this._element);    
             break;
-        case 'finish':
-            this._finishHandler();
+        case 'playProgress':
+            if (this._playProgressHandler) {
+                this._playProgressHandler(data.data);    
+            }
             break;
     }
 };

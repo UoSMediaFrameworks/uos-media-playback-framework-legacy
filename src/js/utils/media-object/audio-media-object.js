@@ -11,6 +11,8 @@ function AudioMediaObject (obj) {
 AudioMediaObject.prototype = Object.create(TemporalMediaObject.prototype);
 AudioMediaObject.prototype.constructor = AudioMediaObject;
 
+AudioMediaObject.typeName = 'audio';
+
 AudioMediaObject.prototype.play = function(callback) {
     var self = this,
         // hide inside of play() because Audio5 library bombs when loaded 
@@ -41,7 +43,7 @@ AudioMediaObject.prototype.play = function(callback) {
 };
 
 AudioMediaObject.prototype.stop = function(fadeOutTime) {
-    if (this._player.playing) {
+    if (this._player && this._player.playing) {
         var fadeOutMs = fadeOutTime * 1000,
             resolution = 10,
             units = fadeOutMs / resolution,
@@ -58,9 +60,7 @@ AudioMediaObject.prototype.stop = function(fadeOutTime) {
             }
         }.bind(this), resolution);
 
-        
-    } else {
-        throw 'stopping already stopped audio ' + this._obj.url;
+        this.emit('done', this);
     }
 };
 

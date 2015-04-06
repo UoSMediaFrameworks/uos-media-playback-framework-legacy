@@ -8,10 +8,11 @@ inherits(MediaObject, EventEmitter);
 module.exports = MediaObject;
 
 function MediaObject (obj) {
-    this._obj = obj;
+    this._obj = obj || {};
 
-    this.tags = obj.tags ? parseTagString(obj.tags) : [];
-    this.type = obj.type;
+    this.tags = this._obj.tags ? parseTagString(this._obj.tags) : [];
+    this.type = this._obj.type;
+    this._playing = false;
 }
 
 function parseTagString (tagString) {
@@ -19,10 +20,27 @@ function parseTagString (tagString) {
 }
 
 MediaObject.prototype.play = function(parent, doneCb) {
-    this.emit('play');
+    this._playing = true;
 };
 
+// triggers a hard stop
+MediaObject.prototype.transition = function() {
+    if (this._playing) {
+        this._playing = false;
+        this.emit('transition', this);
+
+        setTimeout(function() {
+            this.emit('done', this);    
+        }.bind(this), 1400);    
+    }    
+};
+
+// triggers a soft stop
 MediaObject.prototype.stop = function() {
-    this.emit('stop');
+    if (this._playing) {
+        this._playing = false;
+        this.emit('transition', this);    
+        this.emit('done', this);    
+    }    
 };
 

@@ -10,6 +10,8 @@ function ImageMediaObject (obj) {
 ImageMediaObject.prototype = Object.create(AtemporalMediaObject.prototype);
 ImageMediaObject.prototype.constructor = ImageMediaObject;
 
+ImageMediaObject.typeName = 'image';
+
 // trigger callback with preloaded element
 ImageMediaObject.prototype.makeElement = function(callback) {
     var el = new Image();
