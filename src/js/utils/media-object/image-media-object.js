@@ -1,14 +1,14 @@
 'use strict';
 /*jshint browser:true */
 
-var MediaObject = require('./media-object');
+var StaticMediaObject = require('./static-media-object');
 var inherits = require('inherits');
 
 module.exports = ImageMediaObject;
-inherits(ImageMediaObject, MediaObject);
+inherits(ImageMediaObject, StaticMediaObject);
 
-function ImageMediaObject (obj, ops) {
-    MediaObject.call(this, obj, ops);
+function ImageMediaObject (obj) {
+    StaticMediaObject.call(this, obj);
 }
 
 ImageMediaObject.typeName = 'image';
@@ -25,6 +25,12 @@ ImageMediaObject.prototype.makeElement = function(callback) {
 
     callback();
 
+};
+
+ImageMediaObject.prototype.play = function(ops) {
+    setTimeout(this.transition.bind(this), ops.displayDuration);
+    this.element.style.transition = 'opacity ' + (ops.transitionDuration / 1000) + 's ease-in-out';
+    StaticMediaObject.prototype.play.call(this, ops);
 };
 
 ImageMediaObject.prototype.onReady = function(callback) {

@@ -120,10 +120,10 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
             mo.removeListener('done', moDoneHandler);
         });
 
-        // fill the queue with matching mediaObjects
-        queue = _.filter(masterList, function(mo) {
+        // fill the queue with matching mediaObjects that aren't currently active
+        queue = _(masterList).difference(active).filter(function(mo) {
             return tagMatcher.match(mo.tags);
-        });
+        }).value();
     };
 
     this.take = function(typesArray) {
@@ -131,18 +131,25 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
             return countOnScreen[moType.typeName] < maximumOnScreen[moType.typeName];
         });
 
-        var matchedType;
-        return _.find(queue, function(mo, index) {
-            matchedType = _.find(eligibleTypes, function(type) { 
-                return mo instanceof type; 
+        var matchedType, matchedMo;
+
+        function checkType (obj) {
+            return _.find(eligibleTypes, function(type) { 
+                return queue[i] instanceof type; 
             });
+        }
+
+        for (var i = 0; i < queue.length; i++) {
+            matchedType = checkType(queue[i]);
+
             if (matchedType) {
+                matchedMo = queue[i];
                 countOnScreen[matchedType.typeName]++;
-                queue.splice(index, 1);
-                active.push(mo);
-                return mo;
-            }
-        });
+                queue.splice(i, 1);
+                active.push(matchedMo);
+                return matchedMo;
+            }    
+        } 
     };
 
     this.setTagMatcher = function(newTagMatcher) {

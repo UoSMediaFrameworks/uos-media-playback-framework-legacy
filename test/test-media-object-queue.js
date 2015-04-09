@@ -158,6 +158,17 @@ describe('MediaObjectQueue', function () {
         });
     });
 
+    describe('setScene() called twice with identical scene', function () {
+        it('should not refill the queue if all mediaObjects are currently taken and playing', function () {
+            var scene = makeScene({foo: 1});
+            this.queue.setScene(scene);
+            var mo = this.queue.take([FooMediaObject]);
+            mo.play();
+            this.queue.setScene(scene);
+            assert.isUndefined(this.queue.take([FooMediaObject]));
+        });
+    });
+
     describe('scene attributes', function () {
         function checkAttributes (expectedValues) {
             _.forEach(expectedValues, function(value, key) {
@@ -173,9 +184,9 @@ describe('MediaObjectQueue', function () {
             });
 
             checkAttributes({
-                displayInterval: 3,
-                displayDuration: 10,
-                transitionDuration: 1
+                displayInterval: 3000,
+                displayDuration: 10000,
+                transitionDuration: 1400
             });
         });
 
@@ -195,9 +206,9 @@ describe('MediaObjectQueue', function () {
             });
 
             checkAttributes({
-                displayInterval: 4,
-                displayDuration: 13,
-                transitionDuration: 3
+                displayInterval: 4000,
+                displayDuration: 13000,
+                transitionDuration: 3000
             }); 
 
         });

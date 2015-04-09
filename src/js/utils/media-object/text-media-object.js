@@ -1,14 +1,16 @@
 'use strict';
 /*jshint browser:true */
 
-var AtemporalMediaObject = require('./atemporal-media-object');
+var StaticMediaObject = require('./static-media-object');
+var inherits = require('inherits');
+
+module.exports = TextMediaObject;
+inherits(TextMediaObject, StaticMediaObject);
+
 
 function TextMediaObject (obj) {
-    AtemporalMediaObject.call(this, obj);
+    StaticMediaObject.call(this, obj);
 }
-
-TextMediaObject.prototype = Object.create(AtemporalMediaObject.prototype);
-TextMediaObject.prototype.constructor = TextMediaObject;
 
 TextMediaObject.typeName = 'text';
 
@@ -18,8 +20,14 @@ TextMediaObject.prototype.makeElement = function(callback) {
 
     el.innerText = this._obj.text;
     el.classList.add('text-media-object', 'media-object');
+    this.element = el;
     
     callback(el);
+};
+
+TextMediaObject.prototype.onReady = function(callback) {
+	// it's always ready!
+	callback();
 };
 
 module.exports = TextMediaObject;

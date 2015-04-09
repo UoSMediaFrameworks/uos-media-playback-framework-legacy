@@ -25,17 +25,11 @@ VideoMediaObject.prototype.makeElement = function(callback) {
 
         callback();
     }.bind(this));
-
-    player.onPlayProgress(function(data) {
-        if ((data.duration - data.seconds) < 1.4 || data.duration < 1.4) {
-            this.transition();
-        }
-    }.bind(this));
     
     this._player = player;
 };
 
-VideoMediaObject.prototype.play = function() {
+VideoMediaObject.prototype.play = function(ops) {
     this._loading = false;
 
     var volume = this._obj.volume;
@@ -47,7 +41,16 @@ VideoMediaObject.prototype.play = function() {
     this._player.postMessage('setVolume', volume || 0.00001);
     this._player.postMessage('play');
 
-    MediaObject.prototype.play.call(this);
+    // setup transition stuff
+    var transitionSeconds = ops.transitionDuration / 1000;
+    this.element.style.transition = 'opacity ' + (ops.transitionDuration / 1000) + 's ease-in-out';
+    this._player.onPlayProgress(function(data) {
+        if ((data.duration - data.seconds) < transitionSeconds || data.duration < transitionSeconds ) {
+            this.transition();
+        }
+    }.bind(this));
+
+    MediaObject.prototype.play.call(this, ops);
 };
 
 VideoMediaObject.prototype.stop = function() {
