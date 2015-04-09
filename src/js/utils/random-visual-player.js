@@ -1,7 +1,6 @@
 'use strict';
 /* jshint browser:true */
 var _ = require('lodash');
-var TagMatcher = require('./tag-matcher');
 var VideoMediaObject = require('./media-object/video-media-object');
 var ImageMediaObject = require('./media-object/image-media-object');
 var TextMediaObject = require('./media-object/text-media-object');
