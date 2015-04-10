@@ -14,32 +14,31 @@ var MediaObjectPreview = React.createClass({
 		};
 	},
 
-	loadThumbImage: function(url) {
-		var mo = this.props.mediaObject;
-		if (! this.state.thumbImage) {
-			switch(mo.type) {
-				case 'audio':
-					soundCloud.waveformUrl(mo.url, function(url) {
-						// triggers invariant violation sometimes
-						this.setState({thumbImage: url});
-					}.bind(this));
-					break;
+	loadThumbImage: function(mediaObject) {
+		
+		switch(mediaObject.type) {
+			case 'audio':
+				soundCloud.waveformUrl(mediaObject.url, function(url) {
+					// triggers invariant violation sometimes
+					this.setState({thumbImage: url});
+				}.bind(this));
+				break;
 
-				case 'video':
-					vimeoApi.video(getVimeoId(mo.url), function(err, data) {
-						this.setState({thumbImage: data.pictures.sizes[0].link});
-					}.bind(this));
-					break;		
-			}
+			case 'video':
+				vimeoApi.video(getVimeoId(mediaObject.url), function(err, data) {
+					this.setState({thumbImage: data.pictures.sizes[0].link});
+				}.bind(this));
+				break;		
 		}
+		
 	},
 
 	componentWillMount: function() {
-		this.loadThumbImage();
+		this.loadThumbImage(this.props.mediaObject);
 	},
 
 	componentWillReceiveProps: function(nextProps) {
-		this.loadThumbImage();	
+		this.loadThumbImage(nextProps.mediaObject);	
 	},
 
 	render: function() {

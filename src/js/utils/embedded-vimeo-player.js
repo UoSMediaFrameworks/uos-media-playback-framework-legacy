@@ -36,13 +36,17 @@ function onMessageRecieved (event) {
     players[data.player_id].handleEvent(data);
 }
 
-if (window.addEventListener) {
-    window.addEventListener('message', onMessageRecieved, false);
-} else {
-    window.attachEvent('onmessage', onMessageRecieved, false);
+// check for window, we won't have it if we are running headless tests
+if (typeof window !== 'undefined') {
+    if (window.addEventListener) {
+        window.addEventListener('message', onMessageRecieved, false);
+    } else {
+        window.attachEvent('onmessage', onMessageRecieved, false);
+    }
 }
 
 function EmbeddedVimeoPlayer (vimeoId) {
+    this._ready = false;
     this.id = hat();
 
     registerPlayer(this.id, this);
@@ -51,11 +55,11 @@ function EmbeddedVimeoPlayer (vimeoId) {
             api: 1,
             player_id: this.id,
             title: 0,
-            autoplay: 1
+            autoplay: 0
         }),
         playerUrl = '//player.vimeo.com/video/' + vimeoId + '?' + urlAttrsStr;
 
-    this.element = makeElement('iframe', {
+    this._element = makeElement('iframe', {
         src: playerUrl,
         id: this.id,
         width: 640,
@@ -64,7 +68,9 @@ function EmbeddedVimeoPlayer (vimeoId) {
         class: 'media-object embedded-vimeo-player'
     });
 
-    this.url = window.location.protocol + this.element.attributes.src.value.split('?')[0];
+    document.body.appendChild(this._element);
+    
+    this.url = window.location.protocol + this._element.attributes.src.value.split('?')[0];
 }
 
 EmbeddedVimeoPlayer.prototype.postMessage = function(action, value) {
@@ -77,15 +83,18 @@ EmbeddedVimeoPlayer.prototype.postMessage = function(action, value) {
     }
 
     var msg = JSON.stringify(data);
-    this.element.contentWindow.postMessage(data, this.url);
+    if (this._element.contentWindow) {
+        this._element.contentWindow.postMessage(data, this.url);    
+    } else {
+        console.log('no content window to post to');
+    }
+    
 };
 
-EmbeddedVimeoPlayer.prototype.onFinish = function(cb) {
-    this._finishHandler = function() {
-        this.remove();
-        cb();
-    }.bind(this);
+EmbeddedVimeoPlayer.prototype.onPlayProgress = function(cb) {
+    this._playProgressHandler = cb;
 };
+
 
 EmbeddedVimeoPlayer.prototype.onReady = function(cb) {
     this._readyHandler = cb;
@@ -94,11 +103,13 @@ EmbeddedVimeoPlayer.prototype.onReady = function(cb) {
 EmbeddedVimeoPlayer.prototype.handleEvent = function(data) {
     switch(data.event) {
         case 'ready':
-            this.postMessage('addEventListener', 'finish');
-            this._readyHandler();
+            this.postMessage('addEventListener', 'playProgress');
+            this._readyHandler(this._element);    
             break;
-        case 'finish':
-            this._finishHandler();
+        case 'playProgress':
+            if (this._playProgressHandler) {
+                this._playProgressHandler(data.data);    
+            }
             break;
     }
 };
