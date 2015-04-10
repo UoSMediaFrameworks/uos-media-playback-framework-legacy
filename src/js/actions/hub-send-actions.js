@@ -35,6 +35,7 @@ module.exports = {
             },
             'displayDuration': 10,
             'displayInterval': 3,
+            'transitionDuration': 1.4,
             'themes': {},
             'style': {
                 'backgroundColor': 'black'
