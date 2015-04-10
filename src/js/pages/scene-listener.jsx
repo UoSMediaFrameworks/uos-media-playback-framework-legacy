@@ -53,7 +53,7 @@ var SceneListener = React.createClass({
         
             this.mediaObjectQueue.setScene(this.state.scene);    
             this.randomVisualPlayer.start();
-            // this.randomAudioPlayer.start();
+            this.randomAudioPlayer.start();
         }
     },
 
@@ -69,7 +69,7 @@ var SceneListener = React.createClass({
             {image: 3, text: 1, video: 1, audio: 1}
         );
         this.randomVisualPlayer = new RandomVisualPlayer(playerElem, this.mediaObjectQueue);
-        // this.randomAudioPlayer = new RandomAudioPlayer(this.mediaObjectQueue);
+        this.randomAudioPlayer = new RandomAudioPlayer(this.mediaObjectQueue);
 
         this._maybeUpdatePlayer();
     },

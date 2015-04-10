@@ -127,11 +127,19 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
     };
 
     this.take = function(typesArray) {
-        var eligibleTypes = _.filter(typesArray, function(moType) {
-            return countOnScreen[moType.typeName] < maximumOnScreen[moType.typeName];
-        });
+        var activeSoloTypes = _(active)
+            .filter(function(mo) {
+                return mo._obj.solo === true;
+            })
+            .map(function(mo) {
+                return mo.constructor;
+            }).value();
 
-        var matchedType, matchedMo;
+        var eligibleTypes = _(typesArray)
+            .filter(function(moType) {
+                return countOnScreen[moType.typeName] < maximumOnScreen[moType.typeName];
+            })
+            .difference(activeSoloTypes).value();
 
         function checkType (obj) {
             return _.find(eligibleTypes, function(type) { 
@@ -139,17 +147,30 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
             });
         }
 
-        for (var i = 0; i < queue.length; i++) {
-            matchedType = checkType(queue[i]);
+        if (eligibleTypes.length > 0) {
+            var matchedType, matchedMo;
 
-            if (matchedType) {
-                matchedMo = queue[i];
-                countOnScreen[matchedType.typeName]++;
-                queue.splice(i, 1);
-                active.push(matchedMo);
-                return matchedMo;
-            }    
-        } 
+            for (var i = 0; i < queue.length; i++) {
+                matchedType = checkType(queue[i]);
+
+                if (matchedType) {
+                    matchedMo = queue[i];
+
+                    // if the next mo in the queue is marked as solo, only give it back once
+                    // all other active mo's of the same type are off the stage
+                    if (matchedMo._obj.solo !== true || (matchedMo._obj.solo === true && countOnScreen[matchedType.typeName] === 0)) {
+                        countOnScreen[matchedType.typeName]++;
+                        queue.splice(i, 1);
+                        active.push(matchedMo);
+                        return matchedMo;
+                    } else {
+                        console.log('solo next up', matchedMo);
+                    }
+                }    
+            }     
+        }
+
+        
     };
 
     this.setTagMatcher = function(newTagMatcher) {

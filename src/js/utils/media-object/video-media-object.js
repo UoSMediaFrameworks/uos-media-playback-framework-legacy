@@ -4,6 +4,8 @@
 var MediaObject = require('./media-object');
 var EmbeddedVimeoPlayer = require('../embedded-vimeo-player');
 var getVimeoId = require('../get-vimeo-id');
+var TweenloopInterval = require('../tween-loop-interval');
+var TWEEN = require('tween.js');
 
 function VideoMediaObject (obj, ops) {
     this._loading = false;
@@ -29,16 +31,19 @@ VideoMediaObject.prototype.makeElement = function(callback) {
     this._player = player;
 };
 
-VideoMediaObject.prototype.play = function(ops) {
-    this._loading = false;
-
+VideoMediaObject.prototype.getVolume = function() {
     var volume = this._obj.volume;
     if (isNaN(volume)) {
         volume = 100;
     }
-    volume = volume / 100;
+    return volume / 100;
+};
+
+VideoMediaObject.prototype.play = function(ops) {
+    this._loading = false;
+    this._ops = ops;
     // vimeo player complains if you pass it 0, so we pass it just above zero
-    this._player.postMessage('setVolume', volume || 0.00001);
+    this._player.postMessage('setVolume', this.getVolume() || 0.00001);
     this._player.postMessage('play');
 
     // setup transition stuff
@@ -51,6 +56,22 @@ VideoMediaObject.prototype.play = function(ops) {
     }.bind(this));
 
     MediaObject.prototype.play.call(this, ops);
+};
+
+VideoMediaObject.prototype.transition = function() {
+    if (this._playing) {
+        
+        var position = {vol: this.getVolume()};
+        var target = {vol: 0.00001};
+        new TWEEN.Tween(position)
+            .to(target, this._ops.transitionDuration)
+            .onUpdate(function() {
+                this._player.postMessage('setVolume', position.vol);
+            }.bind(this))
+            .start();
+    }    
+
+    MediaObject.prototype.transition.call(this);
 };
 
 VideoMediaObject.prototype.stop = function() {

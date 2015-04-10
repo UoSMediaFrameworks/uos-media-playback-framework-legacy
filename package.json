@@ -42,7 +42,6 @@
     "jquery": "^2.1.1",
     "keymirror": "^0.1.0",
     "lodash": "^3.6.0",
-    "main-bower-files": "^2.0.0",
     "media-hub-client": "git+https://git@github.com/Colum-SMA-Dev/MediaHubClient.git",
     "merge-stream": "^0.1.6",
     "object-assign": "^2.0.0",
@@ -52,6 +51,7 @@
     "require-sdk": "0.0.2",
     "serve-static": "^1.6.3",
     "spin.js": "^2.0.2",
+    "tween.js": "^0.14.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^2.1.1"

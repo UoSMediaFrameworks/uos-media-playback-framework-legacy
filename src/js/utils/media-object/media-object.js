@@ -24,7 +24,7 @@ MediaObject.prototype.play = function(ops) {
     this._ops = ops || {};
 };
 
-// triggers a hard stop
+// triggers a soft stop
 MediaObject.prototype.transition = function() {
     if (this._playing) {
         this._playing = false;
@@ -36,7 +36,7 @@ MediaObject.prototype.transition = function() {
     }    
 };
 
-// triggers a soft stop
+// triggers a hard stop
 MediaObject.prototype.stop = function() {
     if (this._playing) {
         this._playing = false;

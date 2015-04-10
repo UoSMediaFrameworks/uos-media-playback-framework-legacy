@@ -2,6 +2,7 @@
 /* jshint browser:true */
 var _ = require('lodash');
 var VideoMediaObject = require('./media-object/video-media-object');
+var variableThrottle = require('./variable-throttle');
 var ImageMediaObject = require('./media-object/image-media-object');
 var TextMediaObject = require('./media-object/text-media-object');
 
@@ -10,26 +11,10 @@ function RandomVisualPlayer (stageElement, queue) {
 
     
     var showMediaLastRun;
-    function showMedia() {
-        // only execute every queue.displayInterval
-        var now = new Date().getTime();
-        var run = false;
-        if (showMediaLastRun) {
-            var elapsed = now - showMediaLastRun;
-            if (elapsed > queue.displayInterval) {
-                run = true;
-                showMediaLastRun = now;
-            } else {
-                // delay till we reach the displayInterval
-                setTimeout(showMedia, queue.displayInterval - elapsed);
-            }
-        } else {
-            showMediaLastRun = now;
-            run = true;
-        }
 
-        if (run) {
-            var obj = queue.take([VideoMediaObject, ImageMediaObject, TextMediaObject]);
+    var showMedia = variableThrottle(function() {
+        _.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject], function(moType) {
+            var obj = queue.take([moType]);
             if (obj) {
                 obj.on('done', moDoneHandler);
                 obj.on('transition', moTransitionHandler);
@@ -53,11 +38,13 @@ function RandomVisualPlayer (stageElement, queue) {
                         stageElement.appendChild(obj.element);
                         placeAtRandomPosition(obj.element);    
                     }
-                    
                 });
             }    
-        }
-    }
+        });
+    }, function() {
+        return queue.displayInterval;
+    });
+
 
     function calcDimension(dim, element) {
         return Math.round(Math.random() * (stageElement[dim] - element[dim])) + 'px';
@@ -85,9 +72,6 @@ function RandomVisualPlayer (stageElement, queue) {
     }
 
     this.start = function() {
-        // _.forEach(['video', 'image', 'text'], function(type) {
-        //     showElementsOfType(type);
-        // });
         showMedia();
 
         if (queue.displayInterval) {

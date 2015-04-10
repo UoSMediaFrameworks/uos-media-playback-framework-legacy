@@ -83,8 +83,12 @@ EmbeddedVimeoPlayer.prototype.postMessage = function(action, value) {
     }
 
     var msg = JSON.stringify(data);
-
-    this._element.contentWindow.postMessage(data, this.url);
+    if (this._element.contentWindow) {
+        this._element.contentWindow.postMessage(data, this.url);    
+    } else {
+        console.log('no content window to post to');
+    }
+    
 };
 
 EmbeddedVimeoPlayer.prototype.onPlayProgress = function(cb) {
