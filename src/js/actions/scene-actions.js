@@ -60,6 +60,7 @@ var SceneActions = {
                 var tags = _(data.tags).pluck('tag').map(function(x) { return x.trim(); }).value().join(', ');
                 SceneActions.addMediaObject(sceneId, {
                     type: 'video', 
+                    volume: 100,
                     url: vimeoUrl,
                     tags: tags
                 });
