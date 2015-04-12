@@ -24,6 +24,10 @@ EmptyRule.prototype.equalTo = function(emptyRule) {
 	return emptyRule instanceof EmptyRule;
 };
 
+EmptyRule.prototype.toString = function() {
+	return '';
+};
+
 
 function TagRule (tag) {
 	this._value = tag;
@@ -35,6 +39,10 @@ TagRule.prototype.match = function(tagList) {
 
 TagRule.prototype.equalTo = function(tagRule) {
 	return tagRule instanceof TagRule && this._value === tagRule._value;
+};
+
+TagRule.prototype.toString = function() {
+	return this._value;
 };
 
 
@@ -53,6 +61,11 @@ AndRule.prototype.equalTo = function(andRule) {
 		this._right.equalTo(andRule._right);
 };
 
+AndRule.prototype.toString = function() {
+	return this._left.toString() + ' AND ' + this._right.toString(); 
+};
+
+
 function OrRule (leftRule, rightRule) {
 	this._left = leftRule;
 	this._right = rightRule;
@@ -66,6 +79,10 @@ OrRule.prototype.equalTo = function(orRule) {
 	return orRule instanceof OrRule && 
 		this._left.equalTo(orRule._left) && 
 		this._right.equalTo(orRule._right);
+};
+
+OrRule.prototype.toString = function() {
+	return this._left.toString() + ' OR ' + this._right.toString(); 
 };
 
 
@@ -83,6 +100,10 @@ ParethesisRule.prototype.equalTo = function(rule) {
 		this._rule.equalTo(rule._rule);
 };
 
+ParethesisRule.prototype.toString = function() {
+	return '(' + this._rule.toString() + ')';
+};
+
 
 /****************************************************\
         TagMatcher
@@ -91,6 +112,10 @@ ParethesisRule.prototype.equalTo = function(rule) {
 function TagMatcher (query) {
 	this._query = parseQuery(tokenizeQuery(query || ''));
 }
+
+TagMatcher.prototype.toString = function() {
+	return this._query.toString();
+};
 
 function parseQuery (tokens) {
 

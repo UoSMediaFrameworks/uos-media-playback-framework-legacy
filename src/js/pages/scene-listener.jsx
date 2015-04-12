@@ -84,15 +84,16 @@ var SceneListener = React.createClass({
     },
 
     mergeTagAndThemeFilters: function() {
-        var themeQueries = _.map(this.state.activeThemes, function(themeName) {
-            return this.state.scene.themes[themeName];
+        var filterStrings = _.map(this.state.activeThemes, function(themeName) {
+            return '(' + this.state.scene.themes[themeName] + ')';
         }.bind(this));
         
-        var mergedString = _.map(themeQueries.concat([this.getRefVal('tags')]), function(v) {
-            return '(' + v + ')';
-        }).join(' AND ');
+        var tagsInput = this.getRefVal('tags').trim();
+        if (tagsInput !== '') {
+            filterStrings.push('(' + tagsInput + ')');
+        }
 
-        return new TagMatcher(mergedString);
+        return new TagMatcher(filterStrings.join(' OR '));
     },
 
     updateTags: function(event) {
@@ -100,6 +101,7 @@ var SceneListener = React.createClass({
             event.preventDefault();
         }
         var tagFilter = this.mergeTagAndThemeFilters();
+        console.log('new filter: ' + tagFilter.toString());
         // this.randomAudioPlayer.setTagMatcher(tagFilter);
         this.mediaObjectQueue.setTagMatcher(tagFilter);
     },
