@@ -121,9 +121,13 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
         });
 
         // fill the queue with matching mediaObjects that aren't currently active
-        queue = _(masterList).difference(active).filter(function(mo) {
-            return tagMatcher.match(mo.tags);
-        }).value();
+        queue = _(masterList)
+            .difference(active)
+            .filter(function(mo) {
+                return tagMatcher.match(mo.tags);
+            })
+            .shuffle()
+            .value();
     };
 
     this.take = function(typesArray) {
