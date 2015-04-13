@@ -10,11 +10,12 @@ var MediaObjectPreview = React.createClass({
 
 	getInitialState: function() {
 		return {
-			thumbImage: undefined 
+			thumbImage: undefined,
+			title: ''
 		};
 	},
 
-	loadThumbImage: function(mediaObject) {
+	loadObjectExtras: function(mediaObject) {
 		
 		switch(mediaObject.type) {
 			case 'audio':
@@ -22,23 +23,39 @@ var MediaObjectPreview = React.createClass({
 					// triggers invariant violation sometimes
 					this.setState({thumbImage: url});
 				}.bind(this));
+
+				soundCloud.title(mediaObject.url, function(title) {
+					this.setState({title: title});
+				}.bind(this));
 				break;
 
 			case 'video':
 				vimeoApi.video(getVimeoId(mediaObject.url), function(err, data) {
-					this.setState({thumbImage: data.pictures.sizes[0].link});
+					this.setState({
+						thumbImage: data.pictures.sizes[0].link,
+						title: data.name
+					});
 				}.bind(this));
+				break;
+
+			case 'text':
+				this.setState({title: mediaObject.text});
 				break;		
 		}
 		
 	},
 
+	setupState: function(mediaObject) {
+		this.setState(this.getInitialState());
+		this.loadObjectExtras(mediaObject);
+	},
+
 	componentWillMount: function() {
-		this.loadThumbImage(this.props.mediaObject);
+		this.setupState(this.props.mediaObject);
 	},
 
 	componentWillReceiveProps: function(nextProps) {
-		this.loadThumbImage(nextProps.mediaObject);	
+		this.setupState(nextProps.mediaObject);	
 	},
 
 	render: function() {
@@ -51,27 +68,34 @@ var MediaObjectPreview = React.createClass({
 		 		break;
 		 	case 'video': 
 		 		if (this.state.thumbImage) {
-		 			extra = <img src={this.state.thumbImage} />;	
+		 			extra = <div className='icon-wrapper'>
+		 				<img src={this.state.thumbImage} />
+		 				<Glyphicon className='icon' icon='facetime-video' />
+		 			</div>;	
 		 		} else {
-		 			extra = <Glyphicon icon='facetime-video' />;
+		 			extra = <Glyphicon className='icon' icon='facetime-video' />;
 		 		}
 		 		break;
 		 	case 'audio':
 		 		if (this.state.thumbImage) {
 		 			extra = <img className='waveform-url' src={this.state.thumbImage} />;	
 		 		} else {
-		 			extra = <Glyphicon icon='volume-up' />;
+		 			extra = <Glyphicon className='icon' icon='volume-up' />;
 		 		}
 		 		
 		 		break;
 		 	case 'text': 
-		 		extra = <Glyphicon icon='font' />;
+		 		extra = <Glyphicon className='icon' icon='font' />;
 		 		break;
 		 }
+
+		 var title = <span className='preview-title'>{this.state.title}</span>;
 
 		return <div className='media-object-item-preview'>
 			{extra}
 			{this.props.children}
+			{title}
+			
 		</div>;
 	}
 });

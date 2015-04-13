@@ -8,7 +8,8 @@ var MediaObjectPreview = require('./media-object-preview.jsx');
 var MediaObjectList = React.createClass({
     getInitialState: function() {
         return {
-            selectedIndex: null 
+            selectedIndex: null,
+            listLayout: 'grid' 
         };
     },
 
@@ -23,6 +24,18 @@ var MediaObjectList = React.createClass({
         return function (e) {
             SceneActions.removeMediaObject(scene, index);
         }.bind(this);
+    },
+
+    handleListChange: function(event) {
+        this.setState({listLayout: event.target.textContent});
+    },
+
+    listSelectedClass: function(value) {
+        if (this.state.listLayout === value) {
+            return 'btn btn-primary';
+        } else {
+            return 'btn btn-default';
+        }
     },
 
     render: function() {
@@ -50,8 +63,14 @@ var MediaObjectList = React.createClass({
             items = [<li key='empty' className='empty-media-object-item '>Nothing in the scene yet</li>];
         }
 
+        var wrapperClass = 'media-object-list media-object-list-' + this.state.listLayout;
+
         return (
-            <div className='media-object-list'>
+            <div className={wrapperClass}>
+                <div className='btn-group btn-group-xs' role='group'>
+                    <button type='button' onClick={this.handleListChange} className={this.listSelectedClass("grid")}>grid</button>
+                    <button type='button' onClick={this.handleListChange} className={this.listSelectedClass("list")}>list</button>
+                </div>
                 <p className='media-object-list-instructions'>Drag and drop images here to add to scene</p>
                 <ul className=''>{items}</ul>
             </div>

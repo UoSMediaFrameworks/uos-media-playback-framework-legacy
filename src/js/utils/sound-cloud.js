@@ -86,6 +86,7 @@ function convertTags (tagString) {
 
 module.exports = {
 	waveformUrl: apiHandler('waveform_url'),
+	title: apiHandler('title'),
 	tags: apiHandler(['genre', 'tag_list'], function(data) {
 		// concat the genre and tag_list together since soundcloud assigns
 		// the first tag as the genre

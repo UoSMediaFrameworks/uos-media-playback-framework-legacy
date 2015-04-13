@@ -1,14 +1,6 @@
-.player {
-    position: relative;
-    height: 200px;
-    background-color: #ddd;
-    overflow: hidden;
-}
-
 html, body, #main, .app { 
     height: 100%;
 }
-
 
 /* dirtay css! Forces the loader div to flex down */
 .app > div:last-child {
@@ -106,15 +98,19 @@ html, body, #main, .app {
     text-align: center;
     font-size: 20px;
     color: #ccc;
+    z-index: -1;
 }
 
 .media-object-list ul {
     padding: 0;
     margin: 0;
+}
+
+.media-object-list-grid ul {
     line-height: 0;
 }
 
-.media-object-list li {
+.media-object-list-grid li {
     list-style: none;
 } 
 
@@ -128,14 +124,14 @@ html, body, #main, .app {
 }
 
 .media-object-item:hover {
-    background-color: #eee;
+    background-color: #ddd !important;
 }
 
 .media-object-item.selected {
-    background-color: #ccc;
+    background-color: #ccc !important;
 }
 
-.media-object-item {
+.media-object-list-grid .media-object-item {
     height: 70px;
     display: inline-block;
     width: 70px;
@@ -144,23 +140,73 @@ html, body, #main, .app {
     padding: 5px;
 }
 
-.media-object-item-preview {
+.media-object-list-list .media-object-item {
+    height: 30px;
+    margin: 4px 0;
+}
+
+.media-object-list-list .media-object-item:nth-of-type(odd) {
+    background: #f3f3f3;
+}
+
+.media-object-list .media-object-item-preview {
+    overflow: hidden;
+}
+
+.media-object-list-grid .media-object-item-preview {
     width: 60px;
     height: 60px;
     font-size: 60px;
     position: relative;
-    overflow: hidden;
+}
+
+.media-object-list-list .media-object-item-preview {
+    height: 100%;
 }
 
 
-.media-object-item-preview img {
-    width: auto;
+
+.media-object-list .media-object-item-preview img {
     height: 100%;
+}
+
+.media-object-list-grid .media-object-item-preview img {   
+    display: inline-block;
+    position: absolute;
+}
+
+.media-object-list-list .media-object-item-preview img {   
+    width: 30px;
+}
+
+.icon-wrapper {
+    position: relative;
+}
+
+.media-object-list-list .icon-wrapper {
     display: inline-block;
 }
 
+.media-object-list-list .icon {
+    width: 30px;
+    text-align: center;
+}
 
-.media-object-item-preview button {
+.media-object-list .icon-wrapper .icon  {
+    opacity: 0.5;
+    color: white;
+}
+
+.media-object-list-list .icon-wrapper .icon {
+    position: absolute;
+    left: 0px;
+}
+
+.media-object-list-list .icon-wrapper .img {
+    height: 30px;
+}
+
+.media-object-list-grid .media-object-item-preview button {
     display: none;
     position: absolute;
     top: 0px;
@@ -169,12 +215,28 @@ html, body, #main, .app {
     padding: 0;
 }
 
-.media-object-item-preview button:hover {
+.media-object-list-grid .preview-title {
+    display: none;
+}
+
+.media-object-list-list .preview-title {
+    padding-left: 5px;
+}
+
+.media-object-item-preview {
+    cursor: pointer;
+}
+
+.media-object-list .media-object-item-preview button:hover {
     color: #cc0000;
 }
 
-.media-object-item-preview:hover button {
+.media-object-list-grid .media-object-item-preview:hover button {
     display: inherit;
+}
+
+.media-object-list-list .media-object-item-preview button {
+    float: right;
 }
 
 .file-upload-status {
