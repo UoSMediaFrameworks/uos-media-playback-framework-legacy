@@ -3,7 +3,7 @@
 /* global confirm: false */
 
 var React = require('react');
-
+var _ = require('lodash');
 var SceneTextEditor = require('../scene-text-editor.jsx');
 var SceneStore = require('../../stores/scene-store');
 var FileUploadStore = require('../../stores/file-upload-store');
@@ -29,8 +29,7 @@ var Scene = React.createClass({
     getStateFromStores: function() {
         return {
             scene: SceneStore.getScene(this.getParams().id),
-            uploads: FileUploadStore.getStates(),
-            focusedMediaObject: null
+            uploads: FileUploadStore.getStates()
         }; 
     },
 
@@ -50,7 +49,9 @@ var Scene = React.createClass({
     },
 
     getInitialState: function() {
-        return this.getStateFromStores();
+        return _.extend(this.getStateFromStores(), {
+            focusedMediaObject: null
+        });
     },
 
     fileHandler: function(fileList) {
