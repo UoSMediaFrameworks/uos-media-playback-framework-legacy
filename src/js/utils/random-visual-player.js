@@ -47,7 +47,14 @@ function RandomVisualPlayer (stageElement, queue) {
 
 
     function calcDimension(dim, element) {
-        return Math.round(Math.random() * (stageElement[dim] - element[dim])) + 'px';
+        var elementDimensionSize = element[dim];
+
+        var randomNonOverlapPosition = Math.random() * (stageElement[dim] - elementDimensionSize);
+        // allow potential overlap of up to 30% of element's dimension
+        var potentialOverlap = _.random(-0.3, 0.3) * elementDimensionSize;
+
+        
+        return Math.round(randomNonOverlapPosition + potentialOverlap) + 'px';
     }
 
     function placeAtRandomPosition(element) {
