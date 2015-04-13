@@ -11,19 +11,26 @@ if (! process.env.VIMEO_ACCESS_TOKEN) {
 	throw 'VIMEO_ACCESS_TOKEN must be set in environment variables';
 }
 
+var cache = {};
+
 module.exports = {
 	// callback in node style
 	video: function(vimeoId, callback) {
-		makeRequest({
-			url: API_URL + 'videos/' + vimeoId,
-			responseParser: jsonParser,
-			onLoad: function(data) {
-				callback(null, data);
-			},
-			onError: callback,
-			headers: {
-				'Authorization': 'bearer ' + process.env.VIMEO_ACCESS_TOKEN
-			}
-		});
+		if ( cache.hasOwnProperty(vimeoId)) {
+			callback(null, cache[vimeoId]);
+		} else {
+			makeRequest({
+				url: API_URL + 'videos/' + vimeoId,
+				responseParser: jsonParser,
+				onLoad: function(data) {
+					cache[vimeoId] = data;
+					callback(null, data);
+				},
+				onError: callback,
+				headers: {
+					'Authorization': 'bearer ' + process.env.VIMEO_ACCESS_TOKEN
+				}
+			});
+		}
 	}
 };
