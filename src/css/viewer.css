@@ -65,7 +65,7 @@ html, body {
 .image-media-object { 
     width: auto;
     height: auto;
-    max-width: 75%;
+    max-width: 50%;
 }
 
 .embedded-vimeo-player {
