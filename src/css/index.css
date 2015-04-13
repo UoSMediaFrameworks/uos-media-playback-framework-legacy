@@ -193,9 +193,12 @@ html, body, #main, .app {
 }
 
 .media-object-list .icon-wrapper .icon  {
-    opacity: 0.5;
     color: white;
 }
+.media-object-list-grid .icon-wrapper .icon  {
+    opacity: 0.5;
+}
+
 
 .media-object-list-list .icon-wrapper .icon {
     position: absolute;
