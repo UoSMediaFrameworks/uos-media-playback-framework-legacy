@@ -133,7 +133,7 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
     this.take = function(typesArray) {
         var activeSoloTypes = _(active)
             .filter(function(mo) {
-                return mo._obj.solo === true;
+                return mo._obj.solo === true && mo._playing === true;
             })
             .map(function(mo) {
                 return mo.constructor;
@@ -166,9 +166,15 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
                         countOnScreen[matchedType.typeName]++;
                         queue.splice(i, 1);
                         active.push(matchedMo);
+
+                        // ensure it's set to be playing
+                        matchedMo._playing = true;
+
                         return matchedMo;
                     } else {
-                        console.log('solo next up', matchedMo);
+                        // there is a solo waiting at the front of the queue
+                        // so return nothing and wait till next time
+                        return undefined;
                     }
                 }    
             }     

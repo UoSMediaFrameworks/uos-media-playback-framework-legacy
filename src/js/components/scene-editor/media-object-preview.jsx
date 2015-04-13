@@ -31,8 +31,14 @@ var MediaObjectPreview = React.createClass({
 
 			case 'video':
 				vimeoApi.video(getVimeoId(mediaObject.url), function(err, data) {
+					var url;
+					try {
+						url = data.pictures.sizes[0].link;
+					} catch(err) {
+						console.log('couldn\'t extract vimeo thumb url from api request');
+					}
 					this.setState({
-						thumbImage: data.pictures.sizes[0].link,
+						thumbImage: url,
 						title: data.name
 					});
 				}.bind(this));

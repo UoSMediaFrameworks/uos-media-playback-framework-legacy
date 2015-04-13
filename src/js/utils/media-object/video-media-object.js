@@ -60,7 +60,6 @@ VideoMediaObject.prototype.play = function(ops) {
 
 VideoMediaObject.prototype.transition = function() {
     if (this._playing) {
-        
         var position = {vol: this.getVolume()};
         var target = {vol: 0.00001};
         new TWEEN.Tween(position)
