@@ -4,6 +4,8 @@ var LoginPage = require('../pages/login-page.jsx');
 var ClientStore = require('../stores/client-store');
 var SceneActions = require('../actions/scene-actions');
 var Loader = require('./loader.jsx');
+var StatusMessageStore = require('../stores/status-message-store');
+var StatusAlert = require('./status-alert.jsx');
 var Router = require('react-router'),
     RouteHandler = Router.RouteHandler,
     Link = Router.Link;
@@ -12,7 +14,8 @@ var Router = require('react-router'),
 function _getState () {
     return {
         loggedIn: ClientStore.loggedIn(),
-        attemptingLogin: ClientStore.attemptingLogin()
+        attemptingLogin: ClientStore.attemptingLogin(),
+        messages: StatusMessageStore.getMessages()
     };
 }
 
@@ -24,10 +27,12 @@ var App = React.createClass({
 
     componentDidMount: function() {
         ClientStore.addChangeListener(this._onChange);
+        StatusMessageStore.addChangeListener(this._onChange);
     },
 
     componentWillUnmount: function() {
         ClientStore.removeChangeListener(this._onChange);
+        StatusMessageStore.removeChangeListener(this._onChange);
     },
 
     _onChange: function() {
@@ -47,6 +52,12 @@ var App = React.createClass({
             </div>;
         }
 
+        var messages = this.state.messages;
+
+        var statusAlerts = Object.keys(messages).map(function(name) {
+            return <StatusAlert key={name} name={name} state={messages[name]} />;
+        });        
+
         return (
             <div className='app'>
                 <div className='header'>
@@ -59,6 +70,10 @@ var App = React.createClass({
                 <Loader message='Logging in...' loaded={! this.state.attemptingLogin}>
                     <RouteHandler key='handler' />
                 </Loader>
+
+                <div className="file-upload-status">
+                    {statusAlerts}
+                </div>
             </div>
         );       
 

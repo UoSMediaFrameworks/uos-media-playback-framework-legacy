@@ -28,7 +28,15 @@ var HubRecieveActions = {
             result: success,
             errorMessage: errorMessage
         });
-    }
+    },
+
+    errorMessage: function(message) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.STATUS_MESSAGE,
+            message: message,
+            status: 'danger'
+        });
+    },
 };
 
 module.exports = HubRecieveActions;

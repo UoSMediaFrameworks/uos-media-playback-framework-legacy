@@ -1,16 +1,16 @@
 var React = require('react');
 
-var FileUpload = React.createClass({
+var StatusAlert = React.createClass({
 
 	render: function() {
 		var klass = 'alert alert-' + this.props.state.state;
 		return (
 			<div className={klass}>
-				{this.props.name} {this.props.state.message || this.props.state}
+				{this.props.state.message}
 			</div>
 		);
 	}
 
 });
 
-module.exports = FileUpload;
+module.exports = StatusAlert;

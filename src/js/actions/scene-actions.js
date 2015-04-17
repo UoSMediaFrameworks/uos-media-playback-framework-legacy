@@ -125,13 +125,13 @@ var SceneActions = {
         });
 
         assetStore.create(file, function(status, data) {
-            var msg = (status === 'warning' ? 'No tags found' : '');
+            var msg = (status === 'warning' ? 'No tags found in ' + file.name : '');
 
             AppDispatcher.handleServerAction({
                 type: ActionTypes.UPLOAD_ASSET_RESULT,
-                file: file,
+                id: file.name,
                 status: status,
-                msg: msg
+                message: msg
             });
 
             var msecs = status === 'success' ? 1000 : 10000;
@@ -139,7 +139,7 @@ var SceneActions = {
             setTimeout(function() {
                 AppDispatcher.handleServerAction({
                     type: ActionTypes.UPLOAD_ASSET_RESULT_REMOVE,
-                    file: file
+                    id: file.name
                 });    
             }, msecs);
 

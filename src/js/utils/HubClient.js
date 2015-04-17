@@ -34,48 +34,75 @@ var HubClient = {
 
         socket.on('connect',function() {
             socket.emit('auth', creds, function(err, token) {
-                connectionCache.setHubToken(token);
-                HubRecieveActions.recieveLoginResult(true);
-                HubRecieveActions.tryListScenes();
-                client.listScenes().then(HubRecieveActions.recieveSceneList);
-            }, function(error) {
-                client.disconnect();
-                HubRecieveActions.recieveLoginResult(false, error.toString());
+                if (err) {
+                    socket.disconnect();
+                    HubRecieveActions.recieveLoginResult(false, err.toString());
+                } else {
+                    connectionCache.setHubToken(token);
+                
+                    HubRecieveActions.recieveLoginResult(true);
+                    HubRecieveActions.tryListScenes();
+
+                    socket.emit('listScenes', function(err, scenes) {
+                        if (err) throw err;
+                        HubRecieveActions.recieveSceneList(scenes);
+                    });
+                }
             });
         });
     },
 
     logout: function() {
         connectionCache.clear();
-        client.disconnect();
+        socket.disconnect();
     },
 
     loadScene: function(id) {
-        client.loadScene(id).then(HubRecieveActions.recieveScene);
+        socket.emit('loadScene', id, function(err, scene) {
+            if (err || ! scene) {
+                HubRecieveActions.errorMessage('Couldn\'t load requested scene, reload the page and try again');
+            } else {
+                HubRecieveActions.recieveScene(scene);    
+            }
+        });
     },
 
     save: function(scene, cb) {
-        client.saveScene(scene).then(function(newScene) {
-            if (cb) {
-                cb(newScene);
+        socket.emit('saveScene', scene, function(err, newScene) {
+            if (err) {
+                HubRecieveActions.errorMessage('Couldn\'t save scene, please try again');
+            } else {
+                if (cb) {
+                    cb(newScene);
+                }    
             }
         });
     },
 
     deleteScene: function(id) {
-        client.deleteScene(id).then(function() {
-            assetStore.removeUnusedImages();
+        socket.emit('deleteScene', id, function(err) {
+            if (err) {
+                HubRecieveActions.errorMessage('Couldn\'t delete scene, please try again');
+            } else {
+                assetStore.removeUnusedImages();    
+            }
         });
     },
 
     subscribeScene: function(id) {
         // no confirmation handler as of yet
-        client.subScene(id, HubRecieveActions.recieveScene);
+        socket.emit('subScene', id, function(err, scene) {
+            if (err) {
+                HubRecieveActions.errorMessage("Couldn't subscribe to scene, please reload the page");
+            } else {
+                HubRecieveActions.recieveScene(scene);
+            }
+        });
     },
 
     unsubscribeScene: function(id) {
         // no confirmation handler as of yet
-        client.unsubScene(id);
+        socket.emit('unsubScene', id);
     }
 };
 

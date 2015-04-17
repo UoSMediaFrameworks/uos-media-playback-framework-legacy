@@ -6,7 +6,6 @@ var React = require('react');
 var _ = require('lodash');
 var SceneTextEditor = require('../scene-text-editor.jsx');
 var SceneStore = require('../../stores/scene-store');
-var FileUploadStore = require('../../stores/file-upload-store');
 var Authentication = require('../../mixins/Authentication');
 var HubSendActions = require('../../actions/hub-send-actions');
 var SceneActions = require('../../actions/scene-actions');
@@ -15,7 +14,6 @@ var Loader = require('../loader.jsx');
 var TagUnion = require('../tag-union.jsx');
 var Router = require('react-router');
 var DropZone = require('../drop-zone.jsx');
-var FileUploadAlert = require('../file-upload-alert.jsx');
 var AddMediaObject = require('../scene-editor/add-media-object.jsx');
 var Router = require('react-router'),
     Link = Router.Link;
@@ -29,19 +27,16 @@ var Scene = React.createClass({
     getStateFromStores: function() {
         return {
             scene: SceneStore.getScene(this.getParams().id),
-            uploads: FileUploadStore.getStates()
         }; 
     },
 
     componentDidMount:function(){
         SceneStore.addChangeListener(this._onChange);
-        FileUploadStore.addChangeListener(this._onChange);
         HubSendActions.loadScene(this.getParams().id);
     },
 
     componentWillUnmount: function() {
         SceneStore.removeChangeListener(this._onChange);
-        FileUploadStore.removeChangeListener(this._onChange);
     },
 
     _onChange:function(){
@@ -71,11 +66,7 @@ var Scene = React.createClass({
     },
 
     render: function() {
-        var uploads = this.state.uploads;
-
-        var fileUploads = Object.keys(uploads).map(function(name) {
-            return <FileUploadAlert key={name} name={name} state={uploads[name]} />;
-        });        
+        
 
         var viewerUrl = '/viewer.html#/scenes/' + this.getParams().id;
 
@@ -106,10 +97,6 @@ var Scene = React.createClass({
                 </div>
                 <TagUnion scene={this.state.scene} 
                  focusedMediaObject={this.state.focusedMediaObject}/>
-
-                <div className="file-upload-status">
-                    {fileUploads}
-                </div>
             </DropZone>
         );
     }
