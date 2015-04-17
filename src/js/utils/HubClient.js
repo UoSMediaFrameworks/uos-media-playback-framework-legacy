@@ -50,6 +50,14 @@ var HubClient = {
                 }
             });
         });
+
+        socket.on('connect_error', function(err) {
+            HubRecieveActions.errorMessage(
+                "Connection to hub failed: " + 
+                err.toString() +
+                "\nTrying to reconnect.");
+            HubRecieveActions.recieveLoginResult(false);
+        });
     },
 
     logout: function() {

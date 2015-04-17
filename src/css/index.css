@@ -242,16 +242,17 @@ html, body, #main, .app {
     float: right;
 }
 
-.file-upload-status {
+.status-messages {
     z-index: 1;
     position: absolute;
     bottom: 0;
     margin: 0 auto;
 }
 
-.file-upload-status .alert {
+.status-messages .alert {
     margin: 0;
     padding: 2px;
+    white-space: pre;
 }
 
 

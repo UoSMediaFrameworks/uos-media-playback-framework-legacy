@@ -60,7 +60,7 @@ var App = React.createClass({
 
         return (
             <div className='app'>
-                <div className="file-upload-status">
+                <div className="status-messages">
                     {statusAlerts}
                 </div>
                 <div className='header'>
