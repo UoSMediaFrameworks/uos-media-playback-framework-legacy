@@ -19,6 +19,7 @@ module.exports = {
         UPLOAD_ASSET_RESULT: null,
         UPLOAD_ASSET_RESULT_REMOVE: null,
         STATUS_MESSAGE: null,
+        STATUS_MESSAGE_UPDATE: null,
         STATUS_MESSAGE_REMOVE: null
     }),
     PayloadSources: keymirror({

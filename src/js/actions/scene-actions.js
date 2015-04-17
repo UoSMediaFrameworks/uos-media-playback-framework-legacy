@@ -6,6 +6,7 @@ var HubClient = require('../utils/HubClient');
 var getVimeoId = require('../utils/get-vimeo-id');
 var objectAssign = require('object-assign');
 var ActionTypes = SceneConstants.ActionTypes;
+var hat = require('hat');
 var _ = require('lodash');
 var soundCloud = require('../utils/sound-cloud');
 var vimeoApi = require('../utils/vimeo-api');
@@ -119,17 +120,22 @@ var SceneActions = {
     },
 
     uploadAsset: function(sceneId, file) {
+        var alertId = hat();
         AppDispatcher.handleViewAction({
-            type: ActionTypes.UPLOAD_ASSET,
-            file: file
+            type: ActionTypes.STATUS_MESSAGE,
+            message: 'Uploading ' + file.name + '...',
+            id: alertId,
+            status: 'info' 
         });
 
         assetStore.create(file, function(status, data) {
-            var msg = (status === 'warning' ? 'No tags found in ' + file.name : '');
+            var msg = (status === 'warning' ? 
+                'No tags found in ' + file.name : 
+                'Upload successful!');
 
             AppDispatcher.handleServerAction({
-                type: ActionTypes.UPLOAD_ASSET_RESULT,
-                id: file.name,
+                type: ActionTypes.STATUS_MESSAGE_UPDATE,
+                id: alertId,
                 status: status,
                 message: msg
             });
@@ -138,8 +144,8 @@ var SceneActions = {
             
             setTimeout(function() {
                 AppDispatcher.handleServerAction({
-                    type: ActionTypes.UPLOAD_ASSET_RESULT_REMOVE,
-                    id: file.name
+                    type: ActionTypes.STATUS_MESSAGE_REMOVE,
+                    id: alertId
                 });    
             }, msecs);
 

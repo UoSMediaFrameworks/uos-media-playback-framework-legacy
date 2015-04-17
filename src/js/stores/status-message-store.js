@@ -32,7 +32,7 @@ var StatusMessageStore = assign({}, EventEmitter.prototype, {
 
     dispatcherIndex: AppDispatcher.register(function(payload){
         var action = payload.action;
-        var file;
+        var file, message;
         switch(action.type){
             case ActionTypes.UPLOAD_ASSET:
                 file = action.file;
@@ -41,7 +41,7 @@ var StatusMessageStore = assign({}, EventEmitter.prototype, {
 
             case ActionTypes.UPLOAD_ASSET_RESULT:
                 file = action.file;
-                var message = findMessage(file.name);
+                message = findMessage(file.name);
                 message.state = action.status;
                 message.message = action.message;
                 break;
@@ -56,6 +56,12 @@ var StatusMessageStore = assign({}, EventEmitter.prototype, {
                     message: action.message,
                     state: action.status
                 });
+                break;
+
+            case ActionTypes.STATUS_MESSAGE_UPDATE:
+                message = findMessage(action.id);
+                message.state = action.status;
+                message.message = action.message;
                 break;
 
             case ActionTypes.STATUS_MESSAGE_REMOVE:

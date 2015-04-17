@@ -60,6 +60,9 @@ var App = React.createClass({
 
         return (
             <div className='app'>
+                <div className="file-upload-status">
+                    {statusAlerts}
+                </div>
                 <div className='header'>
                     {sessionNav}                      
                     <a target='_blank' className='dos-donts' href='https://docs.google.com/document/d/1B25gvDRob576KPsgusEhhUY3GI_XF6guHIBpLPrn9U0/edit?usp=sharing'>
@@ -70,10 +73,6 @@ var App = React.createClass({
                 <Loader message='Logging in...' loaded={! this.state.attemptingLogin}>
                     <RouteHandler key='handler' />
                 </Loader>
-
-                <div className="file-upload-status">
-                    {statusAlerts}
-                </div>
             </div>
         );       
 

@@ -244,7 +244,7 @@ html, body, #main, .app {
 
 .file-upload-status {
     z-index: 1;
-    position: fixed;
+    position: absolute;
     bottom: 0;
     margin: 0 auto;
 }
