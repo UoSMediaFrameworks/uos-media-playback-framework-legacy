@@ -1,12 +1,12 @@
 'use strict';
 /*jshint browser:true */
 
-var hubClient = require('media-hub-client');
 var HubRecieveActions = require('../actions/hub-recieve-actions');
+var io = require('socket.io-client');
 var HubSendActions = require('../actions/hub-send-actions');
 var assetStore = require('./asset-store');
 var connectionCache = require('./connection-cache');
-var client;
+var socket;
 
 var HubClient = {
     login: function(url, creds) {
@@ -30,16 +30,19 @@ var HubClient = {
                 throw 'url and creds must be provided for login to function';
         }
 
-        client = hubClient({forceNew: true});
-        client.connect(url, creds).then(function(token) {
-            connectionCache.setHubToken(token);
-            HubRecieveActions.recieveLoginResult(true);
-            HubRecieveActions.tryListScenes();
-            client.listScenes().then(HubRecieveActions.recieveSceneList);
-        }, function(error) {
-            client.disconnect();
-            HubRecieveActions.recieveLoginResult(false, error.toString());
-        });    
+        socket = io(url, {forceNew: true});
+
+        socket.on('connect',function() {
+            socket.emit('auth', creds, function(err, token) {
+                connectionCache.setHubToken(token);
+                HubRecieveActions.recieveLoginResult(true);
+                HubRecieveActions.tryListScenes();
+                client.listScenes().then(HubRecieveActions.recieveSceneList);
+            }, function(error) {
+                client.disconnect();
+                HubRecieveActions.recieveLoginResult(false, error.toString());
+            });
+        });
     },
 
     logout: function() {
