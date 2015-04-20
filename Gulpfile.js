@@ -40,12 +40,16 @@ if (production) {
   of watchify, and then I also want to run it manually for the 'build' task.  So I have to 
   abstract out the process of making a bundler, and then leave it open to manual triggering
 */
-var indexBundler = bundlerBuilder('./src/js/index.jsx', 'index.js');
-var viewerBundler = bundlerBuilder('./src/js/viewer.jsx', 'viewer.js');
+var indexBundler = bundlerBuilder('./src/js/index.jsx', 'index.js', true);
+var viewerBundler = bundlerBuilder('./src/js/viewer.jsx', 'viewer.js', true);
+var manifest2015Bundler = bundlerBuilder('./src/js/manifest2015.js', 'manifest2015.js', false);
 
-function bundlerBuilder (startPath, finishName) {
+function bundlerBuilder (startPath, finishName, useReactify) {
     var bundler = watchify(browserify(startPath, objectAssign({debug: true}, watchify.args)));
-    bundler.transform(reactify);
+    if (useReactify) {
+        bundler.transform(reactify);    
+    }
+    
     bundler.transform(envify);
     bundler.on('log', gutil.log);
 
@@ -76,6 +80,7 @@ gulp.task('watch', function () {
 
     indexBundler.bundler.on('update', indexBundler.rebundle);
     viewerBundler.bundler.on('update', viewerBundler.rebundle);
+    manifest2015Bundler.bundler.on('update', manifest2015Bundler.rebundle);
 });
 
 gulp.task('html', function() {
@@ -92,7 +97,8 @@ gulp.task('css', function() {
 gulp.task('bundlejs', function() {
     return mergeStream(
         indexBundler.rebundle(),
-        viewerBundler.rebundle()
+        viewerBundler.rebundle(),
+        manifest2015Bundler.rebundle()
     );
 });
 
@@ -106,6 +112,7 @@ gulp.task('build', ['build-dist'], function() {
     // thus the .on('end', ...)
     indexBundler.bundler.close();
     viewerBundler.bundler.close();
+    manifest2015Bundler.bundler.close();
 });
 
 gulp.task('serve', function(next) {

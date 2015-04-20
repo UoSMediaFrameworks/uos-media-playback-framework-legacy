@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='UTF-8'>
+        <title>Manifest 2015</title>
+        <link rel="stylesheet" media="screen" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+        <link rel="stylesheet" media="screen" href="css/manifest2015.css">
+    </head>
+
+    <body>
+        <div id='errors'></div>
+        <div id='login'>
+            <form id='login-form'>
+                <label>
+                    Password
+                    <input type='password' name='password' />
+                </label>
+                <input type='submit' name='submit' />
+            </form>
+        </div>
+        <div id='player'></div>
+        <script src="//cdn.polyfill.io/v1/polyfill.js?features=<%= polyfillFeatures %>"></script>
+        <script src='js/manifest2015.js'></script>
+    </body>
+</html>
