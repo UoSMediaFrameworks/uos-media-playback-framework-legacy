@@ -18,7 +18,6 @@ var TextMediaObject = require('../utils/media-object/text-media-object');
 var ImageMediaObject = require('../utils/media-object/image-media-object');
 var VideoMediaObject = require('../utils/media-object/video-media-object');
 var AudioMediaObject = require('../utils/media-object/audio-media-object');
-var EmbeddedVimeoPlayer = require('../utils/embedded-vimeo-player');
 
 var SceneListener = React.createClass({
 
