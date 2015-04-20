@@ -4,8 +4,6 @@ var React = require('react');
 var SceneStore = require('../stores/scene-store');
 var ThemeSelector = require('../components/theme-selector.jsx');
 var HubSendActions = require('../actions/hub-send-actions');
-var RandomVisualPlayer = require('../utils/random-visual-player');
-var RandomAudioPlayer = require('../utils/random-audio-player');
 var FormHelper = require('../mixins/form-helper');
 var Router = require('react-router');
 var Authentication = require('../mixins/Authentication');
@@ -18,6 +16,9 @@ var TextMediaObject = require('../utils/media-object/text-media-object');
 var ImageMediaObject = require('../utils/media-object/image-media-object');
 var VideoMediaObject = require('../utils/media-object/video-media-object');
 var AudioMediaObject = require('../utils/media-object/audio-media-object');
+var RandomVisualPlayer = require('../utils/random-visual-player');
+var RandomAudioPlayer = require('../utils/random-audio-player');
+
 
 var SceneListener = React.createClass({
 
