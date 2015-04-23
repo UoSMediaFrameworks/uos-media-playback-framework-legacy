@@ -60,13 +60,23 @@ VideoMediaObject.prototype.play = function(ops) {
 
 VideoMediaObject.prototype.transition = function() {
     if (this._playing) {
-        var position = {vol: this.getVolume()};
-        var target = {vol: 0.00001};
+        this._playing = false;
+        this.emit('transition', this);
+
+        var position = {vol: this.getVolume()},
+            target = {vol: 0.00001},
+            self = this;
         new TWEEN.Tween(position)
             .to(target, this._ops.transitionDuration)
             .onUpdate(function() {
-                this._player.postMessage('setVolume', position.vol);
-            }.bind(this))
+                self._player.postMessage('setVolume', position.vol);
+            })
+            .onComplete(function() {
+                self.emit('done', self);
+            })
+            .onStop(function() {
+                self.emit('done', self);
+            })
             .start();
     }    
 
