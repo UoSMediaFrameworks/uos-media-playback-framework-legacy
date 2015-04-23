@@ -9,9 +9,6 @@ var TextMediaObject = require('./media-object/text-media-object');
 
 function RandomVisualPlayer (stageElement, queue) {
 
-    
-    var showMediaLastRun;
-
     var showMedia = variableThrottle(function() {
         _.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject], function(moType) {
             var obj = queue.take([moType]);
