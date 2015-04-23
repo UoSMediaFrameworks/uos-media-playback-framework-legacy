@@ -17,6 +17,7 @@ var form = document.getElementById('login-form'),
     login = document.getElementById('login'),
     errors = document.getElementById('errors'),
     playerElem = document.getElementById('player'),
+    sceneNameElem = document.getElementById('scene-name'),
     mediaObjectQueue = new MediaObjectQueue(
         [TextMediaObject, AudioMediaObject, VideoMediaObject, ImageMediaObject],
         {image: 3, text: 1, video: 1, audio: 1}
@@ -43,6 +44,8 @@ function nextScene () {
         if (scene.style) {
             $(playerElem).css(scene.style);
         }
+
+        sceneNameElem.textContent = scene.name;
 
         mediaObjectQueue.setScene(scene);
         randomVisualPlayer.start();

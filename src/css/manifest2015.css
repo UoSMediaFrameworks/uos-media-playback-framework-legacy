@@ -24,3 +24,14 @@ html, body, #login, #player {
     -ms-transition: background-color 1000ms linear;
     transition: background-color 1000ms linear;
 }
+
+#scene-name {
+	background-color: rgba(0, 0, 0, .7);
+	padding: 6px 15px;
+	border-top-right-radius: 6px;
+	color: white;
+	font-size: 22px;
+	z-index: 2;
+	position: absolute;
+	bottom: 0px;
+}
