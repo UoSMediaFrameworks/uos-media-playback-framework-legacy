@@ -18,11 +18,11 @@ var SCENE_PROP_DEFAULTS = {
     defaultDisplayCounts - {typeName: num, typeName, num, ...}
 */
 function MediaObjectQueue(types, defaultDisplayCounts) {
-        // active queue of objects to shift/push from
+        // objects that are up for display
     var queue = [],
-        // list of objects that are currently out on load from the queue
+        // list of objects that are currently out on loan from the queue
         active = [],
-        // list of objects that belong to the current scene
+        // all objects in the scene
         masterList = [],
         tagMatcher = new TagMatcher(),
         maximumOnScreen = {},
@@ -42,9 +42,15 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
         // pull it out of the active list
         var activeIndex = _.findIndex(active, function(activeMo) { return activeMo === mediaObject; }); 
         active.splice(activeIndex, 1);
-        // make sure it's still in the masterList and matches the current tagMatcher
-        if (_.find(masterList, function(mo) { return mediaObject === mo; }) && tagMatcher.match(mediaObject.tags)) {
-            queue.push(mediaObject);    
+        // make sure it's still in the masterList
+        if (_.find(masterList, function(mo) { return mediaObject === mo; })) {
+            if (tagMatcher.match(mediaObject.tags)) {
+                queue.push(mediaObject);        
+            }
+        // otherwise it's from an older scene, so remove any event listeners
+        } else {
+            mediaObject.removeListener('transition', moTransitionHandler);
+            mediaObject.removeListener('done', moDoneHandler);
         }
     }
 
@@ -88,41 +94,37 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
             }
         }, {});
 
-        // process the mediaObjects
-        var oldMasterList = _.clone(masterList);
-        masterList = [];
-        var newMo, 
-            index,
-            oldMo;
-
-        // make new masterList, reusing old matching objects if any
-        _.forEach(newScene.scene, function(mo) {
-            var index = _.findIndex(oldMasterList, function(oldMo) { return _.isEqual(oldMo._obj, mo); });
-            if (index !== -1) {
-                oldMo = oldMasterList.splice(index, 1)[0];
-                masterList.push(oldMo);
-            } else {
-                var TypeConstructor = getTypeByName(mo.type);
-                newMo = new TypeConstructor(mo, {
-                    displayDuration: this.displayDuration,
-                    transitionDuration: this.transitionDuration
-                });
-                newMo.on('transition', moTransitionHandler);
-                newMo.on('done', moDoneHandler);
-                masterList.push(newMo);
-            }
-        }.bind(this));
-
         // unhook events from mediaobjects that aren't in the new scene
-        _.forEach(oldMasterList, function(mo) {
-            mo.stop();
+        _.forEach(queue, function(mo) {
             mo.removeListener('transition', moTransitionHandler);
             mo.removeListener('done', moDoneHandler);
         });
 
-        // fill the queue with matching mediaObjects that aren't currently active
+        // transition out all active mediaObjects
+        _.forEach(active, function(mo) {
+            mo.transition();
+        });
+
+        // process the mediaObjects
+        var newMo, 
+            index,
+            oldMo;
+
+        // make new masterList
+        masterList = _.map(newScene.scene, function(mo) {
+            var TypeConstructor = getTypeByName(mo.type);
+            newMo = new TypeConstructor(mo, {
+                displayDuration: this.displayDuration,
+                transitionDuration: this.transitionDuration
+            });
+            newMo.on('transition', moTransitionHandler);
+            newMo.on('done', moDoneHandler);
+            
+            return newMo;
+        }.bind(this));
+
+        // fill the queue with matching mediaObjects
         queue = _(masterList)
-            .difference(active)
             .filter(function(mo) {
                 return tagMatcher.match(mo.tags);
             })

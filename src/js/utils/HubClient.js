@@ -58,6 +58,8 @@ var HubClient = {
                 "\nTrying to reconnect.");
             HubRecieveActions.recieveLoginResult(false);
         });
+
+        socket.on('sceneUpdate', HubRecieveActions.recieveScene);
     },
 
     logout: function() {

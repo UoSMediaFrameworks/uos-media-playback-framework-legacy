@@ -158,14 +158,25 @@ describe('MediaObjectQueue', function () {
         });
     });
 
-    describe('setScene() called twice with identical scene', function () {
-        it('should not refill the queue if all mediaObjects are currently taken and playing', function () {
-            var scene = makeScene({foo: 1});
-            this.queue.setScene(scene);
+    describe('setScene()', function () {
+        it('should transition out any active mediaObjects', function (done) {
+            this.queue.setScene(makeScene({foo: 2}));
             var mo = this.queue.take([FooMediaObject]);
             mo.play({transitionDuration: 0});
-            this.queue.setScene(scene);
-            assert.isUndefined(this.queue.take([FooMediaObject]));
+            mo.on('transition', function() {
+                done();
+            });
+            this.queue.setScene(makeScene({foo: 2}));
+        });
+
+        it('should emit done any active mediaObjects', function (done) {
+            this.queue.setScene(makeScene({foo: 2}));
+            var mo = this.queue.take([FooMediaObject]);
+            mo.play({transitionDuration: 0});
+            mo.on('done', function() {
+                done();
+            });
+            this.queue.setScene(makeScene({foo: 2}));
         });
     });
 
