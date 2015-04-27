@@ -78,7 +78,9 @@ var SceneListener = React.createClass({
     },
 
     componentDidUpdate: function(prevProps, prevState) {
-        this._maybeUpdatePlayer();
+        if (! _.isEqual(prevState.scene, this.state.scene) ) {
+            this._maybeUpdatePlayer();
+        }
         this.updateTags();
     },
 

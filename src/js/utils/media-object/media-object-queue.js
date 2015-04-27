@@ -188,18 +188,23 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
     this.setTagMatcher = function(newTagMatcher) {
         if (! tagMatcher.equalTo(newTagMatcher)) {
             tagMatcher = newTagMatcher;
-            // clear the current queue
-            queue = [];
-            _.forEach(masterList, function(mo) {
-                var activeIndex = _.findIndex(active, function(activeMo) { return activeMo === mo; }); 
-                if ( tagMatcher.match(mo.tags) ) {
-                    if(activeIndex === -1 ) {
-                        queue.push(mo);
-                    }
-                } else if (activeIndex > -1) {
+
+            // fill queue with all newly matching mos from masterList that aren't currently playing
+            queue = _(masterList)
+                .filter(function(mo) {
+                    return tagMatcher.match(mo.tags);
+                })
+                .difference(active)
+                .shuffle()
+                .value();
+
+            // transition out currently playin non-matching videos
+            _(active)
+                .filter(function(mo) {
+                    return ! tagMatcher.match(mo.tags);
+                }).each(function(mo) {
                     mo.transition();
-                }
-            });
+                }).value();
         }
     };
 }
