@@ -158,7 +158,7 @@ describe('MediaObjectQueue', function () {
         });
     });
 
-    describe('setScene()', function () {
+    describe('setScene(scene, {hardReset: true})', function () {
         it('should transition out any active mediaObjects', function (done) {
             this.queue.setScene(makeScene({foo: 2}));
             var mo = this.queue.take([FooMediaObject]);
@@ -166,7 +166,7 @@ describe('MediaObjectQueue', function () {
             mo.on('transition', function() {
                 done();
             });
-            this.queue.setScene(makeScene({foo: 2}));
+            this.queue.setScene(makeScene({foo: 2}), {hardReset: true});
         });
 
         it('should emit done any active mediaObjects', function (done) {
@@ -176,7 +176,7 @@ describe('MediaObjectQueue', function () {
             mo.on('done', function() {
                 done();
             });
-            this.queue.setScene(makeScene({foo: 2}));
+            this.queue.setScene(makeScene({foo: 2}), {hardReset: true});
         });
 
         it('should allow reset any maximumOnScreen limits', function () {
@@ -186,7 +186,7 @@ describe('MediaObjectQueue', function () {
             var mo = this.queue.take([FooMediaObject]);
             mo.play({transitionDuration: 0});
 
-            this.queue.setScene(scene);
+            this.queue.setScene(scene, {hardReset: true});
             assert(this.queue.take([FooMediaObject]));
         });
     });
