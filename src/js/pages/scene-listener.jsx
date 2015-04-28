@@ -60,7 +60,6 @@ var SceneListener = React.createClass({
     componentDidMount: function() {
         HubSendActions.subscribeScene(this.getParams().id);
         SceneStore.addChangeListener(this._onChange);
-        HubSendActions.loadScene(this.getParams().id);
 
         var playerElem = this.getPlayerElem();
         
@@ -79,7 +78,9 @@ var SceneListener = React.createClass({
     },
 
     componentDidUpdate: function(prevProps, prevState) {
-        this._maybeUpdatePlayer();
+        if (! _.isEqual(prevState.scene, this.state.scene) ) {
+            this._maybeUpdatePlayer();
+        }
         this.updateTags();
     },
 
