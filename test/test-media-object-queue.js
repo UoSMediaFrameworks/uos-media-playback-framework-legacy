@@ -178,6 +178,17 @@ describe('MediaObjectQueue', function () {
             });
             this.queue.setScene(makeScene({foo: 2}));
         });
+
+        it('should allow reset any maximumOnScreen limits', function () {
+            var scene = makeScene({foo: 2});
+            scene.maximumOnScreen = {foo: 1};
+            this.queue.setScene(scene);
+            var mo = this.queue.take([FooMediaObject]);
+            mo.play({transitionDuration: 0});
+
+            this.queue.setScene(scene);
+            assert(this.queue.take([FooMediaObject]));
+        });
     });
 
     describe('scene attributes', function () {

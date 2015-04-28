@@ -25,23 +25,19 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
         // all objects in the scene
         masterList = [],
         tagMatcher = new TagMatcher(),
-        maximumOnScreen = {},
-        countOnScreen = {};
+        maximumOnScreen = {};
 
-    // initialize all counts as 0
-    _.forEach(types, function(type) { 
-        countOnScreen[type.typeName] = 0; 
-    });
-
-    function moTransitionHandler (mediaObject) {
-        // decrement type count
-        countOnScreen[mediaObject.constructor.typeName]--;
+    function activeCount (typeName) {
+        return _.filter(active, function(mo) { return mo.constructor.typeName === typeName; }).length;
     }
 
-    function moDoneHandler (mediaObject) {
+    function moTransitionHandler (mediaObject) {
         // pull it out of the active list
         var activeIndex = _.findIndex(active, function(activeMo) { return activeMo === mediaObject; }); 
         active.splice(activeIndex, 1);
+    }
+
+    function moDoneHandler (mediaObject) {
         // make sure it's still in the masterList
         if (_.find(masterList, function(mo) { return mediaObject === mo; })) {
             if (tagMatcher.match(mediaObject.tags)) {
@@ -100,11 +96,6 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
             mo.removeListener('done', moDoneHandler);
         });
 
-        // transition out all active mediaObjects
-        _.forEach(active, function(mo) {
-            mo.transition();
-        });
-
         // process the mediaObjects
         var newMo, 
             index,
@@ -130,6 +121,11 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
             })
             .shuffle()
             .value();
+
+        // transition out all active mediaObjects
+        _.forEach(active, function(mo) {
+            mo.transition();
+        });
     };
 
     this.take = function(typesArray) {
@@ -143,7 +139,7 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
 
         var eligibleTypes = _(typesArray)
             .filter(function(moType) {
-                return countOnScreen[moType.typeName] < maximumOnScreen[moType.typeName];
+                return activeCount(moType.typeName) < maximumOnScreen[moType.typeName];
             })
             .difference(activeSoloTypes).value();
 
@@ -164,8 +160,7 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
 
                     // if the next mo in the queue is marked as solo, only give it back once
                     // all other active mo's of the same type are off the stage
-                    if (matchedMo._obj.solo !== true || (matchedMo._obj.solo === true && countOnScreen[matchedType.typeName] === 0)) {
-                        countOnScreen[matchedType.typeName]++;
+                    if (matchedMo._obj.solo !== true || (matchedMo._obj.solo === true && activeCount(matchedType.typeName) === 0)) {
                         queue.splice(i, 1);
                         active.push(matchedMo);
 
