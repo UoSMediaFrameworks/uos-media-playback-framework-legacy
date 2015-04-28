@@ -47,7 +47,7 @@ function nextScene () {
 
         sceneNameElem.textContent = scene.name;
 
-        mediaObjectQueue.setScene(scene);
+        mediaObjectQueue.setScene(scene, {hardReset: true});
         randomVisualPlayer.start();
         randomAudioPlayer.start();
 

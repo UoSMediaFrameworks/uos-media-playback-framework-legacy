@@ -60,7 +60,9 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
         return t;
     }
 
-    this.setScene = function(newScene) {
+    this.setScene = function(newScene, ops) {
+        ops = ops || {};
+        ops.hardReset = ops.hardReset || false;
 
         // process scene attributes
         var sceneVal;
@@ -123,9 +125,12 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
             .value();
 
         // transition out all active mediaObjects
-        _.forEach(active, function(mo) {
-            mo.transition();
-        });
+        if (ops.hardReset) {
+            _.forEach(_.clone(active), function(activeMo) {
+                activeMo.transition();
+            });    
+        }
+        
     };
 
     this.take = function(typesArray) {
