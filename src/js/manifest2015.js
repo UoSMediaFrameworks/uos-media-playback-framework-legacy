@@ -50,9 +50,6 @@ function nextScene () {
     var delay,
         sceneToLoad = sceneList[currentSceneIndex].name;
 
-    var match = /^(?:scene)?(.+)/.exec(sceneToLoad);
-    sceneToLoad = match[1];
-
     socket.emit('loadSceneByName', sceneToLoad, handleError(function(scene) {
         if (! scene) {
             showError('Attempted to load scene "' + sceneToLoad + '" but it could not be found.');
