@@ -48,7 +48,7 @@ function showError (message) {
 
 function nextScene () {
     var delay,
-        sceneToLoad = 'GUI' + sceneList[currentSceneIndex].name;
+        sceneToLoad = sceneList[currentSceneIndex].name;
 
     socket.emit('loadSceneByName', sceneToLoad, handleError(function(scene) {
         if (! scene) {
