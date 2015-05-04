@@ -12,6 +12,7 @@ var AudioMediaObject = require('./utils/media-object/audio-media-object');
 var MediaObjectQueue = require('./utils/media-object/media-object-queue');
 var RandomAudioPlayer = require('./utils/random-audio-player');
 var RandomVisualPlayer = require('./utils/random-visual-player');
+var transitionEventName = require('./utils/transition-event')();
 
 var form = document.getElementById('login-form'),
     login = document.getElementById('login'),
@@ -32,24 +33,45 @@ var socket;
 
 
 function showError (message) {
-    var msg = document.createElement('h2');
+    var msg = document.createElement('li');
+    msg.classList.add('error');
     msg.innerText = message.toString();
     errors.appendChild(msg);
+    msg.style.opacity = 1;
+    setTimeout(function() {
+        msg.addEventListener(transitionEventName, function() {
+            errors.removeChild(msg);
+        });
+        msg.style.opacity = 0;
+    }, 40 * message.length);
 }
 
 function nextScene () {
-    socket.emit('loadSceneByName', sceneList[currentSceneIndex].name, handleError(function(scene) {
-        console.log('showing scene ' + scene.name);
-        
-        if (scene.style) {
-            $(playerElem).css(scene.style);
+    var delay,
+        sceneToLoad = sceneList[currentSceneIndex].name;
+
+    var match = /^(?:scene)?(.+)/.exec(sceneToLoad);
+    sceneToLoad = match[1];
+
+    socket.emit('loadSceneByName', sceneToLoad, handleError(function(scene) {
+        if (! scene) {
+            showError('Attempted to load scene "' + sceneToLoad + '" but it could not be found.');
+            delay = 1000;
+        } else {
+            console.log('showing scene ' + scene.name);
+            
+            if (scene.style) {
+                $(playerElem).css(scene.style);
+            }
+
+            sceneNameElem.textContent = scene.name;
+
+            mediaObjectQueue.setScene(scene, {hardReset: true});
+            randomVisualPlayer.start();
+            randomAudioPlayer.start();    
+
+            delay = (Number(scene.sceneTransition) || 30) * 1000;
         }
-
-        sceneNameElem.textContent = scene.name;
-
-        mediaObjectQueue.setScene(scene, {hardReset: true});
-        randomVisualPlayer.start();
-        randomAudioPlayer.start();
 
         if (sceneList.length > 1) {
             currentSceneIndex++;
@@ -58,12 +80,10 @@ function nextScene () {
                 currentSceneIndex = 0;
             }
 
-            var delay = (Number(scene.sceneTransition) || 30) * 1000;
-
             sceneDisplayTimeout = setTimeout(function() {
                 nextScene();
             }, delay);
-        }    
+        }
     }));  
     
 }
@@ -73,9 +93,13 @@ function showScenes (newSceneList) {
         clearTimeout(sceneDisplayTimeout);
     }
 
-    sceneList = _.shuffle(newSceneList);
-    currentSceneIndex = 0;
-    nextScene();
+    if (newSceneList && newSceneList.length > 0) {
+        sceneList = _.shuffle(newSceneList);
+        currentSceneIndex = 0;
+        nextScene();
+    } else {
+        showError('No scenes attached to selected node.');
+    }
 }
 
 function handleError (func, errorHandler) {
@@ -113,9 +137,10 @@ form.addEventListener('submit', function(event) {
         socket.emit('auth', {password: form.password.value}, handleError(function(err) {
             form.password.value = '';
             login.style.opacity = 0;
+            playerElem.style.display = 'block';
             cleanup();
 
-            socket.emit('register', 'manifest2015');
+            socket.emit('register', 'scene-selection-demo');
         }, cleanup));
     });
 

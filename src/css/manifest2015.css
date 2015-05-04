@@ -23,6 +23,8 @@ html, body, #login, #player {
     -o-transition: background-color 1000ms linear;
     -ms-transition: background-color 1000ms linear;
     transition: background-color 1000ms linear;
+
+    display: none;
 }
 
 #scene-name {
@@ -34,4 +36,20 @@ html, body, #login, #player {
 	z-index: 2;
 	position: absolute;
 	bottom: 0px;
+}
+
+#errors {
+    position: absolute;
+    top: 0px;
+}
+
+.error {
+    -webkit-transition: opacity 0.4s ease-in-out;
+    -moz-transition: opacity 0.4s ease-in-out;
+    -ms-transition: opacity 0.4s ease-in-out;
+    -o-transition: opacity 0.4s ease-in-out;
+    transition: opacity 0.4s ease-in-out;
+    list-style-type: none;
+    opacity: 0;
+    color: red;
 }
