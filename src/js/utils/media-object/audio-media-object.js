@@ -26,13 +26,11 @@ function tweenAudio (player, start, end, duration) {
         });
 }
 
-AudioMediaObject.prototype.play = function(ops) {
+AudioMediaObject.prototype.play = function() {
     var self = this,
         // hide inside of play() because Audio5 library bombs when loaded 
         // in a headless environment
         Audio5 = require('audio5');
-    
-    this._ops = ops;
 
     console.log('playing ' + this._obj.url, this._obj.tags);
 
@@ -51,9 +49,9 @@ AudioMediaObject.prototype.play = function(ops) {
                 this.volume(0);
                 this.play();
                 
-                tweenAudio(this, 0, volume, ops.transitionDuration).start();
+                tweenAudio(this, 0, volume, self._ops.transitionDuration).start();
                 
-                var transitionSeconds = ops.transitionDuration / 1000;
+                var transitionSeconds = self._ops.transitionDuration / 1000;
                 this.on('timeupdate', function (position, duration) {
                     if ((duration - position) < transitionSeconds || duration < transitionSeconds) {
                         self.transition();
@@ -67,7 +65,7 @@ AudioMediaObject.prototype.play = function(ops) {
         });
     });
 
-    MediaObject.prototype.play.call(this, ops);
+    MediaObject.prototype.play.call(this);
 };
 
 AudioMediaObject.prototype.transition = function() {

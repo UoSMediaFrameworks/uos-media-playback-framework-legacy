@@ -79,7 +79,7 @@ describe('MediaObjectQueue', function () {
         it('should return a mediaObject once the count drops below the maximum', function () {
             var self = this;
             var mo = this.queue.take([FooMediaObject]);
-            mo.play({transitionDuration: 0});
+            mo.play();
             
             assert.isUndefined(this.queue.take([FooMediaObject]));
             
@@ -148,7 +148,7 @@ describe('MediaObjectQueue', function () {
         describe('take()', function () {
             it('should return the same mediaObject after it is stopped', function () {
                 var mo1 = this.queue.take([FooMediaObject]);
-                mo1.play({transitionDuration: 0});
+                mo1.play();
                 mo1.stop();
                 
                 var mo2 = this.queue.take([FooMediaObject]);
@@ -162,7 +162,7 @@ describe('MediaObjectQueue', function () {
         it('should transition out any active mediaObjects', function (done) {
             this.queue.setScene(makeScene({foo: 2}));
             var mo = this.queue.take([FooMediaObject]);
-            mo.play({transitionDuration: 0});
+            mo.play();
             mo.on('transition', function() {
                 done();
             });
@@ -172,7 +172,7 @@ describe('MediaObjectQueue', function () {
         it('should emit done any active mediaObjects', function (done) {
             this.queue.setScene(makeScene({foo: 2}));
             var mo = this.queue.take([FooMediaObject]);
-            mo.play({transitionDuration: 0});
+            mo.play();
             mo.on('done', function() {
                 done();
             });
@@ -184,7 +184,7 @@ describe('MediaObjectQueue', function () {
             scene.maximumOnScreen = {foo: 1};
             this.queue.setScene(scene);
             var mo = this.queue.take([FooMediaObject]);
-            mo.play({transitionDuration: 0});
+            mo.play();
 
             this.queue.setScene(scene, {hardReset: true});
             assert(this.queue.take([FooMediaObject]));
@@ -253,7 +253,7 @@ describe('MediaObjectQueue', function () {
 
         it('should not refill the queue with elements that dont match the active tagFilter', function () {
             var mo = this.queue.take([BarMediaObject]);
-            mo.play({transitionDuration: 0});
+            mo.play();
             this.queue.setTagMatcher(carrotsMatcher);
             mo.stop();
             
@@ -276,7 +276,7 @@ describe('MediaObjectQueue', function () {
             this.queue.setScene(scene);
 
             this.mo = this.queue.take([FooMediaObject]);
-            this.mo.play({transitionDuration: 0});
+            this.mo.play();
         });
 
         it('should trigger "done" events on any currently playing mediaObjects that don\'t match', function (done) {

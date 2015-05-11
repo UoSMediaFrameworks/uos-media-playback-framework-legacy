@@ -7,21 +7,21 @@ var _ = require('lodash');
 inherits(MediaObject, EventEmitter);
 module.exports = MediaObject;
 
-function MediaObject (obj) {
+function MediaObject (obj, ops) {
     this._obj = obj || {};
 
     this.tags = this._obj.tags ? parseTagString(this._obj.tags) : [];
     this.type = this._obj.type;
     this._playing = false;
+    this._ops = ops || {};
 }
 
 function parseTagString (tagString) {
     return _.uniq(_.map(tagString.split(','), function(s) { return s.trim(); }));
 }
 
-MediaObject.prototype.play = function(ops) {
+MediaObject.prototype.play = function() {
     this._playing = true;
-    this._ops = ops || {};
 };
 
 // triggers a soft stop

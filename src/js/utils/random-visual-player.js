@@ -23,11 +23,7 @@ function RandomVisualPlayer (stageElement, queue) {
                             placeAtRandomPosition(obj.element);
                         }
 
-                        obj.play({
-                            transitionDuration: queue.transitionDuration,
-                            // only applicable to atemporal media (images and text)
-                            displayDuration: queue.displayDuration
-                        });
+                        obj.play();
                         obj.element.classList.add('show-media-object');
                     });
 

@@ -39,23 +39,22 @@ VideoMediaObject.prototype.getVolume = function() {
     return volume / 100;
 };
 
-VideoMediaObject.prototype.play = function(ops) {
+VideoMediaObject.prototype.play = function() {
     this._loading = false;
-    this._ops = ops;
     // vimeo player complains if you pass it 0, so we pass it just above zero
     this._player.postMessage('setVolume', this.getVolume() || 0.00001);
     this._player.postMessage('play');
 
     // setup transition stuff
-    var transitionSeconds = ops.transitionDuration / 1000;
-    this.element.style.transition = 'opacity ' + (ops.transitionDuration / 1000) + 's ease-in-out';
+    var transitionSeconds = this._ops.transitionDuration / 1000;
+    this.element.style.transition = 'opacity ' + (this._ops.transitionDuration / 1000) + 's ease-in-out';
     this._player.onPlayProgress(function(data) {
         if ((data.duration - data.seconds) < transitionSeconds || data.duration < transitionSeconds ) {
             this.transition();
         }
     }.bind(this));
 
-    MediaObject.prototype.play.call(this, ops);
+    MediaObject.prototype.play.call(this);
 };
 
 VideoMediaObject.prototype.transition = function() {

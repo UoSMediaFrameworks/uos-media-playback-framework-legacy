@@ -19,9 +19,7 @@ function RandomAudioPlayer (queue) {
         if (obj) {
             obj.on('transition', moTransitionHandler);
 
-            obj.play({
-                transitionDuration: queue.transitionDuration,
-            });
+            obj.play();
         }
     }, function() {
         return queue.displayInterval;
