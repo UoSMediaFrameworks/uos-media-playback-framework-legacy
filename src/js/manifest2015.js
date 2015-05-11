@@ -13,12 +13,15 @@ var MediaObjectQueue = require('./utils/media-object/media-object-queue');
 var RandomAudioPlayer = require('./utils/random-audio-player');
 var RandomVisualPlayer = require('./utils/random-visual-player');
 var transitionEventName = require('./utils/transition-event')();
+var TagMatcher = require('./utils/tag-matcher');
+
 
 var form = document.getElementById('login-form'),
     login = document.getElementById('login'),
     errors = document.getElementById('errors'),
     playerElem = document.getElementById('player'),
     sceneNameElem = document.getElementById('scene-name'),
+    themeNameElem = document.getElementById('theme-name'),
     mediaObjectQueue = new MediaObjectQueue(
         [TextMediaObject, AudioMediaObject, VideoMediaObject, ImageMediaObject],
         {image: 3, text: 1, video: 1, audio: 1}
@@ -46,6 +49,24 @@ function showError (message) {
     }, 40 * message.length);
 }
 
+function getRandomThemeName (scene) {
+    if (! scene.themes) {
+        return null;
+    } else {
+        return _(scene.themes).keys().sample();
+    }
+}
+
+function showThemeName (name) {
+    themeNameElem.textContent = name;
+
+    if (name === '') {
+        themeNameElem.style.display = 'none';
+    } else {
+        themeNameElem.style.display = 'block';
+    }
+}
+
 function nextScene () {
     var delay,
         sceneToLoad = sceneList[currentSceneIndex].name;
@@ -64,6 +85,16 @@ function nextScene () {
             sceneNameElem.textContent = scene.name;
 
             mediaObjectQueue.setScene(scene, {hardReset: true});
+
+            var themeName = getRandomThemeName(scene);
+            if (themeName) {
+                mediaObjectQueue.setTagMatcher(new TagMatcher(scene.themes[themeName]));
+                showThemeName(themeName);
+            } else {
+                themeNameElem.textContent = '';
+                showThemeName('');
+            }
+
             randomVisualPlayer.start();
             randomAudioPlayer.start();    
 

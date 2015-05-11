@@ -13,15 +13,19 @@
             <form id='login-form'>
                 <label>
                     Password
-                    <input type='password' name='password' />
+                    <input tabindex='1' type='password' name='password' />
                 </label>
                 <input type='submit' name='submit' />
             </form>
         </div>
         <div id='player'></div>
         <ul id='errors'></ul>
-        <div id='scene-name'>
+        <div id='scene-name' class='info-box'>
             No Scene currently playing
+        </div>
+
+        <div id='theme-name' class='info-box'>
+            No Theme Selected
         </div>
         <script src="//cdn.polyfill.io/v1/polyfill.js?features=<%= polyfillFeatures %>"></script>
         <script src='js/manifest2015.js'></script>

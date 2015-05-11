@@ -27,15 +27,24 @@ html, body, #login, #player {
     display: none;
 }
 
+.info-box {
+    background-color: rgba(0, 0, 0, .7);
+    padding: 6px 15px;
+    color: white;
+    font-size: 22px;
+    z-index: 2;
+    position: absolute;
+    bottom: 0px;
+}
+
 #scene-name {
-	background-color: rgba(0, 0, 0, .7);
-	padding: 6px 15px;
 	border-top-right-radius: 6px;
-	color: white;
-	font-size: 22px;
-	z-index: 2;
-	position: absolute;
-	bottom: 0px;
+}
+
+#theme-name {
+    border-top-left-radius: 6px;   
+    right: 0px;
+    display: none;
 }
 
 #errors {
