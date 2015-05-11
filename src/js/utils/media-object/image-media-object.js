@@ -7,8 +7,8 @@ var inherits = require('inherits');
 module.exports = ImageMediaObject;
 inherits(ImageMediaObject, StaticMediaObject);
 
-function ImageMediaObject (obj) {
-    StaticMediaObject.call(this, obj);
+function ImageMediaObject (obj, ops) {
+    StaticMediaObject.call(this, obj, ops);
 }
 
 ImageMediaObject.typeName = 'image';

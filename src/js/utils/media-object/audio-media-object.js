@@ -10,8 +10,8 @@ var TWEEN = require('tween.js');
 inherits(AudioMediaObject, MediaObject);
 module.exports = AudioMediaObject;
 
-function AudioMediaObject (obj) {
-    MediaObject.call(this, obj);
+function AudioMediaObject (obj, ops) {
+    MediaObject.call(this, obj, ops);
 }
 
 AudioMediaObject.typeName = 'audio';

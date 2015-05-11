@@ -8,8 +8,8 @@ module.exports = TextMediaObject;
 inherits(TextMediaObject, StaticMediaObject);
 
 
-function TextMediaObject (obj) {
-    StaticMediaObject.call(this, obj);
+function TextMediaObject (obj, ops) {
+    StaticMediaObject.call(this, obj, ops);
 }
 
 TextMediaObject.typeName = 'text';

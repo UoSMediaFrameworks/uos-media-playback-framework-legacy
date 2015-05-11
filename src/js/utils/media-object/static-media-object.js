@@ -7,8 +7,8 @@ var inherits = require('inherits');
 module.exports = StaticMediaObject;
 inherits(StaticMediaObject, MediaObject);
 
-function StaticMediaObject (obj) {
-    MediaObject.call(this, obj);
+function StaticMediaObject (obj, ops) {
+    MediaObject.call(this, obj, ops);
 }
 
 StaticMediaObject.prototype.play = function(ops) {
