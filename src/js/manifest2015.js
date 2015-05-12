@@ -87,13 +87,16 @@ function nextScene () {
             mediaObjectQueue.setScene(scene, {hardReset: true});
 
             var themeName = getRandomThemeName(scene);
+            var themeQuery = '';
             if (themeName) {
-                mediaObjectQueue.setTagMatcher(new TagMatcher(scene.themes[themeName]));
+                themeQuery = scene.themes[themeName];
                 showThemeName(themeName);
             } else {
                 themeNameElem.textContent = '';
                 showThemeName('');
             }
+
+            mediaObjectQueue.setTagMatcher(new TagMatcher(themeQuery));
 
             randomVisualPlayer.start();
             randomAudioPlayer.start();    
