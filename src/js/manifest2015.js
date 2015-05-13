@@ -81,8 +81,8 @@ function nextScene () {
             if (scene.style) {
                 $(playerElem).css(scene.style);
             }
-
-            sceneNameElem.textContent = scene.name;
+            var name = scene.name.replace(/^GUIscene/, '').replace(/([A-Z\d])/g, ' $1').trim();
+            sceneNameElem.textContent = name;
 
             mediaObjectQueue.setScene(scene, {hardReset: true});
 
