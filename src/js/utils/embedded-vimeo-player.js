@@ -100,7 +100,10 @@ EmbeddedVimeoPlayer.prototype.handleEvent = function(data) {
     switch(data.event) {
         case 'ready':
             this.postMessage('addEventListener', 'playProgress');
-            this._readyHandler(this._element);    
+            if (this._readyHandler) {
+                this._readyHandler(this._element);    
+            }
+            
             break;
         case 'playProgress':
             if (this._playProgressHandler) {

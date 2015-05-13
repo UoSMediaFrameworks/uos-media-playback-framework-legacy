@@ -58,7 +58,10 @@ VideoMediaObject.prototype.play = function() {
 };
 
 VideoMediaObject.prototype.transition = function() {
-    if (this._playing) {
+    if (this._loading) {
+        this._loading = false;
+        this._player.onReady(null);
+    } else if (this._playing) {
         this._playing = false;
         this.emit('transition', this);
 

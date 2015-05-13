@@ -61,13 +61,18 @@ function RandomVisualPlayer (stageElement, queue) {
 
     function moDoneHandler (mediaObject) {
         mediaObject.removeListener('done', moDoneHandler);
-        stageElement.removeChild(mediaObject.element);
+        if (mediaObject.element) {
+            stageElement.removeChild(mediaObject.element);    
+        }
         showMedia();
     }
 
     function moTransitionHandler (mediaObject) {
         mediaObject.removeListener('transition', moTransitionHandler);
-        mediaObject.element.classList.remove('show-media-object');
+        // sometimes things can still be loading so, make sure there's an element 
+        if (mediaObject.element) {
+            mediaObject.element.classList.remove('show-media-object');
+        }
         showMedia();
     }
 
