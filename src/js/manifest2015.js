@@ -73,49 +73,60 @@ function nextScene () {
         sceneToLoad = sceneList[currentSceneIndex].name;
 
     socket.emit('loadSceneByName', sceneToLoad, handleError(function(scene) {
-        if (! scene) {
-            showError('Attempted to load scene "' + sceneToLoad + '" but it could not be found.');
-            delay = 1000;
+        if (scene && scene.name !== sceneList[currentSceneIndex].name) {
+            // this handler may be triggered with older request, so make sure request is still valid for the current scene
+            console.log('server responded too late with scene "' + scene.name + '", just gonna ignore it');
         } else {
-            console.log('showing scene ' + scene.name);
-            
-            if (scene.style) {
-                $(playerElem).css(scene.style);
-            }
-            var name = scene.name.replace(/^GUIscene/, '').replace(/([A-Z]|[\d]+)/g, ' $1').trim();
-            sceneNameElem.textContent = name;
-
-            mediaObjectQueue.setScene(scene, {hardReset: true});
-
-            var themeName = getRandomThemeName(scene);
-            var themeQuery = '';
-            if (themeName) {
-                themeQuery = scene.themes[themeName];
-                showThemeName(themeName);
+            if (! scene) {
+                showError('Attempted to load scene "' + sceneToLoad + '" but it could not be found.');
+                delay = 1000;
             } else {
-                themeNameElem.textContent = '';
-                showThemeName('');
+                console.log('showing scene ' + scene.name);
+                
+                if (scene.style) {
+                    $(playerElem).css(scene.style);
+                }
+                var name = scene.name.replace(/^GUIscene/, '').replace(/([A-Z]|[\d]+)/g, ' $1').trim();
+                sceneNameElem.textContent = name;
+
+                mediaObjectQueue.setScene(scene, {hardReset: true});
+
+                var themeName = getRandomThemeName(scene);
+                var themeQuery = '';
+                if (themeName) {
+                    themeQuery = scene.themes[themeName];
+                    showThemeName(themeName);
+                } else {
+                    themeNameElem.textContent = '';
+                    showThemeName('');
+                }
+
+                mediaObjectQueue.setTagMatcher(new TagMatcher(themeQuery));
+
+                randomVisualPlayer.start();
+                randomAudioPlayer.start();    
+
+                delay = (Number(scene.sceneTransition) || 30) * 1000;
             }
 
-            mediaObjectQueue.setTagMatcher(new TagMatcher(themeQuery));
+            if (sceneList.length > 1) {
+                currentSceneIndex++;
+                // loop back to beginning when we reach the end
+                if (currentSceneIndex === sceneList.length) {
+                    currentSceneIndex = 0;
+                }
 
-            randomVisualPlayer.start();
-            randomAudioPlayer.start();    
-
-            delay = (Number(scene.sceneTransition) || 30) * 1000;
-        }
-
-        if (sceneList.length > 1) {
-            currentSceneIndex++;
-            // loop back to beginning when we reach the end
-            if (currentSceneIndex === sceneList.length) {
-                currentSceneIndex = 0;
+                if (sceneDisplayTimeout) {
+                    clearTimeout(sceneDisplayTimeout);
+                }
+                sceneDisplayTimeout = setTimeout(function() {
+                    nextScene();
+                }, delay);
             }
-
-            sceneDisplayTimeout = setTimeout(function() {
-                nextScene();
-            }, delay);
+            
         }
+
+        
     }));  
     
 }
