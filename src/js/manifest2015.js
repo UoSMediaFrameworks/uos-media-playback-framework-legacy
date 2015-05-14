@@ -68,6 +68,33 @@ function showThemeName (name) {
     }
 }
 
+function playScene (scene) {
+    console.log('showing scene ' + scene.name);
+    
+    if (scene.style) {
+        $(playerElem).css(scene.style);
+    }
+    var name = scene.name.replace(/^GUIscene/, '').replace(/([A-Z]|[\d]+)/g, ' $1').trim();
+    sceneNameElem.textContent = name;
+
+    mediaObjectQueue.setScene(scene, {hardReset: true});
+
+    var themeName = getRandomThemeName(scene);
+    var themeQuery = '';
+    if (themeName) {
+        themeQuery = scene.themes[themeName];
+        showThemeName(themeName);
+    } else {
+        themeNameElem.textContent = '';
+        showThemeName('');
+    }
+
+    mediaObjectQueue.setTagMatcher(new TagMatcher(themeQuery));
+
+    randomVisualPlayer.start();
+    randomAudioPlayer.start(); 
+}
+
 function nextScene () {
     var delay,
         sceneToLoad = sceneList[currentSceneIndex].name;
@@ -81,30 +108,7 @@ function nextScene () {
                 showError('Attempted to load scene "' + sceneToLoad + '" but it could not be found.');
                 delay = 1000;
             } else {
-                console.log('showing scene ' + scene.name);
-                
-                if (scene.style) {
-                    $(playerElem).css(scene.style);
-                }
-                var name = scene.name.replace(/^GUIscene/, '').replace(/([A-Z]|[\d]+)/g, ' $1').trim();
-                sceneNameElem.textContent = name;
-
-                mediaObjectQueue.setScene(scene, {hardReset: true});
-
-                var themeName = getRandomThemeName(scene);
-                var themeQuery = '';
-                if (themeName) {
-                    themeQuery = scene.themes[themeName];
-                    showThemeName(themeName);
-                } else {
-                    themeNameElem.textContent = '';
-                    showThemeName('');
-                }
-
-                mediaObjectQueue.setTagMatcher(new TagMatcher(themeQuery));
-
-                randomVisualPlayer.start();
-                randomAudioPlayer.start();    
+                playScene(scene);   
 
                 delay = (Number(scene.sceneTransition) || 30) * 1000;
             }
@@ -126,7 +130,6 @@ function nextScene () {
             
         }
 
-        
     }));  
     
 }
@@ -178,6 +181,9 @@ function tryLogin (auth) {
             cleanup();
 
             socket.emit('register', 'scene-selection-demo');
+
+            // show demo scene right out the gate
+            socket.emit('loadSceneByName', 'GUIsceneTeaser', handleError(playScene));
         }, cleanup));
     });
 
@@ -199,3 +205,8 @@ form.addEventListener('submit', function(event) {
 if (localStorage.getItem('token')) {
     tryLogin({token: localStorage.getItem('token')});
 }
+
+// force reload every hour just to be safe
+setTimeout(function() {
+    location.reload();
+}, 1000 * 60 * 60); // 1 hr
