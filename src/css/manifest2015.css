@@ -18,6 +18,8 @@ html, body, #login, #player {
 	left: 0;
 	right: 0;
 
+	background-color: black;
+
 	-webkit-transition: background-color 1000ms linear;
     -moz-transition: background-color 1000ms linear;
     -o-transition: background-color 1000ms linear;

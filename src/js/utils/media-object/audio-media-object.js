@@ -35,34 +35,38 @@ AudioMediaObject.prototype.play = function() {
     console.log('playing ' + this._obj.url, this._obj.tags);
 
     soundCloud.streamUrl(this._obj.url, function(streamUrl) {
-        var volume = self._obj.volume;
-        if (isNaN(volume)) {
-            volume = 100;
-        }
-        volume = volume / 100;
-
-        self._player = new Audio5({
-            throw_errors: false,
-            format_time: false,
-            ready: function() {
-                this.load(streamUrl);
-                this.volume(0);
-                this.play();
-                
-                tweenAudio(this, 0, volume, self._ops.transitionDuration).start();
-                
-                var transitionSeconds = self._ops.transitionDuration / 1000;
-                this.on('timeupdate', function (position, duration) {
-                    if ((duration - position) < transitionSeconds || duration < transitionSeconds) {
-                        self.transition();
-                    }
-                });
-                this.on('error', function(err) {
-                    console.log(err.toString());
-                    self.emit('done', self);
-                });
+        if (self._playing) {
+            var volume = self._obj.volume;
+            if (isNaN(volume)) {
+                volume = 100;
             }
-        });
+            volume = volume / 100;
+
+            self._player = new Audio5({
+                throw_errors: false,
+                format_time: false,
+                ready: function() {
+                    if (self._playing) {
+                        this.load(streamUrl);
+                        this.volume(0);
+                        this.play();
+                        
+                        tweenAudio(this, 0, volume, self._ops.transitionDuration).start();
+                        
+                        var transitionSeconds = self._ops.transitionDuration / 1000;
+                        this.on('timeupdate', function (position, duration) {
+                            if ((duration - position) < transitionSeconds || duration < transitionSeconds) {
+                                self.transition();
+                            }
+                        });
+                        this.on('error', function(err) {
+                            console.log(err.toString());
+                            self.emit('done', self);
+                        });
+                    }
+                }
+            });
+        }
     });
 
     MediaObject.prototype.play.call(this);

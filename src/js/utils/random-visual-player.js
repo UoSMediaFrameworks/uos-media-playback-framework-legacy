@@ -62,7 +62,14 @@ function RandomVisualPlayer (stageElement, queue) {
     function moDoneHandler (mediaObject) {
         mediaObject.removeListener('done', moDoneHandler);
         if (mediaObject.element) {
-            stageElement.removeChild(mediaObject.element);    
+            if (mediaObject.element.parentElement === stageElement) {
+                stageElement.removeChild(mediaObject.element);    
+            } else {
+                console.log('mediaObject.element is not currently on the stage, should not have triggered moDoneHandler');
+                console.log('element parent is ', mediaObject.element.parentElement);
+            }
+        } else {
+            console.log('moDoneHandler called on mediaObject without element, shouldnt happen....');
         }
         showMedia();
     }

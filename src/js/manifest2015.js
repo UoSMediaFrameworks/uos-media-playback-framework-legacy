@@ -20,6 +20,7 @@ var form = document.getElementById('login-form'),
     login = document.getElementById('login'),
     errors = document.getElementById('errors'),
     playerElem = document.getElementById('player'),
+    submitBtn = document.getElementById('submit'),
     sceneNameElem = document.getElementById('scene-name'),
     themeNameElem = document.getElementById('theme-name'),
     mediaObjectQueue = new MediaObjectQueue(
@@ -148,13 +149,7 @@ function handleError (func, errorHandler) {
     };
 }
 
-
-
-form.addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    var submitBtn = this.submit,
-        form = this;
+function tryLogin (auth) {
     submitBtn.disabled = true;
     submitBtn.value = 'Logging in';
 
@@ -165,8 +160,8 @@ form.addEventListener('submit', function(event) {
             submitBtn.value = 'Submit';
         };
 
-        socket.emit('auth', {password: form.password.value}, handleError(function(err) {
-            form.password.value = '';
+        socket.emit('auth', auth, handleError(function(token) {
+            localStorage.setItem('token', token);
             login.style.opacity = 0;
             playerElem.style.display = 'block';
             cleanup();
@@ -182,4 +177,14 @@ form.addEventListener('submit', function(event) {
             showError('Recieved unknown command from hub: ' + data.name);
         }
     });
+}
+
+form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    tryLogin({password: this.password.value});
+    form.password.value = '';
 });
+
+if (localStorage.getItem('token')) {
+    tryLogin({token: localStorage.getItem('token')});
+}

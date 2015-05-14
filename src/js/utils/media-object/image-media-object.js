@@ -19,8 +19,6 @@ ImageMediaObject.prototype.makeElement = function(callback) {
     
     el.classList.add('image-media-object', 'media-object');
 
-    el.src = this._obj.url;
-
     this.element = el;
 
     callback();
@@ -33,10 +31,23 @@ ImageMediaObject.prototype.play = function() {
     StaticMediaObject.prototype.play.call(this);
 };
 
+ImageMediaObject.prototype.transition = function() {
+    if (this._playing) {
+        this._playing = false;
+        this.emit('transition', this);
+
+        setTimeout(function() {
+            this.emit('done', this);    
+        }.bind(this), this._ops.transitionDuration);    
+    }    
+};
+
 ImageMediaObject.prototype.onReady = function(callback) {
-    if (this.element.complete) {
-        callback();
-    } else {
-        this.element.onload = callback;    
-    }
+    var self = this;
+    this.element.onload = function() {
+        if (self._playing) {
+            callback();
+        }
+    };    
+    this.element.src = this._obj.url;
 };
