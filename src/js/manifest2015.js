@@ -58,6 +58,13 @@ function getRandomThemeName (scene) {
     }
 }
 
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
 function showThemeName (name) {
     themeNameElem.textContent = name;
 
@@ -180,7 +187,7 @@ function tryLogin (auth) {
             playerElem.style.display = 'block';
             cleanup();
 
-            socket.emit('register', 'scene-selection-demo');
+            socket.emit('register', getParameterByName('room'));
 
             // show demo scene right out the gate
             socket.emit('loadSceneByName', 'GUIsceneTeaser', handleError(playScene));
