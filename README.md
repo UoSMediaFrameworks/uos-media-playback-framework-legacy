@@ -1,4 +1,4 @@
-# MediaPlaybackFramework
+# MediaPlaybackFramework [![Build Status](https://travis-ci.org/Colum-SMA-Dev/MediaHub.svg?branch=master)](https://travis-ci.org/Colum-SMA-Dev/MediaPlaybackFramework.svg?branch=master)
 
 This is the currently the only front end for creating scenes and playing scenes.  For this to work you'll also need a running copy of a [MediaHub](https://github.com/Colum-SMA-Dev/MediaHub), and an [AssetStore](https://github.com/Colum-SMA-Dev/AssetStore).  
 
