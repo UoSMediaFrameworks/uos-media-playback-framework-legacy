@@ -57,7 +57,7 @@ function EmbeddedVimeoPlayer (vimeoId) {
             title: 0,
             autoplay: 0
         }),
-        playerUrl = '//player.vimeo.com/video/' + vimeoId + '?' + urlAttrsStr;
+        playerUrl = 'https://player.vimeo.com/video/' + vimeoId + '?' + urlAttrsStr;
 
     this._element = makeElement('iframe', {
         src: playerUrl,
@@ -70,7 +70,7 @@ function EmbeddedVimeoPlayer (vimeoId) {
 
     document.body.appendChild(this._element);
     
-    this.url = window.location.protocol + this._element.attributes.src.value.split('?')[0];
+    this.url = this._element.attributes.src.value.split('?')[0];
 }
 
 EmbeddedVimeoPlayer.prototype.postMessage = function(action, value) {
