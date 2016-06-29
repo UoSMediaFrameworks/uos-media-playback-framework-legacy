@@ -19,7 +19,7 @@ var SceneActions = {
             scene: scene
         });
 
-        HubClient.save(scene);        
+        HubClient.save(scene);
     },
 
     addMediaObject: function(sceneId, mediaObject) {
@@ -46,7 +46,7 @@ var SceneActions = {
     },
 
     addVimeo: function(sceneId, vimeoUrl) {
-        
+
         AppDispatcher.handleServerAction({
             type: ActionTypes.ADD_MEDIA_ATTEMPT,
             value: vimeoUrl
@@ -60,7 +60,7 @@ var SceneActions = {
             } else {
                 var tags = _(data.tags).pluck('tag').map(function(x) { return x.trim(); }).value().join(', ');
                 SceneActions.addMediaObject(sceneId, {
-                    type: 'video', 
+                    type: 'video',
                     volume: 100,
                     url: vimeoUrl,
                     tags: tags
@@ -80,7 +80,7 @@ var SceneActions = {
             value: soundCloudUrl
         });
 
-                
+
         soundCloud.tags(soundCloudUrl, function(tags) {
             AppDispatcher.handleServerAction({
                 type: ActionTypes.ADD_MEDIA_SUCCESS
@@ -91,17 +91,17 @@ var SceneActions = {
                 volume: 100,
                 url: soundCloudUrl,
                 tags: tags
-            });    
+            });
         });
     },
 
-    removeMediaObject: function(scene, index) {     
+    removeMediaObject: function(scene, index) {
         var copy = _.cloneDeep(scene);
-        var removedObject = copy.scene.splice(index, 1);    
+        var removedObject = copy.scene.splice(index, 1);
         if (removedObject.length === 0) {
             throw "attempted to remove mediaObject not found in scene";
         }
-        
+
         AppDispatcher.handleViewAction({
             type: ActionTypes.SCENE_CHANGE,
             scene: copy
@@ -125,12 +125,15 @@ var SceneActions = {
             type: ActionTypes.STATUS_MESSAGE,
             message: 'Uploading ' + file.name + '...',
             id: alertId,
-            status: 'info' 
+            status: 'info'
         });
 
         assetStore.create(file, function(status, data) {
-            var msg = (status === 'warning' ? 
-                'No tags found in ' + file.name : 
+
+            var msg = (status === 'warning' ?
+                'No tags found in ' + file.name :
+                status === 'danger' ?
+                'Upload unsuccessful!' :
                 'Upload successful!');
 
             AppDispatcher.handleServerAction({
@@ -141,12 +144,12 @@ var SceneActions = {
             });
 
             var msecs = status === 'success' ? 1000 : 10000;
-            
+
             setTimeout(function() {
                 AppDispatcher.handleServerAction({
                     type: ActionTypes.STATUS_MESSAGE_REMOVE,
                     id: alertId
-                });    
+                });
             }, msecs);
 
             if (status !== 'danger') {
@@ -160,4 +163,4 @@ var SceneActions = {
     }
 };
 
-module.exports = SceneActions;  
+module.exports = SceneActions;
