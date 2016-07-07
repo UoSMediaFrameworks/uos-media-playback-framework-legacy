@@ -42,6 +42,7 @@
     "lodash._isnative": "^2.4.0",
     "lodash.isobject": "^3.0.2",
     "lodash.noop": "^3.0.1",
+    "lodash._slice": "^2.4.1",
     "merge-stream": "^0.1.6",
     "object-assign": "^2.0.0",
     "react": "^0.12.2",
