@@ -45,6 +45,7 @@
     "lodash._slice": "^2.4.1",
     "lodash._basecreatewrapper": "^2.4.1",
     "lodash.isfunction": "^3.0.8",
+    "lodash.identity": "^3.0.0",
     "merge-stream": "^0.1.6",
     "object-assign": "^2.0.0",
     "react": "^0.12.2",
