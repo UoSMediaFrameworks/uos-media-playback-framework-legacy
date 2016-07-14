@@ -11,7 +11,6 @@ var SceneGraphStore = require('../../stores/scene-graph-store.jsx');
 var SceneGraphListStore = require('../../stores/scene-graph-list-store.jsx');
 var SceneListStore = require('../../stores/scene-list-store'); //scene-list-store does not return the full scene objects - I need the themes
 var SceneStore = require('../../stores/scene-store');
-var ItemGroup = require('../draggable/item-group.jsx');
 var DragDropContainer = require('../basic-draggable/drag-drop-container.jsx');
 var Router = require('react-router'),
     Link = Router.Link;
@@ -243,8 +242,7 @@ var SceneGraph = React.createClass({
                             <div className="panel panel-default scenes-themes-tags no-margin-bottom">
                                 <div className="panel-heading">Scenes</div>
                                 <div className="panel-body">
-                                    {
-                                        this.state.storedFullScenes.map(function(sc){
+                                    {this.state.storedFullScenes.map(function(sc){
                                         return <SceneItemForList scene={sc} sceneGraphId={this.state.sceneGraph._id} />;
                                     }, this)}
                                 </div>
@@ -282,9 +280,7 @@ var SceneGraph = React.createClass({
                     </div>
 
                     <div className="col-md-12">
-
                         <DragDropContainer></DragDropContainer>
-
                     </div>
 
                     <div className="col-md-12">
@@ -294,6 +290,7 @@ var SceneGraph = React.createClass({
                             return <SceneGraphNode indentation="rootLevel" graphTheme={this.state.graphThemes[property]} node={property}/>
                         }, this)}
                     </div>
+
                 </div>
             </div>
         );
