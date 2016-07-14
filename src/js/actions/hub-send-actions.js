@@ -24,6 +24,56 @@ module.exports = {
         HubClient.login(process.env.MEDIA_HUB);
     },
 
+    tryCreateSceneGraph: function(name, cb) {
+        var sceneGraph = {
+            'name': name,
+            'sceneIds': {},
+            "graphThemes": {
+                "city": {
+                    "chicago": {
+                        "ThemeArt": {
+                            "ThemePainting": {
+
+                            },
+                            "ThemePublicAttractions": {
+                                "ThemeGallery": {
+
+                                }
+                            }
+                        },
+                        "ThemeGreat": {}
+                    },
+                    "manchester": {
+
+                    }
+                },
+                "people": {
+                    "chicago": {
+
+                    },
+                    "manchester": {
+
+                    }
+                },
+                "movement": {
+                    "chicago": {
+
+                    },
+                    "manchester": {
+
+                    }
+                }
+            }
+        };
+
+        HubClient.saveSceneGraph(sceneGraph, function(newSceneGraph) {
+            HubRecieveActions.recieveSceneGraph(newSceneGraph);
+            var AppRouter = require('../app-router.jsx');
+            AppRouter.transitionTo('scenegraph', {id: newSceneGraph._id});
+        });
+
+    },
+
     tryCreateScene: function(name, cb) {
     	var scene = {
     		'name': name,
@@ -45,7 +95,7 @@ module.exports = {
 
     	HubClient.save(scene, function(newScene) {
             HubRecieveActions.recieveScene(newScene);
-            // deffer the loading of AppRouter to prevent circular dependencies, 
+            // deffer the loading of AppRouter to prevent circular dependencies,
             // this would be better done with dependency injection
             // http://tomkit.wordpress.com/2013/02/05/circular-dependencies-dependency-injection-in-node-js/
             var AppRouter = require('../app-router.jsx');
@@ -53,6 +103,7 @@ module.exports = {
         });
     },
     loadScene: HubClient.loadScene,
+    loadSceneGraph: HubClient.loadSceneGraph,
     subscribeScene: HubClient.subscribeScene,
     deleteScene: function(sceneId) {
         AppDispatcher.handleViewAction({

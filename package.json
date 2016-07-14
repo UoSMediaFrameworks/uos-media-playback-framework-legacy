@@ -15,15 +15,15 @@
     "lodash-deep": "^1.6.0",
     "mocha": "^2.1.0"
   },
-  "peerDependencies" :{
-      "lodash._isnative": "^2.4.0",
-      "lodash.isobject": "^3.0.2",
-      "lodash.noop": "^3.0.1",
-      "lodash._slice": "^2.4.1",
-      "lodash._basecreatewrapper": "^2.4.1",
-      "lodash.isfunction": "^3.0.8",
-      "lodash.identity": "^3.0.0",
-      "lodash.support": "^3.0.4"
+  "peerDependencies": {
+    "lodash._isnative": "^2.4.0",
+    "lodash.isobject": "^3.0.2",
+    "lodash.noop": "^3.0.1",
+    "lodash._slice": "^2.4.1",
+    "lodash._basecreatewrapper": "^2.4.1",
+    "lodash.isfunction": "^3.0.8",
+    "lodash.identity": "^3.0.0",
+    "lodash.support": "^3.0.4"
   },
   "dependencies": {
     "audio5": "^0.1.10",
@@ -51,8 +51,10 @@
     "lodash": "^3.6.0",
     "merge-stream": "^0.1.6",
     "object-assign": "^2.0.0",
-    "react": "^0.12.2",
-    "react-router": "^0.12.4",
+    "react": "^0.14.0",
+    "react-dnd": "^2.1.4",
+    "react-dnd-html5-backend": "^2.1.2",
+    "react-router": "^0.13.0",
     "reactify": "^0.17.0",
     "require-sdk": "0.0.2",
     "serve-static": "^1.6.3",

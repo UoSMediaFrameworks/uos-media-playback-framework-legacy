@@ -17,8 +17,8 @@ function _updateScene (scene) {
 var SceneStore = assign({}, EventEmitter.prototype, {
     getScene: function(id) {
         if (_scenes.hasOwnProperty(id)) {
-            return _.cloneDeep(_scenes[id]);    
-        } 
+            return _.cloneDeep(_scenes[id]);
+        }
     },
     emitChange: function(){
         this.emit(CHANGE_EVENT);
@@ -42,7 +42,7 @@ var SceneStore = assign({}, EventEmitter.prototype, {
 
             case ActionTypes.DELETE_SCENE:
                 var sceneId = action.sceneId;
-                delete _scenes[sceneId];                
+                delete _scenes[sceneId];
                 HubClient.deleteScene(sceneId);
                 break;
 
@@ -57,7 +57,7 @@ var SceneStore = assign({}, EventEmitter.prototype, {
                 _updateScene(action.scene);
                 break;
         }
-        
+
         SceneStore.emitChange();
 
         return true;

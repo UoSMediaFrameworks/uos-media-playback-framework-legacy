@@ -1,4 +1,4 @@
-html, body, #main, .app { 
+html, body, #main, .app {
     height: 100%;
 }
 
@@ -112,7 +112,7 @@ html, body, #main, .app {
 
 .media-object-list-grid li {
     list-style: none;
-} 
+}
 
 .empty-media-object-item {
     line-height: 16px;
@@ -170,12 +170,12 @@ html, body, #main, .app {
     height: 100%;
 }
 
-.media-object-list-grid .media-object-item-preview img {   
+.media-object-list-grid .media-object-item-preview img {
     display: inline-block;
     position: absolute;
 }
 
-.media-object-list-list .media-object-item-preview img {   
+.media-object-list-list .media-object-item-preview img {
     width: 30px;
 }
 
@@ -332,12 +332,12 @@ html, body, #main, .app {
 }
 
 .dos-donts {
-    position: absolute;   
+    position: absolute;
 }
 
 .add-media-object {
     padding: 10px 0;
-    text-align: center; 
+    text-align: center;
 }
 
 .add-media-object input {
@@ -346,9 +346,55 @@ html, body, #main, .app {
 }
 
 .add-media-object button, .add-media-object input {
-    border-radius: 0;   
+    border-radius: 0;
 }
 
 .waveform-url {
     background-color: black;
+}
+
+.rootLevel {
+
+}
+
+.firstLevel {
+    margin-left: 15px;
+}
+
+.add-scene-button {
+    width:100%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.remove-scene-button {
+    margin-top: 5px;
+    margin-bottom:20px;
+    width: 100%;
+}
+
+.scene-graph .scene-list {
+    max-width: 250px;
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.scenes-themes-tags {
+    min-height: 200px;
+}
+
+.scene-graph-theme-drag-containers {
+    min-height: 200px;
+}
+
+.margin-top-34 {
+    margin-top: 44px;
+}
+
+.no-margin-bottom {
+    margin-bottom: 0;
+}
+
+.scene-graph-scene-list-container {
+    margin-bottom: 20px;
 }
