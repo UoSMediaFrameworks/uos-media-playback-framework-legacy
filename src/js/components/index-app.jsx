@@ -9,7 +9,7 @@ var StatusAlert = require('./status-alert.jsx');
 var Router = require('react-router'),
     RouteHandler = Router.RouteHandler,
     Link = Router.Link;
-
+var connectionCache = require('../utils/connection-cache');
 
 function _getState () {
     return {
@@ -45,9 +45,9 @@ var App = React.createClass({
     
     render: function() {
         var sessionNav, nav;
-
+		//AJF: gets the groupID then passes as a parameter to get the group name. I tried a version of getShortGroupName that would accept no groupID and get it from the current session but it wasn't working @todo: fix this in connectioncache
         if (this.state.loggedIn) {
-            sessionNav = <div className='session-nav'>
+            sessionNav = <div className='session-nav'><span>{connectionCache.getGroupID()} - {connectionCache.getShortGroupName(connectionCache.getGroupID())}</span>
                 <a className='btn' onClick={this.handleLogout}>Log out</a>
             </div>;
         }
@@ -69,10 +69,12 @@ var App = React.createClass({
                         Do's &amp; Don'ts of Media Frameworks
                     </a> 
                     <h4 className='title'>Media Scene Editor</h4>
+					
                 </div>
                 <Loader message='Logging in...' loaded={! this.state.attemptingLogin}>
                     <RouteHandler key='handler' />
                 </Loader>
+				
             </div>
         );       
 

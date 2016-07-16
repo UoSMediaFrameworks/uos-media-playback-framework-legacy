@@ -4,6 +4,7 @@
 var React = require('react');
 var Router = require('./app-router.jsx');
 var HubSendActions = require('./actions/hub-send-actions');
+var connectionCache = require('./utils/connection-cache');
 
 // login with localStorage creds if possible
 HubSendActions.tryTokenLogin();

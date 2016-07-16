@@ -33,16 +33,19 @@ var HubClient = {
         socket = io(url, {forceNew: true});
 
         socket.on('connect',function() {
-            socket.emit('auth', creds, function(err, token) {
+            socket.emit('auth', creds, function(err, token, socketID/*AJF: doesn't get used here*/, groupID) {/*AJF: callback extended to accept the groupID of the user*/
                 if (err) {
                     socket.disconnect();
                     HubRecieveActions.recieveLoginResult(false, err.toString());
                 } else {
                     connectionCache.setHubToken(token);
-                
+					
                     HubRecieveActions.recieveLoginResult(true);
                     HubRecieveActions.tryListScenes();
-
+					
+					console.log("Setting groupID in HubClient to: " + groupID);
+					connectionCache.setGroupID(groupID);//AJF: set the groupID
+					
                     socket.emit('listScenes', function(err, scenes) {
                         if (err) throw err;
                         HubRecieveActions.recieveSceneList(scenes);
