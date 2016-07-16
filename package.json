@@ -15,6 +15,16 @@
     "lodash-deep": "^1.6.0",
     "mocha": "^2.1.0"
   },
+  "peerDependencies" :{
+      "lodash._isnative": "^2.4.0",
+      "lodash.isobject": "^3.0.2",
+      "lodash.noop": "^3.0.1",
+      "lodash._slice": "^2.4.1",
+      "lodash._basecreatewrapper": "^2.4.1",
+      "lodash.isfunction": "^3.0.8",
+      "lodash.identity": "^3.0.0",
+      "lodash.support": "^3.0.4"
+  },
   "dependencies": {
     "audio5": "^0.1.10",
     "browserify": "^7.0.0",
