@@ -40,18 +40,18 @@ var LandingContainer = React.createClass({
 
         return connectDropTarget(
             <div style={{
-                fontSize: 25,
-                fontWeight: 'bold',
                 minHeight: '200px',
                 width: '100%',
                 borderColor: backgroundColor,
                 borderStyle: 'solid',
                 borderWidth: '2px'
             }}>
-                {isActive ?
-                    'Release to drop' :
-                    'Drag a theme here to exclude'
-                }
+                <h4>
+                    {isActive ?
+                        'Release to drop' :
+                        'Drag a theme here to exclude'
+                    }
+                </h4>
             </div>
         );
     }
