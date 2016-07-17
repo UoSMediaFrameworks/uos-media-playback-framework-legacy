@@ -24,21 +24,20 @@ module.exports = {
 	},
 	getShortGroupName: function(groupID) {
 	
-		var groupNames = [ //AJF: @todo: load map from config file
-		{id : 0, name: "Admin"},
-		{id : 1, name: "Test1"},
-		{id : 2, name: "Test2"},
-		{id : 101, name: "Chicago"},
-		{id : 102, name: "Beijing"},
-		{id : 103, name: "Dalian"},
-		{id : 104, name: "Kuala Lumpur"},
-		{id : 105, name: "Seoul"},
-		{id : 106, name: "Manchester"}
-		];
+		var groupNames = new Map() //AJF: @todo: load map from config file
+		groupNames.set(0, "Admin");
+		groupNames.set(1, "Test1");
+		groupNames.set(2, "Test2");
+		groupNames.set(101, "Chicago");
+		groupNames.set(102, "Beijing");
+		groupNames.set(103, "Dalian");
+		groupNames.set(104, "Kuala Lumpur");
+		groupNames.set(105, "Seoul");
+		groupNames.set(106, "Manchester");
 		
 		//console.log("The groupID was set to: " + groupID);
 		
-		return groupNames[groupID].name;
+		return groupNames.get(parseInt(groupID));
 	},
 	
 	
