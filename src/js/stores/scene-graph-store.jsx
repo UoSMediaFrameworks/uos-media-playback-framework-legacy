@@ -58,6 +58,9 @@ var SceneGraphStore = assign({}, EventEmitter.prototype, {
                 _removeSceneFromSceneGraph(action.sceneGraphId, action.sceneId);
                 SceneGraphStore.emitChange();
                 break;
+            case ActionTypes.SCENE_GRAPH_SELECTION:
+                SceneGraphStore.emitChange();
+                break;
         }
 
         SceneGraphStore.emitChange();

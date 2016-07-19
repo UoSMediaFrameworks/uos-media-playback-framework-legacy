@@ -30,6 +30,14 @@ var SceneGraphActions = {
         });
     },
 
+    selectSceneForSceneGraphDisplay: function(sceneGraphId, sceneId) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.SCENE_GRAPH_SELECTION,
+            sceneGraphId: sceneGraphId,
+            sceneId: sceneId
+        });
+    },
+
     excludeTheme: function(themeId, sceneGraphId) {
 
     }

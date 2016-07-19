@@ -26,6 +26,7 @@ module.exports = {
         SCENE_GRAPH_UPDATE: null,
         SCENE_GRAPH_ADD_SCENE: null,
         SCENE_GRAPH_REMOVE_SCENE: null,
+        SCENE_GRAPH_SELECTION: null,
     }),
     PayloadSources: keymirror({
         VIEW_ACTION: null,
