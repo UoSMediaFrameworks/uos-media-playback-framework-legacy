@@ -65,7 +65,7 @@ var LoginPage = React.createClass({
         if (this.state.errorMessage) {
             alert = <div className='alert alert-danger'>{this.state.errorMessage}</div>;
         }
-        
+
 
 		return (
             <div>
@@ -87,12 +87,12 @@ var LoginPage = React.createClass({
                 </div>
             </div>
 
-                <div className="footer navbar-fixed-bottom" style={{ padding: '5px' }}>
+                <div className="footer navbar-fixed-bottom" style={{ padding: '5px', zIndex: "-1" }}>
                     <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons Licence" style={{ borderWidth:0 }} src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
                 </div>
 
             </div>
-            
+
 		);
 	}
 });
