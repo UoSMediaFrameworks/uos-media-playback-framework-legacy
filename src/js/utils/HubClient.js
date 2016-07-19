@@ -40,6 +40,7 @@ var HubClient = {
                 } else {
                     connectionCache.setHubToken(token);
 					
+
                     HubRecieveActions.recieveLoginResult(true);
                     HubRecieveActions.tryListScenes();
 					
@@ -50,13 +51,18 @@ var HubClient = {
                         if (err) throw err;
                         HubRecieveActions.recieveSceneList(scenes);
                     });
+
+                    socket.emit('listSceneGraphs', function(err, sceneGraphs) {
+                        if(err) throw err;
+                        HubRecieveActions.recieveSceneGraphList(sceneGraphs);
+                    })
                 }
             });
         });
 
         socket.on('connect_error', function(err) {
             HubRecieveActions.errorMessage(
-                "Connection to hub failed: " + 
+                "Connection to hub failed: " +
                 err.toString() +
                 "\nTrying to reconnect.");
             HubRecieveActions.recieveLoginResult(false);
@@ -75,7 +81,17 @@ var HubClient = {
             if (err || ! scene) {
                 HubRecieveActions.errorMessage('Couldn\'t load requested scene, reload the page and try again');
             } else {
-                HubRecieveActions.recieveScene(scene);    
+                HubRecieveActions.recieveScene(scene);
+            }
+        });
+    },
+
+    loadSceneGraph: function(id) {
+        socket.emit('loadSceneGraph', id, function(err, sceneGraph) {
+            if (err || ! sceneGraph) {
+                HubRecieveActions.errorMessage('Couldn\'t load requested scene graph, reload the page and try again');
+            } else {
+                HubRecieveActions.recieveSceneGraph(sceneGraph);
             }
         });
     },
@@ -87,7 +103,19 @@ var HubClient = {
             } else {
                 if (cb) {
                     cb(newScene);
-                }    
+                }
+            }
+        });
+    },
+
+    saveSceneGraph: function(sceneGraph, cb) {
+        socket.emit('saveSceneGraph', sceneGraph, function(err, newSceneGraph) {
+            if(err) {
+                HubRecieveActions.errorMessage('Couldn\'t save scene graph, please try again');
+            } else {
+                if(cb) {
+                    cb(newSceneGraph);
+                }
             }
         });
     },
@@ -97,7 +125,7 @@ var HubClient = {
             if (err) {
                 HubRecieveActions.errorMessage('Couldn\'t delete scene, please try again');
             } else {
-                assetStore.removeUnusedImages();    
+                assetStore.removeUnusedImages();
             }
         });
     },

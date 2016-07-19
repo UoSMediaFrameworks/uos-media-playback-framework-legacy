@@ -20,7 +20,7 @@ function _getState () {
 }
 
 var App = React.createClass({
-    
+
     getInitialState: function() {
         return _getState();
     },
@@ -42,7 +42,7 @@ var App = React.createClass({
     handleLogout: function(event) {
         SceneActions.logout();
     },
-    
+
     render: function() {
         var sessionNav, nav;
 		//AJF: gets the groupID then passes as a parameter to get the group name. I tried a version of getShortGroupName that would accept no groupID and get it from the current session but it wasn't working @todo: fix this in connectioncache
@@ -56,7 +56,7 @@ var App = React.createClass({
 
         var statusAlerts = Object.keys(messages).map(function(name) {
             return <StatusAlert key={name} name={name} state={messages[name]} />;
-        });        
+        });
 
         return (
             <div className='app'>
@@ -64,21 +64,21 @@ var App = React.createClass({
                     {statusAlerts}
                 </div>
                 <div className='header'>
-                    {sessionNav}                      
+                    {sessionNav}
                     <a target='_blank' className='dos-donts' href='https://docs.google.com/document/d/1B25gvDRob576KPsgusEhhUY3GI_XF6guHIBpLPrn9U0/edit?usp=sharing'>
                         Do's &amp; Don'ts of Media Frameworks
-                    </a> 
+                    </a>
                     <h4 className='title'>Media Scene Editor</h4>
-					
+
                 </div>
                 <Loader message='Logging in...' loaded={! this.state.attemptingLogin}>
                     <RouteHandler key='handler' />
                 </Loader>
-				
-            </div>
-        );       
 
-        
+            </div>
+        );
+
+
     }
 
 });

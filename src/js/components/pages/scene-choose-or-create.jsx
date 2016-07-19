@@ -13,7 +13,7 @@ var SceneChooser = React.createClass({
         event.preventDefault();
         HubSendActions.tryCreateScene(this.getRefVal('name'));
     },
-    
+
     render: function() {
         return (
             <div className='container'>
@@ -21,7 +21,23 @@ var SceneChooser = React.createClass({
                     <div className='col-md-6'>
                         <h2>Edit an Existing Scene</h2>
                         <SceneList />
-                        
+                        <div>
+                            <h4> Example Scenes </h4>
+                            <ul>
+                                <li>
+                                    <a href="http://uos-sceneeditor.azurewebsites.net/#/scenes/578dfadc389260641874b2c1">MF Audio Example</a>
+                                </li>
+                                <li>
+                                    <a href="http://uos-sceneeditor.azurewebsites.net/#/scenes/578dfb1e389260641874b2de">MF Minimal Vimeo Example</a>
+                                </li>
+                                <li>
+                                    <a href="http://uos-sceneeditor.azurewebsites.net/#/scenes/578dfb83389260641874b2e3">MF Vimeo Example</a>
+                                </li>
+                                <li>
+                                    <a href="http://uos-sceneeditor.azurewebsites.net/#/scenes/578d54eaef8cf0101bc4211f">MF Solo Example</a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                     <div className='col-md-6'>
                         <h2>Create a new Scene</h2>
@@ -34,7 +50,7 @@ var SceneChooser = React.createClass({
                     </div>
                 </div>
             </div>
-            
+
         );
     }
 

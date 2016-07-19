@@ -16,10 +16,22 @@ var HubRecieveActions = {
         	scenes: scenes
         });
     },
+    recieveSceneGraphList: function(sceneGraphs) {
+        AppDispatcher.handleServerAction({
+            type: ActionTypes.RECEIVE_SCENE_GRAPH_LIST,
+            sceneGraphs: sceneGraphs
+        });
+    },
     recieveScene: function(scene) {
         AppDispatcher.handleServerAction({
             type: ActionTypes.RECIEVE_SCENE,
             scene: scene
+        });
+    },
+    recieveSceneGraph: function(sceneGraph) {
+        AppDispatcher.handleServerAction({
+            type: ActionTypes.RECEIVE_SCENE_GRAPH,
+            sceneGraph: sceneGraph
         });
     },
     recieveLoginResult: function(success, errorMessage) {

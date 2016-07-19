@@ -12,6 +12,8 @@ module.exports = {
         LIST_SCENES_ATTEMPT: null,
         RECIEVE_SCENE_LIST: null,
         RECIEVE_SCENE: null,
+        RECEIVE_SCENE_GRAPH_LIST: null,
+        RECEIVE_SCENE_GRAPH: null,
         HUB_LOGIN_ATTEMPT: null,
         HUB_LOGIN_RESULT: null,
         HUB_LOGOUT: null,
@@ -20,7 +22,10 @@ module.exports = {
         UPLOAD_ASSET_RESULT_REMOVE: null,
         STATUS_MESSAGE: null,
         STATUS_MESSAGE_UPDATE: null,
-        STATUS_MESSAGE_REMOVE: null
+        STATUS_MESSAGE_REMOVE: null,
+        SCENE_GRAPH_UPDATE: null,
+        SCENE_GRAPH_ADD_SCENE: null,
+        SCENE_GRAPH_REMOVE_SCENE: null,
     }),
     PayloadSources: keymirror({
         VIEW_ACTION: null,
