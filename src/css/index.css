@@ -310,10 +310,6 @@ html, body, #main, .app {
     text-align: center;
 }
 
-.scene-list-loader {
-    height: 100px;
-}
-
 .loader-text {
     text-align: center;
 }
