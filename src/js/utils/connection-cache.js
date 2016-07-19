@@ -34,6 +34,10 @@ module.exports = {
 		groupNames.set(104, "Kuala Lumpur");
 		groupNames.set(105, "Seoul");
 		groupNames.set(106, "Manchester");
+		groupNames.set(107, "Chengdu");
+		groupNames.set(108, "Hong Kong");
+		groupNames.set(109, "Shenyang");
+		groupNames.set(110, "Panjin");
 		
 		//console.log("The groupID was set to: " + groupID);
 		
