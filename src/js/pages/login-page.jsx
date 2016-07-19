@@ -68,23 +68,31 @@ var LoginPage = React.createClass({
         
 
 		return (
-			<div className="row">
-				<div className="col-sm-6 col-sm-offset-3">
-					<h1>Please Login</h1>
+            <div>
+                <div className="row">
+                <div className="col-sm-6 col-sm-offset-3">
+                    <h1>Please Login</h1>
                     {alert}
-					<form onSubmit={this.handleSubmit} role="form">
-						<div className='form-group'>
-		    				<label>Password</label>
-		    				<input ref="password" type="password" className="form-control" id="exampleInputPassword1" placeholder="Password" />
-		  				</div>
+                    <form onSubmit={this.handleSubmit} role="form">
+                        <div className='form-group'>
+                            <label>Password</label>
+                            <input ref="password" type="password" className="form-control" id="exampleInputPassword1" placeholder="Password" />
+                        </div>
 
-		  				<div className='form-group'>
+                        <div className='form-group'>
                             <button type="submit" className="btn btn-primary">Login</button>
-		  				</div>
-		  				
-					</form>
-				</div>
-			</div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+                <div className="footer navbar-fixed-bottom" style={{ padding: '5px' }}>
+                    <a rel="license" href="http://creativecommons.org/licenses/by/4.0/"><img alt="Creative Commons Licence" style={{ borderWidth:0 }} src="https://i.creativecommons.org/l/by/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+                </div>
+
+            </div>
+            
 		);
 	}
 });
