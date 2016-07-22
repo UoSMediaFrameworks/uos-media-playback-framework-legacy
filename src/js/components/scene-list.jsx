@@ -5,6 +5,7 @@ var Router = require('react-router');
 var SceneListStore = require('../stores/scene-list-store');
 var Loader = require('./loader.jsx');
 var Link = require('react-router').Link;
+var ConnectionCache = require('../utils/connection-cache.js');
 
 function _getState () {
     return {
@@ -36,7 +37,7 @@ var SceneList = React.createClass({
         var links = this.state.scenes.map(function(scene) {
             return (
                 <li key={scene._id}>
-                    <Link to='scene' params={{id: scene._id}}>{scene.name}</Link>
+                    <Link to='scene' params={{id: scene._id}}>{ ConnectionCache.getGroupID()==0 ? ConnectionCache.getShortGroupName(scene._groupID) + ' - ' + scene.name : scene.name }</Link>
                 </li>
             );
         });

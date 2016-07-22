@@ -46,7 +46,7 @@ function occurrences(string, subString, allowOverlapping){
 var SceneTextEditor = React.createClass({
     
     getHumanReadableScene: function() {
-        return _.omit(this.props.scene, '_id');
+        return _.omit(this.props.scene, '_id', '_groupID');
     },
 
     getSceneString: function() {
