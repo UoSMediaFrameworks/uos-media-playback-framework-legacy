@@ -20,7 +20,7 @@ module.exports = {
 			callback(null, cache[vimeoId]);
 		} else {
 			makeRequest({
-				url: API_URL + 'videos/' + vimeoId,
+				url: API_URL + 'videos/' + vimeoId + '?fields=tags',
 				responseParser: jsonParser,
 				onLoad: function(data) {
 					cache[vimeoId] = data;
