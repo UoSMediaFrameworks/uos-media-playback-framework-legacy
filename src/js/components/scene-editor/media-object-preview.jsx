@@ -11,6 +11,10 @@ var getImageMediaObjectThumbnailUrl = function(mediaObjectUrl) {
         return mediaObjectUrl;
     }
 
+    if(mediaObjectUrl.indexOf(process.env.AZURE_CDN_URL) === -1) {
+        return mediaObjectUrl;
+    }
+
     var trailingSlash = mediaObjectUrl.lastIndexOf('/');
     return mediaObjectUrl.substring(0, trailingSlash + 1) + "thumbnail-" + mediaObjectUrl.substring(trailingSlash + 1, mediaObjectUrl.length);
 };
