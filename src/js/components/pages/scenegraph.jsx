@@ -238,6 +238,7 @@ var SceneGraph = React.createClass({
             <div className="container scene-graph">
                 <div className="row">
                     <div className="col-md-12">
+                        <Link className='btn' to='scenegraphs'>&lt; Back to Scene Graph List</Link>
                         <h3>SceneGraph: {this.state.name}</h3>
                     </div>
                     <div className="col-md-12 scene-graph-scene-list-container">
