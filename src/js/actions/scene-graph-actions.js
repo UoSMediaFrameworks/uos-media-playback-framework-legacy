@@ -39,7 +39,21 @@ var SceneGraphActions = {
     },
 
     excludeTheme: function(themeId, sceneGraphId) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.SCENE_GRAPH_EXCLUDE_THEME,
+            sceneGraphId: sceneGraphId,
+            themeId: themeId
+        });
+    },
 
+    addThemeIntoSceneGraph: function(parentList, parentKey, themeId, sceneGraphId) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.SCENE_GRAPH_ADD_THEME_TO_STRUCTURE,
+            parentList: parentList,
+            parentKey: parentKey,
+            sceneGraphId: sceneGraphId,
+            themeId: themeId
+        });
     }
 };
 

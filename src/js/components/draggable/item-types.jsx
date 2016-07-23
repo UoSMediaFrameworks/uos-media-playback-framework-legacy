@@ -1,4 +1,4 @@
 exports.ItemTypes = {
     THEME: 'theme',
-    LANDING_CONTAINER: 'landing container'
+    LANDING_CONTAINER: 'landing container',
 };

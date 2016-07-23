@@ -38,6 +38,9 @@ var LandingContainer = React.createClass({
             backgroundColor = 'darkkhaki';
         }
 
+        var sceneGraph = this.props.sceneGraph;
+        var excludedThemes = Object.keys(sceneGraph.excludedThemes);
+
         return connectDropTarget(
             <div style={{
                 minHeight: '200px',
@@ -51,6 +54,10 @@ var LandingContainer = React.createClass({
                         'Release to drop' :
                         'Drag a theme here to exclude'
                     }
+
+                    {excludedThemes.map(function(excludedTheme){
+                        return <p>{excludedTheme}</p>
+                    })}
                 </h4>
             </div>
         );

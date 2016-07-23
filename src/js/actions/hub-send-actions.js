@@ -30,7 +30,10 @@ module.exports = {
             'sceneIds': {},
             "graphThemes": {
                 "city": {
-                    "chicago": {
+                    "Rivers": {
+
+                    },
+                    "Chicago": {
                         "ThemeArt": {
                             "ThemePainting": {
 
@@ -43,27 +46,106 @@ module.exports = {
                         },
                         "ThemeGreat": {}
                     },
-                    "manchester": {
+                    "Manchester": {
+
+                    },
+                    "Beijing": {
+
+                    },
+                    "Dalian": {
+
+                    },
+                    "KualaLumpur": {
+
+                    },
+                    "Seoul": {
+
+                    },
+                    "Chengdu": {
+
+                    },
+                    "HongKong": {
+
+                    },
+                    "Shenyang": {
+
+                    },
+                    "Panjin": {
 
                     }
                 },
                 "people": {
-                    "chicago": {
+                    "Rivers": {
 
                     },
-                    "manchester": {
+                    "Chicago": {
+
+                    },
+                    "Manchester": {
+
+                    },
+                    "Beijing": {
+
+                    },
+                    "Dalian": {
+
+                    },
+                    "KualaLumpur": {
+
+                    },
+                    "Seoul": {
+
+                    },
+                    "Chengdu": {
+
+                    },
+                    "HongKong": {
+
+                    },
+                    "Shenyang": {
+
+                    },
+                    "Panjin": {
 
                     }
                 },
                 "movement": {
-                    "chicago": {
+                    "Rivers": {
 
                     },
-                    "manchester": {
+                    "Chicago": {
+
+                    },
+                    "Manchester": {
+
+                    },
+                    "Beijing": {
+
+                    },
+                    "Dalian": {
+
+                    },
+                    "KualaLumpur": {
+
+                    },
+                    "Seoul": {
+
+                    },
+                    "Chengdu": {
+
+                    },
+                    "HongKong": {
+
+                    },
+                    "Shenyang": {
+
+                    },
+                    "Panjin": {
 
                     }
                 }
-            }
+            },
+            'excludedThemes': {}
         };
 
         HubClient.saveSceneGraph(sceneGraph, function(newSceneGraph) {

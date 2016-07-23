@@ -1,29 +1,43 @@
 var React = require('react');
 var PropTypes = React.PropTypes;
 var ItemTypes = require('../draggable/item-types.jsx').ItemTypes;
-
 var DragSource = require('react-dnd').DragSource;
+var SceneGraphActions = require('../../actions/scene-graph-actions');
 
 var itemSource = {
     beginDrag: function(props) {
         console.log("Begin drag: ", props);
         return {
-            name: props.name
+            name: props.name,
+            sceneGraph: props.sceneGraph
         };
     },
     endDrag: function(props, monitor) {
         var item = monitor.getItem();
         var dropResult = monitor.getDropResult();
 
-        console.log("end drag");
-        console.log(item);
-        console.log(dropResult);
-        
-        if (dropResult) {
-            console.log("DROP SUCCESS");
+        console.log("end drag - item, dropResult", {
+            item: item,
+            dropResult: dropResult
+        });
+
+        if(!dropResult){
+            return;
         }
 
-        console.log("DROP FAIL");
+        if (dropResult.name !== 'scene-graph-drop-target') {
+            SceneGraphActions.excludeTheme(item.name, item.sceneGraph._id);
+        } else if (dropResult.name === 'scene-graph-drop-target') {
+            console.log("DROPPED INTO THE HIERARCHY: ", dropResult);
+
+            var dropData = dropResult.props;
+            var dropParentList = dropData.parentList;
+            var dropParentKey = dropData.node;
+            var dropSceneGraphId = dropData.sceneGraph._id;
+            var themeId = item.name;
+            SceneGraphActions.addThemeIntoSceneGraph(dropParentList, dropParentKey, themeId, dropSceneGraphId);
+
+        }
     }
 };
 

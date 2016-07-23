@@ -15,60 +15,6 @@ var DragDropContainer = require('../basic-draggable/drag-drop-container.jsx');
 var Router = require('react-router'),
     Link = Router.Link;
 
-
-var basicHardcodedStructure = {
-    "_id": "7821387123818e",
-    "name": "testSceneGraph",
-    city: {
-        chicago: {
-            "ThemeArt": {
-                "ThemePainting": {
-
-                },
-                "ThemePublicAttractions": {
-                    "ThemeGallery": {
-
-                    }
-                }
-            },
-            "ThemeGreat": {}
-        },
-        manchester: {
-            "ThemeArt": {},
-            "ThemeRainy": {}
-        }
-    },
-    movement: {
-        chicago: {
-            "ThemeBikes": {
-
-            },
-            "ThemeGreen": {
-                "ThemeElectricBus": {
-
-                }
-            }
-        },
-        manchester: {
-            "ThemeTrams": {
-
-            },
-            "ThemeDisruption": {
-
-            }
-        }
-    },
-    people: {
-        chicago: {
-            "ThemeHappy": {}
-        },
-        manchester: {
-            "ThemeBusy": {}
-        }
-    }
-};
-
-
 var SceneItem = React.createClass({
     render: function() {
         return <option value={this.props.scene._id}>{this.props.scene.name}</option>;
@@ -213,12 +159,27 @@ var SceneGraph = React.createClass({
             storedFullScenes: [],
             selectedScene: selectedScene,
             selectedSceneThemeList: generateThemeListForSelectedScene(selectedScene),
-            selectSceneTags: generateTagListFromThemeList(selectedScene)
+            selectSceneTags: generateTagListFromThemeList(selectedScene),
+            themeUnionForScenesInGraph: {}
         };
 
-        var sceneIds = state.sceneGraph && state.sceneGraph.sceneIds ? state.sceneGraph.sceneIds : []
+        var sceneIds = state.sceneGraph && state.sceneGraph.sceneIds ? state.sceneGraph.sceneIds : [];
         for(var sceneId in sceneIds) {
             state.storedFullScenes.push(SceneStore.getScene(sceneIds[sceneId]))
+        }
+
+        for(var scene in state.storedFullScenes) {
+            var fullSceneObj = state.storedFullScenes[scene];
+            var themeKeys = Object.keys(fullSceneObj.themes);
+
+            var excludedThemeList = Object.keys(state.sceneGraph.excludedThemes);
+
+            for(var property in themeKeys) {
+
+                if(excludedThemeList.indexOf(themeKeys[property]) === -1)
+                    state.themeUnionForScenesInGraph[themeKeys[property]] = {};
+
+            }
         }
 
         console.log("getStateFromStores: ", state);
@@ -321,15 +282,12 @@ var SceneGraph = React.createClass({
                     </div>
 
                     <div className="col-md-12">
-                        <DragDropContainer></DragDropContainer>
-                    </div>
+                        <DragDropContainer
+                            themeUnion={Object.keys(this.state.themeUnionForScenesInGraph)}
+                            sceneGraph={this.state.sceneGraph}
+                            graphThemes={this.state.graphThemes}>
 
-                    <div className="col-md-12">
-                        <h4>SceneGraph</h4>
-
-                        { Object.keys(this.state.graphThemes).map(function(property){
-                            return <SceneGraphNode indentation="rootLevel" graphTheme={this.state.graphThemes[property]} node={property}/>
-                        }, this)}
+                        </DragDropContainer>
                     </div>
 
                 </div>
@@ -340,3 +298,30 @@ var SceneGraph = React.createClass({
 });
 
 module.exports = SceneGraph;
+
+//
+// { Object.keys(this.state.graphThemes).map(function(property){
+//     return <SceneGraphNode indentation="rootLevel" graphTheme={this.state.graphThemes[property]} node={property}/>
+// }, this)}
+
+/*
+
+
+ <div className="col-md-12">
+ <h4>SceneGraph</h4>
+
+ { Object.keys(this.state.graphThemes).map(function(property){
+ return <TreePositionLandingContainer indentation="rootLevel" graphTheme={this.state.graphThemes[property]} node={property} sceneGraph={this.state.sceneGraph}/>
+ }, this)}
+ </div>
+
+
+ { Object.keys(this.state.graphThemes).map(function(property){
+ return <SceneGraphNode indentation="rootLevel" graphTheme={this.state.graphThemes[property]} node={property}/>
+ }, this)}
+
+ { Object.keys(this.state.graphTheme).map(function(property){
+ return <TreePositionLandingContainer indentation="rootLevel" graphTheme={this.state.graphThemes[property]} node={property} sceneGraph={this.state.sceneGraph}/>
+ }, this)}
+
+ */

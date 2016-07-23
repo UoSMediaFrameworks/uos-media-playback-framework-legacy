@@ -24,6 +24,26 @@ function _removeSceneFromSceneGraph (sceneGraphId, sceneId) {
     delete _sceneGraphs[sceneGraphId].sceneIds[sceneId];
 }
 
+function _addThemeExclusion (sceneGraphId, themeId) {
+    console.log("_addThemeExclusion: ", { sceneGraphId: sceneGraphId, themeId: themeId});
+    _sceneGraphs[sceneGraphId].excludedThemes[themeId] = {};
+}
+
+function _deleteThemeExclusion (sceneGraphId, themeId) {
+    console.log("_deleteThemeExclusion: ", { sceneGraphId: sceneGraphId, themeId: themeId});
+    delete _sceneGraphs[sceneGraphId].excludedThemes[themeId];
+}
+
+function _addThemeToSceneGraphStructure (sceneGraphId, themeId, parentList, parentKey) {
+    console.log("_addThemeToSceneGraphStructure", { sceneGraphId: sceneGraphId, themeId: themeId, parent:parent, parentKey: parentKey});
+    var graphThemes = _sceneGraphs[sceneGraphId]['graphThemes'];
+    for(var parentIndex in parentList) {
+        var parentKey = parentList[parentIndex];
+        graphThemes = graphThemes[parentKey];
+    }
+    graphThemes[themeId] = {};
+}
+
 var SceneGraphStore = assign({}, EventEmitter.prototype, {
     getSceneGraph: function(id) {
         if (_sceneGraphs.hasOwnProperty(id)) {
@@ -59,6 +79,14 @@ var SceneGraphStore = assign({}, EventEmitter.prototype, {
                 SceneGraphStore.emitChange();
                 break;
             case ActionTypes.SCENE_GRAPH_SELECTION:
+                SceneGraphStore.emitChange();
+                break;
+            case ActionTypes.SCENE_GRAPH_EXCLUDE_THEME:
+                _addThemeExclusion(action.sceneGraphId, action.themeId);
+                SceneGraphStore.emitChange();
+                break;
+            case ActionTypes.SCENE_GRAPH_ADD_THEME_TO_STRUCTURE:
+                _addThemeToSceneGraphStructure(action.sceneGraphId, action.themeId, action.parentList, action.parentKey);
                 SceneGraphStore.emitChange();
                 break;
         }
