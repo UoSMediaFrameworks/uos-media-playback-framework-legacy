@@ -32,7 +32,7 @@ var ItemGroupForThemeUnion = React.createClass({
             return (
                 <div className="firstLevel">
                     <TreePositionLandingContainer indentation="rootLevel" parent={parent} parentList={parentList} graphTheme={parent[property]} node={property} sceneGraph={sg}>
-                        <ul>
+                        <ul className="graph-themes-list">
                             {Object.keys(parent[property]).map(function(nestedProperty){
                                 var updatedParentList = _.clone(parentList);
                                 updatedParentList.push(nestedProperty);
@@ -61,7 +61,7 @@ var ItemGroupForThemeUnion = React.createClass({
                 <div className="col-md-12">
                     <h4>SceneGraph</h4>
 
-                    <ul>
+                    <ul className="graph-themes-list">
                         { Object.keys(this.props.graphThemes || {}).map(function(property){
                             var parentList = [property];
                             return renderItem(this.props.graphThemes, property, this.props.sceneGraph, parentList);

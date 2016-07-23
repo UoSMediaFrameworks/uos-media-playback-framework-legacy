@@ -112,8 +112,6 @@ var _selectedScene = undefined;
 var generateThemeListForSelectedScene = function(selectedScene) {
     var themes = [];
 
-    console.log("generateThemeListForSelectedScene: ", selectedScene);
-
     if(!selectedScene || !selectedScene.themes)
         return themes;
 
@@ -128,16 +126,12 @@ var generateTagListFromThemeList = function(selectedScene) {
 
     var tags = [];
 
-    console.log("generateTagListFromThemeList selectedScene: ", selectedScene);
-
     if(!selectedScene || !selectedScene.themes)
         return tags;
 
     for(var theme in selectedScene.themes) {
         tags.push(selectedScene.themes[theme]);
     }
-
-    console.log("generateTagListFromThemeList: ", tags);
 
     return tags;
 };
@@ -165,7 +159,12 @@ var SceneGraph = React.createClass({
 
         var sceneIds = state.sceneGraph && state.sceneGraph.sceneIds ? state.sceneGraph.sceneIds : [];
         for(var sceneId in sceneIds) {
-            state.storedFullScenes.push(SceneStore.getScene(sceneIds[sceneId]))
+            var fullScene = SceneStore.getScene(sceneIds[sceneId]);
+            if(!fullScene) {
+                HubSendActions.loadScene(sceneIds[sceneId]);
+            } else {
+                state.storedFullScenes.push(fullScene);
+            }
         }
 
         for(var scene in state.storedFullScenes) {
@@ -298,30 +297,3 @@ var SceneGraph = React.createClass({
 });
 
 module.exports = SceneGraph;
-
-//
-// { Object.keys(this.state.graphThemes).map(function(property){
-//     return <SceneGraphNode indentation="rootLevel" graphTheme={this.state.graphThemes[property]} node={property}/>
-// }, this)}
-
-/*
-
-
- <div className="col-md-12">
- <h4>SceneGraph</h4>
-
- { Object.keys(this.state.graphThemes).map(function(property){
- return <TreePositionLandingContainer indentation="rootLevel" graphTheme={this.state.graphThemes[property]} node={property} sceneGraph={this.state.sceneGraph}/>
- }, this)}
- </div>
-
-
- { Object.keys(this.state.graphThemes).map(function(property){
- return <SceneGraphNode indentation="rootLevel" graphTheme={this.state.graphThemes[property]} node={property}/>
- }, this)}
-
- { Object.keys(this.state.graphTheme).map(function(property){
- return <TreePositionLandingContainer indentation="rootLevel" graphTheme={this.state.graphThemes[property]} node={property} sceneGraph={this.state.sceneGraph}/>
- }, this)}
-
- */

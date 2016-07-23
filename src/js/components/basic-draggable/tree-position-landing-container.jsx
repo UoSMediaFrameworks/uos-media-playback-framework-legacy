@@ -36,6 +36,8 @@ function collect(connect, monitor) {
     }
 };
 
+var _collapsed = true;
+
 var TreePositionLandingContainer = React.createClass({
     propTypes: {
         connectDropTarget: PropTypes.func.isRequired,
@@ -44,25 +46,50 @@ var TreePositionLandingContainer = React.createClass({
         children: PropTypes.node
     },
 
+    getInitialState: function() {
+        return {
+            _collapsed: _collapsed
+        }
+    },
+
+    handleToggleCollapse: function(event) {
+        _collapsed = !_collapsed;
+
+        this.setState({_collapsed: _collapsed});
+    },
+
     render: function () {
         var connectDropTarget = this.props.connectDropTarget;
         var isOver = this.props.isOver;
         var isOverCurrent = this.props.isOverCurrent;
         var children = this.props.children;
-        var backgroundColor = '#222';
+        var backgroundColor = '#EEEEEE';
         if (isOverCurrent) {
-            backgroundColor = 'darkgreen';
+            backgroundColor = '#388E3C';
+        }
+
+        var classNames = '' + this.props.indentation + ' ';
+
+        var dropDownClassNames = 'glyphicon glyphicon-hand-up collapse-icon';
+        var dropUpClassNames = 'glyphicon glyphicon-hand-down collapse-icon';
+        var iconClassNames = dropUpClassNames;
+
+        if(this.state._collapsed) {
+            classNames += ' collapsed-container';
+            iconClassNames = dropDownClassNames;
         }
 
         return connectDropTarget(
             <li style={{
-                minHeight: '50px',
+                minHeight: '30px',
                 width: '100%',
                 borderColor: backgroundColor,
-                borderStyle: 'solid',
-                borderWidth: '2px'
-            }} className={this.props.indentation}>
-                <p> {this.props.node} </p>
+                borderStyle: 'dotted',
+                borderWidth: '1px'
+            }} className={classNames}>
+                <span className={iconClassNames}  aria-hidden="true"
+                      onClick={this.handleToggleCollapse}></span>
+                <span className="node-name"> {this.props.node} </span>
                 {children}
             </li>
         );

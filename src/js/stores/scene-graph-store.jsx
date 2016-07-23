@@ -72,22 +72,26 @@ var SceneGraphStore = assign({}, EventEmitter.prototype, {
                 break;
             case ActionTypes.SCENE_GRAPH_ADD_SCENE:
                 _addSceneToSceneGraph(action.sceneGraphId, action.sceneId);
-                SceneGraphStore.emitChange();
+                var sceneGraph = _sceneGraphs[action.sceneGraphId];
+                HubClient.saveSceneGraph(sceneGraph);
                 break;
             case ActionTypes.SCENE_GRAPH_REMOVE_SCENE:
                 _removeSceneFromSceneGraph(action.sceneGraphId, action.sceneId);
-                SceneGraphStore.emitChange();
+                var sceneGraph = _sceneGraphs[action.sceneGraphId];
+                HubClient.saveSceneGraph(sceneGraph);
                 break;
             case ActionTypes.SCENE_GRAPH_SELECTION:
                 SceneGraphStore.emitChange();
                 break;
             case ActionTypes.SCENE_GRAPH_EXCLUDE_THEME:
                 _addThemeExclusion(action.sceneGraphId, action.themeId);
-                SceneGraphStore.emitChange();
+                var sceneGraph = _sceneGraphs[action.sceneGraphId];
+                HubClient.saveSceneGraph(sceneGraph);
                 break;
             case ActionTypes.SCENE_GRAPH_ADD_THEME_TO_STRUCTURE:
                 _addThemeToSceneGraphStructure(action.sceneGraphId, action.themeId, action.parentList, action.parentKey);
-                SceneGraphStore.emitChange();
+                var sceneGraph = _sceneGraphs[action.sceneGraphId];
+                HubClient.saveSceneGraph(sceneGraph);
                 break;
         }
 
