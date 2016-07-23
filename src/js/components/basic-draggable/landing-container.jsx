@@ -54,11 +54,11 @@ var LandingContainer = React.createClass({
                         'Release to drop' :
                         'Drag a theme here to exclude'
                     }
-
-                    {excludedThemes.map(function(excludedTheme){
-                        return <p>{excludedTheme}</p>
-                    })}
                 </h4>
+
+                {excludedThemes.map(function(excludedTheme){
+                    return <p>{excludedTheme}</p>
+                })}
             </div>
         );
     }
