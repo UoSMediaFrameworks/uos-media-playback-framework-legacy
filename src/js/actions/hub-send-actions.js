@@ -30,21 +30,67 @@ module.exports = {
             'sceneIds': {},
             "graphThemes": {
                 "city": {
-                    "Rivers": {
+                    "TransportationSystem": {
+
+                    },
+                    "EthnicDance": {
+
+                    },
+                    "NightMarket": {
+
+                    },
+                    "GreenInitiative": {
+
+                    },
+                    "Changes": {
+
+                    },
+                    "Technology": {
+
+                    },
+                    "Entertainment": {
+
+                    },
+                    "Tradition": {
+
+                    },
+                    "Intimacy": {
+
+                    },
+                    "History": {
+
+                    },
+                    "FoodDiversity": {
+
+                    },
+                    "Diversity": {
+
+                    },
+                    "Nature": {
+
+                    },
+                    "Politics": {
+
+                    },
+                    "Place": {
+
+                    },
+                    "Signage": {
+
+                    },
+                    "Archaeology": {
+
+                    },
+                    "Climate": {
+
+                    },
+                    "Commute": {
+
+                    },
+                    "FusionOfCultures": {
 
                     },
                     "Chicago": {
-                        "ThemeArt": {
-                            "ThemePainting": {
-
-                            },
-                            "ThemePublicAttractions": {
-                                "ThemeGallery": {
-
-                                }
-                            }
-                        },
-                        "ThemeGreat": {}
                     },
                     "Manchester": {
 
@@ -75,7 +121,67 @@ module.exports = {
                     }
                 },
                 "people": {
-                    "Rivers": {
+                    "Entertainment": {
+
+                    },
+                    "Tradition": {
+
+                    },
+                    "Intimacy": {
+
+                    },
+                    "History": {
+
+                    },
+                    "FoodDiversity": {
+
+                    },
+                    "Diversity": {
+
+                    },
+                    "Nature": {
+
+                    },
+                    "Politics": {
+
+                    },
+                    "Conflict": {
+
+                    },
+                    "Waterways": {
+
+                    },
+                    "Sports": {
+
+                    },
+                    "Culture": {
+
+                    },
+                    "PaceOfTime": {
+
+                    },
+                    "Art": {
+
+                    },
+                    "FoodFusion": {
+
+                    },
+                    "Student": {
+
+                    },
+                    "Language": {
+
+                    },
+                    "WorkingClass": {
+
+                    },
+                    "Generation": {
+
+                    },
+                    "Migration": {
+
+                    },
+                    "Personality": {
 
                     },
                     "Chicago": {
@@ -110,7 +216,64 @@ module.exports = {
                     }
                 },
                 "movement": {
-                    "Rivers": {
+                    "Progress": {
+
+                    },
+                    "Nightlife": {
+
+                    },
+                    "Lively": {
+
+                    },
+                    "Performance": {
+
+                    },
+                    "Transit": {
+
+                    },
+                    "Tour": {
+
+                    },
+                    "Conflict": {
+
+                    },
+                    "Waterways": {
+
+                    },
+                    "Sports": {
+
+                    },
+                    "Culture": {
+
+                    },
+                    "PaceOfTime": {
+
+                    },
+                    "Art": {
+
+                    },
+                    "FoodFusion": {
+
+                    },
+                    "Migration": {
+
+                    },
+                    "TransportationSystem": {
+
+                    },
+                    "EthnicDance": {
+
+                    },
+                    "NightMarket": {
+
+                    },
+                    "GreenInitiative": {
+
+                    },
+                    "Changes": {
+
+                    },
+                    "Technology": {
 
                     },
                     "Chicago": {
@@ -145,7 +308,8 @@ module.exports = {
                     }
                 }
             },
-            'excludedThemes': {}
+            'excludedThemes': {},
+            'nodeList': []
         };
 
         HubClient.saveSceneGraph(sceneGraph, function(newSceneGraph) {
