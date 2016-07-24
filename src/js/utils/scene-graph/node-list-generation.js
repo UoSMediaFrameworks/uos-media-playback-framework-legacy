@@ -171,6 +171,8 @@ var nodeList = [
 ];
 
 module.exports = {
+    
+    //TODO attach the scenes as nodes
     generateNodeListForSceneGraph: function(sceneGraph) {
 
         var root = sceneGraph.graphThemes;

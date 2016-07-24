@@ -2,7 +2,7 @@ var React = require('react');
 var PropTypes = React.PropTypes;
 var ItemTypes = require('../draggable/item-types.jsx').ItemTypes;
 var DropTarget = require('react-dnd').DropTarget;
-
+var SceneGraphActions = require('../../actions/scene-graph-actions');
 
 var landingContainerTarget = {
     drop: function() {
@@ -17,6 +17,22 @@ function collect(connect, monitor) {
         canDrop: monitor.canDrop()
     }
 };
+
+var ExcludedTheme = React.createClass({
+
+    removeExcludedTheme: function(event) {
+        SceneGraphActions.includeTheme(this.props.excludedTheme, this.props.sceneGraph._id);
+    },
+
+    render: function() {
+        return (
+            <div>
+                {this.props.excludedTheme}
+                <span className="glyphicon glyphicon-remove" onClick={this.removeExcludedTheme}></span>
+            </div>
+        )
+    }
+});
 
 var LandingContainer = React.createClass({
     propTypes: {
@@ -59,7 +75,7 @@ var LandingContainer = React.createClass({
                 </h4>
 
                 {excludedThemes.map(function(excludedTheme){
-                    return <div>{excludedTheme}</div>
+                    return <ExcludedTheme excludedTheme={excludedTheme} sceneGraph={sceneGraph}></ExcludedTheme>
                 })}
             </div>
         );

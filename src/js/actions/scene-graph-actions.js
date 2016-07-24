@@ -46,6 +46,14 @@ var SceneGraphActions = {
         });
     },
 
+    includeTheme: function(themeId, sceneGraphId) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.SCENE_GRAPH_INCLUDE_THEME,
+            sceneGraphId: sceneGraphId,
+            themeId: themeId
+        });
+    },
+
     addThemeIntoSceneGraph: function(parentList, parentKey, themeId, sceneGraphId) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.SCENE_GRAPH_ADD_THEME_TO_STRUCTURE,
@@ -54,7 +62,17 @@ var SceneGraphActions = {
             sceneGraphId: sceneGraphId,
             themeId: themeId
         });
-    }
+    },
+
+    removeThemeFromSceneGraph: function(parentList, parentKey, themeId, sceneGraphId) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.SCENE_GRAPH_REMOVE_THEME_FROM_STRUCTURE,
+            parentList: parentList,
+            parentKey: parentKey,
+            sceneGraphId: sceneGraphId,
+            themeId: themeId
+        });
+    },
 };
 
 module.exports = SceneGraphActions;

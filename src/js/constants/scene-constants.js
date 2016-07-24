@@ -28,7 +28,9 @@ module.exports = {
         SCENE_GRAPH_REMOVE_SCENE: null,
         SCENE_GRAPH_SELECTION: null,
         SCENE_GRAPH_EXCLUDE_THEME: null,
+        SCENE_GRAPH_INCLUDE_THEME: null,
         SCENE_GRAPH_ADD_THEME_TO_STRUCTURE: null,
+        SCENE_GRAPH_REMOVE_THEME_FROM_STRUCTURE: null,
     }),
     PayloadSources: keymirror({
         VIEW_ACTION: null,

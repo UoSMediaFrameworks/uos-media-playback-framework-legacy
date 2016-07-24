@@ -2,6 +2,7 @@ var React = require('react');
 var PropTypes = React.PropTypes;
 var ItemTypes = require('../draggable/item-types.jsx').ItemTypes;
 var DropTarget = require('react-dnd').DropTarget;
+var SceneGraphActions = require('../../actions/scene-graph-actions');
 
 
 var landingContainerTarget = {
@@ -11,13 +12,7 @@ var landingContainerTarget = {
         var hasDroppedOnChild = monitor.didDrop();
         var hasDropResult = monitor.getDropResult();
 
-        console.log("hasDroppedOnChild, hasDropResult", {
-            hasDroppedOnChild: hasDroppedOnChild,
-            hasDropResult: hasDropResult
-        });
-
         if (hasDroppedOnChild) {
-            console.log("HASDROPPEDONCHILD");
             return;
         }
 
@@ -32,7 +27,7 @@ function collect(connect, monitor) {
     return {
         connectDropTarget: connect.dropTarget(),
         isOver: monitor.isOver(),
-        isOverCurrent: monitor.isOver({ shallow: true }),
+        isOverCurrent: monitor.isOver({ shallow: true })
     }
 };
 
@@ -56,6 +51,10 @@ var TreePositionLandingContainer = React.createClass({
         _collapsed = !_collapsed;
 
         this.setState({_collapsed: _collapsed});
+    },
+
+    handleRemove: function(event) {
+        SceneGraphActions.removeThemeFromSceneGraph(this.props.parentList, this.props.node, this.props.node, this.props.sceneGraph._id);
     },
 
     render: function () {
@@ -90,6 +89,7 @@ var TreePositionLandingContainer = React.createClass({
                 <span className={iconClassNames}  aria-hidden="true"
                       onClick={this.handleToggleCollapse}></span>
                 <span className="node-name"> {this.props.node} </span>
+                <span className="glyphicon glyphicon-remove" onClick={this.handleRemove}></span>
                 {children}
             </li>
         );
@@ -100,11 +100,3 @@ var TreePositionLandingContainer = React.createClass({
 
 module.exports = DropTarget(ItemTypes.LANDING_CONTAINER, landingContainerTarget, collect)(TreePositionLandingContainer);
 
-/*
- <ul>
- { Object.keys(this.props.graphTheme).map(function(property){
- return <TreePositionLandingContainer indentation="firstLevel" graphTheme={this.props.graphTheme[property]} node={property} sceneGraph={this.props.sceneGraph}/>
- }, this)}
- </ul>
- */
-//connectDropTarget={connectDropTarget} isOver={isOver}
