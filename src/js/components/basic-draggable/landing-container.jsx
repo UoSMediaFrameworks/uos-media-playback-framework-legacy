@@ -59,7 +59,7 @@ var LandingContainer = React.createClass({
                 </h4>
 
                 {excludedThemes.map(function(excludedTheme){
-                    return <p>{excludedTheme}</p>
+                    return <div>{excludedTheme}</div>
                 })}
             </div>
         );
