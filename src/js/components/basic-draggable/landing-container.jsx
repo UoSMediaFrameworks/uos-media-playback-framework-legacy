@@ -47,7 +47,9 @@ var LandingContainer = React.createClass({
                 width: '100%',
                 borderColor: backgroundColor,
                 borderStyle: 'solid',
-                borderWidth: '2px'
+                borderWidth: '1px',
+                paddingLeft: '15px',
+                paddingRight: '15px'
             }}>
                 <h4>
                     {isActive ?
