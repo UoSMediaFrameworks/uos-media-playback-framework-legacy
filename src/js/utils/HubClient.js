@@ -6,6 +6,7 @@ var io = require('socket.io-client');
 var HubSendActions = require('../actions/hub-send-actions');
 var assetStore = require('./asset-store');
 var connectionCache = require('./connection-cache');
+var NodeListGeneration = require('./scene-graph/node-list-generation');
 var socket;
 
 var HubClient = {
@@ -39,14 +40,14 @@ var HubClient = {
                     HubRecieveActions.recieveLoginResult(false, err.toString());
                 } else {
                     connectionCache.setHubToken(token);
-					
+
 
                     HubRecieveActions.recieveLoginResult(true);
                     HubRecieveActions.tryListScenes();
-					
+
 					console.log("Setting groupID in HubClient to: " + groupID);
 					connectionCache.setGroupID(groupID);//AJF: set the groupID
-					
+
                     socket.emit('listScenes', function(err, scenes) {
                         if (err) throw err;
                         HubRecieveActions.recieveSceneList(scenes);
@@ -109,6 +110,7 @@ var HubClient = {
     },
 
     saveSceneGraph: function(sceneGraph, cb) {
+        NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
         socket.emit('saveSceneGraph', sceneGraph, function(err, newSceneGraph) {
             if(err) {
                 HubRecieveActions.errorMessage('Couldn\'t save scene graph, please try again');

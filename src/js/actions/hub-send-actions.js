@@ -30,40 +30,131 @@ module.exports = {
             'sceneIds': {},
             "graphThemes": {
                 "city": {
-                    "chicago": {
-                        "ThemeArt": {
-                            "ThemePainting": {
-
-                            },
-                            "ThemePublicAttractions": {
-                                "ThemeGallery": {
-
-                                }
-                            }
-                        },
-                        "ThemeGreat": {}
+                    "Entertainment": {},
+                    "Tradition": {},
+                    "Bonds": {},
+                    "Cuisine": {},
+                    "Diversity": {},
+                    "Landscape": {},
+                    "Politics": {},
+                    "Transportation System": {},
+                    "Native Performance": {},
+                    "Night Market": {},
+                    "Green Initiative": {},
+                    "Changes": {},
+                    "Technology": {},
+                    "Landmarks": {},
+                    "Signage": {},
+                    "Historical Events": {},
+                    "Nature": {},
+                    "Sound Of Cities": {},
+                    "Fusion Of Culture": {},
+                    "Chicago": {},
+                    "Manchester": {
                     },
-                    "manchester": {
-
+                    "Beijing": {
+                    },
+                    "Dalian": {
+                    },
+                    "KualaLumpur": {
+                    },
+                    "Seoul": {
+                    },
+                    "Chengdu": {
+                    },
+                    "HongKong": {
+                    },
+                    "Shenyang": {
+                    },
+                    "Panjin": {
                     }
                 },
                 "people": {
-                    "chicago": {
-
+                    "Conflict": {},
+                    "Waterway": {},
+                    "Sports": {},
+                    "Culture": {},
+                    "PaceOfLife": {},
+                    "Art": {},
+                    "Migration": {},
+                    "Entertainment": {},
+                    "Tradition": {},
+                    "Bonds": {},
+                    "Cuisine": {},
+                    "Diversity": {},
+                    "Landscape": {},
+                    "Politics": {},
+                    "Students Life": {},
+                    "Fusion Of Language": {},
+                    "Workforce": {},
+                    "Aging Society": {},
+                    "Youth Trends": {},
+                    "Cross Culture": {},
+                    "Chicago": {
                     },
-                    "manchester": {
-
+                    "Manchester": {
+                    },
+                    "Beijing": {
+                    },
+                    "Dalian": {
+                    },
+                    "KualaLumpur": {
+                    },
+                    "Seoul": {
+                    },
+                    "Chengdu": {
+                    },
+                    "HongKong": {
+                    },
+                    "Shenyang": {
+                    },
+                    "Panjin": {
                     }
                 },
                 "movement": {
-                    "chicago": {
-
+                    "Conflict": {},
+                    "Waterway": {},
+                    "Sports": {},
+                    "Culture": {},
+                    "PaceOfLife": {},
+                    "Art": {},
+                    "Migration": {},
+                    "Transportation System": {},
+                    "Native Performance": {},
+                    "Night Market": {},
+                    "Green Initiative": {},
+                    "Changes": {},
+                    "Technology": {},
+                    "Evolution": {},
+                    "Vitality": {},
+                    "Travel": {},
+                    "Performance": {},
+                    "Night Life": {},
+                    "Traffic": {},
+                    "Chicago": {
                     },
-                    "manchester": {
-
+                    "Manchester": {
+                    },
+                    "Beijing": {
+                    },
+                    "Dalian": {
+                    },
+                    "KualaLumpur": {
+                    },
+                    "Seoul": {
+                    },
+                    "Chengdu": {
+                    },
+                    "HongKong": {
+                    },
+                    "Shenyang": {
+                    },
+                    "Panjin": {
                     }
                 }
-            }
+            },
+            'excludedThemes': {},
+            'nodeList': []
         };
 
         HubClient.saveSceneGraph(sceneGraph, function(newSceneGraph) {

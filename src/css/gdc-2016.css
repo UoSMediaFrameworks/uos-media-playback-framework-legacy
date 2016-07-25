@@ -1,0 +1,7 @@
+
+
+/* Hides the city nodes for GDC-2016*/
+
+.Chicago, .Manchester, .Beijing, .Dalian, .KualaLumpur, .Seoul, .Chengdu, .HongKong, .Shenyang, .Panjin {
+    display: none;
+}

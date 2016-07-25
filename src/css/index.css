@@ -391,6 +391,26 @@ html, body, #main, .app {
     margin-bottom: 0;
 }
 
+
+
+/** Editor UI **/
 .scene-graph-scene-list-container {
     margin-bottom: 20px;
+}
+
+.collapsed-container {
+    height: 10px;
+    overflow: hidden;
+}
+
+.collapse-icon {
+    font-size: 1.5em;
+}
+
+.node-name {
+    padding: 4px;
+}
+
+.graph-themes-list {
+    list-style: none;
 }
