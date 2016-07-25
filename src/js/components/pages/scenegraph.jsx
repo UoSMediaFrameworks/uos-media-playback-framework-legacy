@@ -234,12 +234,17 @@ var SceneGraph = React.createClass({
 
     render: function() {
 
+        var sceneGraphId = this.state.sceneGraph ? this.state.sceneGraph._id : "";
+
+        var viewerUrl = "http://uos-mediahubgraph.azurewebsites.net/?id=" + sceneGraphId;
+
         return (
             <div className="container scene-graph">
                 <div className="row">
                     <div className="col-md-12">
                         <Link className='btn' to='scenegraphs'>&lt; Back to Scene Graph List</Link>
                         <h3>SceneGraph: {this.state.name}</h3>
+                        <a className='btn' href={viewerUrl}>Open Graph</a>
                     </div>
                     <div className="col-md-12 scene-graph-scene-list-container">
                         <h4>Add a scene to the graph</h4>
