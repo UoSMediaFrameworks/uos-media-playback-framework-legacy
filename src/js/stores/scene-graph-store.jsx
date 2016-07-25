@@ -7,6 +7,7 @@ var EventEmitter = require('events').EventEmitter;
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
 var HubClient = require('../utils/HubClient');
 var SceneStore = require('./scene-store');
+var ConnectionCache = require('../utils/connection-cache');
 
 var CHANGE_EVENT = "change";
 var _sceneGraphs = {};
@@ -16,9 +17,45 @@ function _updateSceneGraph (sceneGraph) {
 }
 
 function _addSceneToSceneGraph (sceneGraphId, sceneId) {
-    console.log("sceneGraphId: " + sceneGraphId + ", sceneId: " + sceneId);
-    _sceneGraphs[sceneGraphId].sceneIds[sceneId] = sceneId;
+    console.log("_addSceneToSceneGraph: [sceneGraphId: " + sceneGraphId + ", sceneId: " + sceneId + "]");
+
+    //TODO get new scene
+    var newScene = SceneStore.getScene(sceneId);
+
+    var newSceneThemeList = Object.keys(newScene.themes);
+    var currentlyExcludedThemes = Object.keys(_sceneGraphs[sceneGraphId].excludedThemes);
+
+    var sceneThemesToAdd = [];  //get theme list by removing an excluded themes from the new scenes themelist
+    for(var themeIndex in newSceneThemeList) {
+        var proposedThemeId = newSceneThemeList[themeIndex];
+
+        if(currentlyExcludedThemes.indexOf(proposedThemeId) === -1) {
+            sceneThemesToAdd.push(proposedThemeId);
+        }
+    }
+
+    //Hack to get the city node name from login session
+    var sceneCity = ConnectionCache.getShortGroupName(ConnectionCache.getGroupID());
+    sceneCity = sceneCity.split(' ').join('');
+
+    console.log("The scene city found: ", sceneCity);
+
+    //For each root node, find the city node then add each new theme as child
+    _.forEach(Object.keys(_sceneGraphs[sceneGraphId].graphThemes), function(rootNodeProperty){
+        var rootNode =  _sceneGraphs[sceneGraphId].graphThemes[rootNodeProperty];
+
+        var cityNode = rootNode[sceneCity];
+
+        _.forEach(sceneThemesToAdd, function(themeId) {
+            cityNode[themeId] = {};
+        });
+
+    });
+
     console.log("_addSceneToSceneGraph: ", _sceneGraphs[sceneGraphId]);
+
+    //finally add the scene id to the document
+    _sceneGraphs[sceneGraphId].sceneIds[sceneId] = sceneId;
 }
 
 function _removeThemesForNode (currentNode, themeIdsToRemove) {
@@ -79,11 +116,17 @@ function _removeSceneFromSceneGraph (sceneGraphId, sceneId) {
 
 function _addThemeExclusion (sceneGraphId, themeId) {
     console.log("_addThemeExclusion: ", { sceneGraphId: sceneGraphId, themeId: themeId});
+
+    //TODO remove theme from scene graph
+
     _sceneGraphs[sceneGraphId].excludedThemes[themeId] = {};
 }
 
 function _deleteThemeExclusion (sceneGraphId, themeId) {
     console.log("_deleteThemeExclusion: ", { sceneGraphId: sceneGraphId, themeId: themeId});
+
+    //TODO add theme back into scene graph
+
     delete _sceneGraphs[sceneGraphId].excludedThemes[themeId];
 }
 

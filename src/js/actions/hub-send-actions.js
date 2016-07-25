@@ -30,281 +30,126 @@ module.exports = {
             'sceneIds': {},
             "graphThemes": {
                 "city": {
-                    "TransportationSystem": {
-
-                    },
-                    "EthnicDance": {
-
-                    },
-                    "NightMarket": {
-
-                    },
-                    "GreenInitiative": {
-
-                    },
-                    "Changes": {
-
-                    },
-                    "Technology": {
-
-                    },
-                    "Entertainment": {
-
-                    },
-                    "Tradition": {
-
-                    },
-                    "Intimacy": {
-
-                    },
-                    "History": {
-
-                    },
-                    "FoodDiversity": {
-
-                    },
-                    "Diversity": {
-
-                    },
-                    "Nature": {
-
-                    },
-                    "Politics": {
-
-                    },
-                    "Place": {
-
-                    },
-                    "Signage": {
-
-                    },
-                    "Archaeology": {
-
-                    },
-                    "Climate": {
-
-                    },
-                    "Commute": {
-
-                    },
-                    "FusionOfCultures": {
-
-                    },
-                    "Chicago": {
-                    },
+                    "Entertainment": {},
+                    "Tradition": {},
+                    "Bonds": {},
+                    "Cuisine": {},
+                    "Diversity": {},
+                    "Landscape": {},
+                    "Politics": {},
+                    "Transportation System": {},
+                    "Native Performance": {},
+                    "Night Market": {},
+                    "Green Initiative": {},
+                    "Changes": {},
+                    "Technology": {},
+                    "Landmarks": {},
+                    "Signage": {},
+                    "Historical Events": {},
+                    "Nature": {},
+                    "Sound Of Cities": {},
+                    "Fusion Of Culture": {},
+                    "Chicago": {},
                     "Manchester": {
-
                     },
                     "Beijing": {
-
                     },
                     "Dalian": {
-
                     },
                     "KualaLumpur": {
-
                     },
                     "Seoul": {
-
                     },
                     "Chengdu": {
-
                     },
                     "HongKong": {
-
                     },
                     "Shenyang": {
-
                     },
                     "Panjin": {
-
                     }
                 },
                 "people": {
-                    "Entertainment": {
-
-                    },
-                    "Tradition": {
-
-                    },
-                    "Intimacy": {
-
-                    },
-                    "History": {
-
-                    },
-                    "FoodDiversity": {
-
-                    },
-                    "Diversity": {
-
-                    },
-                    "Nature": {
-
-                    },
-                    "Politics": {
-
-                    },
-                    "Conflict": {
-
-                    },
-                    "Waterways": {
-
-                    },
-                    "Sports": {
-
-                    },
-                    "Culture": {
-
-                    },
-                    "PaceOfTime": {
-
-                    },
-                    "Art": {
-
-                    },
-                    "FoodFusion": {
-
-                    },
-                    "Student": {
-
-                    },
-                    "Language": {
-
-                    },
-                    "WorkingClass": {
-
-                    },
-                    "Generation": {
-
-                    },
-                    "Migration": {
-
-                    },
-                    "Personality": {
-
-                    },
+                    "Conflict": {},
+                    "Waterway": {},
+                    "Sports": {},
+                    "Culture": {},
+                    "PaceOfLife": {},
+                    "Art": {},
+                    "Migration": {},
+                    "Entertainment": {},
+                    "Tradition": {},
+                    "Bonds": {},
+                    "Cuisine": {},
+                    "Diversity": {},
+                    "Landscape": {},
+                    "Politics": {},
+                    "Students Life": {},
+                    "Fusion Of Language": {},
+                    "Workforce": {},
+                    "Aging Society": {},
+                    "Youth Trends": {},
+                    "Cross Culture": {},
                     "Chicago": {
-
                     },
                     "Manchester": {
-
                     },
                     "Beijing": {
-
                     },
                     "Dalian": {
-
                     },
                     "KualaLumpur": {
-
                     },
                     "Seoul": {
-
                     },
                     "Chengdu": {
-
                     },
                     "HongKong": {
-
                     },
                     "Shenyang": {
-
                     },
                     "Panjin": {
-
                     }
                 },
                 "movement": {
-                    "Progress": {
-
-                    },
-                    "Nightlife": {
-
-                    },
-                    "Lively": {
-
-                    },
-                    "Performance": {
-
-                    },
-                    "Transit": {
-
-                    },
-                    "Tour": {
-
-                    },
-                    "Conflict": {
-
-                    },
-                    "Waterways": {
-
-                    },
-                    "Sports": {
-
-                    },
-                    "Culture": {
-
-                    },
-                    "PaceOfTime": {
-
-                    },
-                    "Art": {
-
-                    },
-                    "FoodFusion": {
-
-                    },
-                    "Migration": {
-
-                    },
-                    "TransportationSystem": {
-
-                    },
-                    "EthnicDance": {
-
-                    },
-                    "NightMarket": {
-
-                    },
-                    "GreenInitiative": {
-
-                    },
-                    "Changes": {
-
-                    },
-                    "Technology": {
-
-                    },
+                    "Conflict": {},
+                    "Waterway": {},
+                    "Sports": {},
+                    "Culture": {},
+                    "PaceOfLife": {},
+                    "Art": {},
+                    "Migration": {},
+                    "Transportation System": {},
+                    "Native Performance": {},
+                    "Night Market": {},
+                    "Green Initiative": {},
+                    "Changes": {},
+                    "Technology": {},
+                    "Evolution": {},
+                    "Vitality": {},
+                    "Travel": {},
+                    "Performance": {},
+                    "Night Life": {},
+                    "Traffic": {},
                     "Chicago": {
-
                     },
                     "Manchester": {
-
                     },
                     "Beijing": {
-
                     },
                     "Dalian": {
-
                     },
                     "KualaLumpur": {
-
                     },
                     "Seoul": {
-
                     },
                     "Chengdu": {
-
                     },
                     "HongKong": {
-
                     },
                     "Shenyang": {
-
                     },
                     "Panjin": {
-
                     }
                 }
             },
