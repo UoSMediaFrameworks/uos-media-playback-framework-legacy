@@ -47,7 +47,7 @@ var App = React.createClass({
         var sessionNav, nav;
 		//AJF: gets the groupID then passes as a parameter to get the group name. I tried a version of getShortGroupName that would accept no groupID and get it from the current session but it wasn't working @todo: fix this in connectioncache
         if (this.state.loggedIn) {
-            sessionNav = <div className='session-nav'><span>{connectionCache.getGroupID()} - {connectionCache.getShortGroupName(connectionCache.getGroupID())}</span>
+            sessionNav = <div className='session-nav'><span><a href="/#/scenegraphs" target="_blank">Open SceneGraph Creator</a>&nbsp;{connectionCache.getGroupID()} - {connectionCache.getShortGroupName(connectionCache.getGroupID())}</span>
                 <a className='btn' onClick={this.handleLogout}>Log out</a>
             </div>;
         }
