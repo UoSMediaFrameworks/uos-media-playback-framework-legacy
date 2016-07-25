@@ -117,15 +117,36 @@ function _removeSceneFromSceneGraph (sceneGraphId, sceneId) {
 function _addThemeExclusion (sceneGraphId, themeId) {
     console.log("_addThemeExclusion: ", { sceneGraphId: sceneGraphId, themeId: themeId});
 
-    //TODO remove theme from scene graph
-
     _sceneGraphs[sceneGraphId].excludedThemes[themeId] = {};
+
+    var excludedThemes = Object.keys(_sceneGraphs[sceneGraphId].excludedThemes);
+
+    _removeThemesForNode(_sceneGraphs[sceneGraphId].graphThemes, excludedThemes);
+
+    console.log("_addThemeExclusion - removed themes fron structure");
+
 }
 
 function _deleteThemeExclusion (sceneGraphId, themeId) {
     console.log("_deleteThemeExclusion: ", { sceneGraphId: sceneGraphId, themeId: themeId});
 
-    //TODO add theme back into scene graph
+
+    //Hack to get the city node name from login session
+    var sceneCity = ConnectionCache.getShortGroupName(ConnectionCache.getGroupID());
+    sceneCity = sceneCity.split(' ').join('');
+
+    console.log("The scene city found: ", sceneCity);
+
+    //For each root node, find the city node then add each theme as child
+    _.forEach(Object.keys(_sceneGraphs[sceneGraphId].graphThemes), function(rootNodeProperty){
+        var rootNode =  _sceneGraphs[sceneGraphId].graphThemes[rootNodeProperty];
+
+        var cityNode = rootNode[sceneCity];
+
+        cityNode[themeId] = {};
+
+    });
+
 
     delete _sceneGraphs[sceneGraphId].excludedThemes[themeId];
 }
