@@ -111,7 +111,7 @@ module.exports = {
                                 children: {}
                             },
                             "Chicago": {
-                                type: "gtheme",
+                                type: "city",
                                 children: {}
                             },
                             "Manchester": {
@@ -236,7 +236,7 @@ module.exports = {
                                 children: {}
                             },
                             "Chicago": {
-                                type: "gtheme",
+                                type: "city",
                                 children: {}
                             },
                             "Manchester": {
@@ -357,7 +357,7 @@ module.exports = {
                                 children: {}
                             },
                             "Chicago": {
-                                type: "gtheme",
+                                type: "city",
                                 children: {}
                             },
                             "Manchester": {

@@ -66,15 +66,14 @@ function _removeThemesForNode (currentNode, themeIdsToRemove) {
 
     _.forEach(Object.keys(currentNode.children), function(nodePropertyKey){
 
-        console.log("nodePropertyKey: " + nodePropertyKey);
-        console.log("currentNode.type: " + currentNode.type);
-        console.log("test: ", themeIdsToRemove.indexOf(nodePropertyKey) === -1 );
-
         if(themeIdsToRemove.indexOf(nodePropertyKey) === -1 && currentNode.type !== 'stheme') {
             _removeThemesForNode(currentNode.children[nodePropertyKey], themeIdsToRemove);
         } else {
-            console.log("_removeThemesForNode: ", { currentNode: currentNode, childProp: nodePropertyKey});
-            delete currentNode.children[nodePropertyKey];
+            if(currentNode.children[nodePropertyKey].type === 'stheme') {
+                delete currentNode.children[nodePropertyKey];
+            } else {
+                _removeThemesForNode(currentNode.children[nodePropertyKey], themeIdsToRemove);
+            }
         }
     });
 

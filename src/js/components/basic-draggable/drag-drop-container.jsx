@@ -45,7 +45,6 @@ var ItemGroupForThemeUnion = React.createClass({
 
                     <ul className="graph-themes-list">
                         { Object.keys(this.props.graphThemes.children || {}).map(function(property){
-                            console.log("this.props.graphThemes.children", property);
                             var parentList = [property];
                             return renderItem(this.props.graphThemes.children, property, this.props.sceneGraph, parentList);
                         }, this)}
