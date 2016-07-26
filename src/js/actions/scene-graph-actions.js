@@ -54,13 +54,14 @@ var SceneGraphActions = {
         });
     },
 
-    addThemeIntoSceneGraph: function(parentList, parentKey, themeId, sceneGraphId) {
+    addThemeIntoSceneGraph: function(parentList, parentKey, themeId, sceneGraphId, parentType) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.SCENE_GRAPH_ADD_THEME_TO_STRUCTURE,
             parentList: parentList,
             parentKey: parentKey,
             sceneGraphId: sceneGraphId,
-            themeId: themeId
+            themeId: themeId,
+            parentType: parentType
         });
     },
 

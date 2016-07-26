@@ -2,6 +2,7 @@
 'use strict';
 
 var _ = require('lodash');
+var SceneStore = require('../../stores/scene-store');
 
 var cities = [
     "beijing",
@@ -82,6 +83,8 @@ var getChildTypeFromParentType = function(parentType, nodeId) {
             return 'theme';
         case 'subgraphtheme':
             return 'theme';
+        case 'scene':
+            return 'scene';
     }
 };
 
@@ -95,20 +98,43 @@ var createNode = function(id, name, parentIds, childrenIds, type) {
     }
 };
 
+var getSceneNodeListForSTheme = function(sceneGraph, sthemeId) {
+
+    var sceneNameIds = [];
+
+    _.forEach(Object.keys(sceneGraph.sceneIds), function(id){
+        var sceneId = sceneGraph.sceneIds[id];
+
+        var scene = SceneStore.getScene(sceneId);
+
+        var sceneThemes = Object.keys(scene.themes);
+
+        if(sceneThemes.indexOf(sthemeId) !== -1) {
+            sceneNameIds.push(scene.name);
+        }
+    });
+
+    return sceneNameIds;
+};
 
 //TODO can offer non recursive function for large scene graphs
-var getChildrenNodes = function(node, nodeObj) {
-    // console.log("getChildrenNodes: ", {node: node, nodeObj: nodeObj});
+var getChildrenNodes = function(node, nodeObj, sceneGraph) {
 
-    var rootNodeChildren = Object.keys(node);
+    var rootNodeChildren = Object.keys(node.children);
 
     _.map(rootNodeChildren, function(childProp) {
-        var child = node[childProp];
+        var child = node.children[childProp];
         var childObj = createNode(childProp, childProp, [], [], getChildTypeFromParentType(nodeObj.type, childProp));
-        var childrenNodes = getChildrenNodes(child, childObj);
+        var childrenNodes = getChildrenNodes(child, childObj, sceneGraph);
         childObj.parentRelationshipIds.push(nodeObj._id);
 
-        // console.log("childObj: ", childObj);
+        if(child.type === "stheme") { //if stheme attach all duplicate scene nodes - dedupe process will prune these
+            var sceneNodeIds = getSceneNodeListForSTheme(sceneGraph, childProp);
+            _.forEach(sceneNodeIds, function(sceneNode) {
+                var sceneNodeObj = createNode(sceneNode, sceneNode, [childProp], [], "scene");
+                nodeList.push(sceneNodeObj);
+            });
+        }
 
         nodeList.push(childObj);
 
@@ -171,7 +197,7 @@ var nodeList = [
 ];
 
 module.exports = {
-    
+
     //TODO attach the scenes as nodes
     generateNodeListForSceneGraph: function(sceneGraph) {
 
@@ -182,19 +208,19 @@ module.exports = {
          * Create the initial nodes for the list
          * @type {Array}
          */
-        var rootNodes = Object.keys(root);
+        var rootNodes = Object.keys(root.children);
 
         nodeList = [];
 
         _.forEach(rootNodes, function(rootNodeKey){
-            var rootNode = root[rootNodeKey];
+            var rootNode = root.children[rootNodeKey];
 
             //create roots node, no parents.. skipping children ids for now
             var node = createNode(rootNodeKey, rootNodeKey, [], [], 'root');
             nodeList.push(node);
 
             //recursively iterate through children added them to node list
-            getChildrenNodes(rootNode, node);
+            getChildrenNodes(rootNode, node, sceneGraph);
             nodeList = dedupeChildren(nodeList);
         });
 

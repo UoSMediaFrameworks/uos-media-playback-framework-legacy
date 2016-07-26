@@ -29,127 +29,374 @@ module.exports = {
             'name': name,
             'sceneIds': {},
             "graphThemes": {
-                "city": {
-                    "Entertainment": {},
-                    "Tradition": {},
-                    "Bonds": {},
-                    "Cuisine": {},
-                    "Diversity": {},
-                    "Landscape": {},
-                    "Politics": {},
-                    "Transportation System": {},
-                    "Native Performance": {},
-                    "Night Market": {},
-                    "Green Initiative": {},
-                    "Changes": {},
-                    "Technology": {},
-                    "Landmarks": {},
-                    "Signage": {},
-                    "Historical Events": {},
-                    "Nature": {},
-                    "Sound Of Cities": {},
-                    "Fusion Of Culture": {},
-                    "Chicago": {},
-                    "Manchester": {
+                type: "document",
+                children: {
+                    "city": {
+                        type: "root",
+                        children: {
+                            "Entertainment": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Tradition": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Bonds": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Cuisine": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Diversity": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Landscape": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Politics": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Transportation System": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Native Performance": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Night Market": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Green Initiative": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Changes": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Technology": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Landmarks": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Signage": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Historical Events": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Nature": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Sound Of Cities": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Fusion Of Culture": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Chicago": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Manchester": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Beijing": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Dalian": {
+                                type: "city",
+                                children: {}
+                            },
+                            "KualaLumpur": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Seoul": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Chengdu": {
+                                type: "city",
+                                children: {}
+                            },
+                            "HongKong": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Shenyang": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Panjin": {
+                                type: "city",
+                                children: {}
+                            }
+                        }
                     },
-                    "Beijing": {
+                    "people": {
+                        type: "root",
+                        children: {
+                            "Conflict": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Waterway": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Sports": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Culture": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "PaceOfLife": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Art": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Migration": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Entertainment": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Tradition": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Bonds": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Cuisine": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Diversity": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Landscape": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Politics": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Students Life": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Fusion Of Language": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Workforce": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Aging Society": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Youth Trends": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Cross Culture": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Chicago": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Manchester": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Beijing": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Dalian": {
+                                type: "city",
+                                children: {}
+                            },
+                            "KualaLumpur": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Seoul": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Chengdu": {
+                                type: "city",
+                                children: {}
+                            },
+                            "HongKong": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Shenyang": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Panjin": {
+                                type: "city",
+                                children: {}
+                            }
+                        }
                     },
-                    "Dalian": {
-                    },
-                    "KualaLumpur": {
-                    },
-                    "Seoul": {
-                    },
-                    "Chengdu": {
-                    },
-                    "HongKong": {
-                    },
-                    "Shenyang": {
-                    },
-                    "Panjin": {
-                    }
-                },
-                "people": {
-                    "Conflict": {},
-                    "Waterway": {},
-                    "Sports": {},
-                    "Culture": {},
-                    "PaceOfLife": {},
-                    "Art": {},
-                    "Migration": {},
-                    "Entertainment": {},
-                    "Tradition": {},
-                    "Bonds": {},
-                    "Cuisine": {},
-                    "Diversity": {},
-                    "Landscape": {},
-                    "Politics": {},
-                    "Students Life": {},
-                    "Fusion Of Language": {},
-                    "Workforce": {},
-                    "Aging Society": {},
-                    "Youth Trends": {},
-                    "Cross Culture": {},
-                    "Chicago": {
-                    },
-                    "Manchester": {
-                    },
-                    "Beijing": {
-                    },
-                    "Dalian": {
-                    },
-                    "KualaLumpur": {
-                    },
-                    "Seoul": {
-                    },
-                    "Chengdu": {
-                    },
-                    "HongKong": {
-                    },
-                    "Shenyang": {
-                    },
-                    "Panjin": {
-                    }
-                },
-                "movement": {
-                    "Conflict": {},
-                    "Waterway": {},
-                    "Sports": {},
-                    "Culture": {},
-                    "PaceOfLife": {},
-                    "Art": {},
-                    "Migration": {},
-                    "Transportation System": {},
-                    "Native Performance": {},
-                    "Night Market": {},
-                    "Green Initiative": {},
-                    "Changes": {},
-                    "Technology": {},
-                    "Evolution": {},
-                    "Vitality": {},
-                    "Travel": {},
-                    "Performance": {},
-                    "Night Life": {},
-                    "Traffic": {},
-                    "Chicago": {
-                    },
-                    "Manchester": {
-                    },
-                    "Beijing": {
-                    },
-                    "Dalian": {
-                    },
-                    "KualaLumpur": {
-                    },
-                    "Seoul": {
-                    },
-                    "Chengdu": {
-                    },
-                    "HongKong": {
-                    },
-                    "Shenyang": {
-                    },
-                    "Panjin": {
+                    "movement": {
+                        type: "root",
+                        children: {
+                            "Conflict": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Waterway": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Sports": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Culture": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "PaceOfLife": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Art": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Migration": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Transportation System": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Native Performance": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Night Market": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Green Initiative": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Changes": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Technology": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Evolution": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Vitality": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Travel": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Performance": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Night Life": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Traffic": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Chicago": {
+                                type: "gtheme",
+                                children: {}
+                            },
+                            "Manchester": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Beijing": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Dalian": {
+                                type: "city",
+                                children: {}
+                            },
+                            "KualaLumpur": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Seoul": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Chengdu": {
+                                type: "city",
+                                children: {}
+                            },
+                            "HongKong": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Shenyang": {
+                                type: "city",
+                                children: {}
+                            },
+                            "Panjin": {
+                                type: "city",
+                                children: {}
+                            }
+                        }
                     }
                 }
             },

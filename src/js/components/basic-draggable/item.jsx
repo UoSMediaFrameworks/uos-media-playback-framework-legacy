@@ -34,8 +34,9 @@ var itemSource = {
             var dropParentList = dropData.parentList;
             var dropParentKey = dropData.node;
             var dropSceneGraphId = dropData.sceneGraph._id;
+            var dropParentType = dropData.graphTheme.type;
             var themeId = item.name;
-            SceneGraphActions.addThemeIntoSceneGraph(dropParentList, dropParentKey, themeId, dropSceneGraphId);
+            SceneGraphActions.addThemeIntoSceneGraph(dropParentList, dropParentKey, themeId, dropSceneGraphId, dropParentType);
 
         }
     }
