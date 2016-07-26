@@ -44,7 +44,7 @@ function occurrences(string, subString, allowOverlapping){
 }
 
 var SceneTextEditor = React.createClass({
-    
+
     getHumanReadableScene: function() {
         return _.omit(this.props.scene, '_id', '_groupID');
     },
@@ -68,11 +68,17 @@ var SceneTextEditor = React.createClass({
                 // add back the id from the scene
                 newScene._id = this.props.scene._id;
                 // make sure that something changed
-                if (! _.isEqual(this.props.scene, newScene)) {
-                    SceneActions.updateScene(newScene);    
-                } 
+
+                var shouldSave = false;
+                _.forEach(this.props.scene, function(sceneObj){
+                    shouldSave = ! sceneObj.hasOwnProperty("_id");
+                });
+
+                if (! _.isEqual(this.props.scene, newScene) || shouldSave) { //TODO ensure a save occurs for scene media without id - must update view with _id
+                    SceneActions.updateScene(newScene);
+                }
                 this.setState({error: null});
-                
+
             } catch (e) {
                 if (e instanceof SyntaxError) {
                     this.setState({error: e.message});
@@ -91,17 +97,17 @@ var SceneTextEditor = React.createClass({
             mode:  'application/json',
             styleActiveLine: true
         });
-        
+
         this.document.on('blur', this.saveJSON(true));
 
         var saveTimeout;
         this.document.on('change', function(cm, changeObj) {
             // change gets called for anychange, so ignore programatic changes
-            if (changeObj.origin !== 'setValue') {
+            // if (changeObj.origin !== 'setValue') { //TODO this is blocking changes that have been added from button
                 if (saveTimeout) clearTimeout(saveTimeout);
 
-                saveTimeout = setTimeout(this.saveJSON(false), 1000);    
-            }
+                saveTimeout = setTimeout(this.saveJSON(false), 1000);
+            // }
         }.bind(this));
     },
 
@@ -120,10 +126,10 @@ var SceneTextEditor = React.createClass({
 
             } catch(e) {
                 // do nothing, just ignore updates when we have bad json
-            }    
+            }
         }
-        
-        
+
+
         if (this.props.focusedMediaObject !== prevProps.focusedMediaObject) {
             var jsonStr = this.document.getValue();
             // get index of scene property in json
@@ -137,14 +143,14 @@ var SceneTextEditor = React.createClass({
             if (openBracketIndex === -1) {
                 throw "cannot locate requested open bracket";
             }
-            
+
             jsonStr = jsonStr.substring(0, openBracketIndex);
             var lines = occurrences(jsonStr, '\n');
             var targetLine = lines + 1;
             this.document.setCursor(targetLine, 3);
             this.document.scrollIntoView({line: targetLine}, 50);
 
-            if (! this.document.hasFocus()) this.document.focus();  
+            if (! this.document.hasFocus()) this.document.focus();
         }
     },
 
