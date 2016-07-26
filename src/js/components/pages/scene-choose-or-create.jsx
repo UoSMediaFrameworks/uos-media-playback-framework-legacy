@@ -36,6 +36,30 @@ var SceneChooser = React.createClass({
                                 <li>
                                     <a href="http://uos-sceneeditor.azurewebsites.net/#/scenes/578d54eaef8cf0101bc4211f">MF Solo Example</a>
                                 </li>
+								<li>
+                                    <a href="http://uos-sceneeditor.azurewebsites.net/#/scenes/57967f9081a29c700e9dc4bf">Demo 1 Example</a>
+                                </li>
+								<li>
+                                    <a href="http://uos-sceneeditor.azurewebsites.net/#/scenes/57967a1181a29c700e9dc455">Demo 2a Example</a>
+                                </li>
+								<li>
+                                    <a href="http://uos-sceneeditor.azurewebsites.net/#/scenes/5797082a81a29c700e9dd59e">Demo 2b Example</a>
+                                </li>
+								<li>
+                                    <a href="http://uos-sceneeditor.azurewebsites.net/#/scenes/579710b481a29c700e9ddaae">Demo 2c Example</a>
+                                </li>
+								<li>
+                                    <a href="http://uos-sceneeditor.azurewebsites.net/#/scenes/5790a7e92e00bd003d640b91">Demo 3a Example</a>
+                                </li>
+								<li>
+                                    <a href="http://uos-sceneeditor.azurewebsites.net/#/scenes/57973a1981a29c700e9de55d">Demo 3b Example</a>
+                                </li>
+								<li>
+                                    <a href="http://uos-sceneeditor.azurewebsites.net/#/scenes/57967d3181a29c700e9dc482">Demo 4 Example</a>
+                                </li>
+								<li>
+                                    <a href="http://uos-sceneeditor.azurewebsites.net/#/scenes/5796838081a29c700e9dc5be">Demo 5 Example</a>
+                                </li>
                             </ul>
                         </div>
                     </div>
