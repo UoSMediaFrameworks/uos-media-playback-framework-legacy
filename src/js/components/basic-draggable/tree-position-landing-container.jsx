@@ -78,6 +78,12 @@ var TreePositionLandingContainer = React.createClass({
             iconClassNames = dropDownClassNames;
         }
 
+        var removeNodeClassNames = "glyphicon glyphicon-remove";
+
+        if(this.props.graphTheme.type !== 'stheme') {
+            removeNodeClassNames += " display-none";
+        }
+
         return connectDropTarget(
             <li style={{
                 minHeight: '30px',
@@ -89,7 +95,7 @@ var TreePositionLandingContainer = React.createClass({
                 <span className={iconClassNames}  aria-hidden="true"
                       onClick={this.handleToggleCollapse}></span>
                 <span className="node-name"> {this.props.node} </span>
-                <span className="glyphicon glyphicon-remove" onClick={this.handleRemove}></span>
+                <span className={removeNodeClassNames} onClick={this.handleRemove}></span>
                 {children}
             </li>
         );

@@ -5,3 +5,7 @@
 .Chicago, .Manchester, .Beijing, .Dalian, .KualaLumpur, .Seoul, .Chengdu, .HongKong, .Shenyang, .Panjin {
     display: none;
 }
+
+.display-none {
+    display: none;
+}
