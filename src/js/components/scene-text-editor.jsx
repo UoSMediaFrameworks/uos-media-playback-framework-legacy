@@ -46,7 +46,7 @@ function occurrences(string, subString, allowOverlapping){
 var SceneTextEditor = React.createClass({
 
     getHumanReadableScene: function() {
-        return _.omit(this.props.scene, '_id', '_groupID');
+        return _.omit(this.props.scene, '_id');
     },
 
     getSceneString: function() {
@@ -70,9 +70,13 @@ var SceneTextEditor = React.createClass({
                 // make sure that something changed
 
                 var shouldSave = false;
-                _.forEach(this.props.scene, function(sceneObj){
-                    shouldSave = ! sceneObj.hasOwnProperty("_id");
-                });
+                _.forEach(this.props.scene.scene, function(sceneObj){
+                   if(!shouldSave) {
+                       shouldSave = ! sceneObj.hasOwnProperty("_id");
+                       if(shouldSave) //Can break out of this now
+                        break;
+                   }
+               });
 
                 if (! _.isEqual(this.props.scene, newScene) || shouldSave) { //TODO ensure a save occurs for scene media without id - must update view with _id
                     SceneActions.updateScene(newScene);
