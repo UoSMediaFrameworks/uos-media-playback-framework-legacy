@@ -74,8 +74,6 @@ var SceneTextEditor = React.createClass({
 
                    if(!shouldSave) {
                        shouldSave = ! sceneObj.hasOwnProperty("_id");
-                       if(shouldSave) //Can break out of this now
-                        break;
                    }
                });
 
