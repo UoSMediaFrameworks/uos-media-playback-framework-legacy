@@ -77,7 +77,7 @@ function showThemeName (name) {
 
 function playScene (scene) {
     console.log('showing scene ' + scene.name);
-    
+
     if (scene.style) {
         $(playerElem).css(scene.style);
     }
@@ -174,7 +174,7 @@ function tryLogin (auth) {
     submitBtn.disabled = true;
     submitBtn.value = 'Logging in';
 
-    socket = io("http://localhost:3000", {forceNew: true});
+    socket = io(process.env.MEDIA_HUB, {forceNew: true});
     socket.on('connect', function() {
         var cleanup = function() {
             submitBtn.disabled = false;
