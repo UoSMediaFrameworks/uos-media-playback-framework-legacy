@@ -70,8 +70,10 @@ var SceneTextEditor = React.createClass({
                 // make sure that something changed
 
                 var shouldSave = false;
-                _.forEach(this.props.scene, function(sceneObj){
-                    shouldSave = ! sceneObj.hasOwnProperty("_id");
+                _.forEach(this.props.scene.scene, function(sceneObj){
+                    if(!shouldSave) {
+                        shouldSave = ! sceneObj.hasOwnProperty("_id");
+                    }
                 });
 
                 if (! _.isEqual(this.props.scene, newScene) || shouldSave) { //TODO ensure a save occurs for scene media without id - must update view with _id
@@ -123,7 +125,6 @@ var SceneTextEditor = React.createClass({
                 if (! _.isEqual(curScene, this.getHumanReadableScene())) {
                     this.document.setValue(this.getSceneString());
                 }
-
             } catch(e) {
                 // do nothing, just ignore updates when we have bad json
             }
