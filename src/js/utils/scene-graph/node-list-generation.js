@@ -110,7 +110,7 @@ var getSceneNodeListForSTheme = function(sceneGraph, sthemeId) {
         var sceneThemes = Object.keys(scene.themes);
 
         if(sceneThemes.indexOf(sthemeId) !== -1) {
-            sceneNameIds.push(scene.name);
+            sceneNameIds.push( { name: scene.name, _id: scene._id });
         }
     });
 
@@ -129,9 +129,9 @@ var getChildrenNodes = function(node, nodeObj, sceneGraph) {
         childObj.parentRelationshipIds.push(nodeObj._id);
 
         if(child.type === "stheme") { //if stheme attach all duplicate scene nodes - dedupe process will prune these
-            var sceneNodeIds = getSceneNodeListForSTheme(sceneGraph, childProp);
-            _.forEach(sceneNodeIds, function(sceneNode) {
-                var sceneNodeObj = createNode(sceneNode, sceneNode, [childProp], [], "scene");
+            var sceneNodeData = getSceneNodeListForSTheme(sceneGraph, childProp);
+            _.forEach(sceneNodeData, function(sceneNode) {
+                var sceneNodeObj = createNode(sceneNode._id, sceneNode.name, [childProp], [], "scene");
                 nodeList.push(sceneNodeObj);
             });
         }

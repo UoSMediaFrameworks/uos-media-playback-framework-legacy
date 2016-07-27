@@ -77,7 +77,7 @@ function showThemeName (name) {
 
 function playScene (scene) {
     console.log('showing scene ' + scene.name);
-    
+
     if (scene.style) {
         $(playerElem).css(scene.style);
     }
@@ -99,15 +99,15 @@ function playScene (scene) {
     mediaObjectQueue.setTagMatcher(new TagMatcher(themeQuery));
 
     randomVisualPlayer.start();
-    randomAudioPlayer.start(); 
+    randomAudioPlayer.start();
 }
 
 function nextScene () {
     var delay,
-        sceneToLoad = sceneList[currentSceneIndex].name;
+        sceneToLoad = sceneList[currentSceneIndex];
 
-    socket.emit('loadSceneByName', sceneToLoad, handleError(function(scene) {
-        if (scene && scene.name !== sceneList[currentSceneIndex].name) {
+    socket.emit('loadScene', sceneToLoad, handleError(function(scene) {
+        if (scene && scene._id !== sceneList[currentSceneIndex]) {
             // this handler may be triggered with older request, so make sure request is still valid for the current scene
             console.log('server responded too late with scene "' + scene.name + '", just gonna ignore it');
         } else {
@@ -115,7 +115,7 @@ function nextScene () {
                 showError('Attempted to load scene "' + sceneToLoad + '" but it could not be found.');
                 delay = 1000;
             } else {
-                playScene(scene);   
+                playScene(scene);
 
                 delay = (Number(scene.sceneTransition) || 30) * 1000;
             }
@@ -134,11 +134,11 @@ function nextScene () {
                     nextScene();
                 }, delay);
             }
-            
+
         }
 
-    }));  
-    
+    }));
+
 }
 
 function showScenes (newSceneList) {
@@ -187,14 +187,19 @@ function tryLogin (auth) {
             playerElem.style.display = 'block';
             cleanup();
 
-            socket.emit('register', getParameterByName('room'));
+            var roomId = getParameterByName('room');
+
+            socket.emit('register', "/#" + roomId);
 
             // show demo scene right out the gate
-            socket.emit('loadSceneByName', 'GUIsceneTeaser', handleError(playScene));
+            //socket.emit('loadSceneByName', 'GUIsceneTeaser', handleError(playScene)); //TODO decide if we want to load one on start
         }, cleanup));
     });
 
     socket.on('command', function(data) {
+
+        console.log("COMMAND: ", data);
+
         if (data.name === 'showScenes') {
             showScenes(data.value);
         } else {
