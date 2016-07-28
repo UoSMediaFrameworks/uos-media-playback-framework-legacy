@@ -110,7 +110,11 @@ var HubClient = {
     },
 
     saveSceneGraph: function(sceneGraph, cb) {
-        NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
+
+        if(sceneGraph._id !== "5799f99c0a2c0f6c56d0c59c") {
+            NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
+        }
+
         socket.emit('saveSceneGraph', sceneGraph, function(err, newSceneGraph) {
             if(err) {
                 HubRecieveActions.errorMessage('Couldn\'t save scene graph, please try again');
