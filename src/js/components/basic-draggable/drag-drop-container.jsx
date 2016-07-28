@@ -10,7 +10,12 @@ var ItemGroupForThemeUnion = React.createClass({
     render: function() {
 
         function renderItem(parent, property, sg, parentList) {
-            var classNames = "firstLevel " + property;
+
+            var classNames = "firstLevel ";
+            if(parent[property].type === 'city') {
+                classNames + property;
+            }
+
             return (
                 <div className={classNames}>
                     <TreePositionLandingContainer indentation="rootLevel" parent={parent} parentList={parentList} graphTheme={parent[property]} node={property} sceneGraph={sg}>
