@@ -111,7 +111,7 @@ var HubClient = {
 
     saveSceneGraph: function(sceneGraph, cb) {
 
-        if(sceneGraph._id !== "5799f99c0a2c0f6c56d0c59c") {
+        if(sceneGraph._id !== "579a2186792e8b3c827d2b15") {
             NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
         }
 
