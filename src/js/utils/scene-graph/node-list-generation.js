@@ -88,6 +88,19 @@ var getChildTypeFromParentType = function(parentType, nodeId) {
     }
 };
 
+var getChildTypeFromNodeType = function(node) {
+    switch(node.type) {
+        case 'root':
+        case 'city':
+        case 'scene':
+            return node.type;
+        case 'gtheme':
+            return 'subgraphtheme';
+        case 'stheme':
+            return 'theme';
+    }
+};
+
 var createNode = function(id, name, parentIds, childrenIds, type) {
     return {
         _id: id,
@@ -124,7 +137,7 @@ var getChildrenNodes = function(node, nodeObj, sceneGraph) {
 
     _.map(rootNodeChildren, function(childProp) {
         var child = node.children[childProp];
-        var childObj = createNode(childProp, childProp, [], [], getChildTypeFromParentType(nodeObj.type, childProp));
+        var childObj = createNode(childProp, childProp, [], [], getChildTypeFromNodeType(child));
         var childrenNodes = getChildrenNodes(child, childObj, sceneGraph);
         childObj.parentRelationshipIds.push(nodeObj._id);
 
@@ -225,5 +238,28 @@ module.exports = {
         });
 
         sceneGraph.nodeList = nodeList;
-    }
+    },
+
+    // generateNodeListForSceneGraphs: function(sceneGraphs) {
+    //     _.forEach(sceneGraphs, function(sceneGraph){
+    //         this.generateNodeListForSceneGraph(sceneGraph);
+    //     }, this);
+    //
+    //
+    //     var fullNodeList = [];
+    //
+    //
+    //     _.forEach(sceneGraphs, function(sceneGraph){
+    //
+    //         _.forEach(sceneGraph.nodeList, function(node){
+    //             fullNodeList.push(node);
+    //         });
+    //
+    //     }, this);
+    //
+    //     var dedupedFullNodeList = dedupeChildren(fullNodeList);
+    //
+    //     console.log("dedupedFullNodeList: ", dedupedFullNodeList);
+    //
+    // }
 };
