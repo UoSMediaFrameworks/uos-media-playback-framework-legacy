@@ -157,7 +157,7 @@ var SceneGraph = React.createClass({
             themeUnionForScenesInGraph: {}
         };
 
-        var sceneIds = state.sceneGraph && state.sceneGraph.sceneIds ? state.sceneGraph.sceneIds : [];
+        var sceneIds = state.sceneGraph && state.sceneGraph.sceneIds ? Object.keys(state.sceneGraph.sceneIds) : [];
         for(var sceneId in sceneIds) {
             var fullScene = SceneStore.getScene(sceneIds[sceneId]);
             if(!fullScene) {
