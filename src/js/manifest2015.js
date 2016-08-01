@@ -103,10 +103,40 @@ function playScene (scene) {
     randomAudioPlayer.start();
 }
 
+function playSceneAJFTesting (scene) { //AJF: todo: rename or remove once proper requirements elicited
+    console.log('playSceneAJFTesting: showing scene: ' + scene.name);
+
+    if (scene.style) {
+        $(playerElem).css({"background-image":"none","background-color":"black"});
+        $(playerElem).css(scene.style);
+    }
+    var name = scene.name.replace(/^GUIscene/, '').replace(/([A-Z]|[\d]+)/g, ' $1').trim();
+    sceneNameElem.textContent = name;
+
+    mediaObjectQueue.setScene(scene, {hardReset: true});
+
+    /*var themeName = getRandomThemeName(scene);
+    var themeQuery = '';
+    if (themeName) {
+        themeQuery = scene.themes[themeName];
+        showThemeName(themeName);
+    } else {
+        themeNameElem.textContent = '';
+        showThemeName('');
+    }
+	*/
+    //mediaObjectQueue.setTagMatcher(new TagMatcher(themeQuery));
+
+    randomVisualPlayer.start();
+    randomAudioPlayer.start();
+}
+
 function nextScene () {
     var delay,
         sceneToLoad = sceneList[currentSceneIndex];
-
+		
+		console.log("nextScene()");
+		
     socket.emit('loadScene', sceneToLoad, handleError(function(scene) {
         if (scene && scene._id !== sceneList[currentSceneIndex]) {
             // this handler may be triggered with older request, so make sure request is still valid for the current scene
@@ -147,13 +177,19 @@ function showScenes (newSceneList) {
         clearTimeout(sceneDisplayTimeout);
     }
 
-    if (newSceneList && newSceneList.length > 0) {
+	if(newSceneList)
+	{
+		if(newSceneList.length == 1) { //AJF: if a single scene is received then just invoke a player that plays everything.
+			sceneList=newSceneList;
+			socket.emit('loadScene', sceneList[0], handleError(function(scene) { playSceneAJFTesting(scene) }));
+		} else if (newSceneList.length > 1) {
         sceneList = _.shuffle(newSceneList);
         currentSceneIndex = 0;
         nextScene();
     } else {
         showError('No scenes attached to selected node.');
     }
+	}
 }
 
 function handleError (func, errorHandler) {
