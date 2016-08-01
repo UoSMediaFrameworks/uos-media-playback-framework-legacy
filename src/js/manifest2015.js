@@ -79,6 +79,7 @@ function playScene (scene) {
     console.log('showing scene ' + scene.name);
 
     if (scene.style) {
+        $(playerElem).css({"background-image":"none","background-color":"black"});
         $(playerElem).css(scene.style);
     }
     var name = scene.name.replace(/^GUIscene/, '').replace(/([A-Z]|[\d]+)/g, ' $1').trim();
