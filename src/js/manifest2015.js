@@ -114,6 +114,7 @@ function playSceneAJFTesting (scene) { //AJF: todo: rename or remove once proper
     sceneNameElem.textContent = name;
 
     mediaObjectQueue.setScene(scene, {hardReset: true});
+    mediaObjectQueue.setTagMatcher(new TagMatcher());
 
     /*var themeName = getRandomThemeName(scene);
     var themeQuery = '';
@@ -191,13 +192,14 @@ function showScenes (newSceneList) {
 		if(newSceneList.length == 1) { //AJF: if a single scene is received then just invoke a player that plays everything.
 			sceneList=newSceneList;
 			socket.emit('loadScene', sceneList[0], handleError(function(scene) { playSceneAJFTesting(scene) }));
-		} else if (newSceneList.length > 1) {
-        sceneList = _.shuffle(newSceneList);
-        currentSceneIndex = 0;
-        nextScene();
-    } else {
-        showError('No scenes attached to selected node.');
-    }
+		} else if (
+            newSceneList.length > 1) {
+            sceneList = _.shuffle(newSceneList);
+            currentSceneIndex = 0;
+            nextScene();
+        } else {
+            showError('No scenes attached to selected node.');
+        }
 	}
 }
 
