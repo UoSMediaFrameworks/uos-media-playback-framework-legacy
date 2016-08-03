@@ -115,6 +115,8 @@ function playSceneAJFTesting (scene) { //AJF: todo: rename or remove once proper
 
     mediaObjectQueue.setScene(scene, {hardReset: true});
     mediaObjectQueue.setTagMatcher(new TagMatcher());
+    themeNameElem.textContent = '';
+    showThemeName('');
 
     /*var themeName = getRandomThemeName(scene);
     var themeQuery = '';
