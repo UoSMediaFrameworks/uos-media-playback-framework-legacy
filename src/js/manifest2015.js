@@ -79,7 +79,7 @@ function playScene (scene) {
     console.log('showing scene ' + scene.name);
 
     if (scene.style) {
-        $(playerElem).css({"background-image":"none","background-color":"black"});
+        $(playerElem).removeAttr('style');
         $(playerElem).css(scene.style);
     }
     var name = scene.name.replace(/^GUIscene/, '').replace(/([A-Z]|[\d]+)/g, ' $1').trim();
@@ -134,9 +134,9 @@ function playSceneAJFTesting (scene) { //AJF: todo: rename or remove once proper
 function nextScene () {
     var delay,
         sceneToLoad = sceneList[currentSceneIndex];
-		
+
 		console.log("nextScene()");
-		
+
     socket.emit('loadScene', sceneToLoad, handleError(function(scene) {
         if (scene && scene._id !== sceneList[currentSceneIndex]) {
             // this handler may be triggered with older request, so make sure request is still valid for the current scene
