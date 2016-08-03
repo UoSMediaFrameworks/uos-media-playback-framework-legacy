@@ -131,11 +131,14 @@ function playSceneAJFTesting (scene) { //AJF: todo: rename or remove once proper
     randomAudioPlayer.start();
 }
 
-function nextScene () {
+function nextScene() {
     var delay,
         sceneToLoad = sceneList[currentSceneIndex];
 
 		console.log("nextScene()");
+
+		console.log("sceneList.length: " + sceneList.length);
+		console.log("currentSceneIndex: " + currentSceneIndex);
 
     socket.emit('loadScene', sceneToLoad, handleError(function(scene) {
         if (scene && scene._id !== sceneList[currentSceneIndex]) {
@@ -148,20 +151,26 @@ function nextScene () {
             } else {
                 playScene(scene);
 
-                delay = (Number(scene.sceneTransition) || 30) * 1000;
+                delay = (Number(scene.sceneTransition) || 15) * 1000;
             }
 
+			console.log("nextScene(), delay: " + delay);
+
             if (sceneList.length > 1) {
+				console.log("Incrementing");
                 currentSceneIndex++;
                 // loop back to beginning when we reach the end
-                if (currentSceneIndex === sceneList.length) {
+                if (currentSceneIndex == sceneList.length) {
+					console.log("Setting currentSceneIndex = 0");
                     currentSceneIndex = 0;
                 }
 
                 if (sceneDisplayTimeout) {
+					console.log("calling clearTimeout(sceneDisplayTimeout)");
                     clearTimeout(sceneDisplayTimeout);
                 }
                 sceneDisplayTimeout = setTimeout(function() {
+					console.log("calling nextScene()");
                     nextScene();
                 }, delay);
             }
