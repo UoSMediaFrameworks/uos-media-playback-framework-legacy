@@ -107,7 +107,7 @@ function playSceneAJFTesting (scene) { //AJF: todo: rename or remove once proper
     console.log('playSceneAJFTesting: showing scene: ' + scene.name);
 
     if (scene.style) {
-        $(playerElem).css({"background-image":"none","background-color":"black"});
+        $(playerElem).removeAttr('style');
         $(playerElem).css(scene.style);
     }
     var name = scene.name.replace(/^GUIscene/, '').replace(/([A-Z]|[\d]+)/g, ' $1').trim();
@@ -228,9 +228,10 @@ function tryLogin (auth) {
         };
 
         socket.emit('auth', auth, handleError(function(token) {
+            console.log('Logged in: ' + token)
             localStorage.setItem('token', token);
             login.style.opacity = 0;
-            playerElem.style.display = 'block';
+            playerElem.className = 'player-on'
             cleanup();
 
             var roomId = getParameterByName('room');

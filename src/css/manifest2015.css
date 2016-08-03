@@ -2,16 +2,16 @@ html, body, #login, #player {
     height: 100%;
     /* for some reason vimeo embeds break down when you add them anywhere but
        document.body to trigger preloading (we later move them to the player element),
-       so I have to hide overflow so scroll bars don't show for that brief moment when 
+       so I have to hide overflow so scroll bars don't show for that brief moment when
        the vimeo iframe is directly in the body */
     overflow: hidden;
 }
 
 #login {
-    
+
 }
 
-#player {
+.player-off {
 	position: absolute;
 	top: 0;
 	bottom: 0;
@@ -25,8 +25,25 @@ html, body, #login, #player {
     -o-transition: background-color 1000ms linear;
     -ms-transition: background-color 1000ms linear;
     transition: background-color 1000ms linear;
+    display:none;
+}
 
-    display: none;
+
+.player-on {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    background-color: black;
+
+    -webkit-transition: background-color 1000ms linear;
+    -moz-transition: background-color 1000ms linear;
+    -o-transition: background-color 1000ms linear;
+    -ms-transition: background-color 1000ms linear;
+    transition: background-color 1000ms linear;
+    display:block;
 }
 
 .info-box {
@@ -44,7 +61,7 @@ html, body, #login, #player {
 }
 
 #theme-name {
-    border-top-left-radius: 6px;   
+    border-top-left-radius: 6px;
     right: 0px;
     display: none;
 }
