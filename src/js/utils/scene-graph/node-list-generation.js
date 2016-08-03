@@ -161,7 +161,8 @@ var findChildrenByChild = function(searchChild, children) {
     var duplicateChildren = [];
 
     _.forEach(children, function(child) {
-        if(child._id === searchChild._id)
+
+        if(child._id === searchChild._id &&  getChildTypeFromNodeType(child.type) === searchChild.type)
             duplicateChildren.push(child);
     });
 
