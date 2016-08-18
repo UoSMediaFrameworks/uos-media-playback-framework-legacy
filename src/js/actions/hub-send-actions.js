@@ -149,7 +149,11 @@ module.exports = {
                             "Panjin": {
                                 type: "city",
                                 children: {}
-                            }
+                            },
+                            "GDC Experience": {
+                                type: "gtheme",
+                                children: {}
+                            },
                         }
                     },
                     "people": {
@@ -274,7 +278,11 @@ module.exports = {
                             "Panjin": {
                                 type: "city",
                                 children: {}
-                            }
+                            },
+                            "GDC Experience": {
+                                type: "gtheme",
+                                children: {}
+                            },
                         }
                     },
                     "movement": {
