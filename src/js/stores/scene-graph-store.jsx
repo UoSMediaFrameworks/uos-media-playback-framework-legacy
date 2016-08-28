@@ -12,10 +12,23 @@ var ConnectionCache = require('../utils/connection-cache');
 var CHANGE_EVENT = "change";
 var _sceneGraphs = {};
 
+/**
+ * Update local cache _sceneGraphs for a scene graph
+ * @param sceneGraph
+ * @private
+ */
 function _updateSceneGraph (sceneGraph) {
     _sceneGraphs[sceneGraph._id] = sceneGraph;
 }
 
+/**
+ * Adds a new scene to a scene graph
+ *
+ * Maps all sthemes for the new scene into the appriopriate city nodes :: GDC 2016
+ * @param sceneGraphId
+ * @param sceneId
+ * @private
+ */
 function _addSceneToSceneGraph (sceneGraphId, sceneId) {
     console.log("_addSceneToSceneGraph: [sceneGraphId: " + sceneGraphId + ", sceneId: " + sceneId + "]");
 
@@ -33,13 +46,13 @@ function _addSceneToSceneGraph (sceneGraphId, sceneId) {
         }
     }
 
-    //Hack to get the city node name from login session
+    //Hack to get the city node name from login session :: GDC 2016
     var sceneCity = ConnectionCache.getShortGroupName(ConnectionCache.getGroupID());
     sceneCity = sceneCity.split(' ').join('');
 
     console.log("The scene city found: ", sceneCity);
 
-    //For each root node, find the city node then add each new theme as child
+    //For each root node, find the city node then add each new theme as child  :: GDC 2016
     _.forEach(Object.keys(_sceneGraphs[sceneGraphId].graphThemes.children), function(rootNodeProperty){
         var rootNode =  _sceneGraphs[sceneGraphId].graphThemes.children[rootNodeProperty];
 
@@ -60,6 +73,12 @@ function _addSceneToSceneGraph (sceneGraphId, sceneId) {
     _sceneGraphs[sceneGraphId].sceneIds[sceneId] = sceneId;
 }
 
+/**
+ * Recursively processes the data structure to remove themeIds for sthemes only
+ * @param currentNode
+ * @param themeIdsToRemove
+ * @private
+ */
 function _removeThemesForNode (currentNode, themeIdsToRemove) {
 
     console.log("ThemeIdsToRemove: ", themeIdsToRemove);
@@ -86,6 +105,15 @@ function _removeThemesFromStructureForSceneRemoval (sceneGraph, themeIdsToRemove
     console.log("_removeThemesFromStructureForSceneRemoval", sceneGraph.graphThemes)
 }
 
+
+/**
+ * Removes a scene from a scene graph
+ *
+ * Further processes the scene being removed to remove all sthemes from the data structure :: GDC 2016
+ * @param sceneGraphId
+ * @param sceneId
+ * @private
+ */
 function _removeSceneFromSceneGraph (sceneGraphId, sceneId) {
     var sceneGraph = _.cloneDeep(_sceneGraphs[sceneGraphId]);
 
@@ -122,6 +150,14 @@ function _removeSceneFromSceneGraph (sceneGraphId, sceneId) {
     delete _sceneGraphs[sceneGraphId].sceneIds[sceneId];
 }
 
+/**
+ * Excludes a theme from the scene graph
+ *
+ * Further removes the theme from the data structure - clean up of auto mapping to city nodes :: GDC 2016
+ * @param sceneGraphId
+ * @param themeId
+ * @private
+ */
 function _addThemeExclusion (sceneGraphId, themeId) {
     console.log("_addThemeExclusion: ", { sceneGraphId: sceneGraphId, themeId: themeId});
 
@@ -135,6 +171,14 @@ function _addThemeExclusion (sceneGraphId, themeId) {
 
 }
 
+/**
+ * Removes a theme excludes
+ * 
+ * Further adds the theme back into the scene graph for the city mapping :: GDC 2016
+ * @param sceneGraphId
+ * @param themeId
+ * @private
+ */
 function _deleteThemeExclusion (sceneGraphId, themeId) {
     console.log("_deleteThemeExclusion: ", { sceneGraphId: sceneGraphId, themeId: themeId});
 
@@ -161,7 +205,14 @@ function _deleteThemeExclusion (sceneGraphId, themeId) {
     delete _sceneGraphs[sceneGraphId].excludedThemes[themeId];
 }
 
-
+/**
+ * Ensures all gthemes have correct children for new child
+ * @param node
+ * @param gThemeId
+ * @param newThemeId
+ * @param parentType
+ * @private
+ */
 function _addChildForEachGTheme(node, gThemeId, newThemeId, parentType) {
 
     _.forEach(Object.keys(node.children), function(childProperty){

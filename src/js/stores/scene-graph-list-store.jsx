@@ -12,15 +12,12 @@ var _sceneGraphs = {};
 
 function _addSceneGraphs (sceneGraphs) {
 
-    console.log("addSceneGraphs: ", sceneGraphs);
-
     sceneGraphs.forEach(function(sceneGraph) {
         if (!_sceneGraphs[sceneGraph._id]) {
             _sceneGraphs[sceneGraph._id] = sceneGraph;
         }
     });
 
-    console.log("Stores cache of graphs: ", _sceneGraphs);
 }
 
 function _updateSceneGraph (sceneGraph) {

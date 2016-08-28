@@ -88,6 +88,12 @@ var getChildTypeFromParentType = function(parentType, nodeId) {
     }
 };
 
+/**
+ * Parses the node instance to return type for graph naming type
+ *  TODO: Update D3 graph to use same node types and this process is not required
+ * @param node
+ * @returns {*}
+ */
 var getChildTypeFromNodeType = function(node) {
     switch(node.type) {
         case 'root':
@@ -101,6 +107,15 @@ var getChildTypeFromNodeType = function(node) {
     }
 };
 
+/**
+ * Simple node instance creation
+ * @param id
+ * @param name
+ * @param parentIds
+ * @param childrenIds
+ * @param type
+ * @returns {{_id: *, name: *, type: *, parentRelationshipIds: *, childrenRelationshipIds: *}}
+ */
 var createNode = function(id, name, parentIds, childrenIds, type) {
     return {
         _id: id,
@@ -111,6 +126,12 @@ var createNode = function(id, name, parentIds, childrenIds, type) {
     }
 };
 
+/**
+ * Generates the list of scene name and id objects for each scene within the scene graph that features the given stheme
+ * @param sceneGraph
+ * @param sthemeId
+ * @returns {Array}
+ */
 var getSceneNodeListForSTheme = function(sceneGraph, sthemeId) {
 
     var sceneNameIds = [];
@@ -141,7 +162,7 @@ var getChildrenNodes = function(node, nodeObj, sceneGraph) {
         var childrenNodes = getChildrenNodes(child, childObj, sceneGraph);
         childObj.parentRelationshipIds.push(nodeObj._id);
 
-        if(child.type === "stheme") { //if stheme attach all duplicate scene nodes - dedupe process will prune these
+        if(child.type === "stheme") { //if stheme attach all duplicate scene leaf nodes - dedupe process will prune these - as scenes are not provided in the document data structure
             var sceneNodeData = getSceneNodeListForSTheme(sceneGraph, childProp);
             _.forEach(sceneNodeData, function(sceneNode) {
                 var sceneNodeObj = createNode(sceneNode._id, sceneNode.name, [childProp], [], "scene");
@@ -157,6 +178,12 @@ var getChildrenNodes = function(node, nodeObj, sceneGraph) {
     return rootNodeChildren;
 };
 
+/**
+ * Resolve a list of duplicate chlidren within a nodes children
+ * @param searchChild
+ * @param children
+ * @returns {Array}
+ */
 var findChildrenByChild = function(searchChild, children) {
     var duplicateChildren = [];
 

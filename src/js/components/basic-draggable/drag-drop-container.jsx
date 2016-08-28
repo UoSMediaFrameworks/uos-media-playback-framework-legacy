@@ -15,6 +15,8 @@ var ItemGroupForThemeUnion = React.createClass({
             if(parent[property].type === 'city') {
                 classNames + property;
             }
+            
+            //city is added to the class name to allow css hiding.  This is to ensure city logins do not have direct access to city nodes in the drag drop structure :: GDC 2016
 
             return (
                 <div className={classNames}>
