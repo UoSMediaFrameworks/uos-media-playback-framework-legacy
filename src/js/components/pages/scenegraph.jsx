@@ -140,8 +140,23 @@ var SceneGraph = React.createClass({
 
     mixins: [Router.State, Authentication],
 
+    loadAllScenesForSceneGraph: function(sceneGraph) {
+
+        var sceneIds = sceneGraph && sceneGraph.sceneIds ? Object.keys(sceneGraph.sceneIds) : [];
+
+        for(var sceneId in sceneIds) {
+            HubSendActions.loadScene(sceneIds[sceneId]);
+        }
+
+    },
+
     getStateFromStores: function() {
         var sceneGraph = SceneGraphStore.getSceneGraph(this.getParams().id);
+
+        if(sceneGraph && ! this.state.sceneGraph) {
+            this.loadAllScenesForSceneGraph(sceneGraph);
+        }
+
         var selectedScene = SceneStore.getScene(_selectedSceneForRemoval);
 
         var state = {
@@ -158,11 +173,10 @@ var SceneGraph = React.createClass({
         };
 
         var sceneIds = state.sceneGraph && state.sceneGraph.sceneIds ? Object.keys(state.sceneGraph.sceneIds) : [];
+
         for(var sceneId in sceneIds) {
             var fullScene = SceneStore.getScene(sceneIds[sceneId]);
-            if(!fullScene) {
-                HubSendActions.loadScene(sceneIds[sceneId]);
-            } else {
+            if(fullScene) {
                 state.storedFullScenes.push(fullScene);
             }
         }
