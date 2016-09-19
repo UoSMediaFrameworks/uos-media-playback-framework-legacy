@@ -460,5 +460,14 @@ module.exports = {
         var AppRouter = require('../app-router.jsx');
         AppRouter.transitionTo('scenes');
     },
+    deleteSceneGraph: function(sceneGraphId) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.DELETE_SCENE_GRAPH,
+            sceneGraphId: sceneGraphId
+        });
+
+        var AppRouter = require('../app-router.jsx');
+        AppRouter.transitionTo('scenegraphs');
+    },
     unsubscribeScene: HubClient.unsubscribeScene
 };

@@ -53,7 +53,6 @@ var SceneGraphListStore = assign({}, EventEmitter.prototype, {
 
     dispatcherIndex: AppDispatcher.register(function(payload){
         var action = payload.action; // this is our action from handleViewAction
-        var sceneGraph;
         switch(action.type){
             //TODO new action types
             case ActionTypes.RECEIVE_SCENE_GRAPH_LIST:
@@ -63,6 +62,10 @@ var SceneGraphListStore = assign({}, EventEmitter.prototype, {
                 break;
             case ActionTypes.RECEIVE_SCENE_GRAPH:
                 _updateSceneGraph(action.sceneGraph);
+                SceneGraphListStore.emitChange();
+                break;
+            case ActionTypes.DELETE_SCENE_GRAPH:
+                delete _sceneGraphs[action.sceneGraphId];
                 SceneGraphListStore.emitChange();
                 break;
         }

@@ -136,6 +136,14 @@ var HubClient = {
         });
     },
 
+    deleteSceneGraph: function(id) {
+        socket.emit('deleteSceneGraph', id, function(err){
+            if(err) {
+                HubRecieveActions.errorMessage('Couldn\'t delete scene graph, please try again');
+            }
+        });
+    },
+
     subscribeScene: function(id) {
         // no confirmation handler as of yet
         socket.emit('subScene', id, function(err, scene) {

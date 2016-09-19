@@ -173,7 +173,7 @@ function _addThemeExclusion (sceneGraphId, themeId) {
 
 /**
  * Removes a theme excludes
- * 
+ *
  * Further adds the theme back into the scene graph for the city mapping :: GDC 2016
  * @param sceneGraphId
  * @param themeId
@@ -345,6 +345,10 @@ var SceneGraphStore = assign({}, EventEmitter.prototype, {
                 _deleteThemeFromSceneGraphStructure(action.sceneGraphId, action.themeId, action.parentList, action.parentKey);
                 var sceneGraph = _sceneGraphs[action.sceneGraphId];
                 HubClient.saveSceneGraph(sceneGraph);
+                break;
+            case ActionTypes.DELETE_SCENE_GRAPH:
+                delete _sceneGraphs[action.sceneGraphId];
+                HubClient.deleteSceneGraph(action.sceneGraphId);
                 break;
         }
 

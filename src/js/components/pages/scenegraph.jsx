@@ -246,6 +246,12 @@ var SceneGraph = React.createClass({
         _selectedSceneForRemoval = undefined;
     },
 
+    deleteSceneGraphHandler: function(event) {
+        if(confirm('Deleting a scene graph is a permament operation.\n\nAre you sure?')) {
+            HubSendActions.deleteSceneGraph(this.state.sceneGraph._id);
+        }
+    },
+
     render: function() {
 
         var sceneGraphId = this.state.sceneGraph ? this.state.sceneGraph._id : "";
@@ -254,6 +260,11 @@ var SceneGraph = React.createClass({
 
         return (
             <div className="container scene-graph">
+
+                <div className='scene-controls' style={{margin: '10px'}}>
+                    <button className='btn' onClick={this.deleteSceneGraphHandler}>Delete Scene Graph</button>
+                </div>
+
                 <div className="row">
                     <div className="col-md-12">
                         <Link className='btn' to='scenegraphs'>&lt; Back to Scene Graph List</Link>
