@@ -9,7 +9,7 @@ module.exports = MediaObject;
 
 function MediaObject (obj, ops) {
     this._obj = obj || {};
-
+    this.style = this._obj.style || {};
     this.tags = this._obj.tags ? parseTagString(this._obj.tags) : [];
     this.type = this._obj.type;
     this._playing = false;
@@ -31,17 +31,17 @@ MediaObject.prototype.transition = function() {
         this.emit('transition', this);
 
         setTimeout(function() {
-            this.emit('done', this);    
-        }.bind(this), this._ops.transitionDuration);    
-    }    
+            this.emit('done', this);
+        }.bind(this), this._ops.transitionDuration);
+    }
 };
 
 // triggers a hard stop
 MediaObject.prototype.stop = function() {
     if (this._playing) {
         this._playing = false;
-        this.emit('transition', this);    
-        this.emit('done', this);    
-    }    
+        this.emit('transition', this);
+        this.emit('done', this);
+    }
 };
 

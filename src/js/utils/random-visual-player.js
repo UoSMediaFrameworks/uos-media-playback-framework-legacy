@@ -12,6 +12,9 @@ function RandomVisualPlayer (stageElement, queue) {
     var showMedia = variableThrottle(function() {
         _.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject], function(moType) {
             var obj = queue.take([moType]);
+
+            var style = obj ? obj.style : {};
+
             if (obj) {
                 obj.on('done', moDoneHandler);
                 obj.on('transition', moTransitionHandler);
@@ -19,8 +22,9 @@ function RandomVisualPlayer (stageElement, queue) {
                 obj.makeElement(function() {
                     obj.onReady(function() {
                         if (obj instanceof ImageMediaObject || obj instanceof TextMediaObject) {
+                            addStyle(obj.element, style);
                             stageElement.appendChild(obj.element);
-                            placeAtRandomPosition(obj.element);
+                            placeAtRandomPosition(obj.element); //CAN ADD STYLE LIKE IN THIS METHOD
                         }
 
                         obj.play();
@@ -29,10 +33,10 @@ function RandomVisualPlayer (stageElement, queue) {
 
                     if (obj instanceof VideoMediaObject) {
                         stageElement.appendChild(obj.element);
-                        placeAtRandomPosition(obj.element);    
+                        placeAtRandomPosition(obj.element);
                     }
                 });
-            }    
+            }
         });
     }, function() {
         return queue.displayInterval;
@@ -55,6 +59,12 @@ function RandomVisualPlayer (stageElement, queue) {
         element.style.top = calcDimension('clientHeight', element);
     }
 
+    function addStyle(element, style) {
+        _.forEach(Object.keys(style), function(styleKey) {
+            element.style[styleKey] = style[styleKey];
+        });
+    }
+
     this.setMediaObjectQueue = function(newQueue) {
         queue = newQueue;
     };
@@ -63,7 +73,7 @@ function RandomVisualPlayer (stageElement, queue) {
         mediaObject.removeListener('done', moDoneHandler);
         if (mediaObject.element) {
             if (mediaObject.element.parentElement === stageElement) {
-                stageElement.removeChild(mediaObject.element);    
+                stageElement.removeChild(mediaObject.element);
             } else {
                 console.log('mediaObject.element is not currently on the stage, should not have triggered moDoneHandler');
                 console.log('element parent is ', mediaObject.element.parentElement);
@@ -76,7 +86,7 @@ function RandomVisualPlayer (stageElement, queue) {
 
     function moTransitionHandler (mediaObject) {
         mediaObject.removeListener('transition', moTransitionHandler);
-        // sometimes things can still be loading so, make sure there's an element 
+        // sometimes things can still be loading so, make sure there's an element
         if (mediaObject.element) {
             mediaObject.element.classList.remove('show-media-object');
         }

@@ -37,7 +37,10 @@ var SceneActions = {
         SceneActions.addMediaObject(sceneId, {
             tags: '',
             type: 'text',
-            text: text
+            text: text,
+            style: {
+                'z-index': '1'
+            }
         });
 
         AppDispatcher.handleServerAction({
@@ -63,7 +66,10 @@ var SceneActions = {
                     type: 'video',
                     volume: 100,
                     url: vimeoUrl,
-                    tags: tags
+                    tags: tags,
+                    style: {
+                        'z-index': '1'
+                    }
                 });
 
                 AppDispatcher.handleServerAction({
@@ -90,7 +96,10 @@ var SceneActions = {
                 type: 'audio',
                 volume: 100,
                 url: soundCloudUrl,
-                tags: tags
+                tags: tags,
+                style: {
+                    'z-index': '1'
+                }
             });
         });
     },
@@ -164,7 +173,10 @@ var SceneActions = {
                 SceneActions.addMediaObject(sceneId, {
                     type: 'image',
                     url: data.url,
-                    tags: data.tags
+                    tags: data.tags,
+                    style: {
+                        'z-index': '1'
+                    }
                 });
             }
         });
