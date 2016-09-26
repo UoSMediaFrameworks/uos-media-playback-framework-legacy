@@ -1,6 +1,7 @@
 'use strict';
 
 var React = require('react');
+var ReactDOM = require('react-dom');
 var Spinner = require('spin.js');
 
 var Loader = React.createClass({
@@ -69,7 +70,7 @@ var Loader = React.createClass({
     spin: function () {
       if (this.isMounted() && !this.state.loaded) {
         var spinner = new Spinner(this.state.options);
-        var target = this.refs.loader.getDOMNode();
+        var target = ReactDOM.findDOMNode(this);
 
         // clear out any other spinners from previous renders
         target.innerHTML = '';
@@ -83,11 +84,11 @@ var Loader = React.createClass({
       if (this.state.loaded) {
         return ( <div className={klass} key="content">{this.props.children}</div> );
       } else {
-        return ( 
+        return (
         	<div>
         		<div key="loader" ref="loader" className={klass}></div>
         		<p className='loader-text'>{this.props.message}</p>
-        	</div> 
+        	</div>
         );
       }
     }

@@ -1,4 +1,8 @@
 'use strict';
+
+
+//APEP: DEPCREATED - Not valid for new react version with update of version.
+
 var React = require('react');
 var Router = require('react-router');
 var IndexApp = require('./components/index-app.jsx');
@@ -11,7 +15,6 @@ var Route = Router.Route,
     RouteHandler = Router.RouteHandler,
     DefaultRoute = Router.DefaultRoute,
     Link = Router.Link;
-
 
 var routes = (
     <Route handler={IndexApp}>

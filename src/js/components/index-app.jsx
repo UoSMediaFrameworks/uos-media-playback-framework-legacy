@@ -72,7 +72,7 @@ var App = React.createClass({
 
                 </div>
                 <Loader message='Logging in...' loaded={! this.state.attemptingLogin}>
-                    <RouteHandler key='handler' />
+                    {this.props.children}
                 </Loader>
 
             </div>
