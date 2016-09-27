@@ -7,6 +7,7 @@ var ReactDOM = require('react-dom');
 var Routing = require('react-router');
 var Router = require('react-router').Router;
 var Route = require('react-router').Route;
+var hashHistory = require('react-router').hashHistory;
 var Link = require('react-router').Link;
 
 var HubSendActions = require('./actions/hub-send-actions');
@@ -23,14 +24,14 @@ var SceneGraph = require('./components/pages/scenegraph.jsx');
 // login with localStorage creds if possible
 HubSendActions.tryTokenLogin();
 
-ReactDOM.render((<Router>
-    <Route component={IndexApp}>
+ReactDOM.render((<Router history={hashHistory}>
+    <Route component={IndexApp} >
         <Route path='/' component={SceneChooser} />
-        <Route name='login' path='/login/?' component={LoginPage} />
-        <Route name='scenes' path='/scenes/?' component={SceneChooser} />
-        <Route name='scene' path='/scenes/:id' component={Scene} />
-        <Route name='scenegraphs' path='/scenegraphs/?' component={SceneGraphChooser} />
-        <Route name='scenegraph' path='/scenegraph/:id' component={SceneGraph} />
+        <Route name='login' path='login/?' component={LoginPage} />
+        <Route name='scenes' path='scenes/?' component={SceneChooser} />
+        <Route name='scene' path='scenes/:id' component={Scene} />
+        <Route name='scenegraphs' path='scenegraphs' component={SceneGraphChooser} />
+        <Route name='scenegraph' path='scenegraph/:id' component={SceneGraph} />
     </Route>
 </Router>), document.getElementById('main'));
 

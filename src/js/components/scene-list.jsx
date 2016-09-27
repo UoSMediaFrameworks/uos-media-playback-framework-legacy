@@ -24,11 +24,11 @@ var SceneList = React.createClass({
     componentDidMount: function() {
         SceneListStore.addChangeListener(this._onChange);
     },
-    
+
     componentWillUnmount: function() {
         SceneListStore.removeChangeListener(this._onChange);
     },
-    
+
     _onChange: function() {
         this.setState(_getState());
     },
@@ -37,7 +37,7 @@ var SceneList = React.createClass({
         var links = this.state.scenes.map(function(scene) {
             return (
                 <li key={scene._id}>
-                    <Link to='scene' params={{id: scene._id}}>{ ConnectionCache.getGroupID()==0 ? ConnectionCache.getShortGroupName(scene._groupID) + ' - ' + scene.name : scene.name }</Link>
+                    <Link to={'scene/' + scene._id}>{ ConnectionCache.getGroupID()==0 ? ConnectionCache.getShortGroupName(scene._groupID) + ' - ' + scene.name : scene.name }</Link>
                 </li>
             );
         });

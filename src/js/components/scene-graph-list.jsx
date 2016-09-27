@@ -35,7 +35,7 @@ var SceneGraphList = React.createClass({
         var links = this.state.sceneGraphs.map(function(sceneGraph) {
             return (
                 <li key={sceneGraph._id}>
-                    <Link to='scenegraph' params={{id: sceneGraph._id}}>{sceneGraph.name}</Link>
+                    <Link to={'/scenegraph/' + sceneGraph._id}>{sceneGraph.name}</Link>
                 </li>
             );
         });

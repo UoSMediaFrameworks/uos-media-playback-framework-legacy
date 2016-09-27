@@ -1,16 +1,18 @@
 'use strict';
 
+var ReactDOM = require('react-dom');
+
 module.exports = {
-	
+
 	getRefNode: function(name) {
-		return this.refs[name].getDOMNode();
+        return ReactDOM.findDOMNode(this.refs[name]);
 	},
 
 	getRefVal: function(name) {
-		return this.refs[name].getDOMNode().value;
+        return ReactDOM.findDOMNode(this.refs[name]).value;
 	},
 
 	setRefVal: function(name, value) {
-		this.refs[name].getDOMNode.value = value;
+        ReactDOM.findDOMNode(this.refs[name]).value = value;
 	}
 };
