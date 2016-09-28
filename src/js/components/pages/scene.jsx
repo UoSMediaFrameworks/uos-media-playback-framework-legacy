@@ -19,56 +19,70 @@ var MediaPreviewComponent =  require('../scene-editor/media-preview-player.jsx')
 var Router = require('react-router'),
     Link = Router.Link;
 
+var SceneMonacoTextEditor = require('../scene-monaco-text-editor.jsx');
+
 
 var Scene = React.createClass({
 
     mixins: [Router.State, Authentication],
 
-    getStateFromStores: function () {
+    getStateFromStores: function() {
+
+        //TODO fix this hack when componentDidMount works...
+        if(SceneStore.getScene(this.props.params.id) === undefined) {
+            SceneStore.addChangeListener(this._onChange);
+            HubSendActions.loadScene(this.props.params.id);
+        }
+
         return {
-            scene: SceneStore.getScene(this.getParams().id),
+            scene: SceneStore.getScene(this.props.params.id),
         };
     },
 
-    componentDidMount: function () {
+    componentDidMount:function(){
+
+        //TODO FIX THIS NOW WORKING
+
+        console.log("componentDidMount - SCENE - HERRE");
+
         SceneStore.addChangeListener(this._onChange);
-        HubSendActions.loadScene(this.getParams().id);
+        HubSendActions.loadScene(this.props.params.id);
     },
 
-    componentWillUnmount: function () {
+    componentWillUnmount: function() {
         SceneStore.removeChangeListener(this._onChange);
     },
 
-    _onChange: function () {
+    _onChange:function(){
         this.setState(this.getStateFromStores());
     },
 
-    getInitialState: function () {
+    getInitialState: function() {
         return _.extend(this.getStateFromStores(), {
             focusedMediaObject: null
         });
     },
 
-    fileHandler: function (fileList) {
+    fileHandler: function(fileList) {
         for (var i = 0; i < fileList.length; i++) {
             SceneActions.uploadAsset(this.state.scene._id, fileList[i]);
         }
     },
 
-    deleteSceneHandler: function (event) {
+    deleteSceneHandler: function(event) {
         if (confirm('Deleting a scene will remove all associated images and tags.\n\nAre you sure?')) {
             HubSendActions.deleteScene(this.state.scene._id);
         }
     },
 
-    thumbClickHandler: function (index) {
+    thumbClickHandler: function(index) {
         this.setState({focusedMediaObject: index});
     },
 
-    render: function () {
+    render: function() {
 
 
-        var viewerUrl = '/viewer.html#/scenes/' + this.getParams().id;
+        var viewerUrl = '/viewer.html#/scenes/' + this.props.params.id;
 
         return (
             <DropZone className='flex-container' handler={this.fileHandler}>
@@ -86,21 +100,19 @@ var Scene = React.createClass({
                     </Loader>
                 </div>
 
-                <AddMediaObject scene={this.state.scene}/>
+                <AddMediaObject scene={this.state.scene} />
 
                 <div className="thumbs-and-json">
-                    <div className="flex-container">
-                        <MediaObjectList focusHandler={this.thumbClickHandler}
-                                         scene={this.state.scene}/>
+                    <MediaObjectList focusHandler={this.thumbClickHandler}
+                     scene={this.state.scene} />
 
-                        <MediaPreviewComponent  focusedMediaObject={this.state.focusedMediaObject} scene={this.state.scene}  />
-                    </div>
-                    <SceneTextEditor focusedMediaObject={this.state.focusedMediaObject}
-                                     scene={this.state.scene || {} }/>
+                    <MediaPreviewComponent  focusedMediaObject={this.state.focusedMediaObject} scene={this.state.scene}  />
+                    <SceneMonacoTextEditor/>
+
 
                 </div>
                 <TagUnion scene={this.state.scene}
-                          focusedMediaObject={this.state.focusedMediaObject}/>
+                 focusedMediaObject={this.state.focusedMediaObject}/>
             </DropZone>
         );
     }
