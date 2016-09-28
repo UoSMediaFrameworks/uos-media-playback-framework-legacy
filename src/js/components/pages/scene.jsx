@@ -15,7 +15,6 @@ var TagUnion = require('../tag-union.jsx');
 var Router = require('react-router');
 var DropZone = require('../drop-zone.jsx');
 var AddMediaObject = require('../scene-editor/add-media-object.jsx');
-var MediaPreviewComponent =  require('../scene-editor/media-preview-player.jsx');
 var Router = require('react-router'),
     Link = Router.Link;
 
@@ -27,29 +26,17 @@ var Scene = React.createClass({
     mixins: [Router.State, Authentication],
 
     getStateFromStores: function() {
-
-        //TODO fix this hack when componentDidMount works...
-        if(SceneStore.getScene(this.props.params.id) === undefined) {
-            SceneStore.addChangeListener(this._onChange);
-            HubSendActions.loadScene(this.props.params.id);
-        }
-
         return {
             scene: SceneStore.getScene(this.props.params.id),
         };
     },
 
     componentDidMount:function(){
-
-        //TODO FIX THIS NOW WORKING
-
-        console.log("componentDidMount - SCENE - HERRE");
-
-        SceneStore.addChangeListener(this._onChange);
         HubSendActions.loadScene(this.props.params.id);
+        SceneStore.addChangeListener(this._onChange);
     },
 
-    componentWillUnmount: function() {
+    onWillUnmount: function() {
         SceneStore.removeChangeListener(this._onChange);
     },
 
@@ -107,7 +94,9 @@ var Scene = React.createClass({
                      scene={this.state.scene} />
 
                     <MediaPreviewComponent  focusedMediaObject={this.state.focusedMediaObject} scene={this.state.scene}  />
-                    <SceneMonacoTextEditor/>
+
+                    <SceneMonacoTextEditor focusedMediaObject={this.state.focusedMediaObject}
+                                           scene={this.state.scene || {} }/>
 
 
                 </div>
