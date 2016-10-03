@@ -151,7 +151,7 @@ var SceneGraph = React.createClass({
     },
 
     getStateFromStores: function() {
-        var sceneGraph = SceneGraphStore.getSceneGraph(this.getParams().id);
+        var sceneGraph = SceneGraphStore.getSceneGraph(this.props.params.id);
 
         if(sceneGraph && ! this.state.sceneGraph) {
             this.loadAllScenesForSceneGraph(sceneGraph);
@@ -205,7 +205,7 @@ var SceneGraph = React.createClass({
         SceneGraphStore.addChangeListener(this._onChange);
         SceneListStore.addChangeListener(this._onChange);
         SceneStore.addChangeListener(this._onChange);
-        HubSendActions.loadSceneGraph(this.getParams().id);
+        HubSendActions.loadSceneGraph(this.props.params.id);
     },
 
     componentWillUnmount: function() {

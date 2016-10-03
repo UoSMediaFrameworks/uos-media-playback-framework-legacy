@@ -31,7 +31,7 @@ var SceneListener = React.createClass({
     },
 
     _getScene: function() {
-        return SceneStore.getScene(this.getParams().id);
+        return SceneStore.getScene(this.props.params.id);
     },
 
     getInitialState: function() {
@@ -58,7 +58,7 @@ var SceneListener = React.createClass({
     },
 
     componentDidMount: function() {
-        HubSendActions.subscribeScene(this.getParams().id);
+        HubSendActions.subscribeScene(this.props.params.id);
         SceneStore.addChangeListener(this._onChange);
 
         var playerElem = this.getPlayerElem();
