@@ -2,6 +2,26 @@ html, body, #main, .app {
     height: 100%;
 }
 
+.media-object-item-preview-player-hidden {
+    flex: 1;
+    border: 1px solid #ccc;
+    overflow-y: auto;
+    position: relative;
+    display: none;
+}
+
+.media-object-item-preview-player {
+    border: 1px solid #ccc;
+    overflow-y: auto;
+    position: relative;
+
+}
+
+.react-audio-player {
+    width: 100%;
+
+}
+
 /* dirtay css! Forces the loader div to flex down */
 .app > div:last-child {
     flex: 1;
@@ -26,7 +46,6 @@ html, body, #main, .app {
     padding-left: 2.5px;
 }
 
-
 .thumbs-and-json {
     display: flex;
     padding-bottom: 5px;
@@ -38,6 +57,12 @@ html, body, #main, .app {
 
 .scene-text-editor {
     position: relative;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .scene-text-editor > .error-message {
@@ -57,7 +82,7 @@ html, body, #main, .app {
     display: inherit;
 }
 
-.CodeMirror  {
+.CodeMirror {
     position: absolute;
     top: 0px;
     bottom: 0px;
@@ -164,8 +189,6 @@ html, body, #main, .app {
     height: 100%;
 }
 
-
-
 .media-object-list .media-object-item-preview img {
     height: 100%;
 }
@@ -192,13 +215,13 @@ html, body, #main, .app {
     text-align: center;
 }
 
-.media-object-list .icon-wrapper .icon  {
+.media-object-list .icon-wrapper .icon {
     color: white;
 }
-.media-object-list-grid .icon-wrapper .icon  {
+
+.media-object-list-grid .icon-wrapper .icon {
     opacity: 0.5;
 }
-
 
 .media-object-list-list .icon-wrapper .icon {
     position: absolute;
@@ -255,7 +278,6 @@ html, body, #main, .app {
     white-space: pre;
 }
 
-
 .tag-union {
     list-style-type: none;
     padding: 0;
@@ -274,7 +296,6 @@ html, body, #main, .app {
 .page-nav, .scene-controls {
     position: absolute;
 }
-
 
 .scene-controls {
     text-align: right;
@@ -357,14 +378,14 @@ html, body, #main, .app {
 }
 
 .add-scene-button {
-    width:100%;
+    width: 100%;
     margin-top: 5px;
     margin-bottom: 5px;
 }
 
 .remove-scene-button {
     margin-top: 5px;
-    margin-bottom:20px;
+    margin-bottom: 20px;
     width: 100%;
 }
 
@@ -389,8 +410,6 @@ html, body, #main, .app {
 .no-margin-bottom {
     margin-bottom: 0;
 }
-
-
 
 /** Editor UI **/
 .scene-graph-scene-list-container {

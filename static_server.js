@@ -10,14 +10,15 @@ module.exports = function(dest, opt) {
     var o = opt || {},
         livereload = o.livereload || false,
         callback = o.callback || null;
-        
+
 
     if ( livereload ) {
-        server.use(connectLivereload());    
+        server.use(connectLivereload());
     }
 
     server.use(serverStatic(dest, {'index': ['index.html']}));
-
-    server.listen(process.env.PORT || 5000, callback);
+    var listener = server.listen( 5000, function(){
+        console.log('Listening on port ' + listener.address().port); //Listening on port 8888
+    });
 };
 
