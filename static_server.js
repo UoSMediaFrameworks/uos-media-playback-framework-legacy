@@ -17,8 +17,6 @@ module.exports = function(dest, opt) {
     }
 
     server.use(serverStatic(dest, {'index': ['index.html']}));
-    var listener = server.listen( 5000, function(){
-        console.log('Listening on port ' + listener.address().port); //Listening on port 8888
-    });
+    server.listen(process.env.PORT || 5000, callback);
 };
 
