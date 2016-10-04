@@ -32,6 +32,7 @@ function unregisterPlayer(id) {
 }
 
 function onMessageRecieved (event) {
+    //APEP 3/10/16 - Chrome dev tools + react dev tools cause events to be sent to player 
     var data = JSON.parse(event.data);
     players[data.player_id].handleEvent(data);
 }

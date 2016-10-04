@@ -28,7 +28,7 @@ HubSendActions.tryTokenLogin();
 ReactDOM.render((<Router history={hashHistory}>
     <Route path='/' component={IndexApp} >
         <IndexRoute component={SceneChooser} />
-        <Route name='login'        path='/login/?' component={LoginPage} />
+        <Route name='login'        path='login/?' component={LoginPage} />
         <Route name='scenes'       path='scenes' component={SceneChooser} />
         <Route name='scene'        path="scene/:id" component={Scene} />
         <Route name='scenegraphs'  path='scenegraphs' component={SceneGraphChooser} />

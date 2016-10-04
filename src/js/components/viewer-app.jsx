@@ -36,9 +36,9 @@ var ViewerApp = React.createClass({
 	render: function() {
 		return (
 			<Loader className='login-loader' message='Logging in...' loaded={! this.state.attemptingLogin}>
-				<RouteHandler />
+                {this.props.children}
 			</Loader>
-		); 
+		);
 	}
 
 });

@@ -1,6 +1,7 @@
 'use strict';
 
 var React = require('react');
+var ReactDOM = require('react-dom');
 var SceneStore = require('../stores/scene-store');
 var ThemeSelector = require('../components/theme-selector.jsx');
 var HubSendActions = require('../actions/hub-send-actions');
@@ -42,7 +43,7 @@ var SceneListener = React.createClass({
     },
 
     getPlayerElem: function() {
-        return this.getDOMNode().querySelector('.player');
+        return this.refs.player;
     },
 
     _maybeUpdatePlayer: function() {
@@ -50,8 +51,8 @@ var SceneListener = React.createClass({
             if (this.state.scene.style) {
                 $(this.getPlayerElem()).css(this.state.scene.style);
             }
-        
-            this.mediaObjectQueue.setScene(this.state.scene);    
+
+            this.mediaObjectQueue.setScene(this.state.scene);
             this.randomVisualPlayer.start();
             this.randomAudioPlayer.start();
         }
@@ -62,7 +63,7 @@ var SceneListener = React.createClass({
         SceneStore.addChangeListener(this._onChange);
 
         var playerElem = this.getPlayerElem();
-        
+
         this.mediaObjectQueue = new MediaObjectQueue(
             [TextMediaObject, AudioMediaObject, VideoMediaObject, ImageMediaObject],
             {image: 3, text: 1, video: 1, audio: 1}
@@ -72,7 +73,7 @@ var SceneListener = React.createClass({
 
         this._maybeUpdatePlayer();
     },
-    
+
     componentWillUnmount: function() {
         SceneStore.removeChangeListener(this._onChange);
     },
@@ -88,7 +89,7 @@ var SceneListener = React.createClass({
         var filterStrings = _.map(this.state.activeThemes, function(themeName) {
             return '(' + this.state.scene.themes[themeName] + ')';
         }.bind(this));
-        
+
         var tagsInput = this.getRefVal('tags').trim();
         if (tagsInput !== '') {
             filterStrings.push('(' + tagsInput + ')');
@@ -109,7 +110,7 @@ var SceneListener = React.createClass({
     handleBlur: function(event) {
         this.updateTags();
     },
-    
+
     _onChange: function() {
         this.setState({scene: this._getScene()});
     },
@@ -122,7 +123,7 @@ var SceneListener = React.createClass({
         return (
             <div className='scene-listener'>
                 <Loader loaded={this.state.scene ? true : false}></Loader>
-                <div className='player'></div>
+                <div className='player' ref="player"></div>
                 <ThemeSelector themeChange={this.handleThemeChange} scene={this.state.scene} />
                 <form className='tag-filter' onSubmit={this.updateTags}>
                     <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...' className='form-control scene-listener-tag-input' />

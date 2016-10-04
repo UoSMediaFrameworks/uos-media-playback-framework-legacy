@@ -1,5 +1,7 @@
 'use strict';
 
+//APEP: DEPCREATED - Not valid for new react version with update of version.
+
 var React = require('react');
 var Router = require('react-router');
 var Route = Router.Route,
@@ -19,7 +21,7 @@ var routes = (
         <Route name='scenes' path='/scenes/?' handler={SceneSelector} />
         <Route name='scene' path='/scenes/:id' handler={SceneListener} />
     </Route>
-); 
+);
 
 var ViewerRouter = Router.create({routes: routes});
 
