@@ -23,7 +23,7 @@ var SceneMonacoTextEditor = React.createClass({
     getSceneString: function() {
         var scene = this.getHumanReadableScene();
 
-        return JSON.stringify(scene, null, 2);
+        return this.getSceneStringForSceneObj(scene);
     },
 
     getState: function() {
@@ -123,33 +123,27 @@ var SceneMonacoTextEditor = React.createClass({
 
             if(! _.isEqual(editorScene, this.getHumanReadableScene())) {
                 monacoEditor.setValue(this.getSceneString()); //CHECK if we should set document to new json
-            } 
+            }
         } catch (e) {
             console.log("Error with bad json: ", e);
         }
 
 
         if(this.props.focusedMediaObject !== previousProps.focusedMediaObject) {
-            var sceneMediaObjectRegex = /{.*tags.*type.*\},/i;
+            var sceneMediaObjectRegex = /tags[\s\S]*?/;
 
             //TODO APEP: Github issue raised about issue with regex.
             //TODO APEP: https://github.com/Microsoft/monaco-editor/issues/216
             // sceneMediaObjectRegex = /tags(.|[\s\S])*type/g;
-
             //{[\s\S]{1,10}tags.*[\s\S]*?type[\s\S]*?}[\s\S]*?}
-
             // sceneMediaObjectRegex = /{[\s\S]{1,10}tags.*[\s\S]*?type[\s\S]*?}[\s\S]*?}/g;
-
             // sceneMediaObjectRegex = /tags.*?type/g;
 
-            sceneMediaObjectRegex = /tags[\s\S]*?cook/;
-
             var matches = monacoEditor.getModel().findMatches(sceneMediaObjectRegex, false, true, false, false);
-
-            console.log("MATCHES: " , matches);
-
+            var match = matches[this.props.focusedMediaObject];
+            monacoEditor.setPosition(match.getStartPosition());
+            monacoEditor.revealPosition(match.getStartPosition());
             //TODO try focus here
-
         }
     },
 
