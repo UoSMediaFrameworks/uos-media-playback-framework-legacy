@@ -18,6 +18,7 @@ var AddMediaObject = require('../scene-editor/add-media-object.jsx');
 var Router = require('react-router'),
     Link = Router.Link;
 
+var MediaPreviewComponent =  require('../scene-editor/media-preview-player.jsx');
 var SceneMonacoTextEditor = require('../scene-monaco-text-editor.jsx');
 
 
