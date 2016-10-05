@@ -14,7 +14,7 @@ var objectAssign = require('object-assign');
 var browserify = require('browserify');
 var reactify = require('reactify');
 var envify = require('envify');
-//var streamify = require('gulp-streamify'); AJF: removed as can't find it being used 
+//var streamify = require('gulp-streamify'); AJF: removed as can't find it being used
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat'),
     livereload = require('gulp-livereload'),
@@ -37,7 +37,7 @@ if (production) {
 
 /*
   I don't want to have to define the browserify code twice.  Yet, I need it to run inside
-  of watchify, and then I also want to run it manually for the 'build' task.  So I have to 
+  of watchify, and then I also want to run it manually for the 'build' task.  So I have to
   abstract out the process of making a bundler, and then leave it open to manual triggering
 */
 var indexBundler = bundlerBuilder('./src/js/index.jsx', 'index.js', true);
@@ -47,9 +47,9 @@ var manifest2015Bundler = bundlerBuilder('./src/js/manifest2015.js', 'manifest20
 function bundlerBuilder (startPath, finishName, useReactify) {
     var bundler = watchify(browserify(startPath, objectAssign({debug: true}, watchify.args)));
     if (useReactify) {
-        bundler.transform(reactify);    
+        bundler.transform(reactify);
     }
-    
+
     bundler.transform(envify);
     bundler.on('log', gutil.log);
 
@@ -67,7 +67,7 @@ function bundlerBuilder (startPath, finishName, useReactify) {
     return {bundler: bundler, rebundle: rebundle};
 }
 
-gulp.task('watch', function () { 
+gulp.task('watch', function () {
     // trigger livereload on any change to dest
     livereload.listen(lvPort);
     gulp.watch(dest + '/**').on('change', livereload.changed);
@@ -102,7 +102,12 @@ gulp.task('bundlejs', function() {
     );
 });
 
-gulp.task('build-dist', ['bundlejs', 'html', 'css']);
+gulp.task('include-monaco-editor', function() {
+    //APEP - Small hack to include this full dependency within th dist folder - typically this should be hosted on a CDN. Or build into the bundle
+    return gulp.src(['node_modules/react-monaco-editor/node_modules/monaco-editor']).pipe(gulp.dest('dist'));
+});
+
+gulp.task('build-dist', ['bundlejs', 'html', 'css', 'include-monaco-editor']);
 
 
 ///// BEGIN CLI TASKS ////////////////////////////////
