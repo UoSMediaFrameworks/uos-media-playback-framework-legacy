@@ -11,6 +11,7 @@ var _ = require('lodash');
 var soundCloud = require('../utils/sound-cloud');
 var vimeoApi = require('../utils/vimeo-api');
 var assetStore = require('../utils/asset-store');
+var hashHistory = require('react-router').hashHistory;
 
 var SceneActions = {
     updateScene: function(scene) {
@@ -125,7 +126,7 @@ var SceneActions = {
         });
         HubClient.logout();
 
-        location.reload();
+        hashHistory.push('login');
     },
 
     dismissStatus: function(alertId) {

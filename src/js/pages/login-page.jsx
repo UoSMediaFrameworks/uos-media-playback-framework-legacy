@@ -17,6 +17,7 @@ function _getState () {
 
 
 var LoginPage = React.createClass({
+
     mixins: [Router.Navigation, FormHelper],
 
     statics: {
@@ -34,7 +35,7 @@ var LoginPage = React.createClass({
                 LoginPage.attemptedTransition = null;
                 trans.retry();
             } else {
-                this.transitionTo('/scenes');
+                this.props.history.push('scenes');
             }
         }
     },

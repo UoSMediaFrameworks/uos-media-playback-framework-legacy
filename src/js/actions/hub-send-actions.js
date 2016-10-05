@@ -5,6 +5,7 @@ var ActionTypes = require('../constants/scene-constants').ActionTypes;
 var HubClient = require('../utils/HubClient');
 var HubRecieveActions = require('./hub-recieve-actions');
 var SceneActions = require('./scene-actions');
+var hashHistory = require('react-router').hashHistory;
 
 module.exports = {
     tryLogin: function(creds) {
@@ -414,8 +415,7 @@ module.exports = {
 
         HubClient.saveSceneGraph(sceneGraph, function(newSceneGraph) {
             HubRecieveActions.recieveSceneGraph(newSceneGraph);
-            var AppRouter = require('../app-router.jsx');
-            AppRouter.transitionTo('scenegraph', {id: newSceneGraph._id});
+            hashHistory.push('scenegraph/' + newSceneGraph._id);
         });
 
     },
@@ -441,11 +441,7 @@ module.exports = {
 
     	HubClient.save(scene, function(newScene) {
             HubRecieveActions.recieveScene(newScene);
-            // deffer the loading of AppRouter to prevent circular dependencies,
-            // this would be better done with dependency injection
-            // http://tomkit.wordpress.com/2013/02/05/circular-dependencies-dependency-injection-in-node-js/
-            var AppRouter = require('../app-router.jsx');
-            AppRouter.transitionTo('scene', {id: newScene._id});
+            hashHistory.push('scene/' + newScene._id);
         });
     },
     loadScene: HubClient.loadScene,
@@ -456,18 +452,14 @@ module.exports = {
             type: ActionTypes.DELETE_SCENE,
             sceneId: sceneId
         });
-
-        var AppRouter = require('../app-router.jsx');
-        AppRouter.transitionTo('scenes');
+        hashHistory.push('scenes');
     },
     deleteSceneGraph: function(sceneGraphId) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.DELETE_SCENE_GRAPH,
             sceneGraphId: sceneGraphId
         });
-
-        var AppRouter = require('../app-router.jsx');
-        AppRouter.transitionTo('scenegraphs');
+        hashHistory.push('scenegraphs');
     },
     unsubscribeScene: HubClient.unsubscribeScene
 };
