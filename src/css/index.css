@@ -432,3 +432,15 @@ html, body, #main, .app {
 .graph-themes-list {
     list-style: none;
 }
+
+.display-none {
+    display: none !important;
+}
+
+.highlighted-media-object {
+    border: 2px solid yellow;
+}
+
+.non-highlighted-media-object {
+    border: none;
+}

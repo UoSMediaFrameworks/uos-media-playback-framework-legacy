@@ -9,7 +9,8 @@ var MediaObjectList = React.createClass({
     getInitialState: function() {
         return {
             selectedIndex: null,
-            listLayout: 'grid' 
+            listLayout: 'grid',
+            tagSearch: ""
         };
     },
 
@@ -30,6 +31,10 @@ var MediaObjectList = React.createClass({
         this.setState({listLayout: event.target.textContent});
     },
 
+    handleSearchChange: function(event) {
+        this.setState({tagSearch: event.target.value});
+    },
+
     listSelectedClass: function(value) {
         if (this.state.listLayout === value) {
             return 'btn btn-primary';
@@ -40,25 +45,31 @@ var MediaObjectList = React.createClass({
 
     render: function() {
         var items = null;
-        
+
         if (this.props.scene && this.props.scene.scene && this.props.scene.scene.length !== 0) {
             items = this.props.scene.scene.map(function(mediaObject, index) {
-                
+
                 var klass = 'media-object-item' + (this.state.selectedIndex === index ? ' selected' : '');
+
+                if(this.state.tagSearch.length > 0 && mediaObject.tags.indexOf(this.state.tagSearch) != -1) {
+                    //Highlights media objects that match the tag search.
+                    klass += ' highlighted-media-object'
+                }
+
                 return (
                     <li className={klass}
                      key={index}
-                     onClick={this.handleSelect(index)} 
+                     onClick={this.handleSelect(index)}
                      >
                         <MediaObjectPreview mediaObject={mediaObject}>
                             <button className='btn' onClick={this.handleDelete(this.props.scene, index)}>
                                 <Glyphicon icon='remove-circle' />
                             </button>
                         </MediaObjectPreview>
-                        
+
                     </li>
                 );
-            }.bind(this));  
+            }.bind(this));
         } else {
             items = [<li key='empty' className='empty-media-object-item '>Nothing in the scene yet</li>];
         }
@@ -71,6 +82,15 @@ var MediaObjectList = React.createClass({
                     <button type='button' onClick={this.handleListChange} className={this.listSelectedClass("grid")}>grid</button>
                     <button type='button' onClick={this.handleListChange} className={this.listSelectedClass("list")}>list</button>
                 </div>
+
+                <form >
+                    <input ref="tag-search"
+                           className='form-control'
+                           value={this.state.tagSearch}
+                           onChange={this.handleSearchChange}
+                           placeholder="Search for media by tag"/>
+                </form>
+
                 <p className='media-object-list-instructions'>Drag and drop images here to add to scene</p>
                 <ul className=''>{items}</ul>
             </div>
