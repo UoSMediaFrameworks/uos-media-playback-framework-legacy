@@ -147,14 +147,8 @@ var SceneMonacoTextEditor = React.createClass({
         if(this.props.focusedMediaObject !== previousProps.focusedMediaObject) {
             var sceneMediaObjectRegex = "tags[\\s\\S\\n]*?type";
 
-            //TODO APEP: Github issue raised about issue with regex.
-            //TODO APEP: https://github.com/Microsoft/monaco-editor/issues/216
-            sceneMediaObjectRegex = "{[\\s\\S\\n]{1,10}tags[\\s\\S\\n]*?type[\\s\\S\\n]*?}[\\s\\S\\n]*?}";
-
-            // sceneMediaObjectRegex = /tags(.|[\s\S])*type/g;
-            //{[\s\S]{1,10}tags.*[\s\S]*?type[\s\S]*?}[\s\S]*?}
-            // sceneMediaObjectRegex = /{[\s\S]{1,10}tags.*[\s\S]*?type[\s\S]*?}[\s\S]*?}/g;
-            // sceneMediaObjectRegex = /tags.*?type/g;
+            //TODO APEP: Github issue raised about issue with regex. https://github.com/Microsoft/monaco-editor/issues/216
+            sceneMediaObjectRegex = "{[\\s\\S\\n]{1,10}tags[\\s\\S\\n]*?type[\\s\\S\\n]*?}[\\s\\S\\n]*?}"; //Full media object selection
 
             var matches = this.refs.monaco.editor.getModel().findMatches(sceneMediaObjectRegex, false, true, false, false);
             var match = matches[this.props.focusedMediaObject];
