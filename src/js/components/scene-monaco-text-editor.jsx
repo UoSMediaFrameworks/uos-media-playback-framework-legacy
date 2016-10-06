@@ -6,7 +6,6 @@ var SceneActions = require('../actions/scene-actions');
 var SceneList = require('./scene-list.jsx');
 var _ = require('lodash');
 
-var monacoEditor = undefined;
 
 var SceneMonacoTextEditor = React.createClass({
 
@@ -17,7 +16,7 @@ var SceneMonacoTextEditor = React.createClass({
     },
 
     getSceneStringForSceneObj: function(scene) {
-        return JSON.stringify(scene, null, 2);
+        return JSON.stringify(scene, null, '\t');
     },
 
     getSceneString: function() {
@@ -51,13 +50,13 @@ var SceneMonacoTextEditor = React.createClass({
     saveJSON: function() {
         return function() {
 
-            if(!monacoEditor) {
+            if(!this.refs.monaco.editor) {
                 console.log("Nothing to save yet as component not mounted");
                 return;
             }
 
             try {
-                var newValue = monacoEditor.getValue();
+                var newValue = this.refs.monaco.editor.getValue();
                 // parse it and see if it blows up
                 var newScene = JSON.parse(newValue);
                 // make sure that something changed
@@ -100,29 +99,45 @@ var SceneMonacoTextEditor = React.createClass({
 
         editor.focus();
 
-        monacoEditor = editor;
+        //APEP work in process awaiting github issue for language support
+        // this.refs.monaco.editor.languages.json.jsonDefaults.setDiagnosticsOptions({
+        //     schemas: [{
+        //         schema: {
+        //             type: "object",
+        //             properties: {
+        //                 _id: {
+        //                     type: "string",
+        //                     description: "Scene Identifier"
+        //                 },
+        //                 name: {
+        //                     type: "string",
+        //                     description: "Scene Name"
+        //                 }
+        //             }
+        //         }
+        //     }]
+        // });
 
-        monacoEditor.setValue(this.getInitialState().code);
+        this.refs.monaco.editor.setValue(this.getInitialState().code);
 
-        // monacoEditor.onDidChangeCursorPosition(function(e){
+        // this.refs.monaco.editor.onDidChangeCursorPosition(function(e){
         //     console.log(e);
         // });
         //
-        // monacoEditor.onDidChangeCursorSelection(this.onTextSelection)
+        // this.refs.monaco.editor.onDidChangeCursorSelection(this.onTextSelection)
     },
 
     componentDidUpdate: function(previousProps, previousState) {
         console.log("MONACO - componentDidUpdate");
 
         //TODO check if any errors
-
         try {
-            var editorScene = JSON.parse(monacoEditor ? monacoEditor.getValue() : "{}"); //TODO might need changing
+            var editorScene = JSON.parse(this.refs.monaco.editor ? this.refs.monaco.editor.getValue() : "{}"); //TODO might need changing
 
             console.log("MONACO - componentDidUpdate - editorScene: ", editorScene);
 
             if(! _.isEqual(editorScene, this.getHumanReadableScene())) {
-                monacoEditor.setValue(this.getSceneString()); //CHECK if we should set document to new json
+                this.refs.monaco.editor.setValue(this.getSceneString()); //CHECK if we should set document to new json
             }
         } catch (e) {
             console.log("Error with bad json: ", e);
@@ -130,20 +145,23 @@ var SceneMonacoTextEditor = React.createClass({
 
 
         if(this.props.focusedMediaObject !== previousProps.focusedMediaObject) {
-            var sceneMediaObjectRegex = /tags[\s\S]*?/;
+            var sceneMediaObjectRegex = "tags[\\s\\S\\n]*?type";
 
             //TODO APEP: Github issue raised about issue with regex.
             //TODO APEP: https://github.com/Microsoft/monaco-editor/issues/216
+            sceneMediaObjectRegex = "{[\\s\\S\\n]{1,10}tags[\\s\\S\\n]*?type[\\s\\S\\n]*?}[\\s\\S\\n]*?}";
+
             // sceneMediaObjectRegex = /tags(.|[\s\S])*type/g;
             //{[\s\S]{1,10}tags.*[\s\S]*?type[\s\S]*?}[\s\S]*?}
             // sceneMediaObjectRegex = /{[\s\S]{1,10}tags.*[\s\S]*?type[\s\S]*?}[\s\S]*?}/g;
             // sceneMediaObjectRegex = /tags.*?type/g;
 
-            var matches = monacoEditor.getModel().findMatches(sceneMediaObjectRegex, false, true, false, false);
+            var matches = this.refs.monaco.editor.getModel().findMatches(sceneMediaObjectRegex, false, true, false, false);
             var match = matches[this.props.focusedMediaObject];
-            monacoEditor.setPosition(match.getStartPosition());
-            monacoEditor.revealPosition(match.getStartPosition());
-            //TODO try focus here
+            this.refs.monaco.editor.setPosition(match.getStartPosition());
+            this.refs.monaco.editor.revealPosition(match.getStartPosition());
+            this.refs.monaco.editor.setSelection(match);
+
         }
     },
 
@@ -163,6 +181,7 @@ var SceneMonacoTextEditor = React.createClass({
         return (
             <div className="scene-text-editor">
                 <MonacoEditor
+                    ref="monaco"
                     width="100%"
                     height="100%"
                     language="json"
