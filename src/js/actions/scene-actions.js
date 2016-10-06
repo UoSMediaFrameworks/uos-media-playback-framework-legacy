@@ -46,7 +46,6 @@ var SceneActions = {
     },
 
     addVimeo: function(sceneId, vimeoUrl) {
-
         AppDispatcher.handleServerAction({
             type: ActionTypes.ADD_MEDIA_ATTEMPT,
             value: vimeoUrl
@@ -54,6 +53,7 @@ var SceneActions = {
 
         vimeoApi.video(getVimeoId(vimeoUrl), function(err, data) {
             if (err) {
+                console.log(err)
                 AppDispatcher.handleServerAction({
                     type: ActionTypes.ADD_MEDIA_FAILED
                 });
@@ -63,7 +63,8 @@ var SceneActions = {
                     type: 'video',
                     volume: 100,
                     url: vimeoUrl,
-                    tags: tags
+                    tags: tags,
+                    autoreplay:0
                 });
 
                 AppDispatcher.handleServerAction({
