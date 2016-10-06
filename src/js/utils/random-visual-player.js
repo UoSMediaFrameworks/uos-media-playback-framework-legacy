@@ -15,12 +15,15 @@ function RandomVisualPlayer(stageElement, queue) {
             if (obj) {
                 obj.on('done', moDoneHandler);
                 obj.on('transition', moTransitionHandler);
+
                 obj.makeElement(function () {
                     obj.onReady(function () {
+
                         if (obj instanceof ImageMediaObject || obj instanceof TextMediaObject) {
                             stageElement.appendChild(obj.element);
                             placeAtRandomPosition(obj.element);
                         }
+                        obj.element.onclick = bringToFront;
 
                         obj.play();
                         obj.element.classList.add('show-media-object');
@@ -28,6 +31,9 @@ function RandomVisualPlayer(stageElement, queue) {
 
                     if (obj instanceof VideoMediaObject) {
                         if(obj._obj.autoreplay == 0){obj.element.classList.add('interval-remove');}
+                        window.addEventListener('blur',function(){
+                            bringToFront('',document.activeElement)
+                        });
                         stageElement.appendChild(obj.element);
                         placeAtRandomPosition(obj.element);
                     }
@@ -38,7 +44,21 @@ function RandomVisualPlayer(stageElement, queue) {
         return queue.displayInterval;
     });
 
+    function bringToFront(e,target){
+        var children = stageElement.childNodes;
+        children.forEach(function(el){
+            el.style.zIndex = 1;
+        });
+        if(target){
+            //in the case of Iframe
+            target.style.zIndex = 999;
+        }else{
+            //for all other cases
+            e.target.style.zIndex = 999;
+        }
 
+
+    }
     function calcDimension(dim, element) {
         var elementDimensionSize = element[dim];
 
