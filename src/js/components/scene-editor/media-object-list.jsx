@@ -10,7 +10,8 @@ var MediaObjectList = React.createClass({
         return {
             selectedIndex: null,
             listLayout: 'grid',
-            tagSearch: ""
+            tagSearch: "",
+            highlightType: 'border'
         };
     },
 
@@ -35,6 +36,26 @@ var MediaObjectList = React.createClass({
         this.setState({tagSearch: event.target.value});
     },
 
+    handleHighlightChange: function(event) {
+        this.setState({highlightType: event.target.textContent})
+    },
+
+    handleHighlightType: function() {
+        if(this.state.highlightType === 'border') {
+            return 'highlighted-media-object';
+        } else {
+            return 'display-none'
+        }
+    },
+
+    highlightSelectedClass: function(value) {
+        if (this.state.highlightType === value) {
+            return 'btn btn-primary';
+        } else {
+            return 'btn btn-default';
+        }
+    },
+
     listSelectedClass: function(value) {
         if (this.state.listLayout === value) {
             return 'btn btn-primary';
@@ -51,9 +72,15 @@ var MediaObjectList = React.createClass({
 
                 var klass = 'media-object-item' + (this.state.selectedIndex === index ? ' selected' : '');
 
-                if(this.state.tagSearch.length > 0 && mediaObject.tags.indexOf(this.state.tagSearch) != -1) {
-                    //Highlights media objects that match the tag search.
-                    klass += ' highlighted-media-object'
+                if(this.state.tagSearch.length > 0) {
+                    if(mediaObject.tags.indexOf(this.state.tagSearch) != -1) {
+                        //Highlights media objects that match the tag search.
+                        if(this.state.highlightType === "border")
+                            klass += ' ' + this.handleHighlightType();
+                    } else {
+                        if(this.state.highlightType !== "border")
+                            klass += ' ' + this.handleHighlightType();
+                    }
                 }
 
                 return (
@@ -83,6 +110,11 @@ var MediaObjectList = React.createClass({
                     <button type='button' onClick={this.handleListChange} className={this.listSelectedClass("list")}>list</button>
                 </div>
 
+                <div className='btn-group btn-group-xs' role='group'>
+                    <button type='button' onClick={this.handleHighlightChange} className={this.highlightSelectedClass("border")}>border</button>
+                    <button type='button' onClick={this.handleHighlightChange} className={this.highlightSelectedClass("hidden")}>hidden</button>
+                </div>
+                
                 <form >
                     <input ref="tag-search"
                            className='form-control'
