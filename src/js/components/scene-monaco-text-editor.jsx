@@ -6,6 +6,7 @@ var SceneActions = require('../actions/scene-actions');
 var SceneList = require('./scene-list.jsx');
 var _ = require('lodash');
 
+var saveTimeout;  //APEP global timeout variable to allow us storage the id for clear intervals.
 
 var SceneMonacoTextEditor = React.createClass({
 
@@ -24,6 +25,58 @@ var SceneMonacoTextEditor = React.createClass({
 
         return this.getSceneStringForSceneObj(scene);
     },
+
+    basicSceneSanityChecks: function(editedSceneText) {
+        var errors = [];
+        var editedScene = {};
+
+        try {
+            editedScene = JSON.parse(editedSceneText);
+        } catch (ex) {
+            errors.push({
+                type: "SCENE_PARSE_ISSUE",
+                title: "Invalid Scene JSON",
+                description: "Warning: ParseEx[ " + ex + "]"
+            });
+            console.log("basicSceneSanityChecks - errors: ", errors);
+            return;
+        }
+
+        if(editedScene === {} || Object.keys(editedScene).length < 1) {
+            console.log("Cannot look for warnings as no edited scene");
+            return;
+        }
+
+        var warnings = [];
+
+        var themesAsArray = Object.keys(editedScene.themes);
+
+        if(themesAsArray.length === 0) {
+            warnings.push({
+                type: "NO_THEMES",
+                title: "No Themes",
+                description: "Warning: Scene contains no themes, this is not optimal for playback and meta data searching (Graph)."
+            });
+        }
+
+        var duplicateThemeNames = _.filter(themesAsArray, function (value, index, iteratee) {
+            return _.includes(iteratee, value, index + 1);
+        });
+
+        console.log("duplicateThemeNames: ", duplicateThemeNames);
+
+        if(duplicateThemeNames.length > 0) {
+            warnings.push({
+                type: "THEME_DUPLICATION",
+                title: "Duplicate themes",
+                descriptions: "You have set two themes with the same key (ie theme name), please condense themes into a singular theme or rename one to be unique within the scene"
+            });
+        }
+
+        console.log("basicSceneSanityChecks - errors: ", errors);
+        console.log("basicSceneSanityChecks - warnings: ", warnings);
+    },
+
 
     getState: function() {
         return {
@@ -86,8 +139,6 @@ var SceneMonacoTextEditor = React.createClass({
     },
 
     onChange: function(newValue, e) {
-        var saveTimeout;
-
         if (saveTimeout) clearTimeout(saveTimeout);
 
         saveTimeout = setTimeout(this.saveJSON(false), 1000);
