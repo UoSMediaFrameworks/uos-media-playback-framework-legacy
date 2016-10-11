@@ -50,6 +50,7 @@
     "lodash.support": "^3.0.4",
     "merge-stream": "^0.1.6",
     "object-assign": "^2.0.0",
+    "process-nextick-args": "^1.0.7",
     "react": "^0.14.0",
     "react-dnd": "^2.1.4",
     "react-dnd-html5-backend": "^2.1.2",
