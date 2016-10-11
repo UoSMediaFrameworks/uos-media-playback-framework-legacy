@@ -42,9 +42,11 @@ var ItemGroupForThemeUnion = React.createClass({
             <div>
                 <div className="col-md-6 scene-graph-theme-drag-containers" style={{ border: 'solid green 1px', overflow: 'hidden'}}>
                     <h4>Theme Union</h4>
-                    {this.props.themeUnion.map(function(theme){
-                        return <Item name={theme} sceneGraph={this.props.sceneGraph}/>
-                    }, this)}
+                    <div className="row">
+                        {this.props.themeUnion.map(function(theme){
+                            return <Item name={theme} sceneGraph={this.props.sceneGraph}/>
+                        }, this)}    
+                    </div>
                 </div>
 
                 <div className="col-md-6 scene-graph-theme-drag-containers" style={{ overflow: 'hidden'}}>

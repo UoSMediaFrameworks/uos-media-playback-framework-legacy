@@ -64,7 +64,7 @@ var Item = React.createClass({
 
         return (
             connectDragSource(
-                <div style={{opacity}}>
+                <div style={{opacity}} className="col-lg-6">
                     {name}
                 </div>
             )

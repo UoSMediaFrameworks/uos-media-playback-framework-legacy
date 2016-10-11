@@ -70,7 +70,8 @@ var SceneActions = {
                     tags: tags,
                     style: {
                         'z-index': '1'
-                    }
+                    },
+                    autoreplay:0
                 });
 
                 AppDispatcher.handleServerAction({
