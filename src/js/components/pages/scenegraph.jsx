@@ -15,6 +15,8 @@ var DragDropContainer = require('../basic-draggable/drag-drop-container.jsx');
 var Router = require('react-router'),
     Link = Router.Link;
 
+var mediaHubGraphURL = process.env.MEDIA_HUB_GRAPH_URL || "";
+
 var SceneItem = React.createClass({
     render: function() {
         return <option value={this.props.scene._id}>{this.props.scene.name}</option>;
@@ -256,7 +258,7 @@ var SceneGraph = React.createClass({
 
         var sceneGraphId = this.state.sceneGraph ? this.state.sceneGraph._id : "";
 
-        var viewerUrl = "http://uos-mediahubgraph.azurewebsites.net/?id=" + sceneGraphId;
+        var viewerUrl = mediaHubGraphURL + "/?id=" + sceneGraphId;
 
         return (
             <div className="container scene-graph">
