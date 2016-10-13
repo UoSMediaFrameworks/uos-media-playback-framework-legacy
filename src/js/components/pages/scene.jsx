@@ -70,7 +70,7 @@ var Scene = React.createClass({
     render: function() {
 
 
-        var viewerUrl = '/viewer.html#/scenes/' + this.props.params.id;
+        var viewerUrl = '/viewer.html#/scene/' + this.props.params.id;
 
         return (
             <DropZone className='flex-container' handler={this.fileHandler}>
