@@ -107,7 +107,11 @@ gulp.task('include-monaco-editor', function() {
     return gulp.src(['node_modules/react-monaco-editor/node_modules/monaco-editor/**']).pipe(gulp.dest('dist/monaco-editor'));
 });
 
-gulp.task('build-dist', ['bundlejs', 'html', 'css', 'include-monaco-editor']);
+gulp.task('include-schemas', function() {
+    return gulp.src(['src/schemas/**']).pipe(gulp.dest('dist/schemas'));
+});
+
+gulp.task('build-dist', ['bundlejs', 'html', 'css', 'include-monaco-editor', 'include-schemas']);
 
 
 ///// BEGIN CLI TASKS ////////////////////////////////

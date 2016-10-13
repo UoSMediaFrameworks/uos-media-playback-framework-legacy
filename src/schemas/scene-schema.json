@@ -1,0 +1,14 @@
+{
+    "title": "Schema for Scene objects for the Media Frameworks",
+    "type": "object",
+    "properties": {
+        "_id": {
+            "type": "string",
+            "description": "Scene Identifier"
+        },
+        "name": {
+            "type": "string",
+            "description": "Scene Name"
+        }
+    }
+}
