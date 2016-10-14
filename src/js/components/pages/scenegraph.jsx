@@ -4,7 +4,6 @@
 
 var React = require('react');
 var _ = require('lodash');
-var Authentication = require('../../mixins/Authentication');
 var HubSendActions = require('../../actions/hub-send-actions');
 var SceneGraphActions = require('../../actions/scene-graph-actions');
 var SceneGraphStore = require('../../stores/scene-graph-store.jsx');
@@ -140,7 +139,7 @@ var generateTagListFromThemeList = function(selectedScene) {
 
 var SceneGraph = React.createClass({
 
-    mixins: [Router.State, Authentication],
+    mixins: [Router.State],
 
     loadAllScenesForSceneGraph: function(sceneGraph) {
 

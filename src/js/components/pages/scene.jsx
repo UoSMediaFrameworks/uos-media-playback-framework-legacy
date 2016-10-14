@@ -6,7 +6,6 @@ var React = require('react');
 var _ = require('lodash');
 var SceneTextEditor = require('../scene-text-editor.jsx');
 var SceneStore = require('../../stores/scene-store');
-var Authentication = require('../../mixins/Authentication');
 var HubSendActions = require('../../actions/hub-send-actions');
 var SceneActions = require('../../actions/scene-actions');
 var MediaObjectList = require('../scene-editor/media-object-list.jsx');
@@ -24,7 +23,7 @@ var SceneMonacoTextEditor = require('../scene-monaco-text-editor.jsx');
 
 var Scene = React.createClass({
 
-    mixins: [Router.State, Authentication],
+    mixins: [Router.State],
 
     getStateFromStores: function() {
         return {

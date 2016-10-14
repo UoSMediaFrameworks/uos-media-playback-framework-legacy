@@ -3,8 +3,6 @@
 
 var React = require('react');
 var ReactDOM = require('react-dom');
-
-var Routing = require('react-router');
 var Router = require('react-router').Router;
 var Route = require('react-router').Route;
 var IndexRoute = require('react-router').IndexRoute;
@@ -21,18 +19,24 @@ var LoginPage = require('./pages/login-page.jsx');
 var Scene = require('./components/pages/scene.jsx');
 var SceneGraph = require('./components/pages/scenegraph.jsx');
 
+var ClientStore = require('./stores/client-store');
 
 // login with localStorage creds if possible
 HubSendActions.tryTokenLogin();
 
+function requireAuth(nextState, replaceState) {
+    if (!ClientStore.loggedIn())
+        replaceState({ nextPathname: nextState.location.pathname }, '/login')
+}
+
 ReactDOM.render((<Router history={hashHistory}>
     <Route path='/' component={IndexApp} >
-        <IndexRoute component={SceneChooser} />
+        <IndexRoute component={SceneChooser} onEnter={requireAuth}/>
         <Route name='login'        path='login' component={LoginPage} />
-        <Route name='scenes'       path='scenes' component={SceneChooser} />
-        <Route name='scene'        path="scene/:id" component={Scene} />
-        <Route name='scenegraphs'  path='scenegraphs' component={SceneGraphChooser} />
-        <Route name='scenegraph'   path='scenegraph/:id' component={SceneGraph} />
+        <Route name='scenes'       path='scenes' component={SceneChooser} onEnter={requireAuth}/>
+        <Route name='scene'        path="scene/:id" component={Scene} onEnter={requireAuth}/>
+        <Route name='scenegraphs'  path='scenegraphs' component={SceneGraphChooser} onEnter={requireAuth}/>
+        <Route name='scenegraph'   path='scenegraph/:id' component={SceneGraph} onEnter={requireAuth}/>
     </Route>
 </Router>), document.getElementById('main'));
 

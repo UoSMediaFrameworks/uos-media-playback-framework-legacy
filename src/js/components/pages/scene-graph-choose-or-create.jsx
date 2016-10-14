@@ -1,13 +1,12 @@
 'use strict';
 var React = require('react');
-var Authentication = require('../../mixins/Authentication');
 var HubSendActions = require('../../actions/hub-send-actions');
 var SceneGraphList = require('../scene-graph-list.jsx');
 var FormHelper = require('../../mixins/form-helper');
 
 var SceneGraphChooser = React.createClass({
 
-    mixins: [Authentication, FormHelper],
+    mixins: [FormHelper],
 
     handleSubmit: function(event) {
         event.preventDefault();
