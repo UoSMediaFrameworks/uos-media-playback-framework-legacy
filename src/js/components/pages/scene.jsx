@@ -97,9 +97,12 @@ var Scene = React.createClass({
                         <MediaPreviewComponent  focusedMediaObject={this.state.focusedMediaObject} scene={this.state.scene}  />
                     </div>
 
+                    <div className="flex-container">
+                        <SceneMonacoTextEditor focusedMediaObject={this.state.focusedMediaObject}
+                                               scene={this.state.scene || {} }/>
+                    </div>
 
-                    <SceneMonacoTextEditor focusedMediaObject={this.state.focusedMediaObject}
-                                           scene={this.state.scene || {} }/>
+
 
 
                 </div>
