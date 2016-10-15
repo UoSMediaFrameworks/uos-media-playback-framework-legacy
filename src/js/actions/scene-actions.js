@@ -12,7 +12,7 @@ var soundCloud = require('../utils/sound-cloud');
 var vimeoApi = require('../utils/vimeo-api');
 var assetStore = require('../utils/asset-store');
 var hashHistory = require('react-router').hashHistory;
-
+var toastr = require('toastr');
 var SceneActions = {
     updateScene: function(scene) {
         AppDispatcher.handleViewAction({
@@ -87,22 +87,29 @@ var SceneActions = {
             type: ActionTypes.ADD_MEDIA_ATTEMPT,
             value: soundCloudUrl
         });
+        soundCloud.tags(soundCloudUrl, function(data) {
 
+            if(data.error){
+                AppDispatcher.handleServerAction({
+                    type: ActionTypes.ADD_MEDIA_FAILED,
+                    value:data
+                });
+            }else{
+                AppDispatcher.handleServerAction({
+                    type: ActionTypes.ADD_MEDIA_SUCCESS
+                });
 
-        soundCloud.tags(soundCloudUrl, function(tags) {
-            AppDispatcher.handleServerAction({
-                type: ActionTypes.ADD_MEDIA_SUCCESS
-            });
+                SceneActions.addMediaObject(sceneId, {
+                    type: 'audio',
+                    volume: 100,
+                    url: soundCloudUrl,
+                    tags: data,
+                    style: {
+                        'z-index': '1'
+                    }
+                });
+            }
 
-            SceneActions.addMediaObject(sceneId, {
-                type: 'audio',
-                volume: 100,
-                url: soundCloudUrl,
-                tags: tags,
-                style: {
-                    'z-index': '1'
-                }
-            });
         });
     },
 

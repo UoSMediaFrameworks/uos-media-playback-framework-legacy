@@ -57,17 +57,16 @@ var SceneEditor = React.createClass({
 				case 'vimeo.com':
 					SceneActions.addVimeo(this.props.scene._id, data);
 					break;
-
 				// assume it's an image
 				default:
 					SceneActions.addMediaObject(this.props.scene._id, {type: 'image', url: data});
-					
-			}	
+
+			}
 		} else {
-			SceneActions.addText(this.props.scene._id, data);	
+			SceneActions.addText(this.props.scene._id, data);
 		}
 
-		
+
 	},
 
 	render: function() {
@@ -75,15 +74,15 @@ var SceneEditor = React.createClass({
 
 		return (
 			<form onSubmit={this.handleSubmit} className='add-media-object'>
-				
+
 				<input ref='content'
 					   value={this.state.inputValue}
 					   onChange={this.handleInputChange}
-				       className='form-control' 
-				       placeholder='vimeo url, soundcloud url or text' 
+				       className='form-control'
+				       placeholder='vimeo url, soundcloud url or text'
 				       required />
-				
-				<button className='btn btn-primary' type='submit' 
+
+				<button className='btn btn-primary' type='submit'
 				 disabled={this.state.loading}>
 				 	{text}
 				</button>

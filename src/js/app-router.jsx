@@ -21,7 +21,7 @@ var routes = (
         <DefaultRoute handler={SceneChooser} />
         <Route name='login' path='/login/?' handler={LoginPage} />
         <Route name='scenes' path='/scenes/?' handler={SceneChooser} />
-        <Route name='scene' path='/scenes/:id' handler={Scene} />
+        <Route name='scene' path='/scene/:id' handler={Scene} />
         <Route name='scenegraphs' path='/scenegraphs/?' handler={SceneGraphChooser} />
         <Route name='scenegraph' path='/scenegraph/:id' handler={SceneGraph} />
     </Route>
