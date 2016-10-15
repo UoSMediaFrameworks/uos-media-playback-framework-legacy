@@ -6,7 +6,6 @@ var _ = require('lodash');
 var EventEmitter = require('events').EventEmitter;
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
 var HubClient = require('../utils/HubClient');
-
 var CHANGE_EVENT = "change";
 var _scenes = {};
 

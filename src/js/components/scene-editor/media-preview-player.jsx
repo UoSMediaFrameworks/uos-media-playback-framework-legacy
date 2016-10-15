@@ -20,7 +20,7 @@ var MediaObjectPreviewPlayer = React.createClass({
         var previewContainer = document.getElementsByClassName("media-object-item-preview-player");
         if (props.focusedMediaObject != null) {
             var mediaObject = this._getMediaObject(props);
-            previewContainer.innerHTML = '';
+                previewContainer.innerHTML = '';
             switch (mediaObject.type) {
                 case 'audio':
                     var preview

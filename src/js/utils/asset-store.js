@@ -14,28 +14,27 @@ module.exports = {
         data.append('image', file);
         data.append('filename', file.name);
         data.append('token', connectionCache.getToken());
-        
         var xhr = apiRequest.makeRequest({
         	url: imageApiUrl,
         	responseParser: jsonParser,
         	method: 'POST',
         	formData: data,
-        	onLoad: function(data) {
+        	onLoad: function(err,data) {
                 var tags = data.tags ? data.tags.join(', ') : '';
-                
+
 				var status = (tags === '' ? 'warning' : 'success');
 
                 callback(status, {
-                    url: data.url, 
+                    url: data.url,
                     tags: tags
-                });    
+                });
 	        },
 	        onError: function() {
-	        	callback('danger');	
+	        	callback('danger');
 	        }
         });
 
-  
+
     },
 	removeUnusedImages: function(callback) {
 		var data = new FormData();

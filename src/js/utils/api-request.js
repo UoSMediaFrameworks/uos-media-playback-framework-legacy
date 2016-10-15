@@ -2,7 +2,6 @@
 'use strict';
 
 var _ = require('lodash');
-
 var urlParams = function(obj) {
 	return _.map(obj, function(val, key) {
 		return encodeURI(key) + '=' + encodeURI(val);
@@ -20,24 +19,23 @@ var makeRequest = function(ops) {
 	var responseParser = ops.responseParser || function(responseText) {
 		return responseText;
 	};
-	var errorHandler = ops.onError ||  function(status) {
-		throw 'XMLHttpRequest failed to "' + url + '"';
+	var errorHandler = ops.onError ||  function(xhr) {
+            if (onLoad) onLoad({'status':xhr.status,'error':xhr.statusText},null);
 	};
 
 	xhr.onload = function() {
 		if (xhr.status === 200) {
-
-			if (onLoad) onLoad(responseParser(xhr.responseText));	
+			if (onLoad) onLoad(null,responseParser(xhr.responseText));
 		} else {
-			errorHandler(xhr.status);
+           errorHandler(xhr)
 		}
-		
+
 	};
 
 	xhr.onerror = function() {
-		errorHandler(xhr.status);
+		errorHandler(xhr);
 	};
-	
+
 	xhr.open(method, url + '?' + urlParams(query));
 	_.forEach(headers, function(value, key) {
 		xhr.setRequestHeader(key, value);

@@ -22,11 +22,15 @@ module.exports = {
 			makeRequest({
 				url: API_URL + 'videos/' + vimeoId + '?fields=tags',
 				responseParser: jsonParser,
-				onLoad: function(data) {
-					cache[vimeoId] = data;
-					callback(null, data);
+				onLoad: function(err,data) {
+                    if(err){
+                        callback(err,null);
+                    }else{
+                        cache[vimeoId] = data;
+                        callback(null, data);
+                    }
+
 				},
-				onError: callback,
 				headers: {
 					'Authorization': 'bearer ' + process.env.VIMEO_ACCESS_TOKEN
 				}
