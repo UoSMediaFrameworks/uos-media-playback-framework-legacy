@@ -92,6 +92,10 @@ var SceneMonacoTextEditor = React.createClass({
         // console.log("SceneMonacoTextEditor - _onChange [ react based update ]");
     },
 
+    handleSceneJSONSave: function(saved) {
+        this.props.sceneSavingHandler(saved);
+    },
+
     saveJSON: function() {
         return function() {
 
@@ -101,6 +105,9 @@ var SceneMonacoTextEditor = React.createClass({
             }
 
             try {
+
+                this.handleSceneJSONSave(false);
+
                 var newValue = this.refs.monaco.editor.getValue();
                 // parse it and see if it blows up
                 var newScene = JSON.parse(newValue);
@@ -119,6 +126,8 @@ var SceneMonacoTextEditor = React.createClass({
                 }
 
                 //this.setState({error: null});
+                
+                this.handleSceneJSONSave(true);
 
             } catch (e) {
                 if (e instanceof SyntaxError) {

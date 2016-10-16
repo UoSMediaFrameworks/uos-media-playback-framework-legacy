@@ -28,6 +28,7 @@ var Scene = React.createClass({
     getStateFromStores: function() {
         return {
             scene: SceneStore.getScene(this.props.params.id),
+            saveStatus: true
         };
     },
 
@@ -66,10 +67,17 @@ var Scene = React.createClass({
         this.setState({focusedMediaObject: index});
     },
 
+    sceneSavingHandler: function(saveStatus) {
+        this.setState({saveStatus: saveStatus});
+    },
+
     render: function() {
 
 
         var viewerUrl = '/viewer.html#/scene/' + this.props.params.id;
+
+        var saveFlagKlass = this.state.saveStatus ? "green-save-flag" : "red-save-flag";
+
 
         return (
             <DropZone className='flex-container' handler={this.fileHandler}>
@@ -89,6 +97,10 @@ var Scene = React.createClass({
 
                 <AddMediaObject scene={this.state.scene} />
 
+                <div className="scene-saved-status-bar">
+                    <div className={saveFlagKlass}> Saved Status </div>
+                </div>
+
                 <div className="thumbs-and-json">
                     <div className="flex-container">
                         <MediaObjectList focusedMediaObject={this.state.focusedMediaObject} focusHandler={this.thumbClickHandler}
@@ -98,7 +110,7 @@ var Scene = React.createClass({
                     </div>
 
                     <div className="flex-container">
-                        <SceneMonacoTextEditor focusedMediaObject={this.state.focusedMediaObject}
+                        <SceneMonacoTextEditor focusedMediaObject={this.state.focusedMediaObject} sceneSavingHandler={this.sceneSavingHandler}
                                                scene={this.state.scene || {} } focusHandler={this.thumbClickHandler}/>
                     </div>
 

@@ -444,3 +444,22 @@ html, body, #main, .app {
 .non-highlighted-media-object {
     border: none;
 }
+
+.scene-saved-status-bar {
+    width:100%;
+    color: white;
+}
+
+.green-save-flag {
+    background-color: green;
+    margin-right: 2%;
+    float: right;
+    padding: 2px;
+}
+
+.red-save-flag {
+    background-color: red;
+    margin-right: 2%;
+    float: right;
+    padding: 2px;
+}
