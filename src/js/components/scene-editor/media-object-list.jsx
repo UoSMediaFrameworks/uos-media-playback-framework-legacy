@@ -8,7 +8,7 @@ var MediaObjectPreview = require('./media-object-preview.jsx');
 var MediaObjectList = React.createClass({
     getInitialState: function() {
         return {
-            selectedIndex: null,
+            selectedIndex: this.props.focusedMediaObject,
             listLayout: 'grid',
             tagSearch: "",
             highlightType: 'border'
@@ -64,6 +64,17 @@ var MediaObjectList = React.createClass({
         }
     },
 
+    shouldComponentUpdate: function(nextProps, nextState) {
+        //Only allow component update if we have a change in focused media or scene media list length
+        return this.state.selectedIndex === null ||  ( this.state.selectedIndex !== nextProps.focusedMediaObject || this.props.scene.scene.length !== nextProps.scene.scene.length );
+    },
+
+    componentWillUpdate: function(nextProps, nextState) {
+        //Only update selectedIndex state if changed
+        if(this.props.focusedMediaObject !== nextProps.focusedMediaObject)
+            this.setState({selectedIndex: nextProps.focusedMediaObject});
+    },
+
     render: function() {
         var items = null;
 
@@ -114,7 +125,7 @@ var MediaObjectList = React.createClass({
                     <button type='button' onClick={this.handleHighlightChange} className={this.highlightSelectedClass("border")}>border</button>
                     <button type='button' onClick={this.handleHighlightChange} className={this.highlightSelectedClass("hidden")}>hidden</button>
                 </div>
-                
+
                 <form >
                     <input ref="tag-search"
                            className='form-control'

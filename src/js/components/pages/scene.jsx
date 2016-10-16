@@ -91,7 +91,7 @@ var Scene = React.createClass({
 
                 <div className="thumbs-and-json">
                     <div className="flex-container">
-                        <MediaObjectList focusHandler={this.thumbClickHandler}
+                        <MediaObjectList focusedMediaObject={this.state.focusedMediaObject} focusHandler={this.thumbClickHandler}
                                          scene={this.state.scene}/>
 
                         <MediaPreviewComponent  focusedMediaObject={this.state.focusedMediaObject} scene={this.state.scene}  />
@@ -99,7 +99,7 @@ var Scene = React.createClass({
 
                     <div className="flex-container">
                         <SceneMonacoTextEditor focusedMediaObject={this.state.focusedMediaObject}
-                                               scene={this.state.scene || {} }/>
+                                               scene={this.state.scene || {} } focusHandler={this.thumbClickHandler}/>
                     </div>
 
 

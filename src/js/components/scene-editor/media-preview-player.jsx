@@ -23,17 +23,17 @@ var MediaObjectPreviewPlayer = React.createClass({
             previewContainer.innerHTML = '';
             switch (mediaObject.type) {
                 case 'audio':
-                    var preview
                     soundCloud.streamUrl(mediaObject.url, function (streamUrl) {
-                        preview = <audio
+                        var preview = <audio
                             className="react-audio-player"
                             src={streamUrl}
                             controls
                         >
                         </audio>;
+
+                        this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                     });
 
-                    this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                     break;
 
                 case 'video':
@@ -45,22 +45,26 @@ var MediaObjectPreviewPlayer = React.createClass({
             }
             previewContainer.innerHTML = this.state.preview
         }
-    }
+    },
 
-    , setupState: function (props) {
+    setupState: function (props) {
         this.setState(this.getInitialState());
         if (props) {
             this.previewMediaObject(props);
         }
     },
+
     componentWillMount: function () {
         // console.log(this.props)
 
         this.setState(this.getInitialState());
     },
+
     componentWillReceiveProps: function (nextProps) {
         this.setupState(nextProps);
-    }, render: function () {
+    },
+
+    render: function () {
 
         return <div className={this.state.previewClass}>
             {this.state.preview}

@@ -11,8 +11,6 @@ var saveTimeout;  //APEP global timeout variable to allow us storage the id for 
 var SceneMonacoTextEditor = React.createClass({
 
     getHumanReadableScene: function() {
-        console.log("getHumanReadableScene: ", this.props);
-
         return this.props.scene; //TODO _.omit _id
     },
 
@@ -87,17 +85,11 @@ var SceneMonacoTextEditor = React.createClass({
     },
 
     getInitialState: function() {
-        console.log("getInitialState done");
-
         return this.getState();
     },
 
     _onChange: function() {
-        console.log("SceneMonacoTextEditor - _onChange [ react based update ]");
-    },
-
-    onTextSelection: function(e) {
-        console.log("On Text Selection: ", e);
+        // console.log("SceneMonacoTextEditor - _onChange [ react based update ]");
     },
 
     saveJSON: function() {
@@ -145,8 +137,33 @@ var SceneMonacoTextEditor = React.createClass({
     },
 
 
+    onTextSelection: function(e) {
+        // console.log("MONACO - On Text Selection: ", e);
+
+        var sceneMediaObjectRegex = "{[\\s\\S\\n]{1,10}tags[\\s\\S\\n]*?type[\\s\\S\\n]*?}[\\s\\S\\n]*?}"; //Full media object selection
+
+        var matches = this.refs.monaco.editor.getModel().findMatches(sceneMediaObjectRegex, false, true, false, false);
+
+        for(var m in matches) {
+            var possibleMatch = matches[m];
+
+            var selectionRange = new monaco.Range(e.selection.startLineNumber, e.selection.startColumn, e.selection.endLineNumber, e.selection.endColumn);
+            var tagRange = new monaco.Range(possibleMatch.startLineNumber, possibleMatch.startColumn, possibleMatch.endLineNumber, possibleMatch.endColumn );
+
+            var isInTags = monaco.Range.containsRange(tagRange, selectionRange);
+
+            if(isInTags)
+                this.props.focusHandler(parseInt(m));
+        }
+
+    },
+
+    onChangeCursorPosition: function(e) {
+        // console.log("MONACO - On Cursor Position: ", e);
+    },
+
     onDidMount: function(editor, monaco) {
-        console.log('MONACO - onDidMount', editor);
+        // console.log('MONACO - onDidMount', editor);
 
         editor.focus();
 
@@ -171,25 +188,34 @@ var SceneMonacoTextEditor = React.createClass({
 
         this.refs.monaco.editor.setValue(this.getInitialState().code);
 
-        // this.refs.monaco.editor.onDidChangeCursorPosition(function(e){
-        //     console.log(e);
-        // });
-        //
-        // this.refs.monaco.editor.onDidChangeCursorSelection(this.onTextSelection)
+        this.refs.monaco.editor.onDidChangeCursorPosition(this.onChangeCursorPosition);
+
+        this.refs.monaco.editor.onDidChangeCursorSelection(this.onTextSelection)
+    },
+
+    shouldComponentUpdate: function(nextProps, nextState) {
+
+        if(!this.state.scene) {
+            return true;
+        }
+
+        if(! _.isEqual(nextProps.focusedMediaObject, this.props.focusedMediaObject)) {
+            return true;
+        }
+
+        if(!this.refs.monaco.editor) {
+            return true;
+        }
+
+        return !_.isEqual(nextProps.scene, this.props.scene);
     },
 
     componentDidUpdate: function(previousProps, previousState) {
         console.log("MONACO - componentDidUpdate");
 
-        //TODO check if any errors
         try {
-            var editorScene = JSON.parse(this.refs.monaco.editor ? this.refs.monaco.editor.getValue() : "{}"); //TODO might need changing
-
-            console.log("MONACO - componentDidUpdate - editorScene: ", editorScene);
-
-            if(! _.isEqual(editorScene, this.getHumanReadableScene())) {
-                this.refs.monaco.editor.setValue(this.getSceneString()); //CHECK if we should set document to new json
-            }
+            if(! _.isEqual(this.props.scene, previousProps.scene))
+                this.refs.monaco.editor.setValue(this.getSceneString());
         } catch (e) {
             console.log("Error with bad json: ", e);
         }
@@ -205,7 +231,7 @@ var SceneMonacoTextEditor = React.createClass({
             var match = matches[this.props.focusedMediaObject];
             this.refs.monaco.editor.setPosition(match.getStartPosition());
             this.refs.monaco.editor.revealPosition(match.getStartPosition());
-            this.refs.monaco.editor.setSelection(match);
+            //this.refs.monaco.editor.setSelection(match);
 
         }
     },
@@ -230,7 +256,6 @@ var SceneMonacoTextEditor = React.createClass({
                     width="100%"
                     height="100%"
                     language="json"
-                    value={this.state.code}
                     options={options}
                     requireConfig={requireConfig}
                     onChange={this.onChange}
