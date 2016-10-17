@@ -84,8 +84,12 @@ var SceneListStore = assign({}, EventEmitter.prototype, {
                 delete _scenes[action.sceneId];
                 SceneListStore.emitChange();
                 break;
+            case ActionTypes.HUB_LOGOUT:
+                _scenes = {};
+                SceneListStore.emitChange();
+                break;
         }
-        
+
 
         return true;
     })

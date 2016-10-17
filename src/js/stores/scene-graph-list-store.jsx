@@ -68,6 +68,10 @@ var SceneGraphListStore = assign({}, EventEmitter.prototype, {
                 delete _sceneGraphs[action.sceneGraphId];
                 SceneGraphListStore.emitChange();
                 break;
+            case ActionTypes.HUB_LOGOUT:
+                _sceneGraphs = {};
+                SceneGraphListStore.emitChange();
+                break;
         }
         return true;
     })
