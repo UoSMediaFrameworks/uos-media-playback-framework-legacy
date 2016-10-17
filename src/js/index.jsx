@@ -20,9 +20,13 @@ var Scene = require('./components/pages/scene.jsx');
 var SceneGraph = require('./components/pages/scenegraph.jsx');
 
 var ClientStore = require('./stores/client-store');
+var appVersion = require('./utils/app-version');
 
 // login with localStorage creds if possible
 HubSendActions.tryTokenLogin();
+
+// precache version data
+appVersion.getVersion();
 
 function requireAuth(nextState, replaceState) {
     if (!ClientStore.loggedIn())

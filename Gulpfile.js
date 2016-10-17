@@ -3,6 +3,7 @@
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var path = require('path');
+var run = require('gulp-run');
 var gulpif = require('gulp-if');
 var template = require('gulp-template');
 var source = require('vinyl-source-stream');
@@ -100,6 +101,10 @@ gulp.task('bundlejs', function() {
         viewerBundler.rebundle(),
         manifest2015Bundler.rebundle()
     );
+});
+
+gulp.task('build-version-document', function() {
+    return run('node ./build/app-versioning/app-version.js').exec();
 });
 
 gulp.task('include-monaco-editor', function() {
