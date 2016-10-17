@@ -31,13 +31,21 @@ var MediaObjectPreview = React.createClass({
 	loadObjectExtras: function(mediaObject) {
 		switch(mediaObject.type) {
 			case 'audio':
-				soundCloud.waveformUrl(mediaObject.url, function(url) {
-					// triggers invariant violation sometimes
-					this.setState({thumbImage: url});
-				}.bind(this));
+				soundCloud.waveformUrl(mediaObject.url, function(err,url) {
+                    if(err){
+                        console.log('Unable to load waveform URL')
+                    }else{
+                        this.setState({thumbImage: url});
+                    }
 
-				soundCloud.title(mediaObject.url, function(title) {
-					this.setState({title: title});
+				}.bind(this));
+				soundCloud.title(mediaObject.url, function(err,title) {
+                    if(err){
+                        console.log('Unable to load title')
+                    }else{
+                        this.setState({title: title});
+                    }
+
 				}.bind(this));
 				break;
 

@@ -87,14 +87,15 @@ var SceneActions = {
             type: ActionTypes.ADD_MEDIA_ATTEMPT,
             value: soundCloudUrl
         });
-        soundCloud.tags(soundCloudUrl, function(data) {
-
-            if(data.error){
+        soundCloud.tags(soundCloudUrl, function(err,data) {
+            if(err){
                 AppDispatcher.handleServerAction({
                     type: ActionTypes.ADD_MEDIA_FAILED,
-                    value:data
+                    value:err
                 });
             }else{
+               var tags = soundCloud.convertTags(data[0] + ' ' + data[1]);
+
                 AppDispatcher.handleServerAction({
                     type: ActionTypes.ADD_MEDIA_SUCCESS
                 });
@@ -103,7 +104,7 @@ var SceneActions = {
                     type: 'audio',
                     volume: 100,
                     url: soundCloudUrl,
-                    tags: data,
+                    tags: tags,
                     style: {
                         'z-index': '1'
                     }

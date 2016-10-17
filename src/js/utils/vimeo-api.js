@@ -20,17 +20,20 @@ module.exports = {
 			callback(null, cache[vimeoId]);
 		} else {
 			makeRequest({
-				url: API_URL + 'videos/' + vimeoId + '?fields=tags',
+				url: API_URL + 'videos/' + vimeoId + '?fields=tags,pictures,metadata',
 				responseParser: jsonParser,
 				onLoad: function(err,data) {
                     if(err){
-                        callback(err,null);
+                        callback(err);
                     }else{
                         cache[vimeoId] = data;
                         callback(null, data);
                     }
 
 				},
+                onError: function(data){
+                    console.log(data)
+                },
 				headers: {
 					'Authorization': 'bearer ' + process.env.VIMEO_ACCESS_TOKEN
 				}

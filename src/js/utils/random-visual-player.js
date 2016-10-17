@@ -5,7 +5,7 @@ var VideoMediaObject = require('./media-object/video-media-object');
 var variableThrottle = require('./variable-throttle');
 var ImageMediaObject = require('./media-object/image-media-object');
 var TextMediaObject = require('./media-object/text-media-object');
-
+var toastr = require('toastr');
 
 function RandomVisualPlayer(stageElement, queue) {
     var showMedia = variableThrottle(function () {
@@ -104,6 +104,7 @@ function RandomVisualPlayer(stageElement, queue) {
                 console.log('element parent is ', mediaObject.element.parentElement);
             }
         } else {
+            toastr.warning('There has been an issue with the system.')
             console.log('moDoneHandler called on mediaObject without element, shouldnt happen....');
         }
         showMedia();

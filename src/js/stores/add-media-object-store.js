@@ -54,7 +54,7 @@ var AddMediaObjectStore = assign({}, EventEmitter.prototype, {
                         toastr.warning('The media you are trying to add was not found');
                         break;
                     case 403:
-                        toastr.warning('You are not authorized to add this sound.');
+                        toastr.warning('You are not authorized to add this media.');
                         break;
                     case 503:
                         toastr.warning('media service is unavailable');
