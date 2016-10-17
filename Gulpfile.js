@@ -116,7 +116,7 @@ gulp.task('include-schemas', function() {
     return gulp.src(['src/schemas/**']).pipe(gulp.dest('dist/schemas'));
 });
 
-gulp.task('build-dist', ['bundlejs', 'html', 'css', 'include-monaco-editor', 'include-schemas']);
+gulp.task('build-dist', ['bundlejs', 'html', 'css', 'include-monaco-editor', 'include-schemas', 'build-version-document']);
 
 
 ///// BEGIN CLI TASKS ////////////////////////////////
