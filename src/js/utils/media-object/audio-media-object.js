@@ -6,7 +6,7 @@ var soundCloud = require('../sound-cloud');
 var MediaObject = require('./media-object');
 var inherits = require('inherits');
 var TWEEN = require('tween.js');
-
+var toastr = require('toastr');
 inherits(AudioMediaObject, MediaObject);
 module.exports = AudioMediaObject;
 
@@ -28,13 +28,16 @@ function tweenAudio (player, start, end, duration) {
 
 AudioMediaObject.prototype.play = function() {
     var self = this,
-        // hide inside of play() because Audio5 library bombs when loaded 
+        // hide inside of play() because Audio5 library bombs when loaded
         // in a headless environment
         Audio5 = require('audio5');
 
     console.log('playing ' + this._obj.url, this._obj.tags);
 
-    soundCloud.streamUrl(this._obj.url, function(streamUrl) {
+    soundCloud.streamUrl(this._obj.url, function(err,streamUrl) {
+        if(err){
+            toastr.warning(err)
+        }
         if (self._playing) {
             var volume = self._obj.volume;
             if (isNaN(volume)) {
@@ -50,9 +53,9 @@ AudioMediaObject.prototype.play = function() {
                         this.load(streamUrl);
                         this.volume(0);
                         this.play();
-                        
+
                         tweenAudio(this, 0, volume, self._ops.transitionDuration).start();
-                        
+
                         var transitionSeconds = self._ops.transitionDuration / 1000;
                         this.on('timeupdate', function (position, duration) {
                             if ((duration - position) < transitionSeconds || duration < transitionSeconds) {
@@ -93,7 +96,7 @@ AudioMediaObject.prototype.transition = function() {
 AudioMediaObject.prototype.stop = function() {
     if (this._player && this._player.playing) {
         console.log('stopping ', this._obj.url);
-        this._player.pause();    
+        this._player.pause();
         this.emit('done', this);
     }
 };

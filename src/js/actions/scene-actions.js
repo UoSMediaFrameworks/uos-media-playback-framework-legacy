@@ -13,8 +13,9 @@ var vimeoApi = require('../utils/vimeo-api');
 var assetStore = require('../utils/asset-store');
 var hashHistory = require('react-router').hashHistory;
 var toastr = require('toastr');
+
 var SceneActions = {
-    updateScene: function(scene) {
+    updateScene: function (scene) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.SCENE_CHANGE,
             scene: scene
@@ -23,7 +24,7 @@ var SceneActions = {
         HubClient.save(scene);
     },
 
-    addMediaObject: function(sceneId, mediaObject) {
+    addMediaObject: function (sceneId, mediaObject) {
         // add a default empty tags attribute incase someone isn't specifying it
         var obj = objectAssign({tags: ''}, mediaObject);
 
@@ -32,9 +33,13 @@ var SceneActions = {
             sceneId: sceneId,
             mediaObject: obj
         });
+
+        AppDispatcher.handleServerAction({
+            type: ActionTypes.ADD_MEDIA_SUCCESS
+        });
     },
 
-    addText: function(sceneId, text) {
+    addText: function (sceneId, text) {
         SceneActions.addMediaObject(sceneId, {
             tags: '',
             type: 'text',
@@ -44,25 +49,25 @@ var SceneActions = {
             }
         });
 
-        AppDispatcher.handleServerAction({
-            type: ActionTypes.ADD_MEDIA_SUCCESS
-        });
     },
 
-    addVimeo: function(sceneId, vimeoUrl) {
+    addVimeo: function (sceneId, vimeoUrl) {
 
         AppDispatcher.handleServerAction({
             type: ActionTypes.ADD_MEDIA_ATTEMPT,
             value: vimeoUrl
         });
 
-        vimeoApi.video(getVimeoId(vimeoUrl), function(err, data) {
+        vimeoApi.video(getVimeoId(vimeoUrl), function (err, data) {
             if (err) {
                 AppDispatcher.handleServerAction({
                     type: ActionTypes.ADD_MEDIA_FAILED
                 });
             } else {
-                var tags = _(data.tags).pluck('tag').map(function(x) { return x.trim(); }).value().join(', ');
+                var tags = _(data.tags).pluck('tag').map(function (x) {
+                    return x.trim();
+                }).value().join(', ');
+
                 SceneActions.addMediaObject(sceneId, {
                     type: 'video',
                     volume: 100,
@@ -71,35 +76,28 @@ var SceneActions = {
                     style: {
                         'z-index': '1'
                     },
-                    autoreplay:0
+                    autoreplay: 0
                 });
 
-                AppDispatcher.handleServerAction({
-                    type: ActionTypes.ADD_MEDIA_SUCCESS
-                });
+
             }
         });
     },
 
-    addSoundCloud: function(sceneId, soundCloudUrl) {
+    addSoundCloud: function (sceneId, soundCloudUrl) {
         // so far keep it easy
         AppDispatcher.handleServerAction({
             type: ActionTypes.ADD_MEDIA_ATTEMPT,
             value: soundCloudUrl
         });
-        soundCloud.tags(soundCloudUrl, function(err,data) {
-            if(err){
+        soundCloud.tags(soundCloudUrl, function (err, data) {
+            if (err) {
                 AppDispatcher.handleServerAction({
                     type: ActionTypes.ADD_MEDIA_FAILED,
-                    value:err
+                    value: err
                 });
-            }else{
-               var tags = soundCloud.convertTags(data[0] + ' ' + data[1]);
-
-                AppDispatcher.handleServerAction({
-                    type: ActionTypes.ADD_MEDIA_SUCCESS
-                });
-
+            } else {
+                var tags = soundCloud.convertTags(data[0] + ' ' + data[1]);
                 SceneActions.addMediaObject(sceneId, {
                     type: 'audio',
                     volume: 100,
@@ -109,16 +107,18 @@ var SceneActions = {
                         'z-index': '1'
                     }
                 });
-            }
 
+            }
         });
     },
 
-    removeMediaObject: function(scene, index) {
+
+    removeMediaObject: function (scene, index) {
         var copy = _.cloneDeep(scene);
         var removedObject = copy.scene.splice(index, 1);
+
         if (removedObject.length === 0) {
-            throw "attempted to remove mediaObject not found in scene";
+            toastr.warning("attempted to remove mediaObject not found in scene")
         }
 
         AppDispatcher.handleViewAction({
@@ -129,7 +129,7 @@ var SceneActions = {
         HubClient.save(copy);
     },
 
-    logout: function() {
+    logout: function () {
         AppDispatcher.handleViewAction({
             type: ActionTypes.HUB_LOGOUT
         });
@@ -138,7 +138,7 @@ var SceneActions = {
         hashHistory.push('login');
     },
 
-    dismissStatus: function(alertId) {
+    dismissStatus: function (alertId) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.STATUS_MESSAGE_REMOVE,
             message: alertId,
@@ -146,7 +146,7 @@ var SceneActions = {
         });
     },
 
-    uploadAsset: function(sceneId, file) {
+    uploadAsset: function (sceneId, file) {
         var alertId = hat();
         AppDispatcher.handleViewAction({
             type: ActionTypes.STATUS_MESSAGE,
@@ -155,13 +155,13 @@ var SceneActions = {
             status: 'info'
         });
 
-        assetStore.create(file, function(status, data) {
+        assetStore.create(file, function (status, data) {
 
             var msg = (status === 'warning' ?
-                'No tags found in ' + file.name :
+            'No tags found in ' + file.name :
                 status === 'danger' ?
-                'Upload unsuccessful!' :
-                'Upload successful!');
+                    'Upload unsuccessful!' :
+                    'Upload successful!');
 
             AppDispatcher.handleServerAction({
                 type: ActionTypes.STATUS_MESSAGE_UPDATE,
@@ -172,7 +172,7 @@ var SceneActions = {
 
             var msecs = status === 'success' ? 1000 : 10000;
 
-            setTimeout(function() {
+            setTimeout(function () {
                 AppDispatcher.handleServerAction({
                     type: ActionTypes.STATUS_MESSAGE_REMOVE,
                     id: alertId
