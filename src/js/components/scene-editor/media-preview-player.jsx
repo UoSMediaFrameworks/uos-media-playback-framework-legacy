@@ -2,7 +2,7 @@
 var React = require('react');
 var soundCloud = require('../../utils/sound-cloud');
 var getVimeoId = require('../../utils/get-vimeo-id');
-
+var toastr = require('toastr');
 
 var MediaObjectPreviewPlayer = React.createClass({
     getInitialState: function () {
@@ -23,17 +23,19 @@ var MediaObjectPreviewPlayer = React.createClass({
                 previewContainer.innerHTML = '';
             switch (mediaObject.type) {
                 case 'audio':
-                    soundCloud.streamUrl(mediaObject.url, function (streamUrl) {
-                        var preview = <audio
-                            className="react-audio-player"
-                            src={streamUrl}
-                            controls
-                        >
-                        </audio>;
-
+                    var preview
+                    soundCloud.streamUrl(mediaObject.url, function (err,streamUrl) {
+                        if(err) {
+                            toastr.warning(err)
+                        } else {
+                            preview = <audio
+                                className="react-audio-player"
+                                src={streamUrl}
+                                controls>
+                            </audio>;
+                        }
                         this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                     });
-
                     break;
 
                 case 'video':

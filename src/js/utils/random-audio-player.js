@@ -15,6 +15,7 @@ function RandomAudioPlayer (queue) {
     }
 
     var playAudio = variableThrottle(function() {
+
         var obj = queue.take([AudioMediaObject]);
         if (obj) {
             obj.on('transition', moTransitionHandler);

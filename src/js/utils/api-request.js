@@ -3,9 +3,10 @@
 
 var _ = require('lodash');
 var urlParams = function(obj) {
-	return _.map(obj, function(val, key) {
-		return encodeURI(key) + '=' + encodeURI(val);
-	}).join('&');
+    var params = _.map(obj, function(val, key) {
+        return encodeURI(key) + '=' + encodeURI(val);
+    }).join('&');
+	return  params;
 };
 
 var makeRequest = function(ops) {
