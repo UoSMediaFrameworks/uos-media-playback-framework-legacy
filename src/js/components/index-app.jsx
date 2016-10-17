@@ -10,14 +10,18 @@ var Router = require('react-router'),
     RouteHandler = Router.RouteHandler,
     Link = Router.Link;
 var connectionCache = require('../utils/connection-cache');
+var appVersion = require('../utils/app-version');
 
 function _getState () {
     return {
         loggedIn: ClientStore.loggedIn(),
         attemptingLogin: ClientStore.attemptingLogin(),
-        messages: StatusMessageStore.getMessages()
-    };
+        messages: StatusMessageStore.getMessages(),
+        versionData: appVersion.getVersion()
+    }
 }
+
+var production = process.env.NODE_ENV === 'production';
 
 var App = React.createClass({
 
@@ -45,10 +49,22 @@ var App = React.createClass({
 
     render: function() {
         var sessionNav, nav;
-		//AJF: gets the groupID then passes as a parameter to get the group name. I tried a version of getShortGroupName that would accept no groupID and get it from the current session but it wasn't working @todo: fix this in connectioncache
+        var versionText = this.state.versionData ? this.state.versionData.version : "loading..";
+
+        var banner = !production ? <span> - DEV BUILD </span> : <span></span>;
+
+        //AJF: gets the groupID then passes as a parameter to get the group name. I tried a version of getShortGroupName that would accept no groupID and get it from the current session but it wasn't working @todo: fix this in connectioncache
         if (this.state.loggedIn) {
-            sessionNav = <div className='session-nav'><span><a href="/#/scenegraphs" target="_blank">Open SceneGraph Creator</a>&nbsp;{connectionCache.getGroupID()} - {connectionCache.getShortGroupName(connectionCache.getGroupID())}</span>
+            sessionNav = <div className='session-nav'>
+                <span><a href="/#/scenegraphs" target="_blank">Open SceneGraph Creator</a>&nbsp;{connectionCache.getGroupID()} - {connectionCache.getShortGroupName(connectionCache.getGroupID())}</span>
                 <a className='btn' onClick={this.handleLogout}>Log out</a>
+                <span>Version: {versionText}</span>
+                {banner}
+            </div>;
+        } else {
+            sessionNav = <div className='session-nav'>
+                <span>Version: {versionText}</span>
+                {banner}
             </div>;
         }
 
@@ -69,7 +85,6 @@ var App = React.createClass({
                         Do's &amp; Don'ts of Media Frameworks
                     </a>
                     <h4 className='title'>Media Scene Editor</h4>
-
                 </div>
                 <Loader message='Logging in...' loaded={! this.state.attemptingLogin}>
                     {this.props.children}
