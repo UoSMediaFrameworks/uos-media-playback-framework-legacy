@@ -13,7 +13,7 @@ module.exports = {
             makeRequest({
                 url: APP_VERSION_URL,
                 responseParser: jsonParser,
-                onLoad: function(data) {
+                onLoad: function(error, data) {
                     cache = data;
                     return data;
                 },
