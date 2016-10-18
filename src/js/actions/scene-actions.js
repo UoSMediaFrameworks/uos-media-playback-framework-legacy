@@ -118,7 +118,8 @@ var SceneActions = {
         var removedObject = copy.scene.splice(index, 1);
 
         if (removedObject.length === 0) {
-            toastr.warning("attempted to remove mediaObject not found in scene")
+            toastr.warning("attempted to remove mediaObject not found in scene");
+            return;
         }
 
         AppDispatcher.handleViewAction({
