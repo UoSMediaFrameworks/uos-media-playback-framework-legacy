@@ -3,4 +3,4 @@
 
 module.exports = function(responseText) {
 	return JSON.parse(responseText);
-}
+};

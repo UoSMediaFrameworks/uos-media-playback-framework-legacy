@@ -49,7 +49,7 @@ var App = React.createClass({
 
     render: function() {
         var sessionNav, nav;
-        var versionText = this.state.versionData ? this.state.versionData.version : "loading..";
+        var versionText = this.state.versionData && this.state.versionData.sha ? this.state.versionData.sha.substring(0,7) : "loading..";
 
         var banner = !production ? <span> - DEV BUILD </span> : <span></span>;
 
