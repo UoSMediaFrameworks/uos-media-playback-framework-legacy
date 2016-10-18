@@ -29,6 +29,11 @@ var MediaObjectPreview = React.createClass({
 	},
 
 	loadObjectExtras: function(mediaObject) {
+
+        if(!mediaObject || !mediaObject.type) {
+            return;
+        }
+
 		switch(mediaObject.type) {
 			case 'audio':
 				soundCloud.waveformUrl(mediaObject.url, function(err,url) {

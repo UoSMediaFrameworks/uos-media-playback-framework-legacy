@@ -17,6 +17,7 @@ var MediaObjectList = React.createClass({
 
     handleSelect: function(index) {
         return function(e) {
+            e.preventDefault();
             this.props.focusHandler(index);
             this.setState({selectedIndex: index});
         }.bind(this);
@@ -24,6 +25,7 @@ var MediaObjectList = React.createClass({
 
     handleDelete: function (scene, index) {
         return function (e) {
+            e.preventDefault();
             SceneActions.removeMediaObject(scene, index);
         }.bind(this);
     },

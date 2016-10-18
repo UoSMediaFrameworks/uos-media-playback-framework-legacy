@@ -18,35 +18,43 @@ var MediaObjectPreviewPlayer = React.createClass({
     },
     previewMediaObject: function (props) {
         var previewContainer = document.getElementsByClassName("media-object-item-preview-player");
-        if (props.focusedMediaObject != null) {
-            var mediaObject = this._getMediaObject(props);
-                previewContainer.innerHTML = '';
-            switch (mediaObject.type) {
-                case 'audio':
-                    var preview
-                    soundCloud.streamUrl(mediaObject.url, function (err,streamUrl) {
-                        if(err) {
-                            toastr.warning(err)
-                        } else {
-                            preview = <audio
-                                className="react-audio-player"
-                                src={streamUrl}
-                                controls>
-                            </audio>;
-                        }
-                        this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
-                    });
-                    break;
+        previewContainer.innerHTML = '';
 
-                case 'video':
-                    var vimeoId = getVimeoId(mediaObject.url)
-                    var url = 'https://player.vimeo.com/video/' + vimeoId;
-                    var preview = <iframe width="100%" height="100%" src={url}></iframe>
-                    this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
-                    break;
-            }
-            previewContainer.innerHTML = this.state.preview
+        if (props.focusedMediaObject === null) {
+            return;
         }
+
+        var mediaObject = this._getMediaObject(props);
+
+        if(!mediaObject) {
+            return;
+        }
+
+        switch (mediaObject.type) {
+            case 'audio':
+                soundCloud.streamUrl(mediaObject.url, function (err,streamUrl) {
+                    var preview;
+                    if(err) {
+                        toastr.warning(err)
+                    } else {
+                        preview = <audio
+                            className="react-audio-player"
+                            src={streamUrl}
+                            controls>
+                        </audio>;
+                    }
+                    this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
+                });
+                break;
+
+            case 'video':
+                var vimeoId = getVimeoId(mediaObject.url);
+                var url = 'https://player.vimeo.com/video/' + vimeoId;
+                var preview = <iframe width="100%" height="100%" src={url}></iframe>;
+                this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
+                break;
+        }
+        previewContainer.innerHTML = this.state.preview
     },
 
     setupState: function (props) {

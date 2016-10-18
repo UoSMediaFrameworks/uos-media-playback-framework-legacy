@@ -229,6 +229,12 @@ var SceneMonacoTextEditor = React.createClass({
 
             var matches = this.refs.monaco.editor.getModel().findMatches(sceneMediaObjectRegex, false, true, false, false);
             var match = matches[this.props.focusedMediaObject];
+
+            if(!match) {
+                console.log("No selection for media object available");
+                return;
+            }
+            
             this.refs.monaco.editor.setPosition(match.getStartPosition());
             this.refs.monaco.editor.revealPosition(match.getStartPosition());
             //this.refs.monaco.editor.setSelection(match);

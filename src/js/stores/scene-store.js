@@ -36,7 +36,7 @@ var SceneStore = assign({}, EventEmitter.prototype, {
         switch(action.type){
             case ActionTypes.SCENE_CHANGE:
                 _updateScene(action.scene);
-                HubClient.save(action.scene);
+                SceneStore.emitChange();
                 break;
 
             case ActionTypes.DELETE_SCENE:
@@ -54,6 +54,7 @@ var SceneStore = assign({}, EventEmitter.prototype, {
             // should only be triggered when server sends data back, so no need to save
             case ActionTypes.RECIEVE_SCENE:
                 _updateScene(action.scene);
+                SceneStore.emitChange();
                 break;
         }
 
