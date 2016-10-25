@@ -129,38 +129,40 @@ function RandomVisualPlayer(stageElement, queue) {
     }
     //Improve Done Handler AP.
     function moDoneHandler(mediaObject) {
-        if (mediaObject.type == "video") {
-            switch (mediaObject._obj.autoreplay) {
-                case 0:
-                   console.log('i need a better way to do this');
-                    break;
-                case 1:
-                    clearMediaElement(mediaObject);
-                    break;
-                default:
-                    if (mediaObject.currentLoop == undefined) {
-                        mediaObject.currentLoop = 0;
-                    } else if (mediaObject.currentLoop < mediaObject.autoreplay) {
-                        console.log(mediaObject.currentLoop);
-                        mediaObject.currentLoop++;
-                    } else {
-                        clearMediaElement(mediaObject);
-                    }
-
-                    break;
-
-            }
-        }else{
+        if (mediaObject.type !== "video") {
             clearMediaElement(mediaObject);
+            return;
         }
 
+        switch (mediaObject._obj.autoreplay) {
+            case 0:
+                console.log("moDoneHandler - case 0 do not clear");
+                break;
+            case 1:
+                clearMediaElement(mediaObject);
+                break;
+            default:
+                if (mediaObject.currentLoop == undefined) {
+                    mediaObject.currentLoop = 0;
+                } else if (mediaObject.currentLoop < mediaObject.autoreplay) {
+                    console.log(mediaObject.currentLoop);
+                    mediaObject.currentLoop++;
+                } else {
+                    clearMediaElement(mediaObject);
+                }
+                break;
+        }
     }
 
     function moTransitionHandler(mediaObject) {
         mediaObject.removeListener('transition', moTransitionHandler);
+
+        //As video element is part of the media object, we must parse the media object different to get the HTML element
+        var elementForTransition = mediaObject.type === "video" ? mediaObject._player._element : mediaObject.element;
+
         // sometimes things can still be loading so, make sure there's an element
-        if (mediaObject.element && mediaObject.autoreplay <=1) {
-            mediaObject.element.classList.remove('show-media-object');
+        if (elementForTransition && mediaObject.autoreplay <=1) {
+            elementForTransition.classList.remove('show-media-object');
         }
         showMedia();
     }
