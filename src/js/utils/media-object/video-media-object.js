@@ -28,14 +28,7 @@ VideoMediaObject.prototype.makeElement = function (callback) {
 };
 
 VideoMediaObject.prototype.getLooping = function () {
-    var looping = this._obj.autoreplay;
-    if(looping == undefined || looping < 1)
-    {
-        looping = false
-    }else{
-        looping = true
-    }
-    return looping;
+    return !(this._obj.autoreplay == undefined || this._obj.autoreplay < 1);
 };
 VideoMediaObject.prototype.getVolume = function () {
     var volume = this._obj.volume;
@@ -78,8 +71,7 @@ VideoMediaObject.prototype.transition = function () {
         new TWEEN.Tween(position)
             .to(target, this._ops.transitionDuration)
             .onUpdate(function () {
-                //TODO update refs to new way
-                self._player.postMessage('setVolume', position.vol);
+                self._player.vimeo_player.setVolume(position.vol);
             })
             .onComplete(function () {
                 self.emit('done', self);
