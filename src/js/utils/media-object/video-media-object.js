@@ -29,7 +29,7 @@ VideoMediaObject.prototype.makeElement = function (callback) {
 
 VideoMediaObject.prototype.getLooping = function () {
     var looping = this._obj.autoreplay;
-    if(looping ==undefined && looping < 1)
+    if(looping == undefined || looping < 1)
     {
         looping = false
     }else{
