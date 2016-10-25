@@ -7,57 +7,69 @@ var ImageMediaObject = require('./media-object/image-media-object');
 var TextMediaObject = require('./media-object/text-media-object');
 var toastr = require('toastr');
 
+var looplessMediaObjects = [];
+
 function RandomVisualPlayer(stageElement, queue) {
+
     var showMedia = variableThrottle(function () {
-        removeAllLooplessVideos();
+
+        removeAllLooplessVideos(); //Causing some issues with playback
+
+        console.log("queue: ", queue);
+
         _.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject], function (moType) {
             var obj = queue.take([moType]);
 
             var style = obj ? obj.style : {};
 
-            if (obj) {
-                obj.on('done', moDoneHandler);
-                obj.on('transition', moTransitionHandler);
-
-                obj.makeElement(function () {
-
-                    //TODO improve
-                    if (obj instanceof VideoMediaObject) {
-                        try {
-                            if(obj._obj.autoreplay == 0){
-                                obj._player._element.classList.add('interval-remove');
-                            }
-
-                            // window.addEventListener('blur',function(){
-                            //     bringToFront('',document.activeElement)
-                            // });
-
-                            console.log("stateElement", stageElement);
-                            console.log("obj.element", obj._player._element);
-                            stageElement.appendChild(obj._player._element);
-                            placeAtRandomPosition(obj._player._element);
-                            obj._player._element.classList.add('show-media-object');
-                            obj.play();
-                        } catch (e) {
-                            console.error(e);
-                        }
-                    } else {
-                        obj.onReady(function () {
-
-                            if (obj instanceof ImageMediaObject || obj instanceof TextMediaObject) {
-                                addStyle(obj.element, style);
-                                stageElement.appendChild(obj.element);
-                                placeAtRandomPosition(obj.element);
-                            }
-                            obj.element.onclick = bringToFront;
-
-                            obj.play();
-                            obj.element.classList.add('show-media-object');
-                        });
-                    }
-                });
+            if (!obj) {
+                return;
             }
+
+            obj.on('done', moDoneHandler);
+            obj.on('transition', moTransitionHandler);
+
+            obj.makeElement(function () {
+
+                //TODO improve
+                if (obj instanceof VideoMediaObject) {
+                    try {
+                        if(obj._obj.autoreplay == 0){
+                            obj._player._element.classList.add('interval-remove');
+                            looplessMediaObjects.push(obj);
+                        }
+
+                        // window.addEventListener('blur',function(){
+                        //     bringToFront('',document.activeElement)
+                        // });
+
+                        console.log("stateElement", stageElement);
+                        console.log("obj.element", obj._player._element);
+                        stageElement.appendChild(obj._player._element);
+                        placeAtRandomPosition(obj._player._element);
+                        obj._player._element.classList.add('show-media-object');
+                        obj.play();
+                    } catch (e) {
+                        console.error(e);
+                    }
+                } else {
+                    obj.onReady(function () {
+
+                        if (obj instanceof ImageMediaObject || obj instanceof TextMediaObject) {
+                            addStyle(obj.element, style);
+                            stageElement.appendChild(obj.element);
+                            placeAtRandomPosition(obj.element);
+                        }
+                        obj.element.onclick = bringToFront;
+
+                        obj.play();
+                        obj.element.classList.add('show-media-object');
+                    });
+                }
+            });
+
         });
+
     }, function () {
         return queue.displayInterval;
     });
@@ -87,10 +99,20 @@ function RandomVisualPlayer(stageElement, queue) {
     }
 
     function removeAllLooplessVideos() {
-        var removable = document.getElementsByClassName('interval-remove');
-        while (removable[0]) {
-            removable[0].parentNode.removeChild(removable[0]);
+
+        var i = looplessMediaObjects.length;
+
+        while(i--) {
+            var mediaObject = looplessMediaObjects.splice(i , 1);
+
+            if(!mediaObject || mediaObject.length <= 0)
+                return;
+
+            if(mediaObject[0] instanceof VideoMediaObject) {
+                mediaObject[0].transition();
+            }
         }
+
     }
 
     function placeAtRandomPosition(element) {
@@ -109,6 +131,9 @@ function RandomVisualPlayer(stageElement, queue) {
     };
 
     function clearMediaElement(mediaObject) {
+
+        console.log("randomVisualPlayer - clearMediaElement - mediaObject", mediaObject);
+
         mediaObject.removeListener('done', moDoneHandler);
 
         //As video element is part of the media object, we must parse the media object different to get the HTML element
@@ -129,6 +154,9 @@ function RandomVisualPlayer(stageElement, queue) {
     }
     //Improve Done Handler AP.
     function moDoneHandler(mediaObject) {
+
+        console.log("randomVisualPlayer - moDoneHandler - mediaObject: ", mediaObject);
+
         if (mediaObject.type !== "video") {
             clearMediaElement(mediaObject);
             return;
@@ -136,8 +164,6 @@ function RandomVisualPlayer(stageElement, queue) {
 
         switch (mediaObject._obj.autoreplay) {
             case 0:
-                console.log("moDoneHandler - case 0 do not clear");
-                break;
             case 1:
                 clearMediaElement(mediaObject);
                 break;
@@ -159,6 +185,8 @@ function RandomVisualPlayer(stageElement, queue) {
 
         //As video element is part of the media object, we must parse the media object different to get the HTML element
         var elementForTransition = mediaObject.type === "video" ? mediaObject._player._element : mediaObject.element;
+
+        console.log("randomVisualPlayer - moTransitionHandler - mediaObject: ", mediaObject);
 
         // sometimes things can still be loading so, make sure there's an element
         if (elementForTransition && mediaObject.autoreplay <=1) {

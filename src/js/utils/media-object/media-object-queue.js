@@ -13,7 +13,7 @@ var SCENE_PROP_DEFAULTS = {
     transitionDuration: 1.4
 };
 
-/* 
+/*
     types - Array of constructors
     defaultDisplayCounts - {typeName: num, typeName, num, ...}
 */
@@ -33,7 +33,7 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
 
     function moTransitionHandler (mediaObject) {
         // pull it out of the active list
-        var activeIndex = _.findIndex(active, function(activeMo) { return activeMo === mediaObject; }); 
+        var activeIndex = _.findIndex(active, function(activeMo) { return activeMo === mediaObject; });
         active.splice(activeIndex, 1);
     }
 
@@ -41,7 +41,7 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
         // make sure it's still in the masterList
         if (_.find(masterList, function(mo) { return mediaObject === mo; })) {
             if (tagMatcher.match(mediaObject.tags)) {
-                queue.push(mediaObject);        
+                queue.push(mediaObject);
             }
         // otherwise it's from an older scene, so remove any event listeners
         } else {
@@ -99,7 +99,7 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
         });
 
         // process the mediaObjects
-        var newMo, 
+        var newMo,
             index,
             oldMo;
 
@@ -112,7 +112,7 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
             });
             newMo.on('transition', moTransitionHandler);
             newMo.on('done', moDoneHandler);
-            
+
             return newMo;
         }.bind(this));
 
@@ -128,9 +128,9 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
         if (ops.hardReset) {
             _.forEach(_.clone(active), function(activeMo) {
                 activeMo.transition();
-            });    
+            });
         }
-        
+
     };
 
     this.take = function(typesArray) {
@@ -149,8 +149,8 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
             .difference(activeSoloTypes).value();
 
         function checkType (obj) {
-            return _.find(eligibleTypes, function(type) { 
-                return queue[i] instanceof type; 
+            return _.find(eligibleTypes, function(type) {
+                return queue[i] instanceof type;
             });
         }
 
@@ -178,11 +178,11 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
                         // so return nothing and wait till next time
                         return undefined;
                     }
-                }    
-            }     
+                }
+            }
         }
 
-        
+
     };
 
     this.setTagMatcher = function(newTagMatcher) {
