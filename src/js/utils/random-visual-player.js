@@ -38,10 +38,9 @@ function RandomVisualPlayer(stageElement, queue) {
                             obj._player._element.classList.add('interval-remove');
                             looplessMediaObjects.push(obj);
                         }
-
-                        // window.addEventListener('blur',function(){
-                        //     bringToFront('',document.activeElement)
-                        // });
+                         window.addEventListener('blur',function(){
+                             bringToFront('',document.activeElement)
+                         });
 
                         console.log("stateElement", stageElement);
                         console.log("obj.element", obj._player._element);
