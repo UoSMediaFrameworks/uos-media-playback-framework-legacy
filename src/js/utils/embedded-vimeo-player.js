@@ -3,6 +3,7 @@
 
 var _ = require('lodash');
 var hat = require('hat');
+var Vimeo = require('@vimeo/player');
 
 function urlAttrs (obj) {
     return _.chain(obj)
@@ -32,7 +33,7 @@ function unregisterPlayer(id) {
 }
 
 function onMessageRecieved (event) {
-    //APEP 3/10/16 - Chrome dev tools + react dev tools cause events to be sent to player 
+    //APEP 3/10/16 - Chrome dev tools + react dev tools cause events to be sent to player
     var data = JSON.parse(event.data);
     players[data.player_id].handleEvent(data);
 }
@@ -69,9 +70,13 @@ function EmbeddedVimeoPlayer (vimeoId) {
         class: 'media-object embedded-vimeo-player'
     });
 
-    document.body.appendChild(this._element);
-    
     this.url = this._element.attributes.src.value.split('?')[0];
+
+    document.body.appendChild(this._element);
+
+    this.vimeo_player = new Vimeo(this._element);
+
+    return this;
 }
 
 EmbeddedVimeoPlayer.prototype.postMessage = function(action, value) {
@@ -84,7 +89,9 @@ EmbeddedVimeoPlayer.prototype.postMessage = function(action, value) {
     }
 
     var msg = JSON.stringify(data);
-    
+
+    console.log("postMessage: ", msg);
+
     this._element.contentWindow.postMessage(data, this.url);
 };
 
@@ -102,13 +109,13 @@ EmbeddedVimeoPlayer.prototype.handleEvent = function(data) {
         case 'ready':
             this.postMessage('addEventListener', 'playProgress');
             if (this._readyHandler) {
-                this._readyHandler(this._element);    
+                this._readyHandler(this._element);
             }
-            
+
             break;
         case 'playProgress':
             if (this._playProgressHandler) {
-                this._playProgressHandler(data.data);    
+                this._playProgressHandler(data.data);
             }
             break;
     }

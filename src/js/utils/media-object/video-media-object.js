@@ -22,13 +22,9 @@ VideoMediaObject.prototype.makeElement = function (callback) {
 
     this._loading = true;
 
-    player.onReady(function (element) {
-        this.element = element;
-
-        callback();
-    }.bind(this));
-
     this._player = player;
+
+    callback();
 };
 
 VideoMediaObject.prototype.getLooping = function () {
@@ -51,13 +47,13 @@ VideoMediaObject.prototype.getVolume = function () {
 VideoMediaObject.prototype.play = function () {
     this._loading = false;
     // vimeo player complains if you pass it 0, so we pass it just above zero
-    this._player.postMessage('setVolume', this.getVolume() || 0.00001);
-    this._player.postMessage('play');
+    this._player.vimeo_player.setVolume(this.getVolume() || 0.00001);
+    this._player.vimeo_player.play();
+    this._player.vimeo_player.setLoop(this.getLooping() || false);
 
-    this._player.postMessage('setLoop', this.getLooping() || false);
     // setup transition stuff
     var transitionSeconds = this._ops.transitionDuration / 1000;
-    this.element.style.transition = 'opacity ' + (this._ops.transitionDuration / 1000) + 's ease-in-out';
+    this._player._element.style.transition = 'opacity ' + (this._ops.transitionDuration / 1000) + 's ease-in-out';
     this._player.onPlayProgress(function (data) {
         if ((data.duration - data.seconds) < transitionSeconds || data.duration < transitionSeconds) {
             this.transition();
@@ -81,6 +77,7 @@ VideoMediaObject.prototype.transition = function () {
         new TWEEN.Tween(position)
             .to(target, this._ops.transitionDuration)
             .onUpdate(function () {
+                //TODO update refs to new way
                 self._player.postMessage('setVolume', position.vol);
             })
             .onComplete(function () {
