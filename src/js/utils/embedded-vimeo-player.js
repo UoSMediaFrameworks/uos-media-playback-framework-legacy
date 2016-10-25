@@ -74,6 +74,7 @@ function EmbeddedVimeoPlayer (vimeoId) {
 
     document.body.appendChild(this._element);
 
+    //https://github.com/vimeo/player.js
     this.vimeo_player = new Vimeo(this._element);
 
     return this;

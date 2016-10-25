@@ -21,6 +21,7 @@ function RandomVisualPlayer(stageElement, queue) {
 
                 obj.makeElement(function () {
 
+                    //TODO improve
                     if (obj instanceof VideoMediaObject) {
                         try {
                             if(obj._obj.autoreplay == 0){
@@ -109,15 +110,19 @@ function RandomVisualPlayer(stageElement, queue) {
 
     function clearMediaElement(mediaObject) {
         mediaObject.removeListener('done', moDoneHandler);
-        if (mediaObject._player._element) {
-            if (mediaObject._player._element.parentElement === stageElement) {
-                stageElement.removeChild(mediaObject._player._element);
+
+        //As video element is part of the media object, we must parse the media object different to get the HTML element
+        var elementForRemoval = mediaObject.type === "video" ? mediaObject._player._element : mediaObject.element;
+
+        if (elementForRemoval) {
+            if (elementForRemoval.parentElement === stageElement) {
+                stageElement.removeChild(elementForRemoval);
             } else {
                 console.log('mediaObject.element is not currently on the stage, should not have triggered moDoneHandler');
-                console.log('element parent is ', mediaObject._player._element.parentElement);
+                console.log('element parent is ', elementForRemoval.parentElement);
             }
         } else {
-            toastr.warning('There has been an issue with the system.')
+            toastr.warning('There has been an issue with the system.');
             console.log('moDoneHandler called on mediaObject without element, shouldnt happen....');
         }
         showMedia();
@@ -127,7 +132,7 @@ function RandomVisualPlayer(stageElement, queue) {
         if (mediaObject.type == "video") {
             switch (mediaObject._obj.autoreplay) {
                 case 0:
-                   console.log('i need a better way to do this')
+                   console.log('i need a better way to do this');
                     break;
                 case 1:
                     clearMediaElement(mediaObject);
