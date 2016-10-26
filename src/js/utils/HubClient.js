@@ -7,7 +7,7 @@ var HubSendActions = require('../actions/hub-send-actions');
 var assetStore = require('./asset-store');
 var connectionCache = require('./connection-cache');
 var NodeListGeneration = require('./scene-graph/node-list-generation');
-var toastr = require('toastr')
+var toastr = require('toastr');
 var socket;
 
 var HubClient = {
@@ -71,6 +71,7 @@ var HubClient = {
         });
 
         socket.on('sceneUpdate', HubRecieveActions.recieveScene);
+
     },
 
     logout: function() {
