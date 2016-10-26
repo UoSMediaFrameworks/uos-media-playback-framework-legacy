@@ -3,6 +3,7 @@
 
 var StaticMediaObject = require('./static-media-object');
 var inherits = require('inherits');
+var TWEEN = require('tween.js');
 
 module.exports = ImageMediaObject;
 inherits(ImageMediaObject, StaticMediaObject);
@@ -16,7 +17,7 @@ ImageMediaObject.typeName = 'image';
 // trigger callback with preloaded element
 ImageMediaObject.prototype.makeElement = function(callback) {
     var el = new Image();
-    
+
     el.classList.add('image-media-object', 'media-object');
 
     this.element = el;
@@ -32,14 +33,15 @@ ImageMediaObject.prototype.play = function() {
 };
 
 ImageMediaObject.prototype.transition = function() {
+    console.log("ImageMediaObject - transition - Image transition call made");
     if (this._playing) {
         this._playing = false;
         this.emit('transition', this);
 
         setTimeout(function() {
-            this.emit('done', this);    
-        }.bind(this), this._ops.transitionDuration);    
-    }    
+            this.emit('done', this);
+        }.bind(this), this._ops.transitionDuration);
+    }
 };
 
 ImageMediaObject.prototype.onReady = function(callback) {
@@ -48,6 +50,6 @@ ImageMediaObject.prototype.onReady = function(callback) {
         if (self._playing) {
             callback();
         }
-    };    
+    };
     this.element.src = this._obj.url;
 };

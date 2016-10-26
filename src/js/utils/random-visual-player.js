@@ -15,8 +15,6 @@ function RandomVisualPlayer(stageElement, queue) {
 
         removeAllLooplessVideos(); //Causing some issues with playback
 
-        console.log("queue: ", queue);
-
         _.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject], function (moType) {
             var obj = queue.take([moType]);
 
@@ -142,7 +140,7 @@ function RandomVisualPlayer(stageElement, queue) {
             if (elementForRemoval.parentElement === stageElement) {
                 stageElement.removeChild(elementForRemoval);
             } else {
-                console.log('mediaObject.element is not currently on the stage, should not have triggered moDoneHandler');
+                console.log('elementForRemoval is not currently on the stage, should not have triggered moDoneHandler');
                 console.log('element parent is ', elementForRemoval.parentElement);
             }
         } else {
@@ -188,9 +186,13 @@ function RandomVisualPlayer(stageElement, queue) {
         console.log("randomVisualPlayer - moTransitionHandler - mediaObject: ", mediaObject);
 
         // sometimes things can still be loading so, make sure there's an element
-        if (elementForTransition && mediaObject.autoreplay <=1) {
-            elementForTransition.classList.remove('show-media-object');
+        if (elementForTransition) {
+            if(mediaObject.type !== "video")
+                elementForTransition.classList.remove('show-media-object');
+            else if (mediaObject.type === "video" && mediaObject.autoreplay <=1)
+                elementForTransition.classList.remove('show-media-object');
         }
+
         showMedia();
     }
 
