@@ -5,7 +5,7 @@ var HubSendActions = require('../actions/hub-send-actions');
 var ClientStore = require('../stores/client-store');
 var FormHelper = require('../mixins/form-helper');
 var Router = require('react-router');
-
+var hashHistory = require('react-router').hashHistory;
 
 function _getState () {
     return {
@@ -14,6 +14,7 @@ function _getState () {
         errorMessage: ClientStore.errorMessage()
     };
 }
+
 
 
 var LoginPage = React.createClass({
@@ -30,12 +31,13 @@ var LoginPage = React.createClass({
 
     redirectIfLoggedIn: function() {
         if (this.state.loggedIn) {
-            if (LoginPage.attemptedTransition) {
-               var trans = LoginPage.attemptedTransition;
-                LoginPage.attemptedTransition = null;
-                trans.retry();
+            //React Rotuer 2.X logic to provide redirection to nextPathName if exists
+            //NextPathName exists if the requiredAuth check fails (due to async nature of our login system) but does have a forwarding path available
+            var location = this.props.location;
+            if (location.state && location.state.nextPathname) {
+                hashHistory.push(location.state.nextPathname)
             } else {
-                this.props.history.push('scenes');
+                hashHistory.push('/')
             }
         }
     },
