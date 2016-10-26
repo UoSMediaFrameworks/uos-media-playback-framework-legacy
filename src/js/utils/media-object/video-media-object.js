@@ -28,7 +28,7 @@ VideoMediaObject.prototype.makeElement = function (callback) {
 };
 
 VideoMediaObject.prototype.getLooping = function () {
-    return !(this._obj.autoreplay == undefined || this._obj.autoreplay < 1);
+    return !(this.autoreplay == undefined || this.autoreplay < 1);
 };
 VideoMediaObject.prototype.getVolume = function () {
     var volume = this._obj.volume;

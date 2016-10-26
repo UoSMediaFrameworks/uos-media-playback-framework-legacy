@@ -14,6 +14,11 @@ function MediaObject (obj, ops) {
     this.type = this._obj.type;
     this._playing = false;
     this._ops = ops || {};
+
+    if(this.type === "video") {
+        console.log("MediaObject - VideoMediaObject - setting autoreplay: " + this._obj.autoreplay || 0);
+        this.autoreplay = this._obj.autoreplay || 0;
+    }
 }
 
 function parseTagString (tagString) {

@@ -34,7 +34,7 @@ function RandomVisualPlayer(stageElement, queue) {
                 //TODO improve
                 if (obj instanceof VideoMediaObject) {
                     try {
-                        if(obj._obj.autoreplay == 0){
+                        if(obj.autoreplay == 0){
                             obj._player._element.classList.add('interval-remove');
                             looplessMediaObjects.push(obj);
                         }
@@ -161,7 +161,7 @@ function RandomVisualPlayer(stageElement, queue) {
             return;
         }
 
-        switch (mediaObject._obj.autoreplay) {
+        switch (mediaObject.autoreplay) {
             case 0:
             case 1:
                 clearMediaElement(mediaObject);
