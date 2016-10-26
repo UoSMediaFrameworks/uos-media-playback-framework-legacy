@@ -15,6 +15,8 @@ function RandomVisualPlayer(stageElement, queue) {
 
         removeAllLooplessVideos(); //Causing some issues with playback
 
+        console.log("queue: ", queue);
+
         _.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject], function (moType) {
             var obj = queue.take([moType]);
 
@@ -32,13 +34,13 @@ function RandomVisualPlayer(stageElement, queue) {
                 //TODO improve
                 if (obj instanceof VideoMediaObject) {
                     try {
-                        if(obj.autoreplay == 0){
+                        if (obj.autoreplay == 0) {
                             obj._player._element.classList.add('interval-remove');
                             looplessMediaObjects.push(obj);
                         }
-                         window.addEventListener('blur',function(){
-                             bringToFront('',document.activeElement)
-                         });
+                        window.addEventListener('blur', function () {
+                            bringToFront('', document.activeElement)
+                        });
 
                         console.log("stateElement", stageElement);
                         console.log("obj.element", obj._player._element);
@@ -90,6 +92,14 @@ function RandomVisualPlayer(stageElement, queue) {
         var randomNonOverlapPosition = Math.random() * (stageElement[dim] - elementDimensionSize);
         // allow potential overlap of up to 30% of element's dimension
         var potentialOverlap = _.random(-0.3, 0.3) * elementDimensionSize;
+        var finalPosition = Math.round(randomNonOverlapPosition + potentialOverlap);
+        if (finalPosition <= stageElement[dim] && finalPosition >= 0) {
+            return finalPosition + 'px';
+        } else if (finalPosition > stageElement[dim]) {
+            return stageElement[dim] + 'px';
+        } else {
+            return 0 + 'px';
+        }
 
 
         return Math.round(randomNonOverlapPosition + potentialOverlap) + 'px';
@@ -140,7 +150,7 @@ function RandomVisualPlayer(stageElement, queue) {
             if (elementForRemoval.parentElement === stageElement) {
                 stageElement.removeChild(elementForRemoval);
             } else {
-                console.log('elementForRemoval is not currently on the stage, should not have triggered moDoneHandler');
+                console.log('mediaObject.element is not currently on the stage, should not have triggered moDoneHandler');
                 console.log('element parent is ', elementForRemoval.parentElement);
             }
         } else {
@@ -192,7 +202,6 @@ function RandomVisualPlayer(stageElement, queue) {
             else if (mediaObject.type === "video" && mediaObject.autoreplay <=1)
                 elementForTransition.classList.remove('show-media-object');
         }
-
         showMedia();
     }
 
