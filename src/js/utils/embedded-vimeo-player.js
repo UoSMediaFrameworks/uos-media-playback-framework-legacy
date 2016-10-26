@@ -60,12 +60,14 @@ function EmbeddedVimeoPlayer (vimeoId) {
             autoplay: 0
         }),
         playerUrl = 'https://player.vimeo.com/video/' + vimeoId + '?' + urlAttrsStr;
-
+    var iframeH,iframeW;
+    iframeH = window.innerHeight * 0.40;
+    iframeW = window.innerWidth * 0.40;
     this._element = makeElement('iframe', {
         src: playerUrl,
         id: this.id,
-        width: 640,
-        height: 360,
+        width: iframeW,
+        height: iframeH,
         frameborder: 0,
         class: 'media-object embedded-vimeo-player'
     });
