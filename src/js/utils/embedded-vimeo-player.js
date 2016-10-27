@@ -5,16 +5,34 @@ var _ = require('lodash');
 var hat = require('hat');
 var Vimeo = require('@vimeo/player');
 
-function urlAttrs (obj) {
+function urlAttrs(obj) {
     return _.chain(obj)
         .pairs()
-        .map(function(v) { return v[0] + '=' + v[1].toString();})
+        .map(function (v) {
+            return v[0] + '=' + v[1].toString();
+        })
         .join('&');
+}
+function checkDisplayRatio(id,playerUrl, width, height) {
+    var iframeH, iframeW;
+
+    //Scaling the window to 40% of the screen size
+    iframeH = height * 0.40;
+    iframeW = width * 0.40;
+    //Tranforming it the video size to 16:9 ration
+    if (width >= height) {
+        iframeW = (iframeH * 16) / 9;
+        return {height:iframeH,width:iframeW};
+    } else {
+        iframeH = (iframeW / 16) * 9;
+        return {height:iframeH,width:iframeW};
+
+    }
 }
 
 function makeElement(tagName, attributes) {
     var el = document.createElement(tagName);
-    _.each(attributes, function(value, key) {
+    _.each(attributes, function (value, key) {
         el.setAttribute(key, value);
     });
 
@@ -22,9 +40,8 @@ function makeElement(tagName, attributes) {
 }
 
 
-
 var players = {};
-function registerPlayer (id, player) {
+function registerPlayer(id, player) {
     players[id] = player;
 }
 
@@ -32,7 +49,7 @@ function unregisterPlayer(id) {
     delete players[id];
 }
 
-function onMessageRecieved (event) {
+function onMessageRecieved(event) {
     //APEP 3/10/16 - Chrome dev tools + react dev tools cause events to be sent to player
     var data = JSON.parse(event.data);
     players[data.player_id].handleEvent(data);
@@ -47,7 +64,7 @@ if (typeof window !== 'undefined') {
     }
 }
 
-function EmbeddedVimeoPlayer (vimeoId) {
+function EmbeddedVimeoPlayer(vimeoId) {
     this._ready = false;
     this.id = hat();
 
@@ -60,17 +77,21 @@ function EmbeddedVimeoPlayer (vimeoId) {
             autoplay: 0
         }),
         playerUrl = 'https://player.vimeo.com/video/' + vimeoId + '?' + urlAttrsStr;
-    var iframeH,iframeW;
-    iframeH = window.innerHeight * 0.40;
-    iframeW = window.innerWidth * 0.40;
-    this._element = makeElement('iframe', {
-        src: playerUrl,
-        id: this.id,
-        width: iframeW,
-        height: iframeH,
-        frameborder: 0,
-        class: 'media-object embedded-vimeo-player'
-    });
+    try {
+        var dimensions = checkDisplayRatio(window.innerWidth, window.innerHeight);
+        this._element = makeElement('iframe', {
+            src: playerUrl,
+            id: id,
+            width: dimensions.width,
+            height: dimensions.height,
+            frameborder: 0,
+            class: 'media-object embedded-vimeo-player'
+        });
+    }
+    catch (e) {
+        console.log(e)
+    }
+
 
     this.url = this._element.attributes.src.value.split('?')[0];
 
@@ -82,7 +103,7 @@ function EmbeddedVimeoPlayer (vimeoId) {
     return this;
 }
 
-EmbeddedVimeoPlayer.prototype.postMessage = function(action, value) {
+EmbeddedVimeoPlayer.prototype.postMessage = function (action, value) {
     var data = {
         method: action
     };
@@ -98,17 +119,17 @@ EmbeddedVimeoPlayer.prototype.postMessage = function(action, value) {
     this._element.contentWindow.postMessage(data, this.url);
 };
 
-EmbeddedVimeoPlayer.prototype.onPlayProgress = function(cb) {
+EmbeddedVimeoPlayer.prototype.onPlayProgress = function (cb) {
     this._playProgressHandler = cb;
 };
 
 
-EmbeddedVimeoPlayer.prototype.onReady = function(cb) {
+EmbeddedVimeoPlayer.prototype.onReady = function (cb) {
     this._readyHandler = cb;
 };
 
-EmbeddedVimeoPlayer.prototype.handleEvent = function(data) {
-    switch(data.event) {
+EmbeddedVimeoPlayer.prototype.handleEvent = function (data) {
+    switch (data.event) {
         case 'ready':
             this.postMessage('addEventListener', 'playProgress');
             if (this._readyHandler) {
@@ -124,7 +145,7 @@ EmbeddedVimeoPlayer.prototype.handleEvent = function(data) {
     }
 };
 
-EmbeddedVimeoPlayer.prototype.remove = function() {
+EmbeddedVimeoPlayer.prototype.remove = function () {
     unregisterPlayer(this.id);
 };
 
