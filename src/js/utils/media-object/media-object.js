@@ -17,7 +17,7 @@ function MediaObject (obj, ops) {
 
     if(this.type === "video") {
         console.log("MediaObject - VideoMediaObject - setting autoreplay: " + this._obj.autoreplay || 0);
-        this.autoreplay = this._obj.autoreplay || 0;
+        this.autoreplay = this._obj.autoreplay || 1;
     }
 }
 
