@@ -11,7 +11,7 @@ var saveTimeout;  //APEP global timeout variable to allow us storage the id for 
 var SceneMonacoTextEditor = React.createClass({
 
     getHumanReadableScene: function() {
-        return this.props.scene; //TODO _.omit _id
+        return _.omit(this.props.scene, ['_id', '_groupID']); // APEP Strip out the IDs so they are not displayed
     },
 
     getSceneStringForSceneObj: function(scene) {
@@ -120,6 +120,9 @@ var SceneMonacoTextEditor = React.createClass({
                     }
                 });
 
+                // ensure the ids are attached
+                newScene._id = this.props.scene._id;
+                newScene._groupID = this.props.scene._groupID;
 
                 if (! _.isEqual(this.props.scene, newScene) || shouldSave) { //TODO ensure a save occurs for scene media without id - must update view with _id
                     SceneActions.updateScene(newScene);
