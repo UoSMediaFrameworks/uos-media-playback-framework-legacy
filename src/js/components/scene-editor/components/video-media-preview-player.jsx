@@ -35,7 +35,7 @@ var VideoMediaPreviewPlayer = React.createClass({
 
         var dashUrl =  this._getMediaObjectUrl(mediaObject);
         // dashUrl = "Transcoding_3/video_manifest.mpd";  //APEP: Use dash transcoded from a local express file path (dist folder)  CORS issue as azure storage account does not like localhost:port
-        return <video ref="videoPlayer" data-dashjs-player id="example-video" className="video-js " width="100%" height="320px" controls>
+        return <video ref="videoPlayer" data-dashjs-player id="example-video"  width="100%" height="320px" controls>
             <source src={dashUrl} type="application/dash+xml"></source>
         </video>;
     },
