@@ -54,7 +54,9 @@ var VideoMediaPreviewPlayer = React.createClass({
 
     componentDidUpdate: function() {
 
-        if(!this._getMediaObject(this.props)){
+        var mediaObject = this._getMediaObject(this.props);
+
+        if(! mediaObject){
             return;
         }
 
