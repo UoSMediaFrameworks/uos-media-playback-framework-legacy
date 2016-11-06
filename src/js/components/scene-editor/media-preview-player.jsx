@@ -3,6 +3,7 @@ var React = require('react');
 var soundCloud = require('../../utils/sound-cloud');
 var getVimeoId = require('../../utils/get-vimeo-id');
 var toastr = require('toastr');
+var VideoMediaPreviewPlayer = require('./components/video-media-preview-player.jsx');
 
 var MediaObjectPreviewPlayer = React.createClass({
     getInitialState: function () {
@@ -15,51 +16,6 @@ var MediaObjectPreviewPlayer = React.createClass({
         var scenes = props.scene;
         var currentMediaItemIndex = props.focusedMediaObject;
         return scenes.scene[currentMediaItemIndex] || null;
-    },
-
-    _getVimeoPlayerForMediaObject: function(mediaObject) {
-        var vimeoId = getVimeoId(mediaObject.url);
-        var url = 'https://player.vimeo.com/video/' + vimeoId;
-        return <iframe width="100%" height="100%" src={url}></iframe>;
-    },
-
-    _getRawPlayerForMediaObject: function(mediaObject) {
-
-        //https://devuosassetstore.blob.core.windows.net/assetstoredev/video/raw/581b3a0c3c85c1186c9a26bb/video-audio-test-2.mov
-        //https://devuosassetstore.blob.core.windows.net/assetstoredev/video/transcoded/dash/581b3a0c3c85c1186c9a26bb//video_manifest.mpd
-
-
-        //EG: https://devuosassetstore.blob.core.windows.net/assetstoredev/video/transcoded/dash/581b3a0c3c85c1186c9a26bb//video_manifest.mpd
-
-        //OP one replace raw with transcoded/dash
-
-        //OP two replace last slash with //video_manifest.mpd
-
-        var dashUrl = mediaObject.url.replace("raw", "transcoded/dash");
-
-        var trailingSlash = dashUrl.lastIndexOf("/");
-
-        dashUrl = dashUrl.substring(0, trailingSlash);
-
-        dashUrl += '//video_manifest.mpd';
-
-        console.log("DASH URL: ", dashUrl);
-
-        setTimeout(function() {
-            var player = videojs('example-video');
-        }, 2000);
-
-        return <video id="example-video" className="video-js vjs-default-skin" width="100%" height="100%" data-dashjs-player controls>
-            <source src={dashUrl} type="application/dash+xml"></source>
-        </video>;
-    },
-
-    getVideoPlayerForMediaObject: function(mediaObject) {
-        if(mediaObject.url.indexOf('vimeo.com') != -1) {
-            return this._getVimeoPlayerForMediaObject(mediaObject);
-        }
-
-        return this._getRawPlayerForMediaObject(mediaObject);
     },
 
     previewMediaObject: function (props) {
@@ -94,7 +50,7 @@ var MediaObjectPreviewPlayer = React.createClass({
                 break;
 
             case 'video':
-                var preview = this.getVideoPlayerForMediaObject(mediaObject);
+                var preview = <VideoMediaPreviewPlayer scene={this.props.scene} focusedMediaObject={this.props.focusedMediaObject}></VideoMediaPreviewPlayer>
                 this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;
         }
