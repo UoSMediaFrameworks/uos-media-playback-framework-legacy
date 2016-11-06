@@ -9,7 +9,7 @@ var assetUploadApi = process.env.ASSET_STORE + '/api/';
 var removeUnusedImagesUrl = process.env.ASSET_STORE + '/api/remove-unused-images';
 
 var imageFileTypes = ["png", "jpg"];
-var videoFileTypes = ["mov"];
+var videoFileTypes = ["mov", 'mp4'];
 
 //APEP Improve - this default image case is not good practice
 function getMediaObjectType(file) {
