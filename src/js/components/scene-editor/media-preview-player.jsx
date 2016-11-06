@@ -24,8 +24,33 @@ var MediaObjectPreviewPlayer = React.createClass({
     },
 
     _getRawPlayerForMediaObject: function(mediaObject) {
-        return <video width="100%" height="100%" controls>
-            <source src={mediaObject.url}></source>
+
+        //https://devuosassetstore.blob.core.windows.net/assetstoredev/video/raw/581b3a0c3c85c1186c9a26bb/video-audio-test-2.mov
+        //https://devuosassetstore.blob.core.windows.net/assetstoredev/video/transcoded/dash/581b3a0c3c85c1186c9a26bb//video_manifest.mpd
+
+
+        //EG: https://devuosassetstore.blob.core.windows.net/assetstoredev/video/transcoded/dash/581b3a0c3c85c1186c9a26bb//video_manifest.mpd
+
+        //OP one replace raw with transcoded/dash
+
+        //OP two replace last slash with //video_manifest.mpd
+
+        var dashUrl = mediaObject.url.replace("raw", "transcoded/dash");
+
+        var trailingSlash = dashUrl.lastIndexOf("/");
+
+        dashUrl = dashUrl.substring(0, trailingSlash);
+
+        dashUrl += '//video_manifest.mpd';
+
+        console.log("DASH URL: ", dashUrl);
+
+        setTimeout(function() {
+            var player = videojs('example-video');
+        }, 2000);
+
+        return <video id="example-video" className="video-js vjs-default-skin" width="100%" height="100%" data-dashjs-player controls>
+            <source src={dashUrl} type="application/dash+xml"></source>
         </video>;
     },
 
@@ -89,6 +114,9 @@ var MediaObjectPreviewPlayer = React.createClass({
 
     componentWillReceiveProps: function (nextProps) {
         this.setupState(nextProps);
+    },
+
+    componentDidMount: function() {
     },
 
     render: function () {
