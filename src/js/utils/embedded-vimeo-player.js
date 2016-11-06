@@ -64,12 +64,33 @@ if (typeof window !== 'undefined') {
     }
 }
 
-function EmbeddedVimeoPlayer(vimeoId) {
+function EmbeddedVimeoPlayer(isVimeo, videoUrl) {
     this._ready = false;
     this.id = hat();
+    this.isVimeo = isVimeo;
 
     registerPlayer(this.id, this);
 
+    if(isVimeo)
+        this.setupAsVimeoPlayer(videoUrl);
+    else
+        this.setupAsRawPlayer(videoUrl);
+
+
+    this.url = this._element.attributes.src.value.split('?')[0];
+
+    document.body.appendChild(this._element);
+
+    //https://github.com/vimeo/player.js
+    if(isVimeo)
+        this.vimeo_player = new Vimeo(this._element);
+    else
+        this.raw_player = this._element;
+
+    return this;
+}
+
+EmbeddedVimeoPlayer.prototype.setupAsVimeoPlayer = function(vimeoId) {
     var urlAttrsStr = urlAttrs({
             api: 1,
             player_id: this.id,
@@ -81,7 +102,7 @@ function EmbeddedVimeoPlayer(vimeoId) {
         var dimensions = checkDisplayRatio(window.innerWidth, window.innerHeight);
         this._element = makeElement('iframe', {
             src: playerUrl,
-            id: id,
+            id: this.id,
             width: dimensions.width,
             height: dimensions.height,
             frameborder: 0,
@@ -91,17 +112,19 @@ function EmbeddedVimeoPlayer(vimeoId) {
     catch (e) {
         console.log(e)
     }
+};
 
+EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function(videoUrl) {
+    this._element = makeElement('video', {
+        src: videoUrl,
+        id: this.id,
+        class: 'media-object embedded-vimeo-player'
+    });
 
-    this.url = this._element.attributes.src.value.split('?')[0];
-
-    document.body.appendChild(this._element);
-
-    //https://github.com/vimeo/player.js
-    this.vimeo_player = new Vimeo(this._element);
-
-    return this;
-}
+    this._element.controls = true;
+    this._element.autoplay = true;
+    this._element.looping = true; //should be some logic
+};
 
 EmbeddedVimeoPlayer.prototype.postMessage = function (action, value) {
     var data = {
