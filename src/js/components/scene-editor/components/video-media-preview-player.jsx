@@ -31,13 +31,41 @@ var VideoMediaPreviewPlayer = React.createClass({
         return dashUrl;
     },
 
-    _getRawPlayerForMediaObject: function(mediaObject) {
-
+    /**
+     * Provides standard video playback of transcoded dash stream of raw file
+     * 
+     * APEPE: We do not have the video media object database value at this point
+     * Ultimately, we would need websockets and a store for all the video media objects
+     * @returns {XML: Video HTML component}
+     */
+    _getDashPlayer: function(mediaObject) {
         var dashUrl =  this._getMediaObjectUrl(mediaObject);
         // dashUrl = "Transcoding_3/video_manifest.mpd";  //APEP: Use dash transcoded from a local express file path (dist folder)  CORS issue as azure storage account does not like localhost:port
         return <video ref="videoPlayer" data-dashjs-player id="example-video"  width="100%" height="320px" controls>
             <source src={dashUrl} type="application/dash+xml"></source>
         </video>;
+    },
+
+    /**
+     * Provides standard video playback of raw uploaded file
+     * @returns {XML: Video HTML component}
+     */
+    _getFilePlayer: function(mediaObject) {
+        return <video width="100%" height="100%" controls>
+            <source src={mediaObject.url}></source>
+        </video>;
+    },
+
+    _getRawPlayerForMediaObject: function(mediaObject) {
+
+        return this._getDashPlayer(mediaObject);
+
+        // APEPE: We do not have the video media object database value at this point
+        // Ultimately, we would need websockets and a store for all the video media objects
+        // if(mediaObject.hasTranscoded) {
+        // }
+        //
+        // return this._getFilePlayer(mediaObject);
     },
 
     getVideoPlayerForMediaObject: function(mediaObject) {
