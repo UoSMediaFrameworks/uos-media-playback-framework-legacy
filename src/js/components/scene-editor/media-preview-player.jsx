@@ -1,8 +1,9 @@
-'use strict'
+'use strict';
 var React = require('react');
 var soundCloud = require('../../utils/sound-cloud');
 var getVimeoId = require('../../utils/get-vimeo-id');
 var toastr = require('toastr');
+var VideoMediaPreviewPlayer = require('./components/video-media-preview-player.jsx');
 
 var MediaObjectPreviewPlayer = React.createClass({
     getInitialState: function () {
@@ -16,6 +17,7 @@ var MediaObjectPreviewPlayer = React.createClass({
         var currentMediaItemIndex = props.focusedMediaObject;
         return scenes.scene[currentMediaItemIndex] || null;
     },
+
     previewMediaObject: function (props) {
         var previewContainer = document.getElementsByClassName("media-object-item-preview-player");
         previewContainer.innerHTML = '';
@@ -48,9 +50,7 @@ var MediaObjectPreviewPlayer = React.createClass({
                 break;
 
             case 'video':
-                var vimeoId = getVimeoId(mediaObject.url);
-                var url = 'https://player.vimeo.com/video/' + vimeoId;
-                var preview = <iframe width="100%" height="100%" src={url}></iframe>;
+                var preview = <VideoMediaPreviewPlayer scene={this.props.scene} focusedMediaObject={this.props.focusedMediaObject}></VideoMediaPreviewPlayer>
                 this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;
         }
@@ -65,13 +65,14 @@ var MediaObjectPreviewPlayer = React.createClass({
     },
 
     componentWillMount: function () {
-        // console.log(this.props)
-
         this.setState(this.getInitialState());
     },
 
     componentWillReceiveProps: function (nextProps) {
         this.setupState(nextProps);
+    },
+
+    componentDidMount: function() {
     },
 
     render: function () {

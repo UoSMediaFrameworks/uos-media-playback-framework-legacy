@@ -13,9 +13,7 @@ function RandomVisualPlayer(stageElement, queue) {
 
     var showMedia = variableThrottle(function () {
 
-        removeAllLooplessVideos(); //Causing some issues with playback
-
-        console.log("queue: ", queue);
+        removeAllLooplessVideos();
 
         _.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject], function (moType) {
             var obj = queue.take([moType]);
@@ -42,8 +40,6 @@ function RandomVisualPlayer(stageElement, queue) {
                             bringToFront('', document.activeElement)
                         });
 
-                        console.log("stateElement", stageElement);
-                        console.log("obj.element", obj._player._element);
                         stageElement.appendChild(obj._player._element);
                         placeAtRandomPosition(obj._player._element);
                         obj._player._element.classList.add('show-media-object');
@@ -159,6 +155,35 @@ function RandomVisualPlayer(stageElement, queue) {
         }
         showMedia();
     }
+
+    function vmoDoneHandler(videoMediaObject) {
+
+        if(videoMediaObject.autoreplay === 0 || videoMediaObject.autoreplay === 1) {
+            videoMediaObject.transition();
+            clearMediaElement(videoMediaObject);
+            return;
+        }
+
+        if (videoMediaObject.currentLoop == undefined) {
+            videoMediaObject.currentLoop = 1;
+
+            //TODO if not vimeo
+            videoMediaObject.play();
+        } else if (videoMediaObject.currentLoop < videoMediaObject.autoreplay) {
+            console.log("CurrentLoop: ", videoMediaObject.currentLoop);
+            videoMediaObject.currentLoop++;
+
+
+            //TODO if not vimeo
+            videoMediaObject.play();
+        } else {
+
+            videoMediaObject.currentLoop = 0;
+            videoMediaObject.transition(); //causing some issues
+            clearMediaElement(videoMediaObject);
+        }
+    }
+
     //Improve Done Handler AP.
     function moDoneHandler(mediaObject) {
 
@@ -169,22 +194,7 @@ function RandomVisualPlayer(stageElement, queue) {
             return;
         }
 
-        switch (mediaObject.autoreplay) {
-            case 0:
-            case 1:
-                clearMediaElement(mediaObject);
-                break;
-            default:
-                if (mediaObject.currentLoop == undefined) {
-                    mediaObject.currentLoop = 0;
-                } else if (mediaObject.currentLoop < mediaObject.autoreplay) {
-                    console.log(mediaObject.currentLoop);
-                    mediaObject.currentLoop++;
-                } else {
-                    clearMediaElement(mediaObject);
-                }
-                break;
-        }
+        vmoDoneHandler(mediaObject);
     }
 
     function moTransitionHandler(mediaObject) {

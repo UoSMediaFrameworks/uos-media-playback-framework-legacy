@@ -182,7 +182,7 @@ var SceneActions = {
 
             if (status !== 'danger') {
                 SceneActions.addMediaObject(sceneId, {
-                    type: 'image',
+                    type: data.type,
                     url: data.url,
                     tags: data.tags,
                     style: {

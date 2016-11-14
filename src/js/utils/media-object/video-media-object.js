@@ -18,7 +18,13 @@ VideoMediaObject.prototype.constructor = VideoMediaObject;
 VideoMediaObject.typeName = 'video';
 
 VideoMediaObject.prototype.makeElement = function (callback) {
-    var player = new EmbeddedVimeoPlayer(getVimeoId(this._obj.url));
+
+    var isVimeo = this._obj.url.indexOf("vimeo.com") !== -1;
+    var videoUrl = isVimeo ? getVimeoId(this._obj.url) : this._obj.url;
+
+    console.log("MakeElement: ", this._obj);
+
+    var player = new EmbeddedVimeoPlayer(isVimeo, videoUrl);
 
     this._loading = true;
 
@@ -41,18 +47,34 @@ VideoMediaObject.prototype.getVolume = function () {
 VideoMediaObject.prototype.play = function () {
     this._loading = false;
     // vimeo player complains if you pass it 0, so we pass it just above zero
-    this._player.vimeo_player.setVolume(this.getVolume() || 0.00001);
-    this._player.vimeo_player.play();
-    this._player.vimeo_player.setLoop(this.getLooping() || false);
+    if(this._player.isVimeo) {
+        this._player.vimeo_player.setVolume(this.getVolume() || 0.00001);
+        this._player.vimeo_player.play();
+        this._player.vimeo_player.setLoop(this.getLooping() || false);
+    } else {
+        this._player.raw_player.play();
+    }
+
 
     // setup transition stuff
     var transitionSeconds = this._ops.transitionDuration / 1000;
     this._player._element.style.transition = 'opacity ' + (this._ops.transitionDuration / 1000) + 's ease-in-out';
-    this._player.onPlayProgress(function (data) {
-        if ((data.duration - data.seconds) < transitionSeconds || data.duration < transitionSeconds) {
-            this.transition();
-        }
-    }.bind(this));
+
+
+    if(this._player.isVimeo) {
+        this._player.onPlayProgress(function (data) {
+            if ((data.duration - data.seconds) < transitionSeconds || data.duration < transitionSeconds) {
+                console.log("Transition video player out - vimeo");
+                this.transition();
+            }
+        }.bind(this));
+    } else {
+        this._player.raw_player.addEventListener('ended',function(e) {
+            console.log("HERE - Transition video player out - raw");
+            this.emit('done', this);
+            // this.transition();
+        }.bind(this),false)
+    }
 
     MediaObject.prototype.play.call(this);
 };
@@ -71,7 +93,10 @@ VideoMediaObject.prototype.transition = function () {
         new TWEEN.Tween(position)
             .to(target, this._ops.transitionDuration)
             .onUpdate(function () {
-                self._player.vimeo_player.setVolume(position.vol);
+                if(self._player.isVimeo)
+                    self._player.vimeo_player.setVolume(position.vol);
+                //else
+                    //self._player.raw_player.setVolume(position.vol); //TODO fix
             })
             .onComplete(function () {
                 self.emit('done', self);
