@@ -96,7 +96,7 @@ VideoMediaObject.prototype.transition = function () {
                 if(self._player.isVimeo)
                     self._player.vimeo_player.setVolume(position.vol);
                 else
-                    self._player.raw_player.volume = position.vol;
+                    self._player.raw_player.setVolume(position.vol);
             })
             .onComplete(function () {
                 self.emit('done', self);
