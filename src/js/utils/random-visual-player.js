@@ -13,7 +13,7 @@ function RandomVisualPlayer(stageElement, queue) {
 
     var showMedia = variableThrottle(function () {
 
-        removeAllLooplessVideos(); //Causing some issues with playback
+        removeAllLooplessVideos();
 
         _.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject], function (moType) {
             var obj = queue.take([moType]);

@@ -64,6 +64,16 @@ if (typeof window !== 'undefined') {
     }
 }
 
+function getTranscodedUrl(mediaObjectUrl) {
+    var dashUrl = mediaObjectUrl.replace("raw", "transcoded/dash");
+
+    var trailingSlash = dashUrl.lastIndexOf("/");
+    dashUrl = dashUrl.substring(0, trailingSlash);
+    dashUrl += '//video_manifest.mpd';
+
+    return dashUrl;
+}
+
 function EmbeddedVimeoPlayer(isVimeo, videoUrl) {
     this._ready = false;
     this.id = hat();
@@ -74,7 +84,7 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl) {
     if(isVimeo)
         this.setupAsVimeoPlayer(videoUrl);
     else
-        this.setupAsRawPlayer(videoUrl);
+        this.setupAsRawPlayer(getTranscodedUrl(videoUrl));
 
 
     this.url = this._element.attributes.src.value.split('?')[0];
@@ -82,10 +92,15 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl) {
     document.body.appendChild(this._element);
 
     //https://github.com/vimeo/player.js
-    if(isVimeo)
+    if(isVimeo) {
         this.vimeo_player = new Vimeo(this._element);
-    else
-        this.raw_player = this._element;
+    } else {
+        console.log("EmbeddedVimeoPlayer _element: ", this._element);
+        var url = getTranscodedUrl(videoUrl);
+        // var url = "Transcoding_3/video_manifest.mpd"; //APEP see other comment (_getRawPlayerForMediaObject)
+        var player = dashjs.MediaPlayer().create();
+        this.raw_player = player.initialize(this._element, url, true);
+    }
 
     return this;
 }
@@ -118,8 +133,18 @@ EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function(videoUrl) {
     this._element = makeElement('video', {
         src: videoUrl,
         id: this.id,
-        class: 'media-object embedded-vimeo-player'
+        class: 'media-object embedded-vimeo-player',
+        'data-dashjs-player': 'data-dashjs-player'
     });
+
+    // var source = makeElement('source', {
+    //     src: videoUrl,
+    //     type: 'application/dash+xml'
+    // });
+    //
+    // this._element.appendChild(source);
+
+    console.log("setupAsRawPlayer: ", this._element);
 
     this._element.controls = true;
     this._element.autoplay = true;
