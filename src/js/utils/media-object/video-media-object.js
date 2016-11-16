@@ -9,6 +9,7 @@ var TWEEN = require('tween.js');
 
 function VideoMediaObject(obj, ops) {
     this._loading = false;
+    this._playbackTimeInterval = null; //APEP: ##Hack## for buffering media removal at the end
     MediaObject.call(this, obj, ops);
 }
 
@@ -28,7 +29,6 @@ VideoMediaObject.prototype.play = function () {
         this._player.raw_player.play();
     }
 
-
     // setup transition stuff
     var transitionSeconds = this._ops.transitionDuration / 1000;
     this._player._element.style.transition = 'opacity ' + (this._ops.transitionDuration / 1000) + 's ease-in-out';
@@ -45,6 +45,17 @@ VideoMediaObject.prototype.play = function () {
         this._player._element.addEventListener('ended',function(e) {
             self.transition();
         },false);
+
+        //APEP: ##Hack## for buffering media removal at the end
+        if(this.play_duration !== null && this.play_duration > 0) {
+            if(this._playbackTimeInterval) clearTimeout(this._playbackTimeInterval);
+            this._playbackTimeInterval = setTimeout(function() {
+                console.log("Buffering play duration failure - transition media object: ", self);
+                self.transition();
+            }, this.play_duration * 1.15 * 1000);
+        }
+
+
     }
 
     MediaObject.prototype.play.call(this);
@@ -61,7 +72,21 @@ VideoMediaObject.prototype.makeElement = function (callback) {
 
     this._player = player;
 
-    callback();
+    if(!this._player.isVimeo) { //APEP: ##Hack## for buffering media removal at the end
+        try {
+            //APEP: ##Hack## for buffering media removal at the end
+            this._player.raw_player.retrieveManifest(this._player.player_url, function(manifest){
+                this.play_duration = manifest.Period.duration;
+                callback();
+            }.bind(this));
+        } catch(e) {
+            console.log("e: ", e);
+            return callback();
+        }
+    }
+
+    return callback();
+
 };
 
 VideoMediaObject.prototype.getLooping = function () {
@@ -77,6 +102,10 @@ VideoMediaObject.prototype.getVolume = function () {
 
 
 VideoMediaObject.prototype.transition = function () {
+
+    //APEP: ##Hack## for buffering media removal at the end
+    if(this._playbackTimeInterval) clearTimeout(this._playbackTimeInterval);
+
     if (this._loading) {
         this._loading = false;
         this._player.onReady(null);

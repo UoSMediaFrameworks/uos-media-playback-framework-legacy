@@ -101,6 +101,7 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl) {
         player.getDebug().setLogToBrowserConsole(false);
         player.initialize(this._element, url, true);
         this.raw_player = player;
+        this.player_url = url;
     }
 
     return this;
