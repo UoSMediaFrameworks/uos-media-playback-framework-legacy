@@ -69,7 +69,7 @@ function getTranscodedUrl(mediaObjectUrl) {
 
     var trailingSlash = dashUrl.lastIndexOf("/");
     dashUrl = dashUrl.substring(0, trailingSlash);
-    dashUrl += '//video_manifest.mpd';
+    dashUrl += '/video_manifest.mpd';
 
     return dashUrl;
 }

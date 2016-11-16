@@ -26,14 +26,14 @@ var VideoMediaPreviewPlayer = React.createClass({
 
         var trailingSlash = dashUrl.lastIndexOf("/");
         dashUrl = dashUrl.substring(0, trailingSlash);
-        dashUrl += '//video_manifest.mpd';
+        dashUrl += '/video_manifest.mpd';
 
         return dashUrl;
     },
 
     /**
      * Provides standard video playback of transcoded dash stream of raw file
-     * 
+     *
      * APEPE: We do not have the video media object database value at this point
      * Ultimately, we would need websockets and a store for all the video media objects
      * @returns {XML: Video HTML component}
