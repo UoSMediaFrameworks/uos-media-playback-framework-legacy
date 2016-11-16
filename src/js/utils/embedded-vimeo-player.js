@@ -13,7 +13,7 @@ function urlAttrs(obj) {
         })
         .join('&');
 }
-function checkDisplayRatio(id,playerUrl, width, height) {
+function checkDisplayRatio(width, height) {
     var iframeH, iframeW;
 
     //Scaling the window to 40% of the screen size
@@ -26,7 +26,6 @@ function checkDisplayRatio(id,playerUrl, width, height) {
     } else {
         iframeH = (iframeW / 16) * 9;
         return {height:iframeH,width:iframeW};
-
     }
 }
 
@@ -136,20 +135,16 @@ EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function(videoUrl) {
         src: videoUrl,
         id: this.id,
         class: 'media-object embedded-vimeo-player',
-        'data-dashjs-player': 'data-dashjs-player'
+        'data-dashjs-player': 'data-dashjs-player',
     });
 
-    // var source = makeElement('source', {
-    //     src: videoUrl,
-    //     type: 'application/dash+xml'
-    // });
-    //
-    // this._element.appendChild(source);
+    var dimensions = checkDisplayRatio(window.innerWidth, window.innerHeight);
 
-    console.log("setupAsRawPlayer: ", this._element);
+    this._element.style.width = dimensions.width + 'px';
+    this._element.style.height = dimensions.height + 'px';
 
     this._element.controls = true;
-    this._element.autoplay = true;
+    this._element.autoplay = false;
     this._element.looping = true; //should be some logic
 };
 
