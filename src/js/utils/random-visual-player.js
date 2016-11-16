@@ -42,11 +42,12 @@ function RandomVisualPlayer(stageElement, queue) {
 
                         stageElement.appendChild(obj._player._element);
                         placeAtRandomPosition(obj._player._element);
-                        obj._player._element.classList.add('show-media-object');
                         obj.play();
-                    } catch (e) {
+                        obj._player._element.classList.add('show-media-object');
+                    } catch(e) {
                         console.error(e);
                     }
+
                 } else {
                     obj.onReady(function () {
 

@@ -97,9 +97,11 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl) {
     } else {
         console.log("EmbeddedVimeoPlayer _element: ", this._element);
         var url = getTranscodedUrl(videoUrl);
-        // var url = "Transcoding_3/video_manifest.mpd"; //APEP see other comment (_getRawPlayerForMediaObject)
+        //var url = "Transcoding_3/video_manifest.mpd"; //APEP see other comment (_getRawPlayerForMediaObject)
         var player = dashjs.MediaPlayer().create();
-        this.raw_player = player.initialize(this._element, url, true);
+        player.getDebug().setLogToBrowserConsole(false);
+        player.initialize(this._element, url, true);
+        this.raw_player = player;
     }
 
     return this;
