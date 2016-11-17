@@ -3,7 +3,7 @@
 
 var HUB_TOKEN = 'HUB_TOKEN',
     HUB_URL = 'HUB_URL',
-	GROUP_ID = '-1'; //AJF: initialise groupID 
+	GROUP_ID = '-1'; //AJF: initialise groupID
 
 module.exports = {
 	getToken: function() {
@@ -23,8 +23,8 @@ module.exports = {
 		return localStorage.getItem(GROUP_ID);
 	},
 	getShortGroupName: function(groupID) {
-	
-		var groupNames = new Map() //AJF: @todo: load map from config file
+
+		var groupNames = new Map(); //AJF: @todo: load map from config file
 		groupNames.set(0, "Admin");
 		groupNames.set(1, "Test1");
 		groupNames.set(2, "Test2");
@@ -38,13 +38,14 @@ module.exports = {
 		groupNames.set(108, "Hong Kong");
 		groupNames.set(109, "Shenyang");
 		groupNames.set(110, "Panjin");
-		
+        groupNames.set(111, "Memoir");
+
 		//console.log("The groupID was set to: " + groupID);
-		
+
 		return groupNames.get(parseInt(groupID));
 	},
-	
-	
+
+
 	clear: function() {
 		localStorage.removeItem(HUB_TOKEN);
 		localStorage.removeItem(HUB_URL);
