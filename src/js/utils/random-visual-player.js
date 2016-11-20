@@ -41,7 +41,10 @@ function RandomVisualPlayer(stageElement, queue) {
                         });
 
                         stageElement.appendChild(obj._player._element);
-                        //placeAtRandomPosition(obj._player._element);
+
+                        if(obj._player._element.position() != "absolute")
+                            placeAtRandomPosition(obj._player._element);
+
                         obj.play();
                         obj._player._element.classList.add('show-media-object');
                     } catch(e) {
@@ -54,7 +57,8 @@ function RandomVisualPlayer(stageElement, queue) {
                         if (obj instanceof ImageMediaObject || obj instanceof TextMediaObject) {
                             addStyle(obj.element, style);
                             stageElement.appendChild(obj.element);
-                            //placeAtRandomPosition(obj.element);
+                            if(obj._player._element.position() != "absolute")
+                                placeAtRandomPosition(obj.element);
                         }
                         obj.element.onclick = bringToFront;
 
