@@ -57,7 +57,7 @@ function RandomVisualPlayer(stageElement, queue) {
                         if (obj instanceof ImageMediaObject || obj instanceof TextMediaObject) {
                             addStyle(obj.element, style);
                             stageElement.appendChild(obj.element);
-                            if(obj._player._element.style.position != "absolute")
+                            if(obj.element.style.position != "absolute")
                                 placeAtRandomPosition(obj.element);
                         }
                         obj.element.onclick = bringToFront;
