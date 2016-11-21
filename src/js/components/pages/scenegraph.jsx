@@ -218,9 +218,7 @@ var SceneGraph = React.createClass({
     },
 
     addSelectedScene: function(event) {
-        var selectedScene = _selectedScene;
-
-        SceneGraphActions.addScene(this.state.sceneGraph._id, selectedScene);
+        SceneGraphActions.addScene(this.state.sceneGraph._id, _selectedScene);
     },
 
     removeSelectedSceneFromSceneGraphSceneList: function(event) {

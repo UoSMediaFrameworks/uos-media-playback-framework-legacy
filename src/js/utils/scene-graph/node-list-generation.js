@@ -252,18 +252,22 @@ module.exports = {
         var rootNodes = Object.keys(root.children);
 
         nodeList = [];
+        
+        if(sceneGraph.type === "GDC_SCENE_GRAPH") { //APEP 21/11/2016 Memoir scene graphs do not have node list generation turned on TODO MEMOIR 2016
 
-        _.forEach(rootNodes, function(rootNodeKey){
-            var rootNode = root.children[rootNodeKey];
-
-            //create roots node, no parents.. skipping children ids for now
-            var node = createNode(rootNodeKey, rootNodeKey, [], [], 'root');
-            nodeList.push(node);
-
-            //recursively iterate through children added them to node list
-            getChildrenNodes(rootNode, node, sceneGraph);
-            nodeList = dedupeChildren(nodeList);
-        });
+            _.forEach(rootNodes, function(rootNodeKey){
+                var rootNode = root.children[rootNodeKey];
+            
+                //create roots node, no parents.. skipping children ids for now
+                var node = createNode(rootNodeKey, rootNodeKey, [], [], 'root');
+                nodeList.push(node);
+            
+                //recursively iterate through children added them to node list
+                getChildrenNodes(rootNode, node, sceneGraph);
+                nodeList = dedupeChildren(nodeList);
+            });
+            
+        }
 
         sceneGraph.nodeList = nodeList;
     },

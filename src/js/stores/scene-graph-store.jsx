@@ -46,26 +46,31 @@ function _addSceneToSceneGraph (sceneGraphId, sceneId) {
         }
     }
 
-    //Hack to get the city node name from login session :: GDC 2016
-    var sceneCity = ConnectionCache.getShortGroupName(ConnectionCache.getGroupID());
-    sceneCity = sceneCity.split(' ').join('');
+    if(_sceneGraphs[sceneGraphId].type === "GDC_SCENE_GRAPH") { //APEP: Memoir graphs do not wish to use this functionality
 
-    console.log("The scene city found: ", sceneCity);
+        console.log("Appending sthemes into graph - GDC Scene Graph - scene addition action");
 
-    //For each root node, find the city node then add each new theme as child  :: GDC 2016
-    _.forEach(Object.keys(_sceneGraphs[sceneGraphId].graphThemes.children), function(rootNodeProperty){
-        var rootNode =  _sceneGraphs[sceneGraphId].graphThemes.children[rootNodeProperty];
+        //Hack to get the city node name from login session :: GDC 2016
+        var sceneCity = ConnectionCache.getShortGroupName(ConnectionCache.getGroupID());
+        sceneCity = sceneCity.split(' ').join('');
 
-        var cityNode = rootNode.children[sceneCity];
+        console.log("The scene city found: ", sceneCity);
 
-        _.forEach(sceneThemesToAdd, function(themeId) {
-            cityNode.children[themeId] = {
-                type: "stheme",
-                children: {}
-            };
+        //APEP: For each root node, find the city node then add each new theme as child :: GDC 2016
+        _.forEach(Object.keys(_sceneGraphs[sceneGraphId].graphThemes.children), function(rootNodeProperty){
+            var rootNode =  _sceneGraphs[sceneGraphId].graphThemes.children[rootNodeProperty];
+
+            var cityNode = rootNode.children[sceneCity];
+
+            _.forEach(sceneThemesToAdd, function(themeId) {
+                cityNode.children[themeId] = {
+                    type: "stheme",
+                    children: {}
+                };
+            });
+
         });
-
-    });
+    }
 
     console.log("_addSceneToSceneGraph: ", _sceneGraphs[sceneGraphId]);
 
@@ -188,19 +193,20 @@ function _deleteThemeExclusion (sceneGraphId, themeId) {
 
     console.log("The scene city found: ", sceneCity);
 
-    //For each root node, find the city node then add each theme as child
-    _.forEach(Object.keys(_sceneGraphs[sceneGraphId].graphThemes.children), function(rootNodeProperty){
-        var rootNode =  _sceneGraphs[sceneGraphId].graphThemes.children[rootNodeProperty];
+    if(_sceneGraphs[sceneGraphId].type === "GDC_SCENE_GRAPH") { //APEP: Memoir graphs do not wish to use this functionality
+        //For each root node, find the city node then add each theme as child
+        _.forEach(Object.keys(_sceneGraphs[sceneGraphId].graphThemes.children), function(rootNodeProperty){
+            var rootNode =  _sceneGraphs[sceneGraphId].graphThemes.children[rootNodeProperty];
 
-        var cityNode = rootNode.children[sceneCity];
+            var cityNode = rootNode.children[sceneCity];
 
-        cityNode.children[themeId] = {
-            type: "stheme",
-            children: {}
-        };
+            cityNode.children[themeId] = {
+                type: "stheme",
+                children: {}
+            };
 
-    });
-
+        });
+    }
 
     delete _sceneGraphs[sceneGraphId].excludedThemes[themeId];
 }
@@ -317,11 +323,13 @@ var SceneGraphStore = assign({}, EventEmitter.prototype, {
                 _addSceneToSceneGraph(action.sceneGraphId, action.sceneId);
                 var sceneGraph = _sceneGraphs[action.sceneGraphId];
                 HubClient.saveSceneGraph(sceneGraph);
+                SceneGraphStore.emitChange();
                 break;
             case ActionTypes.SCENE_GRAPH_REMOVE_SCENE:
                 _removeSceneFromSceneGraph(action.sceneGraphId, action.sceneId);
                 var sceneGraph = _sceneGraphs[action.sceneGraphId];
                 HubClient.saveSceneGraph(sceneGraph);
+                SceneGraphStore.emitChange();
                 break;
             case ActionTypes.SCENE_GRAPH_SELECTION:
                 SceneGraphStore.emitChange();
@@ -335,6 +343,7 @@ var SceneGraphStore = assign({}, EventEmitter.prototype, {
                 _deleteThemeExclusion(action.sceneGraphId, action.themeId);
                 var sceneGraph = _sceneGraphs[action.sceneGraphId];
                 HubClient.saveSceneGraph(sceneGraph);
+                SceneGraphStore.emitChange();
                 break;
             case ActionTypes.SCENE_GRAPH_ADD_THEME_TO_STRUCTURE:
                 _addThemeToSceneGraphStructure(action.sceneGraphId, action.themeId, action.parentList, action.parentKey, action.parentType);
