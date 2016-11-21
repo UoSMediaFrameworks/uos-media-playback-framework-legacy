@@ -48,14 +48,6 @@ var SceneItemForList = React.createClass({
     }
 });
 
-var SceneGraphNodeForGraphTheme = React.createClass({
-    //TODO: STORE PROPERTY KEY LIST AS PART PROPERTY LIST
-
-    render: function() {
-
-    }
-});
-
 var SceneGraphNode = React.createClass({
     render: function() {
         return (
@@ -69,12 +61,6 @@ var SceneGraphNode = React.createClass({
                 </ul>
             </li>
         )
-    }
-});
-
-var TagItemForList = React.createClass({
-    render: function() {
-        return <li>{this.props.value}</li>;
     }
 });
 
