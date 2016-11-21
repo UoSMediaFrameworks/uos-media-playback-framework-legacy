@@ -164,7 +164,10 @@ var SceneGraph = React.createClass({
         for(var sceneId in sceneIds) {
             var fullScene = SceneStore.getScene(sceneIds[sceneId]);
             if(fullScene) {
-                state.storedFullScenes.push(fullScene);
+
+                if(!_.find(state.storedFullScenes, function(alreadyCachedScene){ return alreadyCachedScene._id === fullScene._id})) {
+                    state.storedFullScenes.push(fullScene); //APEP only add to full stored scene list if it does not exist it in, this is an issue with async loading that should be resolved better than this
+                }
             }
         }
 
