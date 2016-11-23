@@ -55,13 +55,12 @@ function RandomVisualPlayer(stageElement, queue) {
                     obj.onReady(function () {
 
                         if (obj instanceof ImageMediaObject || obj instanceof TextMediaObject) {
-                            addStyle(obj.element, style);
                             stageElement.appendChild(obj.element);
                             if(obj.element.style.position != "absolute")
                                 placeAtRandomPosition(obj.element);
+                            addStyle(obj.element, style);
                         }
                         obj.element.onclick = bringToFront;
-
                         obj.play();
                         obj.element.classList.add('show-media-object');
                     });
@@ -130,7 +129,10 @@ function RandomVisualPlayer(stageElement, queue) {
 
     function addStyle(element, style) {
         _.forEach(Object.keys(style), function(styleKey) {
-            element.style[styleKey] = style[styleKey];
+            //APEP Ensure we do not set position absolute again, the media-object css class ensures everything is position absolute.
+            //APEP Without this check, the transition animation does not work, it is unclear why
+            if(! (styleKey === "position" && style[styleKey] === "absolute"))
+                element.style[styleKey] = style[styleKey];
         });
     }
 
