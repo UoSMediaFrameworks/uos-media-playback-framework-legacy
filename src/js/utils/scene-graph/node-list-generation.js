@@ -99,6 +99,7 @@ var getChildTypeFromNodeType = function(node) {
         case 'root':
         case 'city':
         case 'scene':
+        case 'chapter':
             return node.type;
         case 'gtheme':
             return 'subgraphtheme';
@@ -237,6 +238,29 @@ var nodeList = [
 
 ];
 
+var getRootChildrenForSceneGraphType = function(sceneGraphType) {
+
+    if(sceneGraphType === "MEMOIR_SCENE_GRAPH") {
+        //APEP: Hardcoded root node children for memoir graph, this is not strictly necessary as we only use parent relationships in D3 graphs
+        return [
+            "Chapter1",
+            "Chapter2",
+            "Chapter3",
+            "Chapter4",
+            "Chapter5",
+            "Chapter6",
+            "Chapter7",
+            "Chapter8",
+            "Chapter9",
+            "Chapter10",
+            "Chapter11",
+            "Chapter12"
+        ]
+    }
+
+    return []; //APEP: Default empty children
+};
+
 module.exports = {
 
     //TODO attach the scenes as nodes
@@ -252,22 +276,20 @@ module.exports = {
         var rootNodes = Object.keys(root.children);
 
         nodeList = [];
-        
-        if(sceneGraph.type === "GDC_SCENE_GRAPH") { //APEP 21/11/2016 Memoir scene graphs do not have node list generation turned on TODO MEMOIR 2016
 
-            _.forEach(rootNodes, function(rootNodeKey){
-                var rootNode = root.children[rootNodeKey];
-            
-                //create roots node, no parents.. skipping children ids for now
-                var node = createNode(rootNodeKey, rootNodeKey, [], [], 'root');
-                nodeList.push(node);
-            
-                //recursively iterate through children added them to node list
-                getChildrenNodes(rootNode, node, sceneGraph);
-                nodeList = dedupeChildren(nodeList);
-            });
-            
-        }
+
+        _.forEach(rootNodes, function(rootNodeKey){
+            var rootNode = root.children[rootNodeKey];
+
+            //create roots node, no parents.. skipping children ids for now
+            var node = createNode(rootNodeKey, rootNodeKey, [], getRootChildrenForSceneGraphType(sceneGraph.type), 'root');
+
+            nodeList.push(node);
+
+            //recursively iterate through children added them to node list
+            getChildrenNodes(rootNode, node, sceneGraph);
+            nodeList = dedupeChildren(nodeList);
+        });
 
         sceneGraph.nodeList = nodeList;
     },

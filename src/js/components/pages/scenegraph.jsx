@@ -22,7 +22,7 @@ var SceneItem = React.createClass({
     }
 });
 
-var _selectedSceneForRemoval = undefined;
+var _selectedSceneForRemoval = null;
 
 var SceneItemForList = React.createClass({
 
@@ -261,7 +261,7 @@ var SceneGraph = React.createClass({
                     </div>
                     <div className="col-md-12 scene-graph-scene-list-container">
                         <h4>Add a scene to the graph</h4>
-                        <select className="form-control scene-list" onChange={this.onSceneSelected} value={this.state.selectedScene ? this.state.selectedScene._id : undefined}>
+                        <select className="form-control scene-list" onChange={this.onSceneSelected} value={this.state.selectedScene ? this.state.selectedScene._id : ""}>
                             {this.state.scenes.map(function(sc){
                                 return <SceneItem scene={sc} />;
                             })}
