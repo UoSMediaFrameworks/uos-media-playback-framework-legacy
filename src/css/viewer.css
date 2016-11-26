@@ -2,7 +2,7 @@ html, body {
 	height: 100%;
     /* for some reason vimeo embeds break down when you add them anywhere but
        document.body to trigger preloading (we later move them to the player element),
-       so I have to hide overflow so scroll bars don't show for that brief moment when 
+       so I have to hide overflow so scroll bars don't show for that brief moment when
        the vimeo iframe is directly in the body */
     overflow: hidden;
 }
@@ -23,10 +23,11 @@ html, body {
     right: 0;
     width: 30%;
     min-width: 200px;
+    z-index: 99999;
 }
 
 .theme-selector {
-    z-index: 3;
+    z-index: 99999;
     position: absolute;
     bottom: 0;
     left: 0;
@@ -42,5 +43,5 @@ html, body {
 
 .theme-selector button:focus {
     outline: none;
-    
+
 }
