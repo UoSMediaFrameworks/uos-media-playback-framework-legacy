@@ -51,7 +51,7 @@ html, body, #login, #player {
     padding: 6px 15px;
     color: white;
     font-size: 61px;
-    z-index: 2;
+    z-index: 99999;
     position: absolute;
     bottom: 0px;
 }
