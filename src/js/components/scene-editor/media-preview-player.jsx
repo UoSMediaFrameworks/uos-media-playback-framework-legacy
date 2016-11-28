@@ -34,6 +34,7 @@ var MediaObjectPreviewPlayer = React.createClass({
 
         switch (mediaObject.type) {
             case 'audio':
+                var self = this; //APEP required for scope resolution within the soundcloud stream URL callback.
                 soundCloud.streamUrl(mediaObject.url, function (err,streamUrl) {
                     var preview;
                     if(err) {
@@ -44,8 +45,8 @@ var MediaObjectPreviewPlayer = React.createClass({
                             src={streamUrl}
                             controls>
                         </audio>;
+                        self.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                     }
-                    this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 });
                 break;
 
