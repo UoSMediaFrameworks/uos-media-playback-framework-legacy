@@ -1,6 +1,6 @@
 'use strict';
 var React = require('react');
-
+var getVimeoId = require('../../../utils/get-vimeo-id');
 var VideoMediaPreviewPlayer = React.createClass({
 
     _getMediaObject: function (props) {
@@ -100,7 +100,6 @@ var VideoMediaPreviewPlayer = React.createClass({
 
         var video = this.getVideoPlayerForMediaObject(mediaObject);
 
-        console.log("video: ", video);
 
         return (
             <div style={{width: '100%', height: '320px'}}>

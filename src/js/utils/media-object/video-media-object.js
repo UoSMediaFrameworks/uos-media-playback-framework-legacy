@@ -2,9 +2,10 @@
 /*jshint browser:true */
 
 var MediaObject = require('./media-object');
-var EmbeddedVimeoPlayer = require('../embedded-vimeo-player');
+
 var getVimeoId = require('../get-vimeo-id');
 var TweenloopInterval = require('../tween-loop-interval');
+var EmbeddedVimeoPlayer = require('../embedded-vimeo-player');
 var TWEEN = require('tween.js');
 
 function VideoMediaObject(obj, ops) {

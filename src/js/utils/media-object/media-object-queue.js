@@ -207,6 +207,13 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
                 }).value();
         }
     };
+    // 30/11/2016 Angel.P : these methods are here for development purposes to check on the queue's internal state
+    this.getActive = function(){
+        return active;
+    };
+    this.getMasterList = function(){
+        return masterList;
+    };
 }
 
 module.exports = MediaObjectQueue;

@@ -17,7 +17,7 @@ var TextMediaObject = require('../utils/media-object/text-media-object');
 var ImageMediaObject = require('../utils/media-object/image-media-object');
 var VideoMediaObject = require('../utils/media-object/video-media-object');
 var AudioMediaObject = require('../utils/media-object/audio-media-object');
-var RandomVisualPlayer = require('../utils/random-visual-player');
+var RandomVisualPlayer = require('../components/viewer/random-visual-player.jsx');
 var RandomAudioPlayer = require('../utils/random-audio-player');
 
 
@@ -49,28 +49,29 @@ var SceneListener = React.createClass({
     _maybeUpdatePlayer: function() {
         if (this.state.scene) {
             if (this.state.scene.style) {
-                $(this.getPlayerElem()).css(this.state.scene.style);
+                $('.player').css(this.state.scene.style);
             }
 
             this.mediaObjectQueue.setScene(this.state.scene);
-            this.randomVisualPlayer.start();
             this.randomAudioPlayer.start();
         }
     },
-
-    componentDidMount: function() {
-        HubSendActions.subscribeScene(this.props.params.id);
-        SceneStore.addChangeListener(this._onChange);
-
-        var playerElem = this.getPlayerElem();
-
+    componentWillMount:function(){
         this.mediaObjectQueue = new MediaObjectQueue(
             [TextMediaObject, AudioMediaObject, VideoMediaObject, ImageMediaObject],
             {image: 3, text: 1, video: 1, audio: 1}
         );
-        this.randomVisualPlayer = new RandomVisualPlayer(playerElem, this.mediaObjectQueue);
+        this.setState({mediaObjectQueue: this.mediaObjectQueue});
+    },
+    componentDidMount: function() {
+        HubSendActions.subscribeScene(this.props.params.id);
+        SceneStore.addChangeListener(this._onChange);
+        this.mediaObjectQueue = new MediaObjectQueue(
+            [TextMediaObject, AudioMediaObject, VideoMediaObject, ImageMediaObject],
+            {image: 3, text: 1, video: 1, audio: 1}
+        );
         this.randomAudioPlayer = new RandomAudioPlayer(this.mediaObjectQueue);
-
+        this.setState({mediaObjectQueue: this.mediaObjectQueue});
         this._maybeUpdatePlayer();
     },
 
@@ -123,12 +124,11 @@ var SceneListener = React.createClass({
         return (
             <div className='scene-listener'>
                 <Loader loaded={this.state.scene ? true : false}></Loader>
-                <div className='player' ref="player"></div>
+                <RandomVisualPlayer mediaQueue={this.state.mediaObjectQueue} />
                 <ThemeSelector themeChange={this.handleThemeChange} scene={this.state.scene} />
                 <form className='tag-filter' onSubmit={this.updateTags}>
                     <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...' className='form-control scene-listener-tag-input' />
                 </form>
-
             </div>
         );
     }

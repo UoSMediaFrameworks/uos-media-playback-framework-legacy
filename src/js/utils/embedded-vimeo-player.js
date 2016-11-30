@@ -22,10 +22,10 @@ function checkDisplayRatio(width, height) {
     //Tranforming it the video size to 16:9 ration
     if (width >= height) {
         iframeW = (iframeH * 16) / 9;
-        return {height:iframeH,width:iframeW};
+        return {height: iframeH, width: iframeW};
     } else {
         iframeH = (iframeW / 16) * 9;
-        return {height:iframeH,width:iframeW};
+        return {height: iframeH, width: iframeW};
     }
 }
 
@@ -50,8 +50,12 @@ function unregisterPlayer(id) {
 
 function onMessageRecieved(event) {
     //APEP 3/10/16 - Chrome dev tools + react dev tools cause events to be sent to player
-    var data = JSON.parse(event.data);
-    players[data.player_id].handleEvent(data);
+    if (typeof event.data == "string") {
+        var data = JSON.parse(event.data);
+        players[data.player_id].handleEvent(data);
+    } else {
+        players[event.data.player_id].handleEvent(event);
+    }
 }
 
 // check for window, we won't have it if we are running headless tests
@@ -78,23 +82,21 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl) {
     this.id = hat();
     this.isVimeo = isVimeo;
 
+
     registerPlayer(this.id, this);
 
-    if(isVimeo)
+    if (isVimeo)
         this.setupAsVimeoPlayer(videoUrl);
     else
         this.setupAsRawPlayer(getTranscodedUrl(videoUrl));
 
 
     this.url = this._element.attributes.src.value.split('?')[0];
-
     document.body.appendChild(this._element);
-
     //https://github.com/vimeo/player.js
-    if(isVimeo) {
+    if (isVimeo) {
         this.vimeo_player = new Vimeo(this._element);
     } else {
-        console.log("EmbeddedVimeoPlayer _element: ", this._element);
         var url = getTranscodedUrl(videoUrl);
         //var url = "Transcoding_3/video_manifest.mpd"; //APEP see other comment (_getRawPlayerForMediaObject)
         var player = dashjs.MediaPlayer().create();
@@ -107,36 +109,34 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl) {
     return this;
 }
 
-EmbeddedVimeoPlayer.prototype.setupAsVimeoPlayer = function(vimeoId) {
+EmbeddedVimeoPlayer.prototype.setupAsVimeoPlayer = function (vimeoId) {
     var urlAttrsStr = urlAttrs({
-            api: 1,
             player_id: this.id,
             title: 0,
-            autoplay: 0
+            autoplay: 0,
+            autopause: 0
         }),
         playerUrl = 'https://player.vimeo.com/video/' + vimeoId + '?' + urlAttrsStr;
-    try {
-        var dimensions = checkDisplayRatio(window.innerWidth, window.innerHeight);
-        this._element = makeElement('iframe', {
-            src: playerUrl,
-            id: this.id,
-            width: dimensions.width,
-            height: dimensions.height,
-            frameborder: 0,
-            class: 'media-object embedded-vimeo-player'
-        });
-    }
-    catch (e) {
-        console.log(e)
-    }
+
+    var dimensions = checkDisplayRatio(window.innerWidth, window.innerHeight);
+    this._element = makeElement('iframe', {
+        id: this.id,
+        width: dimensions.width,
+        height: dimensions.height,
+        src: playerUrl,
+        frameborder: 0,
+        class: ' embedded-vimeo-player'
+    });
+
+
 };
 
-EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function(videoUrl) {
+EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (videoUrl) {
     this._element = makeElement('video', {
         src: videoUrl,
         id: this.id,
-        class: 'media-object embedded-vimeo-player',
-        'data-dashjs-player': 'data-dashjs-player',
+        class: ' embedded-vimeo-player',
+        'data-dashjs-player': 'data-dashjs-player'
     });
 
     var dimensions = checkDisplayRatio(window.innerWidth, window.innerHeight);
