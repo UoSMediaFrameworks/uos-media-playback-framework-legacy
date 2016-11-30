@@ -53,6 +53,7 @@
     "lodash.noop": "^3.0.1",
     "lodash.support": "^3.0.4",
     "merge-stream": "^0.1.6",
+    "node-uuid": "^1.4.7",
     "object-assign": "^2.0.0",
     "process-nextick-args": "^1.0.7",
     "react": "^15.3.2",
