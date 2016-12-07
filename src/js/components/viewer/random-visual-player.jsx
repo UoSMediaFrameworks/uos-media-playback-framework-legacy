@@ -19,7 +19,7 @@ var RandomVisualPlayer = React.createClass({
     },
     loadMediaObject: function (queue) {
         var self = this;
-        console.log("loading object")
+
 
         lodash.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject], function (moType) {
 
@@ -36,8 +36,8 @@ var RandomVisualPlayer = React.createClass({
                 mediaObject: mediaObject,
                 player: self.refs.player,
                 moDoneHandler: self.moDoneHandler,
-                displayDuration: self.state.mediaQueue.displayDuration,
-                transitionDuration: self.state.mediaQueue.transitionDuration,
+                displayDuration: self.props.mediaQueue.displayDuration,
+                transitionDuration: self.props.mediaQueue.transitionDuration,
                 key: index
             };
             return (
@@ -59,7 +59,6 @@ var RandomVisualPlayer = React.createClass({
         var self = this;
         console.log("randomVisualPlayer -vmoDoneHandler - mediaObject: ", videoMediaObject);
         if (videoMediaObject.props.data.mediaObject._obj.autoreplay === 0 || videoMediaObject.props.data.mediaObject._obj.autoreplay === 1) {
-            console.log("current video has 0 or 1 autoreplay value")
             videoMediaObject.props.data.mediaObject.emit("transition", videoMediaObject.props.data.mediaObject);
             setTimeout(function () {
                 videoMediaObject.props.data.mediaObject.emit("done", videoMediaObject.props.data.mediaObject);
@@ -112,13 +111,9 @@ var RandomVisualPlayer = React.createClass({
         }
         return willUpdate;
     },
-    componentWillMount: function () {
-
-
-    },
     componentDidUpdate: function () {
         var self = this;
-        if (self.props.mediaQueue.displayInterval && !self.state.interval) {
+        if (self.props.mediaQueue.displayInterval != undefined && !self.state.interval) {
             self.loadMediaObject(self.props);
             setInterval(function () {
                 self.loadMediaObject(self.props)
