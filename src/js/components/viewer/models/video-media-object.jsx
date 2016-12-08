@@ -41,10 +41,11 @@ var VideoMediaObject = React.createClass({
                 } catch(e) {
                     console.log("e component did mount: ", e);
                 }
+                self.state.player.raw_player.on('PLAYBACK_PLAYING', function (e) {
+                    console.log("Raw event PLAYBACK_PLAYING", e);
+                });
             }
-            self.state.player.raw_player.on('PLAYBACK_PLAYING', function (e) {
-                console.log("Raw event Ended", e);
-            });
+
             var element = this.refs[this.props.data.mediaObject._obj._id];
             element.appendChild(this.state.player._element);
 
