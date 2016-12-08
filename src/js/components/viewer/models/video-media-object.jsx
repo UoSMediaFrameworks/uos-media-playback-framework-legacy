@@ -39,6 +39,7 @@ var VideoMediaObject = React.createClass({
             this.state.player.vimeo_player.setLoop(this.state.looping || false);
         } else {
             this.state.player.raw_player.play();
+            console.log(this.state.player.raw_player)
         }
         var element = this.refs[this.props.data.mediaObject._obj._id];
         element.appendChild(this.state.player._element);
@@ -82,6 +83,7 @@ var VideoMediaObject = React.createClass({
             });
         } else {
             this.state.player._element.addEventListener('ended', function (e) {
+                console.log("Raw video playout");
                 self.transition();
             }, false);
             if (self.state.play_duration !== null && self.state.play_duration > 0) {

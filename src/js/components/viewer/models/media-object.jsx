@@ -20,29 +20,25 @@ var MediaObject = React.createClass({
     componentDidMount: function () {
         var element = this.refs.object.refs[this.props.data.mediaObject._obj._id];
         this.addStyle(element,this.props.data.mediaObject.style);
+        if(element.style.position != "absolute")
+        {
+            this.placeAtRandomPosition(element);
+        }
 
-        this.placeAtRandomPosition(element);
     },
     addStyle:function(element, style) {
         lodash.forEach(Object.keys(style), function(styleKey) {
-            element.style[styleKey] = style[styleKey];
+            if(! (styleKey === "position" && style[styleKey] === "absolute"))
+                element.style[styleKey] = style[styleKey];
         });
     },
     calcDimension: function (player, dim, element) {
         var elementDimensionSize = element[dim];
-        // console.log("refs",this.refs.player[dim],elementDimensionSize)
-        var randomNonOverlapPosition = Math.random() * (this.props.data.player[dim] - elementDimensionSize);
-        // allow potential overlap of up to 30% of element's dimension
-        var potentialOverlap = lodash.random(-0.3, 0.3) * elementDimensionSize;
-        var finalPosition = Math.round(randomNonOverlapPosition + potentialOverlap);
-        if (finalPosition <= this.props.data.player[dim] && finalPosition >= 0) {
-            return finalPosition + 'px';
-        } else if (finalPosition > this.props.data.player[dim]) {
-            return this.props.data.player[dim] + 'px';
-        } else {
-            return 0 + 'px';
-        }
-        return Math.round(randomNonOverlapPosition + potentialOverlap) + 'px';
+        var playerDimensionSize = player[dim];
+        var min = 0;
+        var max = playerDimensionSize - elementDimensionSize;
+        var finalPosition = lodash.random(min,max);
+        return Math.round(finalPosition) + 'px';
     },
     placeAtRandomPosition: function (element) {
         var player = this.props.data.player;

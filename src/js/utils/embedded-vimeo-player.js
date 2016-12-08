@@ -97,6 +97,7 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl) {
     if (isVimeo) {
         this.vimeo_player = new Vimeo(this._element);
     } else {
+
         var url = getTranscodedUrl(videoUrl);
         //var url = "Transcoding_3/video_manifest.mpd"; //APEP see other comment (_getRawPlayerForMediaObject)
         var player = dashjs.MediaPlayer().create();
@@ -104,6 +105,7 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl) {
         player.initialize(this._element, url, true);
         this.raw_player = player;
         this.player_url = url;
+        console.log("getting transcoded url and initializing player",player,url)
     }
 
     return this;

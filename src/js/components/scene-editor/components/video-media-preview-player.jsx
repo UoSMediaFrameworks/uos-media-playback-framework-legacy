@@ -18,7 +18,7 @@ var VideoMediaPreviewPlayer = React.createClass({
     _getVimeoPlayerForMediaObject: function(mediaObject) {
         var vimeoId = getVimeoId(mediaObject.url);
         var url = 'https://player.vimeo.com/video/' + vimeoId;
-        return <iframe width="100%" height="100%" src={url}></iframe>;
+        return <iframe ref="videoPlayer" width="100%" height="100%" src={url}></iframe>;
     },
 
     _getMediaObjectUrl: function(mediaObject) {
@@ -39,7 +39,8 @@ var VideoMediaPreviewPlayer = React.createClass({
      * @returns {XML: Video HTML component}
      */
     _getDashPlayer: function(mediaObject) {
-        var dashUrl =  this._getMediaObjectUrl(mediaObject);
+        console.log("getting dash player", this._getMediaObjectUrl(mediaObject))
+        var dashUrl =  this._getMediaObjectUrl(mediaObject)
         // dashUrl = "Transcoding_3/video_manifest.mpd";  //APEP: Use dash transcoded from a local express file path (dist folder)  CORS issue as azure storage account does not like localhost:port
         return <video ref="videoPlayer" data-dashjs-player id="example-video"  width="100%" height="320px" controls>
             <source src={dashUrl} type="application/dash+xml"></source>
@@ -99,7 +100,8 @@ var VideoMediaPreviewPlayer = React.createClass({
         var mediaObject = this._getMediaObject(this.props);
 
         var video = this.getVideoPlayerForMediaObject(mediaObject);
-
+        console.log("player-preview",this)
+        //this.refs.videoPlayer.autoplay = false;
 
         return (
             <div style={{width: '100%', height: '320px'}}>
