@@ -95,10 +95,8 @@ var VideoMediaPreviewPlayer = React.createClass({
         // var url = "Transcoding_3/video_manifest.mpd"; //APEP see other comment (_getRawPlayerForMediaObject)
         var player = dashjs.MediaPlayer().create();
         player.initialize(document.querySelector("#videoPreview"), url, true);
-        var raw_player = document.querySelector("#videoPreview");
-        console.log("player-preview", raw_player)
-        if (raw_player)
-            raw_player.autoplay = false;
+        //Making sure the video pauses via the dash js library after initialization
+        player.pause();
     },
 
     render: function () {
