@@ -44,6 +44,9 @@ var VideoMediaObject = React.createClass({
                 self.state.player.raw_player.on('PLAYBACK_PLAYING', function (e) {
                     console.log("Raw event PLAYBACK_PLAYING", e);
                 });
+                self.state.player.raw_player._element.on('playing', function (e) {
+                    console.log("Raw event PLAYBACK_PLAYING", e);
+                });
             }
 
             var element = this.refs[this.props.data.mediaObject._obj._id];
@@ -85,6 +88,10 @@ var VideoMediaObject = React.createClass({
             } else {
                 console.log("Raw player");
                 self.state.player.raw_player.on('PLAYBACK_ENDED', function (e) {
+                    console.log("Raw event Ended", e);
+                    self.transition();
+                });
+                self.state.player.raw_player._element.on('ended', function (e) {
                     console.log("Raw event Ended", e);
                     self.transition();
                 });
