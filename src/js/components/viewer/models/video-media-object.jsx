@@ -39,7 +39,13 @@ var VideoMediaObject = React.createClass({
             this.state.player.vimeo_player.setLoop(this.state.looping || false);
         } else {
             this.state.player.raw_player.play();
-            console.log(this.state.player.raw_player)
+            /*Default value of the dash media player is true
+             this.state.player.raw_player.setAutoPlay(true);
+             */
+            this.state.player.raw_player.setVolume(this.state.volume || 0.0);
+            var rawP = this.state.player.raw_player.getVideoElement();
+            rawP.loop = this.state.looping || false;
+            console.log("raw player", this.state.player.raw_player)
         }
         var element = this.refs[this.props.data.mediaObject._obj._id];
         element.appendChild(this.state.player._element);
@@ -68,7 +74,7 @@ var VideoMediaObject = React.createClass({
                         self.transition();
                     });
                     this.state.player.vimeo_player.on('finish', function (e) {
-                       // console.log("event Finish", e);
+                        // console.log("event Finish", e);
                         self.transition();
                     });
                 }

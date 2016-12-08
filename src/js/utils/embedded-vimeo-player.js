@@ -147,8 +147,6 @@ EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (videoUrl) {
     this._element.style.height = dimensions.height + 'px';
 
     this._element.controls = false;
-    this._element.autoplay = false;
-    this._element.looping = true; //should be some logic
 };
 
 EmbeddedVimeoPlayer.prototype.postMessage = function (action, value) {
