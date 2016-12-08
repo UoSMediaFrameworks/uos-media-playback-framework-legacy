@@ -35,18 +35,16 @@ var VideoMediaObject = React.createClass({
             if(! self.state.player.isVimeo) { //APEP: ##Hack## for buffering media removal at the end
                 try {
                     //APEP: ##Hack## for buffering media removal at the end
-                    console.log("APEP HACK raw player manifest")
                     self.state.player.raw_player.retrieveManifest(self.state.player.player_url, function(manifest){
                         self.state.play_duration = manifest.Period.duration;
                     });
                 } catch(e) {
                     console.log("e component did mount: ", e);
                 }
-                self.state.player.raw_player.on('play', function (e) {
-                    console.log("Raw Playing triggered",e)
-                });
             }
-
+            self.state.player.raw_player.on('PLAYBACK_PLAYING', function (e) {
+                console.log("Raw event Ended", e);
+            });
             var element = this.refs[this.props.data.mediaObject._obj._id];
             element.appendChild(this.state.player._element);
 
@@ -62,7 +60,6 @@ var VideoMediaObject = React.createClass({
                 self.state.player.vimeo_player.play();
                 // this.state.player.vimeo_player.setLoop(this.state.looping || false);
             } else {
-                console.log("Raw Play",self.state.player.raw_player);
                 self.state.player.raw_player.play();
                 self.state.player.raw_player.setVolume(this.state.volume || 0.0);
             }
@@ -85,6 +82,7 @@ var VideoMediaObject = React.createClass({
                 });
 
             } else {
+                console.log("Raw player");
                 self.state.player.raw_player.on('PLAYBACK_ENDED', function (e) {
                     console.log("Raw event Ended", e);
                     self.transition();

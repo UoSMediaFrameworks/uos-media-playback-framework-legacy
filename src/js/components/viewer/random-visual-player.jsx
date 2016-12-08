@@ -18,13 +18,12 @@ var RandomVisualPlayer = React.createClass({
         };
     },
     removeAllLooplessVideos(){
-        console.log("removeAllLooplessVideos")
         var self = this;
         var i = self.state.looplessMediaObjects.length;
-        console.log("loopless",self.state.looplessMediaObjects)
+
         while(i--) {
             var mediaObject = self.state.looplessMediaObjects.splice(i , 1);
-            console.log("loop obj",mediaObject);
+
             if(!mediaObject || mediaObject.length <= 0)
                 return;
 
@@ -58,7 +57,6 @@ var RandomVisualPlayer = React.createClass({
             var mO =  (
                 <MediaObject key={mediaObject.guid} data={data}></MediaObject>
             );
-            console.log("mo",mO)
             if(mediaObject instanceof VideoMediaObject){
                 try{
                     if (data.mediaObject._obj.autoreplay == 0) {
@@ -70,7 +68,7 @@ var RandomVisualPlayer = React.createClass({
             }
             return mO;
         });
-        //  console.log(this.state.arr);
+
         this.setState({mediaQueue: this.props.mediaQueue, queue: q});
     },
     moDoneHandler: function (mediaObject) {
