@@ -37,7 +37,6 @@ var VideoMediaObject = React.createClass({
                     //APEP: ##Hack## for buffering media removal at the end
                     self.state.player.raw_player.retrieveManifest(self.state.player.player_url, function(manifest){
                         self.state.play_duration = manifest.Period.duration;
-                        callback();
                     });
                 } catch(e) {
                     console.log("e: ", e);
