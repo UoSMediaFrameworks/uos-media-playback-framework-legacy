@@ -81,14 +81,11 @@ var VideoMediaObject = React.createClass({
 
             } else {
                 console.log("Raw player");
-                self.state.player.raw_player.on('PLAYBACK_ENDED', function (e) {
+
+                self.state.player._element.addEventListener('ended', function (e) {
                     console.log("Raw event Ended", e);
                     self.transition();
-                });
-                self.state.player._element.on('ended', function (e) {
-                    console.log("Raw event Ended", e);
-                    self.transition();
-                });
+                },false);
                 //APEP: ##Hack## for buffering media removal at the end
                 if(self.state.play_duration !== null && self.state.play_duration > 0) {
                     if(self.state._playbackTimeInterval) clearTimeout(self.state._playbackTimeInterval);
