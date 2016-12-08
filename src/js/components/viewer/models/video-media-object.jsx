@@ -32,13 +32,14 @@ var VideoMediaObject = React.createClass({
             self.state.volume = self.getVolume(mediaObject);
             self.state.player = new EmbeddedVimeoPlayer(isVimeo, videoUrl);
 
-            if(! self.state.player.isVimeo) { //APEP: ##Hack## for buffering media removal at the end
+            if (!self.state.player.isVimeo) { //APEP: ##Hack## for buffering media removal at the end
                 try {
                     //APEP: ##Hack## for buffering media removal at the end
-                    self.state.player.raw_player.retrieveManifest(self.state.player.player_url, function(manifest){
+                    self.state.player.raw_player.retrieveManifest(self.state.player.player_url, function (manifest) {
                         self.state.play_duration = manifest.Period.duration;
                     });
-                } catch(e) {
+
+                } catch (e) {
                     console.log("e component did mount: ", e);
                 }
             }
@@ -80,27 +81,31 @@ var VideoMediaObject = React.createClass({
                 });
 
             } else {
-                console.log("Raw player");
 
-                self.state.player._element.addEventListener('ended', function (e) {
-                    console.log("Raw event Ended", e);
-                    self.transition();
-                },false);
-                //APEP: ##Hack## for buffering media removal at the end
-                if(self.state.play_duration !== null && self.state.play_duration > 0) {
-                    if(self.state._playbackTimeInterval) clearTimeout(self.state._playbackTimeInterval);
-                    self.state._playbackTimeInterval = setTimeout(function() {
-                            console.log("Buffering play duration failure - transition media object: ", self);
+                try {
+                    self.state.player._element.addEventListener('ended', function (e) {
+                        console.log("Raw event Ended", e);
                         self.transition();
-                    }, self.state.play_duration * 1.15 * 1000);
+                    }, false);
+                    //APEP: ##Hack## for buffering media removal at the end
+                    if (self.state.play_duration !== null && self.state.play_duration > 0) {
+                        if (self.state._playbackTimeInterval) clearTimeout(self.state._playbackTimeInterval);
+                        self.state._playbackTimeInterval = setTimeout(function () {
+                            console.log("Buffering play duration failure - transition media object: ", self);
+                            self.transition();
+                        }, self.state.play_duration * 1.15 * 1000);
+                    }
+                } catch (e) {
+                    console.log("Raw Player Error", e)
                 }
+
             }
 
         },
         transition: function () {
             //console.log("VideoMediaObject - transition - Video transition call made");
             var self = this;
-            if(self.state._playbackTimeInterval) clearTimeout(self.state._playbackTimeInterval);
+            if (self.state._playbackTimeInterval) clearTimeout(self.state._playbackTimeInterval);
             if (self.props.data.mediaObject.type === "video" && self.props.data.mediaObject._obj.autoreplay <= 1) {
                 self.setState({shown: false});
             }
