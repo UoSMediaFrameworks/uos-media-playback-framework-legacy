@@ -17,10 +17,24 @@ var RandomVisualPlayer = React.createClass({
             interval: false
         };
     },
+    removeAllLooplessVideos(){
+        console.log("removeAllLooplessVideos")
+        var self = this;
+        var i = self.state.looplessMediaObjects.length;
+        console.log("loopless",self.state.looplessMediaObjects)
+        while(i--) {
+            var mediaObject = self.state.looplessMediaObjects.splice(i , 1);
+            console.log("loop obj",mediaObject);
+            if(!mediaObject || mediaObject.length <= 0)
+                return;
+
+          self.vmoDoneHandler(mediaObject[0]);
+        }
+    },
     loadMediaObject: function (queue) {
         var self = this;
 
-
+        self.removeAllLooplessVideos()
         lodash.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject], function (moType) {
 
             var obj = queue.mediaQueue.take([moType]);
@@ -32,6 +46,7 @@ var RandomVisualPlayer = React.createClass({
         });
 
         var q = this.state.arr.map(function (mediaObject, index) {
+
             var data = {
                 mediaObject: mediaObject,
                 player: self.refs.player,
@@ -40,9 +55,20 @@ var RandomVisualPlayer = React.createClass({
                 transitionDuration: self.props.mediaQueue.transitionDuration,
                 key: index
             };
-            return (
+            var mO =  (
                 <MediaObject key={mediaObject.guid} data={data}></MediaObject>
             );
+            console.log("mo",mO)
+            if(mediaObject instanceof VideoMediaObject){
+                try{
+                    if (data.mediaObject._obj.autoreplay == 0) {
+                        self.state.looplessMediaObjects.push(mO);
+                    }
+                }catch(e){
+
+                }
+            }
+            return mO;
         });
         //  console.log(this.state.arr);
         this.setState({mediaQueue: this.props.mediaQueue, queue: q});
@@ -71,21 +97,21 @@ var RandomVisualPlayer = React.createClass({
             videoMediaObject.props.data.mediaObject.currentLoop = 1;
             console.log("current video has autoreplay value of 1>", videoMediaObject.props.data.mediaObject._obj.autoreplay)
             //TODO if not vimeo
-            //  videoMediaObject.play();
+             videoMediaObject.play();
         } else if (videoMediaObject.props.data.mediaObject.currentLoop < videoMediaObject.props.data.mediaObject._obj.autoreplay) {
             console.log("CurrentLoop: ", videoMediaObject.props.data.mediaObject.currentLoop);
             videoMediaObject.props.data.mediaObject.currentLoop++;
 
 
             //TODO if not vimeo
-            // videoMediaObject.play();
+             videoMediaObject.play();
         } else {
             videoMediaObject.props.data.mediaObject.currentLoop = 0;
             videoMediaObject.props.data.mediaObject.emit("transition", videoMediaObject.props.data.mediaObject);
-            setTimeout(function () {
+            //setTimeout(function () {
                 videoMediaObject.props.data.mediaObject.emit("done", videoMediaObject.props.data.mediaObject);
                 self.clearMediaObject(videoMediaObject);
-            }, videoMediaObject.props.data.transitionDuration)
+            //}, videoMediaObject.props.data.transitionDuration)
             //videoMediaObject.transition(); //causing some issues
         }
     },
