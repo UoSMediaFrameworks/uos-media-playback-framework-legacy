@@ -125,9 +125,17 @@ VideoMediaObject.prototype.transition = function () {
                     self._player.raw_player.setVolume(position.vol); //TODO fix
             })
             .onComplete(function () {
+                if(!self._player.isVimeo) {
+                    //APEP: Ensure player is reset in attempt for it to clean its GPU memory
+                    self._player.raw_player.reset();
+                }
                 self.emit('done', self);
             })
             .onStop(function () {
+                if(!self._player.isVimeo) {
+                    //APEP: Ensure player is reset in attempt for it to clean its GPU memory
+                    self._player.raw_player.reset();
+                }
                 self.emit('done', self);
             })
             .start();
