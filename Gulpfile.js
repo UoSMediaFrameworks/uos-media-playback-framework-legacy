@@ -15,6 +15,7 @@ var objectAssign = require('object-assign');
 var browserify = require('browserify');
 var reactify = require('reactify');
 var envify = require('envify');
+var stripify = require('stripify');
 //var streamify = require('gulp-streamify'); AJF: removed as can't find it being used
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat'),
@@ -36,6 +37,16 @@ if (production) {
     gutil.log('making production build');
 }
 
+
+var debugMode = process.env.DEBUG === 'true';
+
+gutil.log('debugMode: ' + debugMode);
+
+
+if(debugMode) {
+    gutil.log('debug turned on');
+}
+
 /*
   I don't want to have to define the browserify code twice.  Yet, I need it to run inside
   of watchify, and then I also want to run it manually for the 'build' task.  So I have to
@@ -49,6 +60,10 @@ function bundlerBuilder (startPath, finishName, useReactify) {
     var bundler = watchify(browserify(startPath, objectAssign({debug: true}, watchify.args)));
     if (useReactify) {
         bundler.transform(reactify);
+    }
+
+    if(!debugMode) {
+        bundler.transform("stripify")
     }
 
     bundler.transform(envify);
