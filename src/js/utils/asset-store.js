@@ -8,8 +8,8 @@ var connectionCache = require('./connection-cache');
 var assetUploadApi = process.env.ASSET_STORE + '/api/';
 var removeUnusedImagesUrl = process.env.ASSET_STORE + '/api/remove-unused-images';
 
-var imageFileTypes = ["png", "jpg"];
-var videoFileTypes = ["mov", 'mp4'];
+var imageFileTypes = ["png", "jpg","tiff","webp","gif","svg"];
+var videoFileTypes = ["mov", 'mp4',"webm","flv","wmv","avi","ogg","qt","asf"];
 
 //APEP Improve - this default image case is not good practice
 function getMediaObjectType(file) {
@@ -46,7 +46,6 @@ module.exports = {
                 var tags = data.tags ? data.tags.join(', ') : '';
 
 				var status = (tags === '' ? 'warning' : 'success');
-
                 callback(status, {
                     url: data.url,
                     tags: tags,
