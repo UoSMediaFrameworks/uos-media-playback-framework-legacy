@@ -16,7 +16,8 @@ var getImageMediaObjectThumbnailUrl = function(mediaObjectUrl) {
     }
 
     var trailingSlash = mediaObjectUrl.lastIndexOf('/');
-    return mediaObjectUrl.substring(0, trailingSlash + 1) + "thumbnail-" + mediaObjectUrl.substring(trailingSlash + 1, mediaObjectUrl.length);
+    var mediaURL = mediaObjectUrl.substring(0, trailingSlash + 1) + "thumbnail-" + mediaObjectUrl.substring(trailingSlash + 1, mediaObjectUrl.length);
+    return mediaURL;
 };
 
 var MediaObjectPreview = React.createClass({
@@ -55,18 +56,20 @@ var MediaObjectPreview = React.createClass({
 				break;
 
 			case 'video':
-				vimeoApi.video(getVimeoId(mediaObject.url), function(err, data) {
-					var url;
-					try {
-						url = data.pictures.sizes[0].link;
-					} catch(err) {
-						console.log('couldn\'t extract vimeo thumb url from api request');
-					}
-					this.setState({
-						thumbImage: url,
-						title: data.name
-					});
-				}.bind(this));
+                if(mediaObject.url.indexOf('vimeo.com') != -1) {
+                    vimeoApi.video(getVimeoId(mediaObject.url), function (err, data) {
+                        var url;
+                        try {
+                            url = data.pictures.sizes[0].link;
+                        } catch (err) {
+                            console.log('couldn\'t extract vimeo thumb url from api request');
+                        }
+                        this.setState({
+                            thumbImage: url,
+                            title: data.name
+                        });
+                    }.bind(this));
+                }
 				break;
 
 			case 'text':

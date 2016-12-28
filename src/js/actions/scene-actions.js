@@ -157,12 +157,16 @@ var SceneActions = {
         });
 
         assetStore.create(file, function (status, data) {
-
-            var msg = (status === 'warning' ?
-            'No tags found in ' + file.name :
-                status === 'danger' ?
-                    'Upload unsuccessful!' :
-                    'Upload successful!');
+            var msg;
+            if(status === 'warning' ){
+                msg = 'No tags found in ' + file.name;
+            }else if(status === 'danger' ){
+                msg =  'Upload unsuccessful!';
+            }else if(status === 'unsupported'){
+                msg =  'File Type is unsupported';
+            }else{
+                msg =   'Upload successful!';
+            }
 
             AppDispatcher.handleServerAction({
                 type: ActionTypes.STATUS_MESSAGE_UPDATE,
@@ -181,14 +185,28 @@ var SceneActions = {
             }, msecs);
 
             if (status !== 'danger') {
-                SceneActions.addMediaObject(sceneId, {
-                    type: data.type,
-                    url: data.url,
-                    tags: data.tags,
-                    style: {
-                        'z-index': '1'
-                    }
-                });
+                if(data.type != "video"){
+                    SceneActions.addMediaObject(sceneId, {
+                        type: data.type,
+                        url: data.url,
+                        tags: data.tags,
+                        style: {
+                            'z-index': '1'
+                        }
+                    });
+                }else{
+                    SceneActions.addMediaObject(sceneId, {
+                        type: data.type,
+                        url: data.url,
+                        tags: data.tags,
+                        volume:100,
+                        style: {
+                            'z-index': '1'
+                        },
+                        autoreplay:1
+                    });
+                }
+
             }
         });
     }
