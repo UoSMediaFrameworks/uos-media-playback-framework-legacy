@@ -128,6 +128,8 @@ var MediaObjectList = React.createClass({
                     <button type='button' onClick={this.handleHighlightChange} className={this.highlightSelectedClass("hidden")}>hidden</button>
                 </div>
 
+                <div className={this.props.saveFlagKlass}> Saved Status </div>
+
                 <form >
                     <input ref="tag-search"
                            className='form-control'

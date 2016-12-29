@@ -445,21 +445,26 @@ html, body, #main, .app {
     border: none;
 }
 
-.scene-saved-status-bar {
-    width:100%;
-    color: white;
-}
-
 .green-save-flag {
     background-color: green;
-    margin-right: 2%;
     float: right;
     padding: 2px;
+    color: white;
 }
 
 .red-save-flag {
     background-color: red;
-    margin-right: 2%;
     float: right;
     padding: 2px;
+    color: white;
+}
+
+#media-upload-drop-target {
+    width: 90%;
+    margin: 0 auto;
+    border: 2px black dashed;
+}
+
+#media-upload-drop-target p {
+    display: none;
 }

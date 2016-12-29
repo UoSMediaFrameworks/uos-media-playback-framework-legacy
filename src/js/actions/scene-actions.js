@@ -147,6 +147,79 @@ var SceneActions = {
         });
     },
 
+    _handleUploadAsset: function(alertId, sceneId, status, data, file){
+
+
+        var msg;
+        if(status === 'warning' ){
+            msg = 'No tags found in ' + file.name;
+        }else if(status === 'danger' ){
+            msg =  'Upload unsuccessful!';
+        }else if(status === 'unsupported'){
+            msg =  'File Type is unsupported';
+        }else{
+            msg =   'Upload successful!';
+        }
+
+        AppDispatcher.handleServerAction({
+            type: ActionTypes.STATUS_MESSAGE_UPDATE,
+            id: alertId,
+            status: status,
+            message: msg
+        });
+
+        var msecs = status === 'success' ? 1000 : 10000;
+
+        setTimeout(function () {
+            AppDispatcher.handleServerAction({
+                type: ActionTypes.STATUS_MESSAGE_REMOVE,
+                id: alertId
+            });
+        }, msecs);
+
+        if (status !== 'danger') {
+            if(data.type != "video"){
+                SceneActions.addMediaObject(sceneId, {
+                    type: data.type,
+                    url: data.url,
+                    tags: data.tags,
+                    style: {
+                        'z-index': '1'
+                    }
+                });
+            }else{
+                SceneActions.addMediaObject(sceneId, {
+                    type: data.type,
+                    url: data.url,
+                    tags: data.tags,
+                    volume:100,
+                    style: {
+                        'z-index': '1'
+                    },
+                    autoreplay:1
+                });
+            }
+
+        }
+    },
+
+    finaliseResumableUploadAsset: function(sceneId, file) {
+        var alertId = hat();
+
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.STATUS_MESSAGE,
+            message: 'Uploading ' + file.name + '...',
+            id: alertId,
+            status: 'info'
+        });
+
+        var self = this;
+
+        assetStore.resumableCreate(file, function (status, data){
+            self._handleUploadAsset(alertId, sceneId, status, data, file);
+        });
+    },
+
     uploadAsset: function (sceneId, file) {
         var alertId = hat();
         AppDispatcher.handleViewAction({
@@ -156,58 +229,10 @@ var SceneActions = {
             status: 'info'
         });
 
+        var self = this;
+
         assetStore.create(file, function (status, data) {
-            var msg;
-            if(status === 'warning' ){
-                msg = 'No tags found in ' + file.name;
-            }else if(status === 'danger' ){
-                msg =  'Upload unsuccessful!';
-            }else if(status === 'unsupported'){
-                msg =  'File Type is unsupported';
-            }else{
-                msg =   'Upload successful!';
-            }
-
-            AppDispatcher.handleServerAction({
-                type: ActionTypes.STATUS_MESSAGE_UPDATE,
-                id: alertId,
-                status: status,
-                message: msg
-            });
-
-            var msecs = status === 'success' ? 1000 : 10000;
-
-            setTimeout(function () {
-                AppDispatcher.handleServerAction({
-                    type: ActionTypes.STATUS_MESSAGE_REMOVE,
-                    id: alertId
-                });
-            }, msecs);
-
-            if (status !== 'danger') {
-                if(data.type != "video"){
-                    SceneActions.addMediaObject(sceneId, {
-                        type: data.type,
-                        url: data.url,
-                        tags: data.tags,
-                        style: {
-                            'z-index': '1'
-                        }
-                    });
-                }else{
-                    SceneActions.addMediaObject(sceneId, {
-                        type: data.type,
-                        url: data.url,
-                        tags: data.tags,
-                        volume:100,
-                        style: {
-                            'z-index': '1'
-                        },
-                        autoreplay:1
-                    });
-                }
-
-            }
+            self._handleUploadAsset(alertId, sceneId, status, data, file);
         });
     }
 };

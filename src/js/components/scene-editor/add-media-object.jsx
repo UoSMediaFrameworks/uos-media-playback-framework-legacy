@@ -11,6 +11,10 @@ var getVimeoId = require('../../utils/get-vimeo-id');
 var Loader = require('../loader.jsx');
 var _ = require('lodash');
 var getHostname = require('../../utils/get-hostname');
+var ReactResumableJs = require('react-resumable-js').default;
+var ALL_FILE_TYPES = require('../../utils/allowed-upload-file-extensions').ALL_FILE_TYPES;
+
+var assetUploadApi = process.env.ASSET_STORE + '/api/resumable/upload/media';
 
 var SceneEditor = React.createClass({
 
@@ -69,11 +73,40 @@ var SceneEditor = React.createClass({
 
 	},
 
+    resumableOnFileSuccess: function(file, message) {
+        console.log("add-media-object - resumableOnFileSuccess");
+        console.log(file, message);
+
+        SceneActions.finaliseResumableUploadAsset(this.props.scene._id, file.file);
+    },
+
+    resumableOnFileAdded: function(file, resumable) {
+        console.log("add-media-object - resumableOnFileAdded");
+        resumable.upload();
+    },
+
 	render: function() {
 		var text = this.state.loading ? 'Loading...' : 'Add';
 
 		return (
 			<form onSubmit={this.handleSubmit} className='add-media-object'>
+
+                <ReactResumableJs
+                    uploaderID="image-upload"
+                    dropTargetID="media-upload-drop-target"
+                    filetypes={ALL_FILE_TYPES}
+                    fileAccept={"*"}
+                    fileAddedMessage="Started!"
+                    completedMessage="Complete!"
+                    service={assetUploadApi}
+                    textLabel="Uploaded files"
+                    previousText="Drop to upload your media:"
+                    disableDragAndDrop={true}
+                    onFileSuccess={this.resumableOnFileSuccess}
+                    onFileAdded={this.resumableOnFileAdded}
+                    maxFiles={1}
+                    maxFileSize={1000000000}
+                > </ReactResumableJs>
 
 				<input ref='content'
 					   value={this.state.inputValue}
@@ -86,6 +119,7 @@ var SceneEditor = React.createClass({
 				 disabled={this.state.loading}>
 				 	{text}
 				</button>
+
 			</form>
 		);
 	}

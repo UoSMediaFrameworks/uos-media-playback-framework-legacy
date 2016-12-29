@@ -12,7 +12,6 @@ var MediaObjectList = require('../scene-editor/media-object-list.jsx');
 var Loader = require('../loader.jsx');
 var TagUnion = require('../tag-union.jsx');
 var Router = require('react-router');
-var DropZone = require('../drop-zone.jsx');
 var AddMediaObject = require('../scene-editor/add-media-object.jsx');
 var Router = require('react-router'),
     Link = Router.Link;
@@ -80,7 +79,7 @@ var Scene = React.createClass({
 
 
         return (
-            <DropZone className='flex-container' handler={this.fileHandler}>
+            <div className='flex-container'>
                 <div className='top-bar'>
                     <div className='page-nav'>
                         <Link className='btn' to='scenes'>&lt; Back to Scene List</Link>
@@ -97,14 +96,10 @@ var Scene = React.createClass({
 
                 <AddMediaObject scene={this.state.scene} />
 
-                <div className="scene-saved-status-bar">
-                    <div className={saveFlagKlass}> Saved Status </div>
-                </div>
-
                 <div className="thumbs-and-json">
                     <div className="flex-container">
                         <MediaObjectList focusedMediaObject={this.state.focusedMediaObject} focusHandler={this.thumbClickHandler}
-                                         scene={this.state.scene}/>
+                                         scene={this.state.scene} saveFlagKlass={saveFlagKlass}/>
 
                         <MediaPreviewComponent  focusedMediaObject={this.state.focusedMediaObject} scene={this.state.scene}  />
                     </div>
@@ -120,7 +115,7 @@ var Scene = React.createClass({
                 </div>
                 <TagUnion scene={this.state.scene}
                  focusedMediaObject={this.state.focusedMediaObject}/>
-            </DropZone>
+            </div>
         );
     }
 
