@@ -43,6 +43,7 @@ module.exports = {
         data.append('relativePath', resumableFile.relativePath);
         data.append('numberOfChunks', resumableFile.chunks.length);
         data.append('uniqueIdentifier', resumableFile.uniqueIdentifier);
+        data.append('mediaType', mediaObject.mediaType);
 
         var xhr = apiRequest.makeRequest({
             url: resumableFinalAssetUploadApi,
