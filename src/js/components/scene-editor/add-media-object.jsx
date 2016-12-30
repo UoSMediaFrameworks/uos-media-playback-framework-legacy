@@ -14,6 +14,7 @@ var getHostname = require('../../utils/get-hostname');
 var ReactResumableJs = require('react-resumable-js').default;
 var ALL_FILE_TYPES = require('../../utils/allowed-upload-file-extensions').ALL_FILE_TYPES;
 var connectionCache = require('../../utils/connection-cache');
+var hat = require('hat');
 
 var assetUploadApi = process.env.ASSET_STORE + '/api/resumable/upload/media';
 
@@ -101,6 +102,7 @@ var SceneEditor = React.createClass({
                     completedMessage="Complete!"
                     service={assetUploadApi}
                     query={{token: connectionCache.getToken()}}
+                    generateUniqueIdentifier={function() { return hat(); }}
                     textLabel="Uploaded files"
                     previousText="Drop to upload your media:"
                     disableDragAndDrop={true}

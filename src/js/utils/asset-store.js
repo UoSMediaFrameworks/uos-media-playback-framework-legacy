@@ -42,6 +42,7 @@ module.exports = {
         data.append('token', connectionCache.getToken());
         data.append('relativePath', resumableFile.relativePath);
         data.append('numberOfChunks', resumableFile.chunks.length);
+        data.append('uniqueIdentifier', resumableFile.uniqueIdentifier);
 
         var xhr = apiRequest.makeRequest({
             url: resumableFinalAssetUploadApi,
