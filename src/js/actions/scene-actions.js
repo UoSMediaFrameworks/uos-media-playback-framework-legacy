@@ -148,8 +148,6 @@ var SceneActions = {
     },
 
     _handleUploadAsset: function(alertId, sceneId, status, data, file){
-
-
         var msg;
         if(status === 'warning' ){
             msg = 'No tags found in ' + file.name;
@@ -203,7 +201,7 @@ var SceneActions = {
         }
     },
 
-    finaliseResumableUploadAsset: function(sceneId, file) {
+    finaliseResumableUploadAsset: function(sceneId, file, resumableFile) {
         var alertId = hat();
 
         AppDispatcher.handleViewAction({
@@ -215,7 +213,7 @@ var SceneActions = {
 
         var self = this;
 
-        assetStore.resumableCreate(file, function (status, data){
+        assetStore.resumableCreate(file, resumableFile, function (status, data){
             self._handleUploadAsset(alertId, sceneId, status, data, file);
         });
     },

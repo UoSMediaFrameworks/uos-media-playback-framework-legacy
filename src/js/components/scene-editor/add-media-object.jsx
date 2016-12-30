@@ -13,6 +13,7 @@ var _ = require('lodash');
 var getHostname = require('../../utils/get-hostname');
 var ReactResumableJs = require('react-resumable-js').default;
 var ALL_FILE_TYPES = require('../../utils/allowed-upload-file-extensions').ALL_FILE_TYPES;
+var connectionCache = require('../../utils/connection-cache');
 
 var assetUploadApi = process.env.ASSET_STORE + '/api/resumable/upload/media';
 
@@ -77,7 +78,7 @@ var SceneEditor = React.createClass({
         console.log("add-media-object - resumableOnFileSuccess");
         console.log(file, message);
 
-        SceneActions.finaliseResumableUploadAsset(this.props.scene._id, file.file);
+        SceneActions.finaliseResumableUploadAsset(this.props.scene._id, file.file, file);
     },
 
     resumableOnFileAdded: function(file, resumable) {
@@ -99,6 +100,7 @@ var SceneEditor = React.createClass({
                     fileAddedMessage="Started!"
                     completedMessage="Complete!"
                     service={assetUploadApi}
+                    query={{token: connectionCache.getToken()}}
                     textLabel="Uploaded files"
                     previousText="Drop to upload your media:"
                     disableDragAndDrop={true}

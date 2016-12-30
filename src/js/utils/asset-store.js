@@ -29,17 +29,19 @@ function getMediaObjectType(file) {
 
 module.exports = {
 
-    resumableCreate: function(file, callback) {
+    resumableCreate: function(file, resumableFile, callback) {
 
         var mediaObject = getMediaObjectType(file);
         if(mediaObject.mediaType === "unsupported") {
             console.log("The file type " + mediaObject.extension + " you have attempted to upload");
             return callback("unsupported", null);
         }
-        
+
         var data = new FormData();
         data.append('filename', file.name);
         data.append('token', connectionCache.getToken());
+        data.append('relativePath', resumableFile.relativePath);
+        data.append('numberOfChunks', resumableFile.chunks.length);
 
         var xhr = apiRequest.makeRequest({
             url: resumableFinalAssetUploadApi,
