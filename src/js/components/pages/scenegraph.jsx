@@ -140,7 +140,7 @@ var SceneGraph = React.createClass({
     getStateFromStores: function() {
         var sceneGraph = SceneGraphStore.getSceneGraph(this.props.params.id);
 
-        if(sceneGraph && ! this.state.sceneGraph) {
+        if(sceneGraph && this.state && ! this.state.sceneGraph) {
             this.loadAllScenesForSceneGraph(sceneGraph);
         }
 
