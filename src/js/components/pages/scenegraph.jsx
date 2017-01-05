@@ -22,8 +22,6 @@ var SceneItem = React.createClass({
     }
 });
 
-var _selectedSceneForRemoval = null;
-
 var SceneItemForList = React.createClass({
 
     getInitialState: function() {
@@ -36,9 +34,8 @@ var SceneItemForList = React.createClass({
 
     onSceneItemSelected: function(event) {
         var sceneId = this.state.scene._id;
-        var sceneGraphId = this.state.sceneGraphId;
 
-        _selectedSceneForRemoval = sceneId;
+        this.props.handleSceneItemForSelection(sceneId);
 
         SceneGraphActions.selectSceneForSceneGraphDisplay(this.state.sceneGraphId, sceneId);
     },
@@ -94,8 +91,6 @@ var SceneTheme = React.createClass({
     }
 });
 
-var _selectedScene = undefined;
-
 var generateThemeListForSelectedScene = function(selectedScene) {
     var themes = [];
 
@@ -131,20 +126,21 @@ var SceneGraph = React.createClass({
 
         var sceneIds = sceneGraph && sceneGraph.sceneIds ? Object.keys(sceneGraph.sceneIds) : [];
 
-        for(var sceneId in sceneIds) {
-            HubSendActions.loadScene(sceneIds[sceneId]);
+        for(var sceneId2 in sceneIds) {
+            HubSendActions.loadScene(sceneIds[sceneId2]);
         }
 
     },
 
     getStateFromStores: function() {
+
         var sceneGraph = SceneGraphStore.getSceneGraph(this.props.params.id);
 
         if(sceneGraph && this.state && ! this.state.sceneGraph) {
             this.loadAllScenesForSceneGraph(sceneGraph);
         }
 
-        var selectedScene = SceneStore.getScene(_selectedSceneForRemoval);
+        var selectedScene = this.state && this.state.selectedSceneId ? SceneStore.getScene(this.state.selectedSceneId) : null;
 
         var state = {
             sceneGraph: sceneGraph,
@@ -152,40 +148,37 @@ var SceneGraph = React.createClass({
             name: sceneGraph ? sceneGraph.name : "",
             sceneGraphs: SceneGraphListStore.getAll(),
             scenes: SceneListStore.getAll(),
-            storedFullScenes: [],
+            storedFullScenes: {},
             selectedScene: selectedScene,
             selectedSceneThemeList: generateThemeListForSelectedScene(selectedScene),
             selectSceneTags: generateTagListFromThemeList(selectedScene),
-            themeUnionForScenesInGraph: {}
+            themeUnionForScenesInGraph: {},
         };
 
         var sceneIds = state.sceneGraph && state.sceneGraph.sceneIds ? Object.keys(state.sceneGraph.sceneIds) : [];
 
-        for(var sceneId in sceneIds) {
-            var fullScene = SceneStore.getScene(sceneIds[sceneId]);
+        for(var sceneIdFromlist in sceneIds) {
+            var fullScene = SceneStore.getScene(sceneIds[sceneIdFromlist]);
             if(fullScene) {
-
-                if(!_.find(state.storedFullScenes, function(alreadyCachedScene){ return alreadyCachedScene._id === fullScene._id})) {
-                    state.storedFullScenes.push(fullScene); //APEP only add to full stored scene list if it does not exist it in, this is an issue with async loading that should be resolved better than this
-                }
+                var storedFullScenes = state.storedFullScenes;
+                storedFullScenes[fullScene._id] = fullScene;
+                state.storedFullScenes = storedFullScenes;
             }
         }
 
-        for(var scene in state.storedFullScenes) {
-            var fullSceneObj = state.storedFullScenes[scene];
+        for(var sceneKey in Object.keys(state.storedFullScenes)) {
+            var fullSceneObj = state.storedFullScenes[Object.keys(state.storedFullScenes)[sceneKey]];
             var themeKeys = Object.keys(fullSceneObj.themes);
 
             var excludedThemeList = Object.keys(state.sceneGraph.excludedThemes);
 
             for(var property in themeKeys) {
-
                 if(excludedThemeList.indexOf(themeKeys[property]) === -1)
                     state.themeUnionForScenesInGraph[themeKeys[property]] = {};
-
             }
         }
 
-        console.log("getStateFromStores: ", state);
+        console.log("SceneGraph - getStateFromStores: ", state);
 
         return state;
     },
@@ -213,25 +206,28 @@ var SceneGraph = React.createClass({
         return _.extend(this.getStateFromStores(), {});
     },
 
+    changeSceneSelection: function(selectedSceneId) {
+        this.setState({"selectedSceneId": selectedSceneId});
+    },
+
     onSceneSelected: function(event) {
-
-        _selectedScene = event.target.value;
-
-        HubSendActions.loadScene(_selectedScene);
+        var selectedSceneId = event.target.value;
+        HubSendActions.loadScene(selectedSceneId);
+        this.changeSceneSelection(selectedSceneId);
     },
 
     addSelectedScene: function(event) {
-        SceneGraphActions.addScene(this.state.sceneGraph._id, _selectedScene);
+        SceneGraphActions.addScene(this.state.sceneGraph._id, this.state.selectedSceneId);
     },
 
     removeSelectedSceneFromSceneGraphSceneList: function(event) {
-        if(!_selectedSceneForRemoval) {
+        if(!this.state.selectedSceneId) {
             return;
         }
 
-        SceneGraphActions.removeScene(this.state.sceneGraph._id, _selectedSceneForRemoval);
+        SceneGraphActions.removeScene(this.state.sceneGraph._id, this.state.selectedSceneId);
 
-        _selectedSceneForRemoval = undefined;
+        this.setState({selectedScene: undefined, selectedSceneId: undefined});
     },
 
     deleteSceneGraphHandler: function(event) {
@@ -261,9 +257,9 @@ var SceneGraph = React.createClass({
                     </div>
                     <div className="col-md-12 scene-graph-scene-list-container">
                         <h4>Add a scene to the graph</h4>
-                        <select className="form-control scene-list" onChange={this.onSceneSelected} value={this.state.selectedScene ? this.state.selectedScene._id : ""}>
+                        <select className="form-control scene-list" onChange={this.onSceneSelected} value={this.state.selectedSceneId}>
                             {this.state.scenes.map(function(sc){
-                                return <SceneItem scene={sc} />;
+                                return <SceneItem  scene={sc} />;
                             })}
                         </select>
                     </div>
@@ -274,8 +270,9 @@ var SceneGraph = React.createClass({
                             <div className="panel panel-default scenes-themes-tags no-margin-bottom">
                                 <div className="panel-heading">Scenes</div>
                                 <div className="panel-body">
-                                    {this.state.storedFullScenes.map(function(sc){
-                                        return <SceneItemForList scene={sc} sceneGraphId={this.state.sceneGraph._id} />;
+                                    {Object.keys(this.state.storedFullScenes).map(function(sceneIdKey){
+                                        var sc = this.state.storedFullScenes[sceneIdKey];
+                                        return <SceneItemForList scene={sc} key={sc._id} sceneGraphId={this.state.sceneGraph._id} handleSceneItemForSelection={this.changeSceneSelection} />;
                                     }, this)}
                                 </div>
                             </div>
