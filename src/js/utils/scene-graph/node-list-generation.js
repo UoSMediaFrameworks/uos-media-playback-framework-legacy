@@ -189,8 +189,7 @@ var findChildrenByChild = function(searchChild, children) {
     var duplicateChildren = [];
 
     _.forEach(children, function(child) {
-
-        if(child._id === searchChild._id &&  getChildTypeFromNodeType(child.type) === searchChild.type)
+        if(child._id === searchChild._id && getChildTypeFromNodeType(child) === searchChild.type)
             duplicateChildren.push(child);
     });
 
@@ -205,9 +204,9 @@ var dedupeChildren = function(children) {
     var uniqueChildren = [];
 
     _.forEach(children, function(child) {
-        if(countChildrenByChild(child, uniqueChildren)) {
+        if(countChildrenByChild(child, uniqueChildren) !== 0) {
             return;
-        }
+        } 
 
         if(countChildrenByChild(child, children) <= 1) {
             uniqueChildren.push(child);
