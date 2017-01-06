@@ -35,9 +35,11 @@ var SceneList = React.createClass({
 
     render: function() {
         var links = this.state.scenes.map(function(scene) {
+            var sceneLinkText = ConnectionCache.getShortGroupName(scene._groupID) + ' - ' + scene.name;
+
             return (
                 <li key={scene._id}>
-                    <Link to={'scene/' + scene._id}>{ ConnectionCache.getGroupID()==0 ? ConnectionCache.getShortGroupName(scene._groupID) + ' - ' + scene.name : scene.name }</Link>
+                    <Link to={'scene/' + scene._id}>{ sceneLinkText }</Link>
                 </li>
             );
         });

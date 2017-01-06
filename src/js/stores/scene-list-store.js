@@ -18,14 +18,16 @@ function _addScenes (scenes) {
 	});
 }
 
-function _updateSceneName (_id, name) {
+function _updateSceneName (_id, name, _groupID) {
+
 	if (_scenes.hasOwnProperty(_id)) {
 		if (_scenes[_id].name !== name) {
 			_scenes[_id].name = name;
+            _scenes[_id]._groupID = _groupID;
 			return true;
 		}
 	} else {
-		_scenes[_id] = {name: name, _id: _id};
+		_scenes[_id] = {name: name, _id: _id, _groupID: _groupID};
 		return true;
 	}
 }
@@ -75,7 +77,7 @@ var SceneListStore = assign({}, EventEmitter.prototype, {
             case ActionTypes.SCENE_CHANGE:
             case ActionTypes.RECIEVE_SCENE:
             	scene = action.scene;
-            	if (_updateSceneName(scene._id, scene.name)) {
+            	if (_updateSceneName(scene._id, scene.name, scene._groupID)) {
             		SceneListStore.emitChange();
             	}
             	break;
