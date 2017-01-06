@@ -33,6 +33,9 @@ var SceneStore = assign({}, EventEmitter.prototype, {
 
     dispatcherIndex: AppDispatcher.register(function(payload){
         var action = payload.action; // this is our action from handleViewAction
+
+        var hC = HubClient;
+
         switch(action.type){
             case ActionTypes.SCENE_CHANGE:
                 _updateScene(action.scene);
@@ -40,9 +43,18 @@ var SceneStore = assign({}, EventEmitter.prototype, {
                 break;
 
             case ActionTypes.DELETE_SCENE:
-                var sceneId = action.sceneId;
-                delete _scenes[sceneId];
-                HubClient.deleteScene(sceneId);
+                console.log("SceneStore - DELETE SCENE");
+                try {
+                    var sceneId = action.sceneId;
+                    //APEP Unsure why but HubClient is null here.. so have had to hack and use require
+                    require('../utils/HubClient').deleteScene(sceneId);
+                    delete _scenes[sceneId];
+                    SceneStore.emitChange();
+                } catch (e) {
+                    alert(e);
+                    throw e;
+                }
+
                 break;
 
             case ActionTypes.ADD_MEDIA_OBJECT:
