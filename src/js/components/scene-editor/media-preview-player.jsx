@@ -54,6 +54,10 @@ var MediaObjectPreviewPlayer = React.createClass({
                 var preview = <VideoMediaPreviewPlayer scene={this.props.scene} focusedMediaObject={this.props.focusedMediaObject}></VideoMediaPreviewPlayer>
                 this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;
+            case 'image':
+                preview = <img width="640" height="320" src={mediaObject.url}></img>
+                this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
+                break;
         }
         previewContainer.innerHTML = this.state.preview
     },
