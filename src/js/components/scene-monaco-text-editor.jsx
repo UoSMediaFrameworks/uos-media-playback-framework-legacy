@@ -96,6 +96,26 @@ var SceneMonacoTextEditor = React.createClass({
         this.props.sceneSavingHandler(saved);
     },
 
+    // Try get a JSON copy of the scene loaded in editor for comparsion check
+    getMonacoEditorVersionOfScene: function() {
+        try {
+            var newValue = this.refs.monaco.editor.getValue();
+            // parse it and see if it blows up
+            var newScene = JSON.parse(newValue);
+            // make sure that something changed
+
+            // ensure the ids are attached
+            newScene._id = this.props.scene._id;
+            newScene._groupID = this.props.scene._groupID;
+
+            return newScene;
+        }
+        catch (e) {
+            return null;
+        }
+
+    },
+
     saveJSON: function() {
         return function() {
 
@@ -108,10 +128,6 @@ var SceneMonacoTextEditor = React.createClass({
 
                 this.handleSceneJSONSave(false);
 
-                var newValue = this.refs.monaco.editor.getValue();
-                // parse it and see if it blows up
-                var newScene = JSON.parse(newValue);
-                // make sure that something changed
 
                 var shouldSave = false;
                 _.forEach(this.props.scene.scene, function(sceneObj){
@@ -120,16 +136,14 @@ var SceneMonacoTextEditor = React.createClass({
                     }
                 });
 
-                // ensure the ids are attached
-                newScene._id = this.props.scene._id;
-                newScene._groupID = this.props.scene._groupID;
+                var newScene = this.getMonacoEditorVersionOfScene();
 
                 if (! _.isEqual(this.props.scene, newScene) || shouldSave) { //TODO ensure a save occurs for scene media without id - must update view with _id
                     SceneActions.updateScene(newScene);
                 }
 
                 //this.setState({error: null});
-                
+
                 this.handleSceneJSONSave(true);
 
             } catch (e) {
@@ -219,7 +233,11 @@ var SceneMonacoTextEditor = React.createClass({
             return true;
         }
 
-        return !_.isEqual(nextProps.scene, this.props.scene);
+
+        // Check if the scene in the next props is the same as the editor copy
+        // If so the editor initiated the change and does not need a component update
+        // If the component does update it can cause the cursor to lose position in editor (bad UX)
+        return !_.isEqual(nextProps.scene, this.getMonacoEditorVersionOfScene());
     },
 
     componentDidUpdate: function(previousProps, previousState) {
