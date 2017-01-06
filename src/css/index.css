@@ -14,12 +14,20 @@ html, body, #main, .app {
     border: 1px solid #ccc;
     overflow-y: auto;
     position: relative;
+    flex: 1;
+    text-align: center;
 
 }
 
 .react-audio-player {
     width: 100%;
 
+}
+
+.react-image-preview {
+    max-width: 100%;
+    max-height: 100%;
+    vertical-align: middle;
 }
 
 /* dirtay css! Forces the loader div to flex down */
