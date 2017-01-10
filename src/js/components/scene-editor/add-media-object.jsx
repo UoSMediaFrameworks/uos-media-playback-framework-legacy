@@ -110,6 +110,7 @@ var SceneEditor = React.createClass({
                     onFileAdded={this.resumableOnFileAdded}
                     maxFiles={1}
                     maxFileSize={1000000000}
+                    showFileList={false}
                 > </ReactResumableJs>
 
 				<input ref='content'
