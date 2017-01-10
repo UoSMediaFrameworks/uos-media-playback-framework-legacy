@@ -48,13 +48,19 @@ function unregisterPlayer(id) {
     delete players[id];
 }
 
-function onMessageRecieved(event) {
+function onMessageRecieved(evt) {
+    //Hey its an angel test
+    if(evt.origin != "https://player.vimeo.com"){
+        console.log("onMessageRecieved",evt,typeof evt.data == "string");
+    }
+
+
     //APEP 3/10/16 - Chrome dev tools + react dev tools cause events to be sent to player
-    if (typeof event.data == "string") {
-        var data = JSON.parse(event.data);
+    if (typeof evt.data == "string") {
+        var data = JSON.parse(evt.data);
         players[data.player_id].handleEvent(data);
     } else {
-        players[event.data.player_id].handleEvent(event);
+        players[evt.data.player_id].handleEvent(evt);
     }
 }
 
@@ -102,7 +108,9 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl) {
         //var url = "Transcoding_3/video_manifest.mpd"; //APEP see other comment (_getRawPlayerForMediaObject)
         var player = dashjs.MediaPlayer().create();
         player.getDebug().setLogToBrowserConsole(false);
+        console.log("angel",url)
         player.initialize(this._element, url, true);
+        player.attachSource(videoUrl);
         this.raw_player = player;
         this.player_url = url;
         console.log("getting transcoded url and initializing player",player,url)

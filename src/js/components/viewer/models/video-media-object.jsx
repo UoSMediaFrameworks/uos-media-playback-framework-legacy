@@ -35,8 +35,14 @@ var VideoMediaObject = React.createClass({
             if (!self.state.player.isVimeo) { //APEP: ##Hack## for buffering media removal at the end
                 try {
                     //APEP: ##Hack## for buffering media removal at the end
-                    self.state.player.raw_player.retrieveManifest(self.state.player.player_url, function (manifest) {
-                        self.state.play_duration = manifest.Period.duration;
+                    self.state.player.raw_player.retrieveManifest(self.state.player.player_url, function (manifest, err) {
+                        if (err) {
+                            console.log("VideoReactErr", err)
+                            self.state.play_duration = null;
+                        }else{
+                            self.state.play_duration = manifest.Period.duration;
+                        }
+
                     });
 
                 } catch (e) {
