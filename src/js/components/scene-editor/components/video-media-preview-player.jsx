@@ -96,6 +96,8 @@ var VideoMediaPreviewPlayer = React.createClass({
 
         var url = this._getMediaObjectUrl(mediaObject);
         // var url = "Transcoding_3/video_manifest.mpd"; //APEP see other comment (_getRawPlayerForMediaObject)
+        var video =document.getElementById('videoPreview');
+        video.load();
         var player = dashjs.MediaPlayer().create();
         player.initialize(document.querySelector("#videoPreview"), url, false);
         player.attachSource(videoUrl);
