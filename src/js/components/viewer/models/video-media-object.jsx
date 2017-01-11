@@ -176,8 +176,8 @@ var VideoMediaObject = React.createClass({
 
             console.log("VideoMediaObject - transition - emitting transition for mediaObject and calling done handler");
 
-            // APEP TODO we must reset the player to avoid memory problems - Missing from translation from Vanilla to React
-            // self._player.raw_player.reset();
+            // APEP reset the player to remove GPU memory and memory growth over time
+            self.state.player.raw_player.reset();
             
             try {
                 self.props.data.mediaObject.emit("transition", self.props.data.mediaObject);
