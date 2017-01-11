@@ -19,14 +19,30 @@ var MediaObject = React.createClass({
     },
     componentDidMount: function () {
         var element = this.refs.object.refs[this.props.data.mediaObject._obj._id];
+
+        //APEP When mounting component, apply the declared style rules and position if not declared by media objects CSS
+
         this.addStyle(element,this.props.data.mediaObject.style);
-        if(element.style.position != "absolute") {
+        if(! this.doesStyleDeclareMediaObjectPosition(this.props.data.mediaObject.style)) {
             this.placeAtRandomPosition(element);
         }
 
     },
+    doesStyleDeclareMediaObjectPosition: function(style) {
+
+        //APEP Find if the style declares the media objects position to be defined by the style tags provided
+
+        var positionStyleTag  = lodash.find(Object.keys(style), function(styleKey) {
+            return styleKey === "position" && style[styleKey] === "absolute";
+        });
+
+        //APEP TODO we should probably enforce at least one of the position absolute values exist ( top, left, etc )
+
+        return positionStyleTag !== undefined;
+    },
     addStyle:function(element, style) {
         lodash.forEach(Object.keys(style), function(styleKey) {
+            // APEP Only apply CSS rules that are not position absolute declaration, the media-object CSS class already implements this rule.  This is a hack for an ugly bug
             if(! (styleKey === "position" && style[styleKey] === "absolute"))
                 element.style[styleKey] = style[styleKey];
         });
