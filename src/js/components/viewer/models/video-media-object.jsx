@@ -180,8 +180,11 @@ var VideoMediaObject = React.createClass({
 
                 self.props.data.moDoneHandler(self);
 
-                // APEP reset the player to remove GPU memory and memory growth over time
-                self.state.player.raw_player.reset();
+                // APEP TODO this needs to be after the transition out animation and before the start of it again
+                if (!self.state.player.isVimeo) {
+                    // APEP reset the player to remove GPU memory and memory growth over time
+                    self.state.player.raw_player.reset();
+                }
             } catch (e) {
                 console.log("VideoMediaObject - transition - failed to complete clean up with error: ", e);
             }
