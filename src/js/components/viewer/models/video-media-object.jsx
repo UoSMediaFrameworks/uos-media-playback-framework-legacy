@@ -173,18 +173,17 @@ var VideoMediaObject = React.createClass({
 
         if (self.props.data.mediaObject) {
 
-
             console.log("VideoMediaObject - transition - emitting transition for mediaObject and calling done handler");
 
-            // APEP reset the player to remove GPU memory and memory growth over time
-            self.state.player.raw_player.reset();
-            
             try {
                 self.props.data.mediaObject.emit("transition", self.props.data.mediaObject);
 
                 self.props.data.moDoneHandler(self);
+
+                // APEP reset the player to remove GPU memory and memory growth over time
+                self.state.player.raw_player.reset();
             } catch (e) {
-                console.log("VideoMediaObject - transition - failed to complete clean up with error: ", e);                
+                console.log("VideoMediaObject - transition - failed to complete clean up with error: ", e);
             }
         }
     },
