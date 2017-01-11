@@ -140,13 +140,7 @@ var VideoMediaObject = React.createClass({
                 self.setVimeoVideoEndedListeners(transitionSeconds);
 
             } else {
-
-                try {
-                    self.setDashVideoEndedListeners();
-                } catch (e) {
-                    console.log("MediaVideoObject - play - Raw Player Error setting listeners", e)
-                }
-
+                self.setDashVideoEndedListeners();
             }
         } catch (e) {
             console.log("VideoMediaObject - play - err: ", e);
@@ -179,9 +173,19 @@ var VideoMediaObject = React.createClass({
 
         if (self.props.data.mediaObject) {
 
-            self.props.data.mediaObject.emit("transition", self.props.data.mediaObject);
 
-            self.props.data.moDoneHandler(self);
+            console.log("VideoMediaObject - transition - emitting transition for mediaObject and calling done handler");
+
+            // APEP TODO we must reset the player to avoid memory problems - Missing from translation from Vanilla to React
+            // self._player.raw_player.reset();
+            
+            try {
+                self.props.data.mediaObject.emit("transition", self.props.data.mediaObject);
+
+                self.props.data.moDoneHandler(self);
+            } catch (e) {
+                console.log("VideoMediaObject - transition - failed to complete clean up with error: ", e);                
+            }
         }
     },
 
