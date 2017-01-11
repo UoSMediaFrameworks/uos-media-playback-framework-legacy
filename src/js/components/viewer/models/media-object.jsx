@@ -20,8 +20,7 @@ var MediaObject = React.createClass({
     componentDidMount: function () {
         var element = this.refs.object.refs[this.props.data.mediaObject._obj._id];
         this.addStyle(element,this.props.data.mediaObject.style);
-        if(element.style.position != "absolute")
-        {
+        if(element.style.position != "absolute") {
             this.placeAtRandomPosition(element);
         }
 

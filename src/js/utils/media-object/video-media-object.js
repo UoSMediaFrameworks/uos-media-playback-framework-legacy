@@ -20,6 +20,9 @@ VideoMediaObject.prototype.constructor = VideoMediaObject;
 VideoMediaObject.typeName = 'video';
 
 VideoMediaObject.prototype.play = function () {
+
+    console.log("VideoMediaObject.prototype.makeElement - Deprecated");
+    
     this._loading = false;
     // vimeo player complains if you pass it 0, so we pass it just above zero
     if(this._player.isVimeo) {
@@ -64,6 +67,8 @@ VideoMediaObject.prototype.play = function () {
 
 VideoMediaObject.prototype.makeElement = function (callback) {
 
+    console.log("VideoMediaObject.prototype.makeElement - Deprecated");
+
     var isVimeo = this._obj.url.indexOf("vimeo.com") !== -1;
     var videoUrl = isVimeo ? getVimeoId(this._obj.url) : this._obj.url;
 
@@ -103,6 +108,8 @@ VideoMediaObject.prototype.getVolume = function () {
 
 
 VideoMediaObject.prototype.transition = function () {
+
+    console.log("VideoMediaObject.prototype.transition - TRANSITION - this: ", this);
 
     //APEP: ##Hack## for buffering media removal at the end
     if(this._playbackTimeInterval) clearTimeout(this._playbackTimeInterval);

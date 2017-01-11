@@ -31,6 +31,9 @@ MediaObject.prototype.play = function() {
 
 // triggers a soft stop
 MediaObject.prototype.transition = function() {
+
+    console.log("Deprecated - MediaObject - transition");
+
     if (this._playing) {
         this._playing = false;
         this.emit('transition', this);

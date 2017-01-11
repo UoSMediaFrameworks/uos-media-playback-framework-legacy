@@ -22,7 +22,7 @@ var TextMediaObject = React.createClass({
 
     },
     transition: function () {
-        //console.log("TextMediaObject - transition - Image transition call made", this);
+        // console.log("TextMediaObject - transition - Text transition call made", this);
         var self = this;
         self.setState({shown: false});
         if(self.props.data.mediaObject) {

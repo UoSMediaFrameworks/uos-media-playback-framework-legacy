@@ -105,7 +105,8 @@ var SceneListener = React.createClass({
         }
         var tagFilter = this.mergeTagAndThemeFilters();
         console.log('new filter: ' + tagFilter.toString());
-        this.mediaObjectQueue.setTagMatcher(tagFilter);
+        if(this.state.mediaObjectQueue)
+            this.state.mediaObjectQueue.setTagMatcher(tagFilter);
     },
 
     handleBlur: function(event) {

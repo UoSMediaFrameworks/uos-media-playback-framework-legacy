@@ -32,12 +32,22 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
     }
 
     function moTransitionHandler (mediaObject) {
+
+        // console.log("Media-object-queue - transitionHandler handler - mediaObject: ", mediaObject);
+
+        // console.log("Media-object-queue - transitionHandler handler - active.length before: ", active);
+
         // pull it out of the active list
         var activeIndex = _.findIndex(active, function(activeMo) { return activeMo === mediaObject; });
         active.splice(activeIndex, 1);
+
+        // console.log("Media-object-queue - transitionHandler handler - active.length after: ", active);
     }
 
     function moDoneHandler (mediaObject) {
+
+        // console.log("Media-object-queue - done handler - mediaObject: ", mediaObject);
+
         // make sure it's still in the masterList
         if (_.find(masterList, function(mo) { return mediaObject === mo; })) {
             if (tagMatcher.match(mediaObject.tags)) {
@@ -45,9 +55,14 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
             }
         // otherwise it's from an older scene, so remove any event listeners
         } else {
+
+            // console.log("Media-object-queue - done handler - removing listeners ");
+
             mediaObject.removeListener('transition', moTransitionHandler);
             mediaObject.removeListener('done', moDoneHandler);
         }
+
+        // console.log("Media-object-queue - done handler - queue end: ", queue);
     }
 
     function getTypeByName (typeName) {

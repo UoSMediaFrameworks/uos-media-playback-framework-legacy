@@ -22,10 +22,9 @@ var ImageMediaObject = React.createClass({
         );
     },
     transition: function () {
-        //console.log("ImageMediaObject - transition - Image transition call made", this);
-        //console.log(this)
+        // console.log("ImageMediaObject - transition - Image transition call made", this);
         var self = this;
-        self.setState({shown: false})
+        self.setState({shown: false});
         if( self.props.data.mediaObject){
             self.props.data.mediaObject.emit("transition",self.props.data.mediaObject);
             setTimeout(function () {

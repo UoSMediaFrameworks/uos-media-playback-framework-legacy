@@ -6,39 +6,25 @@ var ImageMediaObject = require('../../utils/media-object/image-media-object');
 var TextMediaObject = require('../../utils/media-object/text-media-object');
 var variableThrottle = require('../../utils/variable-throttle');
 var uuid = require('node-uuid');
+var hat = require('hat');
 
 var RandomVisualPlayer = React.createClass({
     getInitialState: function () {
         return {
             queue: [],
             arr: [],
-            looplessMediaObjects: [],
             mediaQueue: {},
             interval: false
         };
     },
-    removeAllLooplessVideos(){
-        var self = this;
-        var i = self.state.looplessMediaObjects.length;
 
-        while(i--) {
-            var mediaObject = self.state.looplessMediaObjects.splice(i , 1);
-
-            if(!mediaObject || mediaObject.length <= 0)
-                return;
-
-          self.vmoDoneHandler(mediaObject[0]);
-        }
-    },
     loadMediaObject: function (queue) {
         var self = this;
 
-        self.removeAllLooplessVideos()
         lodash.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject], function (moType) {
 
             var obj = queue.mediaQueue.take([moType]);
             if (obj != undefined) {
-
                 obj.guid = uuid();
                 self.state.arr.push(obj);
             }
@@ -49,68 +35,76 @@ var RandomVisualPlayer = React.createClass({
             var data = {
                 mediaObject: mediaObject,
                 player: self.refs.player,
+                //Attach the done handler using react props
                 moDoneHandler: self.moDoneHandler,
                 displayDuration: self.props.mediaQueue.displayDuration,
                 transitionDuration: self.props.mediaQueue.transitionDuration,
+                mediaObjectUniqueKey: hat(),
                 key: index
             };
             var mO =  (
                 <MediaObject key={mediaObject.guid} data={data}></MediaObject>
             );
-            if(mediaObject instanceof VideoMediaObject){
-                try{
-                    if (data.mediaObject._obj.autoreplay == 0) {
-                        self.state.looplessMediaObjects.push(mO);
-                    }
-                }catch(e){
 
-                }
-            }
             return mO;
         });
 
         this.setState({mediaQueue: this.props.mediaQueue, queue: q});
     },
+
     moDoneHandler: function (mediaObject) {
-        // console.log("randomVisualPlayer - moDoneHandler - mediaObject: ", mediaObject.props.data.mediaObject);
+
+        console.log("randomVisualPlayer - moDoneHandler - mediaObject: ", mediaObject.props.data.mediaObject);
+
+        // APEP for any non video type media, we can similarly clear the video media object
         if (mediaObject.props.data.mediaObject.type !== "video") {
             this.clearMediaObject(mediaObject);
             return;
         }
+
+        // APEP video done handler must be handled separately for autoreplay feature
         this.vmoDoneHandler(mediaObject)
     },
+
+    vmoClearActiveFromQueue: function(videoMediaObject) {
+        // APEP required for vanilla JS objects queue to be cleared of this active vmo ( need to review this )
+        videoMediaObject.props.data.mediaObject.emit("done", videoMediaObject.props.data.mediaObject);
+    },
+
+    vmoAtEndOfLooping: function(videoMediaObject, vmo) {
+
+        this.clearMediaObject(videoMediaObject);
+        this.vmoClearActiveFromQueue(videoMediaObject);
+    },
+
+    vmoWithAutoReplayZeroOrOne: function (videoMediaObject, vmo) {
+
+        this.clearMediaObject(videoMediaObject);
+        this.vmoClearActiveFromQueue(videoMediaObject);
+    },
+
     vmoDoneHandler: function (videoMediaObject) {
         var self = this;
-        console.log("randomVisualPlayer -vmoDoneHandler - mediaObject: ", videoMediaObject);
-        if (videoMediaObject.props.data.mediaObject._obj.autoreplay === 0 || videoMediaObject.props.data.mediaObject._obj.autoreplay === 1) {
-            videoMediaObject.props.data.mediaObject.emit("transition", videoMediaObject.props.data.mediaObject);
-            setTimeout(function () {
-                videoMediaObject.props.data.mediaObject.emit("done", videoMediaObject.props.data.mediaObject);
-                self.clearMediaObject(videoMediaObject);
-            }, videoMediaObject.props.data.transitionDuration)
-            self.clearMediaObject(videoMediaObject);
+
+        var vmo = videoMediaObject.props.data.mediaObject;
+
+        console.log("randomVisualPlayer - vmoDoneHandler - vmo: ", vmo);
+
+        if (vmo._obj.autoreplay === 0 || vmo._obj.autoreplay === 1) {
+            self.vmoWithAutoReplayZeroOrOne(videoMediaObject, vmo);
             return;
         }
-        if (videoMediaObject.props.data.mediaObject.currentLoop == undefined) {
+        if (vmo.currentLoop == undefined) {
             videoMediaObject.props.data.mediaObject.currentLoop = 1;
-            console.log("current video has autoreplay value of 1>", videoMediaObject.props.data.mediaObject._obj.autoreplay)
             //TODO if not vimeo
              videoMediaObject.play();
-        } else if (videoMediaObject.props.data.mediaObject.currentLoop < videoMediaObject.props.data.mediaObject._obj.autoreplay) {
-            console.log("CurrentLoop: ", videoMediaObject.props.data.mediaObject.currentLoop);
+        } else if (vmo.currentLoop < vmo._obj.autoreplay) {
             videoMediaObject.props.data.mediaObject.currentLoop++;
-
-
             //TODO if not vimeo
              videoMediaObject.play();
         } else {
             videoMediaObject.props.data.mediaObject.currentLoop = 0;
-            videoMediaObject.props.data.mediaObject.emit("transition", videoMediaObject.props.data.mediaObject);
-            //setTimeout(function () {
-                videoMediaObject.props.data.mediaObject.emit("done", videoMediaObject.props.data.mediaObject);
-                self.clearMediaObject(videoMediaObject);
-            //}, videoMediaObject.props.data.transitionDuration)
-            //videoMediaObject.transition(); //causing some issues
+            self.vmoAtEndOfLooping(videoMediaObject, vmo);
         }
     },
     clearMediaObject: function (mediaObject) {
