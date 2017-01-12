@@ -5,6 +5,7 @@ var _ = require('lodash');
 var hat = require('hat');
 var Vimeo = require('@vimeo/player');
 
+
 function urlAttrs(obj) {
     return _.chain(obj)
         .pairs()
@@ -94,7 +95,7 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl) {
     if (isVimeo)
         this.setupAsVimeoPlayer(videoUrl);
     else
-        this.setupAsRawPlayer(getTranscodedUrl(videoUrl));
+        this.setupAsRawPlayer(getTranscodedUrl(videoUrl),videoUrl);
 
 
     this.url = this._element.attributes.src.value.split('?')[0];

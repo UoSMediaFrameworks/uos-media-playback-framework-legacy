@@ -37,7 +37,12 @@ module.exports = {
         SCENE_GRAPH_ADD_THEME_TO_STRUCTURE: null,
         SCENE_GRAPH_REMOVE_THEME_FROM_STRUCTURE: null,
         DELETE_SCENE_GRAPH: null,
+        /*Angel P. Video Store events*/
+        GET_TRANSCODED_STATUS_ATTEMPT:null,
+        GET_TRANSCODED_STATUS_FAILURE:null,
+        GET_TRANSCODED_STATUS_SUCCESS:null,
 
+        DELETE_SCENE_GRAPH: null,
         /* APEP Scene Graph Viewer */
         RECEIVE_SCENES_FROM_GRAPH: null
     }),

@@ -7,8 +7,6 @@ var TextMediaObject = require('../../utils/media-object/text-media-object');
 var uuid = require('node-uuid');
 var hat = require('hat');
 
-var mediaObjectRefs = {};
-
 var RandomVisualPlayer = React.createClass({
     getInitialState: function () {
         return {
@@ -23,10 +21,10 @@ var RandomVisualPlayer = React.createClass({
         var self = this;
 
         lodash.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject], function (moType) {
-            var obj = queue.mediaQueue.take([moType]);
-            if (obj !== undefined) {
-                obj.guid = obj.guid || uuid();
 
+            var obj = queue.mediaQueue.take([moType]);
+            if (obj != undefined) {
+                obj.guid = obj.guid || hat();
                 self.state.arr.push(obj);
 
                 // APEP refactored to avoid async issues
@@ -52,12 +50,11 @@ var RandomVisualPlayer = React.createClass({
                 self.setState({mediaQueue: self.props.mediaQueue, queue: q});
             }
         });
-
     },
 
     moDoneHandler: function (mediaObject) {
 
-        // console.log("randomVisualPlayer - moDoneHandler - mediaObject: ", mediaObject.props.data.mediaObject);
+        console.log("randomVisualPlayer - moDoneHandler - mediaObject: ", mediaObject.props.data.mediaObject);
 
         // APEP for any non video type media, we can similarly clear the video media object
         if (mediaObject.props.data.mediaObject.type !== "video") {
@@ -88,6 +85,8 @@ var RandomVisualPlayer = React.createClass({
         var self = this;
 
         var vmo = videoMediaObject.props.data.mediaObject;
+
+        console.log("randomVisualPlayer - vmoDoneHandler - vmo: ", vmo);
 
         if (vmo._obj.autoreplay === 0 || vmo._obj.autoreplay === 1) {
             self.vmoWithAutoReplayZeroOrOne(videoMediaObject, vmo);
@@ -156,8 +155,11 @@ var RandomVisualPlayer = React.createClass({
         var queue = this.state.queue;
         // APEP find the queue react media object within the queue (rendered media objects)
         var reactMediaObject = lodash.find(queue, function (currentObject) {
+            console.log("currentObject: ", currentObject);
             return currentObject.props.data.mediaObject.guid == mediaObject.guid;
         });
+
+        console.log("mediaObjectTransition - reactMediaObject: ", reactMediaObject);
 
         if(reactMediaObject) {
             // APEP if we have a rendered media object, look up for referenced media object
@@ -178,8 +180,12 @@ var RandomVisualPlayer = React.createClass({
         }
     },
 
+    mediaObjectDone: function(mediaObject){
+
+    },
+
     componentDidUpdate: function () {
-        // console.log("randomVisualPlayer - componentDidUpdate");
+        //TODO APEP I think we may need to clean up the existing media if we update with a new scene
 
         // APEP if we update - give the queue the correct transition handler to allow it to purge media from the active list
         // APEP Allows the queue to clean up existing media

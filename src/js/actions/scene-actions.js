@@ -233,9 +233,33 @@ var SceneActions = {
             self._handleUploadAsset(alertId, sceneId, status, data, file);
         });
     },
+    getVideoMediaObjectData: function (mediaObject) {
+        console.log("getVideoMediaObjectData mo", mediaObject)
+        var alertId = hat();
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.GET_TRANSCODED_STATUS_ATTEMPT,
+            message: 'Calling Database for ' + mediaObject.url,
+            id: alertId,
+            status: 'info'
+        });
+        assetStore.checkTranscodedStatus(mediaObject, function (err, data) {
+            if (err) {
+                console.log("checkTranscodedStatus Error", err)
+                AppDispatcher.handleViewAction({
+                    type: ActionTypes.GET_TRANSCODED_STATUS_FAILURE,
+                    value:err
+                })
+            } else {
+                AppDispatcher.handleViewAction({
+                    type: ActionTypes.GET_TRANSCODED_STATUS_SUCCESS,
+                    value:data
+                })
+            }
+        })
+    },
 
     // APEP this is not async - this could be changed if required but like other scene store, this should be preloaded
-    // Probably shouldn't add callback as react component can have a listener for FullSceneStore (will just need to 
+    // Probably shouldn't add callback as react component can have a listener for FullSceneStore (will just need to
     // make sure this is called to load the data from server)
     getFullScene: function(sceneId) {
         assetStore.getFullScene(sceneId, function(err, scene){
