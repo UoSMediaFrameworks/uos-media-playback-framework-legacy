@@ -23,6 +23,8 @@ module.exports = {
         STATUS_MESSAGE: null,
         STATUS_MESSAGE_UPDATE: null,
         STATUS_MESSAGE_REMOVE: null,
+
+        /* APEP Scene Graph Document Authoring */
         SCENE_GRAPH_UPDATE: null,
         SCENE_GRAPH_ADD_SCENE: null,
         SCENE_GRAPH_REMOVE_SCENE: null,
@@ -31,7 +33,10 @@ module.exports = {
         SCENE_GRAPH_INCLUDE_THEME: null,
         SCENE_GRAPH_ADD_THEME_TO_STRUCTURE: null,
         SCENE_GRAPH_REMOVE_THEME_FROM_STRUCTURE: null,
-        DELETE_SCENE_GRAPH: null
+        DELETE_SCENE_GRAPH: null,
+
+        /* APEP Scene Graph Viewer */
+        RECEIVE_SCENES_FROM_GRAPH: null
     }),
     PayloadSources: keymirror({
         VIEW_ACTION: null,

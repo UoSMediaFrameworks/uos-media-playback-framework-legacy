@@ -161,6 +161,25 @@ var HubClient = {
     unsubscribeScene: function(id) {
         // no confirmation handler as of yet
         socket.emit('unsubScene', id);
+    },
+
+    registerToGraphPlayerRoom: function(roomId) {
+
+        console.log("HubClient - registerToGraphPlayerRoom - roomId: " + roomId);
+
+        socket.emit('register', "/#" + roomId);
+
+        socket.on('command', function(data) {
+
+            console.log("HubClient - on command - data: ", data);
+
+            if (data.name === 'showScenes') {
+                // APEP publish scene ID list
+                HubRecieveActions.recieveSceneListForPlayer(data.value);
+            } else {
+                HubRecieveActions.errorMessage("Failed to receive scene list for playback");
+            }
+        });
     }
 };
 
