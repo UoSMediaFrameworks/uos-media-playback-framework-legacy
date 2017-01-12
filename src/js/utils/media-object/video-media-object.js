@@ -22,7 +22,7 @@ VideoMediaObject.typeName = 'video';
 VideoMediaObject.prototype.play = function () {
 
     console.log("VideoMediaObject.prototype.makeElement - Deprecated");
-    
+
     this._loading = false;
     // vimeo player complains if you pass it 0, so we pass it just above zero
     if(this._player.isVimeo) {
@@ -81,18 +81,25 @@ VideoMediaObject.prototype.makeElement = function (callback) {
     if(!this._player.isVimeo) { //APEP: ##Hack## for buffering media removal at the end
         try {
             //APEP: ##Hack## for buffering media removal at the end
-            this._player.raw_player.retrieveManifest(this._player.player_url, function(manifest){
-                this.play_duration = manifest.Period.duration;
-                callback();
+            this._player.raw_player.retrieveManifest(this._player.player_url, function(manifest) {
+                
+                console.log("VideoMediaObject.prototype.makeElement - retrieveManifest - manifest: ", manifest);
+                
+                try {
+                    this.play_duration = manifest.Period.duration;
+                } catch (e) {
+                    console.log("VideoMediaObject.prototype.makeElement - retrieveManifest - error with manifest: ", e);
+                }
+                return callback();
+                
             }.bind(this));
         } catch(e) {
             console.log("e: ", e);
             return callback();
         }
+    } else {
+        return callback();
     }
-
-    return callback();
-
 };
 
 VideoMediaObject.prototype.getLooping = function () {
