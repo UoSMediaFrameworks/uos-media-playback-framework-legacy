@@ -70,7 +70,9 @@ var MediaObjectList = React.createClass({
         //Only allow component update if we have a change in focused media or scene media list length
         return this.state.selectedIndex === null ||  ( this.state.selectedIndex !== nextProps.focusedMediaObject || this.props.scene.scene.length !== nextProps.scene.scene.length );
     },
-
+    componentWillUnmount: function () {
+      console.log("media-object-list unmounting")
+    },
     componentWillUpdate: function(nextProps, nextState) {
         //Only update selectedIndex state if changed
         if(this.props.focusedMediaObject !== nextProps.focusedMediaObject)

@@ -3,6 +3,7 @@ var React = require('react');
 var soundCloud = require('../../utils/sound-cloud');
 var getVimeoId = require('../../utils/get-vimeo-id');
 var toastr = require('toastr');
+var hat = require('hat');
 var VideoMediaPreviewPlayer = require('./components/video-media-preview-player.jsx');
 
 var MediaObjectPreviewPlayer = React.createClass({
@@ -23,6 +24,7 @@ var MediaObjectPreviewPlayer = React.createClass({
         var previewContainer = document.getElementsByClassName("media-object-item-preview-player");
         previewContainer.innerHTML = '';
 
+        var uniqueComponentKey = hat();
         if (props.focusedMediaObject === null) {
             console.log("NO FOCUSED MEDIA")
             return;
@@ -30,7 +32,7 @@ var MediaObjectPreviewPlayer = React.createClass({
 
         var mediaObject = this._getMediaObject(props);
 
-        if(!mediaObject) {
+        if (!mediaObject) {
             console.log("NO MEDIA OBJECT")
             return;
         }
@@ -38,12 +40,13 @@ var MediaObjectPreviewPlayer = React.createClass({
         switch (mediaObject.type) {
             case 'audio':
                 var self = this; //APEP required for scope resolution within the soundcloud stream URL callback.
-                soundCloud.streamUrl(mediaObject.url, function (err,streamUrl) {
+                soundCloud.streamUrl(mediaObject.url, function (err, streamUrl) {
                     var preview;
-                    if(err) {
+                    if (err) {
                         toastr.warning(err)
                     } else {
                         preview = <audio
+                            id={uniqueComponentKey}
                             className="react-audio-player"
                             src={streamUrl}
                             controls>
@@ -54,11 +57,13 @@ var MediaObjectPreviewPlayer = React.createClass({
                 break;
 
             case 'video':
-                var preview = <VideoMediaPreviewPlayer scene={this.props.scene} focusedMediaObject={this.props.focusedMediaObject}></VideoMediaPreviewPlayer>
+
+                var preview = <VideoMediaPreviewPlayer id={uniqueComponentKey} scene={this.props.scene}
+                                                       focusedMediaObject={this.props.focusedMediaObject}></VideoMediaPreviewPlayer>
                 this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;
             case 'image':
-                preview = <img className="react-image-preview" src={mediaObject.url}></img>
+                preview = <img id={uniqueComponentKey} className="react-image-preview" src={mediaObject.url}></img>
                 this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;
         }
@@ -79,12 +84,11 @@ var MediaObjectPreviewPlayer = React.createClass({
     componentWillReceiveProps: function (nextProps) {
         this.setupState(nextProps);
     },
-
-    componentDidMount: function() {
+    componentWillUnmount: function () {
+        this.setState(this.getInitialState())
     },
 
     render: function () {
-
         return <div className={this.state.previewClass}>
             {this.state.preview}
         </div>;

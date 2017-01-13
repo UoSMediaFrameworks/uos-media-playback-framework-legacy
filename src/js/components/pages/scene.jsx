@@ -35,7 +35,9 @@ var Scene = React.createClass({
         HubSendActions.loadScene(this.props.params.id);
         SceneStore.addChangeListener(this._onChange);
     },
-
+    componentWillUnmount:function(){
+        SceneStore.removeChangeListener(this._onChange);
+    },
     onWillUnmount: function() {
         SceneStore.removeChangeListener(this._onChange);
     },

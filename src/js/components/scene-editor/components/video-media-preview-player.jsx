@@ -19,7 +19,6 @@ var VideoMediaPreviewPlayer = React.createClass({
         },
         _onChange: function () {
             var currentVideoObject = this._getMediaObject(this.props);
-            console.log("_onChange", currentVideoObject)
             if (!currentVideoObject) {
                 return;
             }
@@ -37,7 +36,6 @@ var VideoMediaPreviewPlayer = React.createClass({
 
 
         _getVimeoPlayerForMediaObject: function (mediaObject) {
-            console.log("_getVimeoPlayerForMediaObject", mediaObject)
             var vimeoId = getVimeoId(mediaObject.url);
             var url = 'https://player.vimeo.com/video/' + vimeoId;
             return <iframe ref="videoPlayer" width="100%" height="100%" src={url}></iframe>;
@@ -69,7 +67,6 @@ var VideoMediaPreviewPlayer = React.createClass({
          * @returns {XML: Video HTML component}
          */
         _getDashPlayer: function (mediaObject) {
-            console.log("getting dash player", this._getMediaObjectUrl(mediaObject));
             var dashUrl = this._getMediaObjectUrl(mediaObject);
             var video = <div> Video is not transcoded and/or not supported for direct playback</div>;
             if (this.state.videoInfo.data.isTranscoded) {
@@ -78,7 +75,6 @@ var VideoMediaPreviewPlayer = React.createClass({
                 </video>;
             } else {
                 var rawVideoObjSource = this._getRawMediaObjectSource(mediaObject);
-                console.log("raw", rawVideoObjSource)
                 var fallbackSource = rawVideoObjSource.type !== "unsupported" ?
                     <source src={rawVideoObjSource.url} type={rawVideoObjSource.type}></source> : "";
                 if (fallbackSource) {
@@ -124,19 +120,15 @@ var VideoMediaPreviewPlayer = React.createClass({
             }
         },
         componentDidMount: function () {
-            console.log("mount")
             VideoStore.addChangeListener(this._onChange);
         },
-        onWillUnmount: function () {
-            console.log("dismount")
+        componentWillUnmount: function () {
             VideoStore.removeChangeListener(this._onChange);
         },
         componentWillReceiveProps: function (nextProps) {
             // the place to update state before render on an update.
             if (this.props.focusedMediaObject != nextProps.focusedMediaObject) {
-
-                this.setState({isVimeo: null, loading: true, videoInfo: null});
-                console.log("initiate new video", this.state)
+                this.setState(this.getInitialState);
             }
         },
         componentWillUpdate: function (nextProps) {
@@ -146,11 +138,8 @@ var VideoMediaPreviewPlayer = React.createClass({
 
         },
         componentDidUpdate: function () {
-
             var currentVideoObject = this._getMediaObject(this.props);
-            console.log("currentVideoObject", currentVideoObject)
             if (this.state.loading) {
-                console.log("loading")
                 if (this.state.isVimeo == null) {
                     var isVimeo;
                     isVimeo = currentVideoObject.url.indexOf("vimeo.com") !== -1;
@@ -163,12 +152,9 @@ var VideoMediaPreviewPlayer = React.createClass({
                     }
                 }
             } else {
-                console.log("loaded")
                 if (!this.state.isVimeo) {
-                    console.log("loaded from store", this.state)
                     var videoElement = document.getElementById('videoPreview');
                     if (videoElement != null) {
-                        console.log("Reloding from video")
                         videoElement.load();
                     }
                     if (this.state.videoInfo.data.hasTranscoded) {
@@ -182,7 +168,6 @@ var VideoMediaPreviewPlayer = React.createClass({
         render: function () {
             var currentVideoObject = this._getMediaObject(this.props);
             var video;
-            console.log("render", this.state);
             if (this.state.isVimeo == null) {
                 video = <div>No Video</div>;
             }
