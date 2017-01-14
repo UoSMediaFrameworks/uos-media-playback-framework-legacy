@@ -19,7 +19,7 @@ var VideoMediaObject = require('../utils/media-object/video-media-object');
 var AudioMediaObject = require('../utils/media-object/audio-media-object');
 var RandomVisualPlayer = require('../components/viewer/random-visual-player.jsx');
 var RandomAudioPlayer = require('../utils/random-audio-player');
-
+var ActiveTheme = require('../components/viewer/viewer-active-theme.jsx');
 
 var SceneListener = React.createClass({
 
@@ -83,6 +83,11 @@ var SceneListener = React.createClass({
             // console.log("SceneListenr - setScene for mediaObjectQueue - this.props.activeScene:", this.props.activeScene);
 
             this.mediaObjectQueue.setScene(scene, {hardReset: true});
+
+            if(this.props.themeQuery) {
+                var themeQry = scene.themes[this.props.themeQuery];
+                this.mediaObjectQueue.setTagMatcher(new TagMatcher(themeQry));
+            }
             this.randomAudioPlayer.start();
         }
     },
@@ -162,11 +167,14 @@ var SceneListener = React.createClass({
     },
 
     render: function() {
+
+        var ThemeDisplay = this.props.themeQuery ? <ActiveTheme themeQuery={this.props.themeQuery}/> : <ThemeSelector themeChange={this.handleThemeChange} scene={this._getSceneForUpdatingPlayerComponent()} />;
+
         return (
             <div className='scene-listener'>
                 <Loader loaded={this.state.scene ? true : false}></Loader>
                 <RandomVisualPlayer mediaQueue={this.state.mediaObjectQueue} />
-                <ThemeSelector themeChange={this.handleThemeChange} scene={this.state.scene} />
+                {ThemeDisplay}
                 <form className='tag-filter' onSubmit={this.updateTags}>
                     <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...' className='form-control scene-listener-tag-input' />
                 </form>

@@ -105,6 +105,14 @@ var GraphViewer = React.createClass({
         }, delay);
     },
 
+    getRandomThemeName (scene) {
+        if (! scene.themes) {
+            return null;
+        } else {
+            return _(scene.themes).keys().sample();
+        }
+    },
+
     nextScene: function() {
 
         var activeScene = this.state.activeScene;
@@ -136,12 +144,13 @@ var GraphViewer = React.createClass({
                 delay = (Number(newScene.sceneTransition) || 15) * 1000;
             }
 
+            var themeQuery = self.getRandomThemeName(newScene);
 
             if (self.state.scenes.length < 2) {
                 // console.log("GraphViewer - nextScene - no more scenes to iterate through");
                 // console.log("GraphViewer - singleScene set - nextScene - activeScene, activeSceneId: ", newScene, currentSceneId);
 
-                self.setState({activeScene: newScene, activeSceneId: currentSceneId});
+                self.setState({activeScene: newScene, activeSceneId: currentSceneId, themeQuery: themeQuery});
                 return;
             }
 
@@ -161,7 +170,7 @@ var GraphViewer = React.createClass({
 
             // console.log("GraphViewer - nextScene - activeScene, activeSceneId: ", newScene, currentSceneId);
 
-            self.setState({activeScene: newScene, activeSceneId: currentSceneId});
+            self.setState({activeScene: newScene, activeSceneId: currentSceneId, themeQuery: themeQuery});
         });
     },
 
@@ -177,7 +186,7 @@ var GraphViewer = React.createClass({
         var sceneListener;
 
         if(this.state.activeSceneId)
-            sceneListener = <SceneListener sceneId={this.state.activeSceneId} activeScene={this.state.activeScene} />;
+            sceneListener = <SceneListener sceneId={this.state.activeSceneId} activeScene={this.state.activeScene} themeQuery={this.state.themeQuery} />;
         else
             sceneListener = <h2>Graph Viewer</h2>;
 

@@ -34,6 +34,23 @@ html, body {
     left: 0;
 }
 
+.theme-viewer {
+    z-index: 99999;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.info-box {
+    background-color: rgba(0, 0, 0, .7);
+    padding: 6px 15px;
+    color: white;
+    font-size: 61px;
+    z-index: 99999;
+    position: absolute;
+    bottom: 0px;
+}
+
 .tag-filter input {
     z-index: 3;
 }
