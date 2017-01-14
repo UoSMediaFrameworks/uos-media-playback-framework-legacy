@@ -9,6 +9,7 @@ var connectionCache = require('./connection-cache');
 var NodeListGeneration = require('./scene-graph/node-list-generation');
 var toastr = require('toastr');
 var socket;
+var _ = require('lodash');
 
 var HubClient = {
     login: function(url, creds) {
@@ -85,6 +86,16 @@ var HubClient = {
                 HubRecieveActions.errorMessage('Couldn\'t load requested scene, reload the page and try again');
             } else {
                 HubRecieveActions.recieveScene(scene);
+            }
+        });
+    },
+
+    loadSceneWithCb: function(id, cb) {
+        socket.emit('loadScene', id, function(err, scene) {
+            if (err || ! scene) {
+                cb(null);
+            } else {
+                cb(scene);
             }
         });
     },
@@ -169,13 +180,21 @@ var HubClient = {
 
         socket.emit('register', "/#" + roomId);
 
+        var self = this;
+
         socket.on('command', function(data) {
 
             console.log("HubClient - on command - data: ", data);
 
             if (data.name === 'showScenes') {
+                // APEP TODO Include in scene store refactor for loading the scene for graph viewer player
+                // _.forEach(data.value, function(sceneId){
+                //     self.loadScene(sceneId);
+                // });
+
                 // APEP publish scene ID list
                 HubRecieveActions.recieveSceneListForPlayer(data.value);
+
             } else {
                 HubRecieveActions.errorMessage("Failed to receive scene list for playback");
             }

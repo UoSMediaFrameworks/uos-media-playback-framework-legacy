@@ -130,6 +130,7 @@ var RandomVisualPlayer = React.createClass({
         return willUpdate;
     },
     componentDidUpdate: function () {
+        //TODO APEP I think we may need to clean up the existing media if we update with a new scene
         var self = this;
         if (self.props.mediaQueue.displayInterval != undefined && !self.state.interval) {
             self.loadMediaObject(self.props);

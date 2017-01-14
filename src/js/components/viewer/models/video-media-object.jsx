@@ -59,6 +59,37 @@ var VideoMediaObject = React.createClass({
         this.play();
     },
 
+    // Allow component to clear up during removing from DOM
+    componentWillUnmount: function() {
+
+        //TODO investigation to resolving video media object errors during graph viewer
+        // var self = this;
+        //
+        // if(self.state.timeoutOnIntervalTimeout) {
+        //     try {
+        //         clearTimeout(self.state.timeoutOnIntervalTimeout);
+        //     } catch (e) {
+        //         console.log("VideoMediaObject - transition - clearTimeout error e: ", e);
+        //     }
+        // }
+        //
+        // if (self.state._playbackTimeInterval) clearTimeout(self.state._playbackTimeInterval);
+        //
+        // if (self.props.data.mediaObject){
+        //     if (!self.state.player.isVimeo) {
+        //
+        //         if(self.state.player.raw_player) {
+        //             // APEP reset the player to remove GPU memory and memory growth over time
+        //             self.state.player.raw_player.reset();
+        //         }
+        //     }
+        // }
+        //
+        // if(self.state.player) {
+        //     self.state.player.remove();
+        // }
+    },
+
     playVideoAndSetVolume: function() {
         if (this.state.player.isVimeo) {
             this.state.player.vimeo_player.setVolume(this.state.volume || 0.00001);

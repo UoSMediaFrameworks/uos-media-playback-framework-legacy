@@ -31,8 +31,27 @@ var SceneListener = React.createClass({
         }
     },
 
+    _getSceneId: function() {
+        if(this.props.activeScene) {
+            return this.props.activeScene._id;
+        }
+
+        var sceneId = this.props.sceneId || this.props.params.id;
+
+        return sceneId;
+    },
+
     _getScene: function() {
-        return SceneStore.getScene(this.props.params.id);
+
+        if(this.props.activeScene) {
+            return this.props.activeScene;
+        }
+
+        var sceneId = this.props.sceneId || this.props.params.id;
+
+        // console.log("SceneListener - _getScene - sceneId: ", sceneId);
+
+        return SceneStore.getScene(sceneId);
     },
 
     getInitialState: function() {
@@ -46,13 +65,24 @@ var SceneListener = React.createClass({
         return this.refs.player;
     },
 
+    _getSceneForUpdatingPlayerComponent: function() {
+        return this.props.activeScene || this.state.scene;
+    },
+
     _maybeUpdatePlayer: function() {
-        if (this.state.scene) {
-            if (this.state.scene.style) {
-                $('.player').css(this.state.scene.style);
+
+        console.log("SceneListenr - _maybeUpdatePlayer");
+
+        var scene = this._getSceneForUpdatingPlayerComponent();
+
+        if (scene) {
+            if (scene.style) {
+                $('.player').css(scene.style);
             }
 
-            this.mediaObjectQueue.setScene(this.state.scene);
+            // console.log("SceneListenr - setScene for mediaObjectQueue - this.props.activeScene:", this.props.activeScene);
+
+            this.mediaObjectQueue.setScene(scene, {hardReset: true});
             this.randomAudioPlayer.start();
         }
     },
@@ -64,7 +94,7 @@ var SceneListener = React.createClass({
         this.setState({mediaObjectQueue: this.mediaObjectQueue});
     },
     componentDidMount: function() {
-        HubSendActions.subscribeScene(this.props.params.id);
+        HubSendActions.subscribeScene(this._getSceneId());
         SceneStore.addChangeListener(this._onChange);
         this.mediaObjectQueue = new MediaObjectQueue(
             [TextMediaObject, AudioMediaObject, VideoMediaObject, ImageMediaObject],
@@ -80,9 +110,19 @@ var SceneListener = React.createClass({
     },
 
     componentDidUpdate: function(prevProps, prevState) {
+
+        // console.log("SceneListenr - componentDidUpdate");
+
         if (! _.isEqual(prevState.scene, this.state.scene) ) {
+            // console.log("SceneListenr - componentDidUpdate - _maybeUpdatePlayer - 1");
             this._maybeUpdatePlayer();
+        } else if (! _.isEqual(prevProps.activeScene, this.props.activeScene)) {
+            // APEP TODO investigate if this is necessary
+            // console.log("SceneListenr - componentDidUpdate - _maybeUpdatePlayer - 2");
+            this._maybeUpdatePlayer();
+
         }
+
         this.updateTags();
     },
 

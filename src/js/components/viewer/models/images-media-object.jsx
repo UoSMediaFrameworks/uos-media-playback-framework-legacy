@@ -17,7 +17,7 @@ var ImageMediaObject = React.createClass({
         element.style.transition = 'opacity ' + (self.props.data.transitionDuration / 1000) + 's ease-in-out';
         self.setState({shown: true});
         setTimeout(function () {
-                self.transition()
+                self.transition();
             }, self.props.data.displayDuration
         );
     },

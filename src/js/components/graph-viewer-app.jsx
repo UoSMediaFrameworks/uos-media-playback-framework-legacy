@@ -22,8 +22,6 @@ var ViewerApp = React.createClass({
     },
 
     componentDidMount: function() {
-        console.log("GraphViewerApp - componentDidMount");
-
         ClientStore.addChangeListener(this._onChange);
 
         var roomId = this.props.location.query.room;
