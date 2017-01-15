@@ -1,6 +1,7 @@
 'use strict';
 var React = require('react');
 var getVimeoId = require('../../../utils/get-vimeo-id');
+var videoUtils = require('../../../utils/video-utils');
 var SceneActions = require('../../../actions/scene-actions');
 var VideoStore = require('../../../stores/video-media-object-store');
 var _ = require('lodash');
@@ -33,48 +34,52 @@ var VideoMediaPreviewPlayer = React.createClass({
                 loading: false
             }
         },
-
-
+        preloadVideoInfo:function(currentVideoObject){
+            if (this.state.isVimeo == null) {
+                var isVimeo;
+                isVimeo = currentVideoObject.url.indexOf("vimeo.com") !== -1;
+                this.setState({isVimeo: isVimeo})
+            } else {
+                if (!this.state.isVimeo) {
+                    SceneActions.getVideoMediaObjectData(currentVideoObject)
+                } else {
+                    this.setState({loading: false})
+                }
+            }
+        },
+        reinitializeVideo:function(currentVideoObject){
+            var videoElement = document.getElementById('videoPreview');
+            if (videoElement != null) {
+                videoElement.load();
+            }
+            if (this.state.videoInfo.data.hasTranscoded) {
+                var url = videoUtils.getTranscodedUrl(currentVideoObject._url);
+                var player = dashjs.MediaPlayer().create();
+                player.initialize(document.querySelector("#videoPreview"), url, false);
+            }
+        },
         _getVimeoPlayerForMediaObject: function (mediaObject) {
             var vimeoId = getVimeoId(mediaObject.url);
             var url = 'https://player.vimeo.com/video/' + vimeoId;
             return <iframe ref="videoPlayer" width="100%" height="100%" src={url}></iframe>;
         },
-
-        _getMediaObjectUrl: function (mediaObject) {
-            var dashUrl = mediaObject.url.replace("raw", "transcoded/dash");
-            var trailingSlash = dashUrl.lastIndexOf("/");
-            dashUrl = dashUrl.substring(0, trailingSlash);
-            dashUrl += '/video_manifest.mpd';
-            return dashUrl;
-        },
-
-        _getRawMediaObjectSource: function (mediaObject) {
-            var supportedVideoFallback = ["ogv", "ogg", "mp4", "webm"];
-            var extension = mediaObject.url.substr(mediaObject.url.lastIndexOf('.') + 1);
-            var type = "unsupported";
-            if (supportedVideoFallback.indexOf(extension) != -1) {
-                type = "video/" + extension;
-            }
-            return {url: mediaObject.url, type: type}
-        },
-
         /**
          * Provides standard video playback of transcoded dash stream of raw file
          *
          * APEPE: We do not have the video media object database value at this point
          * Ultimately, we would need websockets and a store for all the video media objects
+         * Angel P: We now have the value in but it only gets returned from the store
          * @returns {XML: Video HTML component}
          */
         _getDashPlayer: function (mediaObject) {
-            var dashUrl = this._getMediaObjectUrl(mediaObject);
+            var dashUrl = videoUtils.getTranscodedUrl(mediaObject._url);
             var video = <div> Video is not transcoded and/or not supported for direct playback</div>;
             if (this.state.videoInfo.data.isTranscoded) {
                 video = <video data-dashjs-player id="videoPreview" width="100%" height="320px" controls>
                     <source src={dashUrl} type="application/dash+xml"></source>
                 </video>;
             } else {
-                var rawVideoObjSource = this._getRawMediaObjectSource(mediaObject);
+                var rawVideoObjSource =videoUtils.getRawVideoDirectPlaybackSupport(mediaObject._url);
                 var fallbackSource = rawVideoObjSource.type !== "unsupported" ?
                     <source src={rawVideoObjSource.url} type={rawVideoObjSource.type}></source> : "";
                 if (fallbackSource) {
@@ -111,6 +116,7 @@ var VideoMediaPreviewPlayer = React.createClass({
             return this._getRawPlayerForMediaObject(mediaObject);
         },
         shouldComponentUpdate: function (nextProps, nextState) {
+            //TODO: Angel P, revise should update optimization and bad lifecycle planning
             if (this.props.focusedMediaObject != nextProps.focusedMediaObject) {
                 return true;
             } else if (this.state != nextState) {
@@ -123,6 +129,7 @@ var VideoMediaPreviewPlayer = React.createClass({
             VideoStore.addChangeListener(this._onChange);
         },
         componentWillUnmount: function () {
+            //Angel P - Of amy set state issues happen it will be from this listener not unmounting
             VideoStore.removeChangeListener(this._onChange);
         },
         componentWillReceiveProps: function (nextProps) {
@@ -132,46 +139,28 @@ var VideoMediaPreviewPlayer = React.createClass({
             }
         },
         componentWillUpdate: function (nextProps) {
-
-            //Before it updates anything, check of the props are the same, if they are reset the state
-            //if it the same object,
+            //TODO: Angel P, Think about the event's life cycle and use if necessary
 
         },
         componentDidUpdate: function () {
             var currentVideoObject = this._getMediaObject(this.props);
             if (this.state.loading) {
-                if (this.state.isVimeo == null) {
-                    var isVimeo;
-                    isVimeo = currentVideoObject.url.indexOf("vimeo.com") !== -1;
-                    this.setState({isVimeo: isVimeo})
-                } else {
-                    if (!this.state.isVimeo) {
-                        SceneActions.getVideoMediaObjectData(currentVideoObject)
-                    } else {
-                        this.setState({loading: false})
-                    }
-                }
+               this.preloadVideoInfo(currentVideoObject)
             } else {
                 if (!this.state.isVimeo) {
-                    var videoElement = document.getElementById('videoPreview');
-                    if (videoElement != null) {
-                        videoElement.load();
-                    }
-                    if (this.state.videoInfo.data.hasTranscoded) {
-                        var url = this._getMediaObjectUrl(currentVideoObject);
-                        var player = dashjs.MediaPlayer().create();
-                        player.initialize(document.querySelector("#videoPreview"), url, false);
-                    }
+                    this.reinitializeVideo(currentVideoObject);
                 }
             }
         },
         render: function () {
-            var currentVideoObject = this._getMediaObject(this.props);
+
             var video;
+            //Initial value
             if (this.state.isVimeo == null) {
                 video = <div>No Video</div>;
             }
             if (!this.state.loading) {
+                var currentVideoObject = this._getMediaObject(this.props);
                 video = this.getVideoPlayerForMediaObject(currentVideoObject)
             }
             return (

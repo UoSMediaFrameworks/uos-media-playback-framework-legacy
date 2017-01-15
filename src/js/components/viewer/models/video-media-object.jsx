@@ -2,6 +2,8 @@
 var React = require('react');
 var getVimeoId = require('../../../utils/get-vimeo-id');
 var EmbeddedVimeoPlayer = require('../../../utils/embedded-vimeo-player');
+var SceneActions = require('../../../actions/scene-actions');
+var VideoStore = require('../../../stores/video-media-object-store');
 var classNames = require('classnames');
 var hat = require('hat');
 
@@ -24,14 +26,35 @@ var VideoMediaObject = React.createClass({
         }
         return volume / 100;
     },
+    _onChange:function(){
+      var currentVideoObject = this.props.data.mediaObject;
+     // console.log("_onChange",currentVideoObject)
+        if(!currentVideoObject){
+          return;
+        }
+        var isVimeo = currentVideoObject.url.indexOf("vimeo.com") !== -1;
+        if(isVimeo) {
+
+        }
+    },
+    componentWillReceiveProps:function(nextProps){
+
+    },
+    componentWillMount:function(){
+        var mediaObject = this.props.data.mediaObject._obj;
+        console.log("vmo will mount",mediaObject)
+       // SceneActions.getVideoMediaObjectData(mediaObject)
+    },
     componentDidMount: function () {
         var self = this;
         var mediaObject = this.props.data.mediaObject;
+
+        var videoInfo = VideoStore.getVideoInfo(mediaObject._obj._id);
         var isVimeo = mediaObject._obj.url.indexOf("vimeo.com") !== -1;
         var videoUrl = isVimeo ? getVimeoId(mediaObject._obj.url) : mediaObject._obj.url;
         self.state.looping = !(mediaObject._obj.autoreplay == undefined || mediaObject._obj.autoreplay < 1);
         self.state.volume = self.getVolume(mediaObject);
-        self.state.player = new EmbeddedVimeoPlayer(isVimeo, videoUrl);
+        self.state.player = new EmbeddedVimeoPlayer(isVimeo, videoUrl,videoInfo);
 
         if (!self.state.player.isVimeo) { //APEP: ##Hack## for buffering media removal at the end
             try {
@@ -170,7 +193,13 @@ var VideoMediaObject = React.createClass({
                 self.setVimeoVideoEndedListeners(transitionSeconds);
 
             } else {
-                self.setDashVideoEndedListeners();
+
+                try {
+                    self.setDashVideoEndedListeners();
+                } catch (e) {
+                   console.log("MediaVideoObject - play - Raw Player Error setting listeners", e)
+                }
+
             }
         } catch (e) {
             console.log("VideoMediaObject - play - err: ", e);
