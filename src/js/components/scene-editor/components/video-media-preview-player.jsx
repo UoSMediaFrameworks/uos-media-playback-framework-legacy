@@ -72,14 +72,18 @@ var VideoMediaPreviewPlayer = React.createClass({
          * @returns {XML: Video HTML component}
          */
         _getDashPlayer: function (mediaObject) {
-            var dashUrl = videoUtils.getTranscodedUrl(mediaObject._url);
+
+            var dashUrl = videoUtils.getTranscodedUrl(mediaObject.url);
+            console.log("getDashPlayer",dashUrl);
             var video = <div> Video is not transcoded and/or not supported for direct playback</div>;
             if (this.state.videoInfo.data.isTranscoded) {
+                console.log("trasncoded")
                 video = <video data-dashjs-player id="videoPreview" width="100%" height="320px" controls>
                     <source src={dashUrl} type="application/dash+xml"></source>
                 </video>;
             } else {
-                var rawVideoObjSource =videoUtils.getRawVideoDirectPlaybackSupport(mediaObject._url);
+                console.log("trasncoded")
+                var rawVideoObjSource =videoUtils.getRawVideoDirectPlaybackSupport(mediaObject.url);
                 var fallbackSource = rawVideoObjSource.type !== "unsupported" ?
                     <source src={rawVideoObjSource.url} type={rawVideoObjSource.type}></source> : "";
                 if (fallbackSource) {
@@ -88,6 +92,7 @@ var VideoMediaPreviewPlayer = React.createClass({
                     </video>;
                 }
             }
+            console.log(video)
             return video;
         },
 
@@ -154,7 +159,8 @@ var VideoMediaPreviewPlayer = React.createClass({
         },
         render: function () {
 
-            var video;
+            var video = null;
+            console.log(this)
             //Initial value
             if (this.state.isVimeo == null) {
                 video = <div>No Video</div>;
