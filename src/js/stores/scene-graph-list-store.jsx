@@ -54,7 +54,6 @@ var SceneGraphListStore = assign({}, EventEmitter.prototype, {
     dispatcherIndex: AppDispatcher.register(function(payload){
         var action = payload.action; // this is our action from handleViewAction
         switch(action.type){
-            //TODO new action types
             case ActionTypes.RECEIVE_SCENE_GRAPH_LIST:
                 _addSceneGraphs(action.sceneGraphs);
                 _loadingScenes = false;

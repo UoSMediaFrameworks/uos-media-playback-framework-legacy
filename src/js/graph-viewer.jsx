@@ -11,7 +11,6 @@ var HubSendActions = require('./actions/hub-send-actions');
 
 var LoginPage = require('./pages/login-page.jsx');
 
-// TODO Generic app container suits this app too
 var GraphViewerApp = require('./components/graph-viewer-app.jsx');
 var GraphViewer = require('./pages/viewer/graph-viewer.jsx');
 

@@ -51,7 +51,6 @@ var HubRecieveActions = {
     },
 
     recieveSceneListForPlayer: function(scenes) {
-        // TODO APEP Implement
         AppDispatcher.handleViewAction({
             type: ActionTypes.RECEIVE_SCENES_FROM_GRAPH,
             sceneIds: scenes

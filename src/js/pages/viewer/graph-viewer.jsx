@@ -174,12 +174,6 @@ var GraphViewer = React.createClass({
         });
     },
 
-    playScene: function() {
-        //APEP TODO I think react update will handle the play functionality tbh
-
-        //APEP we may need to provide something some theme name and/or tag matcher
-    },
-
     render: function() {
         // console.log("graph-viewer - render - this.state.activeScene: ", this.state.activeScene);
 
