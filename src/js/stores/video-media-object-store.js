@@ -42,7 +42,6 @@ var VideoMediaObjectStore = assign({}, EventEmitter.prototype, {
         switch (action.type) {
             case ActionTypes.GET_TRANSCODED_STATUS_ATTEMPT:
                 console.log("GET_TRANSCODED_STATUS_ATTEMPT", payload);
-                toastr.info(payload.action.message);
                 break;
             case ActionTypes.GET_TRANSCODED_STATUS_SUCCESS:
                 console.log("GET_TRANSCODED_STATUS_SUCCESS", payload);

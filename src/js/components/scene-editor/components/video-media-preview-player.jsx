@@ -48,12 +48,14 @@ var VideoMediaPreviewPlayer = React.createClass({
             }
         },
         reinitializeVideo:function(currentVideoObject){
+            console.log("reinitializeVideo",currentVideoObject,this.state.videoInfo.data);
             var videoElement = document.getElementById('videoPreview');
             if (videoElement != null) {
                 videoElement.load();
             }
             if (this.state.videoInfo.data.hasTranscoded) {
-                var url = videoUtils.getTranscodedUrl(currentVideoObject._url);
+                console.log("yo",currentVideoObject)
+                var url = videoUtils.getTranscodedUrl(currentVideoObject.url);
                 var player = dashjs.MediaPlayer().create();
                 player.initialize(document.querySelector("#videoPreview"), url, false);
             }
@@ -74,15 +76,15 @@ var VideoMediaPreviewPlayer = React.createClass({
         _getDashPlayer: function (mediaObject) {
 
             var dashUrl = videoUtils.getTranscodedUrl(mediaObject.url);
-            console.log("getDashPlayer",dashUrl);
+            console.log("getDashPlayer",dashUrl,this.state.videoInfo.data);
             var video = <div> Video is not transcoded and/or not supported for direct playback</div>;
-            if (this.state.videoInfo.data.isTranscoded) {
+            if (this.state.videoInfo.data.hasTranscoded) {
                 console.log("trasncoded")
                 video = <video data-dashjs-player id="videoPreview" width="100%" height="320px" controls>
                     <source src={dashUrl} type="application/dash+xml"></source>
                 </video>;
             } else {
-                console.log("trasncoded")
+                console.log("non-transcoded")
                 var rawVideoObjSource =videoUtils.getRawVideoDirectPlaybackSupport(mediaObject.url);
                 var fallbackSource = rawVideoObjSource.type !== "unsupported" ?
                     <source src={rawVideoObjSource.url} type={rawVideoObjSource.type}></source> : "";
@@ -95,7 +97,6 @@ var VideoMediaPreviewPlayer = React.createClass({
             console.log(video)
             return video;
         },
-
         /**
          * Provides standard video playback of raw uploaded file
          * @returns {XML: Video HTML component}
@@ -105,6 +106,7 @@ var VideoMediaPreviewPlayer = React.createClass({
                 <source src={mediaObject.url}></source>
             </video>;
         },
+
 
         _getRawPlayerForMediaObject: function (mediaObject) {
 

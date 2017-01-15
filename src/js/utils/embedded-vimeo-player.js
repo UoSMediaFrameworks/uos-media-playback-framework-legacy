@@ -76,7 +76,7 @@ if (typeof window !== 'undefined') {
 }
 function addSourceToRawVideo(element, transcodedUrl, rawSourceInfo, videoInfo) {
     var source = document.createElement('source');
-    if (videoInfo.data.isTranscoded) {
+    if (videoInfo.data.hasTranscoded) {
         source.src = transcodedUrl;
         source.type = "application/dash+xml";
     } else {
@@ -98,7 +98,7 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl, videoInfo) {
     else
         this.setupAsRawPlayer(transcodedUrl, videoInfo);
 
-    this.url = videoInfo.data.isTranscoded ? transcodedUrl : videoUrl;
+    this.url = videoInfo.data.hasTranscoded ? transcodedUrl : videoUrl;
 
     this.url = this._element.attributes.src.value.split('?')[0];
     document.body.appendChild(this._element);
@@ -141,26 +141,27 @@ EmbeddedVimeoPlayer.prototype.setupAsVimeoPlayer = function (vimeoId) {
 
 };
 
-EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (videoUrl, videoInfo) {
-    var fallbackSource = videoUtils.getRawVideoDirectPlaybackSupport(videoUrl)
-    if (fallbackSource.type !== "unsupported") {
+EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedInfo, videoInfo) {
+    var fallbackSource = videoUtils.getRawVideoDirectPlaybackSupport(videoInfo.data.video.url)
+    if(!videoInfo.data.hasTranscoded && fallbackSource.type == "unsupported"){
+        var div = document.createElement("div");
+        div.innerHTML ="not supported"
+        this._element = div;
+    }else{
         this._element = makeElement('video', {
             id: this.id,
             class: ' embedded-vimeo-player',
             'data-dashjs-player': 'data-dashjs-player'
         });
-        addSourceToRawVideo(this._element, videoUrl, fallbackSource, videoInfo);
+        addSourceToRawVideo(this._element, transcodedInfo, fallbackSource, videoInfo);
         var dimensions = checkDisplayRatio(window.innerWidth, window.innerHeight);
 
         this._element.style.width = dimensions.width + 'px';
         this._element.style.height = dimensions.height + 'px';
 
         this._element.controls = false;
-    } else {
-        var div =  document.createElement('div');
-        div.innerHTML = "Not supported";
-        this._element = div;
     }
+
 
 };
 

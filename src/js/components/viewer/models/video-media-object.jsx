@@ -26,25 +26,6 @@ var VideoMediaObject = React.createClass({
         }
         return volume / 100;
     },
-    _onChange:function(){
-      var currentVideoObject = this.props.data.mediaObject;
-     // console.log("_onChange",currentVideoObject)
-        if(!currentVideoObject){
-          return;
-        }
-        var isVimeo = currentVideoObject.url.indexOf("vimeo.com") !== -1;
-        if(isVimeo) {
-
-        }
-    },
-    componentWillReceiveProps:function(nextProps){
-
-    },
-    componentWillMount:function(){
-        var mediaObject = this.props.data.mediaObject._obj;
-        console.log("vmo will mount",mediaObject)
-       // SceneActions.getVideoMediaObjectData(mediaObject)
-    },
     componentDidMount: function () {
         var self = this;
         var mediaObject = this.props.data.mediaObject;
@@ -112,7 +93,7 @@ var VideoMediaObject = React.createClass({
         // }
     },
 
-    playVideoAndSetVolume: function() {
+    playVideoAndSetVolume: function () {
         if (this.state.player.isVimeo) {
             this.state.player.vimeo_player.setVolume(this.state.volume || 0.00001);
             this.state.player.vimeo_player.play();
