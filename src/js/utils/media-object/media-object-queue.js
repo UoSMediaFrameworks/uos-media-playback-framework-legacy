@@ -27,6 +27,8 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
         tagMatcher = new TagMatcher(),
         maximumOnScreen = {};
 
+    var transitionFunc;
+
     function activeCount (typeName) {
         return _.filter(active, function(mo) { return mo.constructor.typeName === typeName; }).length;
     }
@@ -142,7 +144,9 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
         // transition out all active mediaObjects
         if (ops.hardReset) {
             _.forEach(_.clone(active), function(activeMo) {
-                activeMo.transition();
+                if(transitionFunc) {
+                    transitionFunc(activeMo);
+                }
             });
         }
 
@@ -218,7 +222,9 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
                 .filter(function(mo) {
                     return ! tagMatcher.match(mo.tags);
                 }).each(function(mo) {
-                    mo.transition();
+                    if(transitionFunc) {
+                        transitionFunc(mo);
+                    }
                 }).value();
         }
     };
@@ -228,6 +234,10 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
     };
     this.getMasterList = function(){
         return masterList;
+    };
+
+    this.setTransitionHandler = function(func) {
+          transitionFunc = func;
     };
 }
 

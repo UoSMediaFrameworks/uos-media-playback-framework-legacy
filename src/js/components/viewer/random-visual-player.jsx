@@ -4,7 +4,6 @@ var lodash = require('lodash');
 var VideoMediaObject = require('../../utils/media-object/video-media-object');
 var ImageMediaObject = require('../../utils/media-object/image-media-object');
 var TextMediaObject = require('../../utils/media-object/text-media-object');
-var variableThrottle = require('../../utils/variable-throttle');
 var uuid = require('node-uuid');
 var hat = require('hat');
 
@@ -129,8 +128,36 @@ var RandomVisualPlayer = React.createClass({
         }
         return willUpdate;
     },
+
+    componentDidMount: function() {
+        this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
+    },
+
+    mediaObjectTransition: function(mediaObject) {
+        var queue = this.state.queue;
+        var reactMediaObject = lodash.find(queue, function (currentObject) {
+            console.log("currentObject: ", currentObject);
+            return currentObject.props.data.mediaObject.guid == mediaObject.guid;
+        });
+
+        console.log("mediaObjectTransition - reactMediaObject: ", reactMediaObject);
+
+        if(reactMediaObject) {
+            this.moDoneHandler(reactMediaObject);
+        }
+    },
+
+    mediaObjectDone: function(mediaObject){
+
+    },
+
     componentDidUpdate: function () {
         //TODO APEP I think we may need to clean up the existing media if we update with a new scene
+
+        console.log("randomVisualPlayer - componentDidUpdate"); 
+        // APEP if we update - transition media or get queues media that has been removed
+        this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
+
         var self = this;
         if (self.props.mediaQueue.displayInterval != undefined && !self.state.interval) {
             self.loadMediaObject(self.props);
