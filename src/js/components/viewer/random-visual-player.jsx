@@ -41,13 +41,12 @@ var RandomVisualPlayer = React.createClass({
                         transitionDuration: self.props.mediaQueue.transitionDuration,
                         key: index
                     };
-                    var mO =  (
+
+                    return (
                         <MediaObject key={mediaObject.guid} data={data} onRef={function(ref){
                             mediaObjectRefs[mediaObject.guid] = ref
                         }}></MediaObject>
                     );
-
-                    return mO;
                 });
 
                 self.setState({mediaQueue: self.props.mediaQueue, queue: q});
@@ -111,10 +110,46 @@ var RandomVisualPlayer = React.createClass({
     },
     clearMediaObject: function (mediaObject) {
         var arr = this.state.arr;
+
+        var previous = arr.length;
+
         lodash.remove(arr, function (currentObject) {
             return currentObject.guid == mediaObject.props.data.mediaObject.guid;
         });
-        this.setState({arr: arr})
+
+        var now = arr.length;
+
+        if(previous === now) {
+            console.log("RandomVisualPlayer - clearMediaObject - PREVIOUS AND NOW THE SAME ISSUE");
+            console.log(mediaObject);
+            console.log(mediaObject.props.data.mediaObject);
+            console.log(mediaObject.props.data.mediaObject._obj);
+        }
+
+        console.log("RandomVisualPlayer - clearMediaObject - previous, now: ", previous, now);
+
+        var self = this;
+        
+        var q = this.state.arr.map(function (mediaObject, index) {
+
+            var data = {
+                mediaObject: mediaObject,
+                player: self.refs.player,
+                //Attach the done handler using react props
+                moDoneHandler: self.moDoneHandler,
+                displayDuration: self.props.mediaQueue.displayDuration,
+                transitionDuration: self.props.mediaQueue.transitionDuration,
+                key: index
+            };
+
+            return (
+                <MediaObject key={mediaObject.guid} data={data} onRef={function(ref){
+                            mediaObjectRefs[mediaObject.guid] = ref
+                        }}></MediaObject>
+            );
+        });
+
+        this.setState({arr: arr, queue: q});
     },
     shouldComponentUpdate(nextProps, nextState){
         var stateUpdate = this.state === nextState;
@@ -166,7 +201,7 @@ var RandomVisualPlayer = React.createClass({
 
     componentDidUpdate: function () {
         // console.log("randomVisualPlayer - componentDidUpdate");
-        
+
         // APEP if we update - give the queue the correct transition handler to allow it to purge media from the active list
         // APEP Allows the queue to clean up existing media
         this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);

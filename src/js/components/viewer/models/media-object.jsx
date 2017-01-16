@@ -32,15 +32,18 @@ var MediaObject = React.createClass({
 
     },
     componentWillUnmount: function() {
-        
-        //APEP ensure the reference is removed when removed from display
-        this.props.onRef(null);
+        try {
+            //APEP ensure the reference is removed when removed from display
+            this.props.onRef(null);
+        } catch (e) {
+            console.log("MediaObject - componentWillUnmount - e: ", e);
+        }
     },
-    
+
     getObject: function() {
         return this.refs.object;
     },
-    
+
     doesStyleDeclareMediaObjectPosition: function(style) {
 
         //APEP Find if the style declares the media objects position to be defined by the style tags provided
