@@ -4,7 +4,7 @@ var lodash = require('lodash');
 var VideoMediaObject = require('../../utils/media-object/video-media-object');
 var ImageMediaObject = require('../../utils/media-object/image-media-object');
 var TextMediaObject = require('../../utils/media-object/text-media-object');
-var uuid = require('node-uuid');
+var variableThrottle = require('../../utils/variable-throttle');
 var hat = require('hat');
 
 var RandomVisualPlayer = React.createClass({
@@ -26,6 +26,8 @@ var RandomVisualPlayer = React.createClass({
             if (obj != undefined) {
                 obj.guid = obj.guid || hat();
                 self.state.arr.push(obj);
+            }
+        });
 
                 // APEP refactored to avoid async issues
                 var q = self.state.arr.map(function (mediaObject, index) {
@@ -74,11 +76,13 @@ var RandomVisualPlayer = React.createClass({
     vmoAtEndOfLooping: function(videoMediaObject, vmo) {
 
         this.clearMediaObject(videoMediaObject);
+        this.vmoClearActiveFromQueue(videoMediaObject);
     },
 
     vmoWithAutoReplayZeroOrOne: function (videoMediaObject, vmo) {
 
         this.clearMediaObject(videoMediaObject);
+        this.vmoClearActiveFromQueue(videoMediaObject);
     },
 
     vmoDoneHandler: function (videoMediaObject) {

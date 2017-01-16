@@ -17,7 +17,6 @@ function updateVideoInfo(videoInfo) {
 var VideoMediaObjectStore = assign({}, EventEmitter.prototype, {
 
     getVideoInfo: function (parentId) {
-        console.log("_videos", _videos,parentId)
         if (_videos.hasOwnProperty(parentId)) {
             return _.cloneDeep(_videos[parentId]);
         }

@@ -35,8 +35,12 @@ var VideoMediaObject = React.createClass({
         var videoUrl = isVimeo ? getVimeoId(mediaObject._obj.url) : mediaObject._obj.url;
         self.state.looping = !(mediaObject._obj.autoreplay == undefined || mediaObject._obj.autoreplay < 1);
         self.state.volume = self.getVolume(mediaObject);
-        self.state.player = new EmbeddedVimeoPlayer(isVimeo, videoUrl,videoInfo);
-
+        self.state.player = new EmbeddedVimeoPlayer(isVimeo, videoUrl, videoInfo);
+        // APEP TODO surprised a setState call is not needed
+        if (!self.state.player.supported) {
+            console.log("unsupported")
+            self.props.data.moDoneHandler(self);
+        }
         if (!self.state.player.isVimeo) { //APEP: ##Hack## for buffering media removal at the end
             try {
                 //APEP: ##Hack## for buffering media removal at the end
@@ -122,12 +126,6 @@ var VideoMediaObject = React.createClass({
 
     setVimeoVideoEndedListeners: function(transitionSeconds) {
         var self = this;
-        self.state.player.onPlayProgress(function (data) {
-            if ((data.duration - data.seconds) < transitionSeconds || data.duration < transitionSeconds) {
-                console.log("Video-Media-Object - setVimeoVideoEndedListeners - Transition video player out - vimeo duration checks");
-                self.transition();
-            }
-        });
         self.state.player.vimeo_player.on('ended', function (e) {
             console.log("Video-Media-Object - setVimeoVideoEndedListeners - Transition video player out - ended");
             self.transition();

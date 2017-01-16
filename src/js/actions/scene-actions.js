@@ -234,7 +234,6 @@ var SceneActions = {
         });
     },
     getVideoMediaObjectData: function (mediaObject) {
-        console.log("getVideoMediaObjectData mo", mediaObject)
         var alertId = hat();
         AppDispatcher.handleViewAction({
             type: ActionTypes.GET_TRANSCODED_STATUS_ATTEMPT,

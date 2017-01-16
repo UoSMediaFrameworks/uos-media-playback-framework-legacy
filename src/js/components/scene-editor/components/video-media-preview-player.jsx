@@ -34,7 +34,7 @@ var VideoMediaPreviewPlayer = React.createClass({
                 loading: false
             }
         },
-        preloadVideoInfo:function(currentVideoObject){
+        preloadVideoInfo: function (currentVideoObject) {
             if (this.state.isVimeo == null) {
                 var isVimeo;
                 isVimeo = currentVideoObject.url.indexOf("vimeo.com") !== -1;
@@ -47,14 +47,14 @@ var VideoMediaPreviewPlayer = React.createClass({
                 }
             }
         },
-        reinitializeVideo:function(currentVideoObject){
-            console.log("reinitializeVideo",currentVideoObject,this.state.videoInfo.data);
+        reinitializeVideo: function (currentVideoObject) {
+            console.log("reinitializeVideo", currentVideoObject, this.state.videoInfo.data);
             var videoElement = document.getElementById('videoPreview');
             if (videoElement != null) {
                 videoElement.load();
             }
             if (this.state.videoInfo.data.hasTranscoded) {
-                console.log("yo",currentVideoObject)
+                console.log("yo", currentVideoObject)
                 var url = videoUtils.getTranscodedUrl(currentVideoObject.url);
                 var player = dashjs.MediaPlayer().create();
                 player.initialize(document.querySelector("#videoPreview"), url, false);
@@ -76,18 +76,19 @@ var VideoMediaPreviewPlayer = React.createClass({
         _getDashPlayer: function (mediaObject) {
 
             var dashUrl = videoUtils.getTranscodedUrl(mediaObject.url);
-            console.log("getDashPlayer",dashUrl,this.state.videoInfo.data);
+            //Angel P: The fallbacksource has been moved up so we can use it as a fallback if the transcoded
+            // value can't be reached (localhost)
+
+            var rawVideoObjSource = videoUtils.getRawVideoDirectPlaybackSupport(mediaObject.url);
+            var fallbackSource = rawVideoObjSource.type !== "unsupported" ?
+                <source src={rawVideoObjSource.url} type={rawVideoObjSource.type}></source> : "";
             var video = <div> Video is not transcoded and/or not supported for direct playback</div>;
             if (this.state.videoInfo.data.hasTranscoded) {
-                console.log("trasncoded")
                 video = <video data-dashjs-player id="videoPreview" width="100%" height="320px" controls>
+                    {fallbackSource}
                     <source src={dashUrl} type="application/dash+xml"></source>
                 </video>;
             } else {
-                console.log("non-transcoded")
-                var rawVideoObjSource =videoUtils.getRawVideoDirectPlaybackSupport(mediaObject.url);
-                var fallbackSource = rawVideoObjSource.type !== "unsupported" ?
-                    <source src={rawVideoObjSource.url} type={rawVideoObjSource.type}></source> : "";
                 if (fallbackSource) {
                     video = <video data-dashjs-player id="videoPreview" width="100%" height="320px" controls>
                         {fallbackSource}
@@ -106,8 +107,6 @@ var VideoMediaPreviewPlayer = React.createClass({
                 <source src={mediaObject.url}></source>
             </video>;
         },
-
-
         _getRawPlayerForMediaObject: function (mediaObject) {
 
             return this._getDashPlayer(mediaObject);
@@ -152,7 +151,7 @@ var VideoMediaPreviewPlayer = React.createClass({
         componentDidUpdate: function () {
             var currentVideoObject = this._getMediaObject(this.props);
             if (this.state.loading) {
-               this.preloadVideoInfo(currentVideoObject)
+                this.preloadVideoInfo(currentVideoObject)
             } else {
                 if (!this.state.isVimeo) {
                     this.reinitializeVideo(currentVideoObject);
@@ -162,7 +161,6 @@ var VideoMediaPreviewPlayer = React.createClass({
         render: function () {
 
             var video = null;
-            console.log(this)
             //Initial value
             if (this.state.isVimeo == null) {
                 video = <div>No Video</div>;

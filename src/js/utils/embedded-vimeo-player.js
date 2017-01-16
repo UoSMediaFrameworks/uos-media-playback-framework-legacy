@@ -48,32 +48,7 @@ function registerPlayer(id, player) {
 
 function unregisterPlayer(id) {
     delete players[id];
-}
-
-function onMessageRecieved(evt) {
-    //Hey its an angel test
-    if(evt.origin != "https://player.vimeo.com"){
-        console.log("onMessageRecieved",evt,typeof evt.data == "string");
-    }
-
-
-    //APEP 3/10/16 - Chrome dev tools + react dev tools cause events to be sent to player
-    if (typeof evt.data == "string") {
-        var data = JSON.parse(evt.data);
-        players[data.player_id].handleEvent(data);
-    } else {
-        players[evt.data.player_id].handleEvent(evt);
-    }
-}
-
-// check for window, we won't have it if we are running headless tests
-if (typeof window !== 'undefined') {
-    if (window.addEventListener) {
-        window.addEventListener('message', onMessageRecieved, false);
-    } else {
-        window.attachEvent('onmessage', onMessageRecieved, false);
-    }
-}
+}   
 function addSourceToRawVideo(element, transcodedUrl, rawSourceInfo, videoInfo) {
     var source = document.createElement('source');
     if (videoInfo.data.hasTranscoded) {
@@ -165,47 +140,7 @@ EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedInfo, video
 
 };
 
-EmbeddedVimeoPlayer.prototype.postMessage = function (action, value) {
-    var data = {
-        method: action
-    };
 
-    if (value) {
-        data.value = value;
-    }
-
-    var msg = JSON.stringify(data);
-
-    console.log("postMessage: ", msg);
-
-    this._element.contentWindow.postMessage(data, this.url);
-};
-
-EmbeddedVimeoPlayer.prototype.onPlayProgress = function (cb) {
-    this._playProgressHandler = cb;
-};
-
-
-EmbeddedVimeoPlayer.prototype.onReady = function (cb) {
-    this._readyHandler = cb;
-};
-
-EmbeddedVimeoPlayer.prototype.handleEvent = function (data) {
-    switch (data.event) {
-        case 'ready':
-            this.postMessage('addEventListener', 'playProgress');
-            if (this._readyHandler) {
-                this._readyHandler(this._element);
-            }
-
-            break;
-        case 'playProgress':
-            if (this._playProgressHandler) {
-                this._playProgressHandler(data.data);
-            }
-            break;
-    }
-};
 
 EmbeddedVimeoPlayer.prototype.remove = function () {
     unregisterPlayer(this.id);

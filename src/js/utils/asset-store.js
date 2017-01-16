@@ -29,7 +29,6 @@ function getMediaObjectType(file) {
 
 module.exports = {
     checkTranscodedStatus:function(videoMediaObject,callback){
-        console.log("AssetStore checkTranscodedStatus",videoMediaObject);
 
         var apiUrl = assetUploadApi + "isTranscoded";
         var data = new FormData();
@@ -42,7 +41,6 @@ module.exports = {
             method:"POST",
             formData:data,
             onLoad:function(err,data){
-                console.log(data)
                 callback(null,data)
             },
             onError:function(info){

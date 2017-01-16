@@ -18,6 +18,7 @@ var ImageMediaObject = React.createClass({
     play: function () {
         var self = this;
         var element = self.refs[self.props.data.mediaObject._obj._id];
+        console.log("image play",element)
         element.style.transition = 'opacity ' + (self.props.data.transitionDuration / 1000) + 's ease-in-out';
         self.setState({shown: true});
         this.playTimeout = setTimeout(function () {
