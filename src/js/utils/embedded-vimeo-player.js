@@ -61,6 +61,9 @@ function addSourceToRawVideo(element, transcodedUrl, rawSourceInfo, videoInfo) {
     element.appendChild(source);
 }
 function EmbeddedVimeoPlayer(isVimeo, videoUrl, videoInfo) {
+
+    console.log("newEVP")
+
     this._ready = false;
     this.unsupported = false;
     this.id = hat();
@@ -73,11 +76,12 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl, videoInfo) {
         this.setupAsVimeoPlayer(videoUrl);
         this.url = videoUrl;
     } else {
+        console.log("non Vimeo",videoInfo)
         if (videoInfo) {
             videoInfo.data.hasTranscoded ? transcodedUrl : videoUrl
             this.setupAsRawPlayer(transcodedUrl, videoInfo);
         } else {
-            this._element = document.createELement("div");
+            this._element =  document.createElement("div");
             this.unsupported = true;
         }
     }
@@ -128,7 +132,7 @@ EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedInfo, video
     if (!videoInfo.data.hasTranscoded && fallbackSource.type == "unsupported") {
         this.unsupported = true;
         var div = document.createElement("div");
-        div.innerHTML ="not supported"
+        div.innerHTML ="not supported";
         this._element = div;
     }else{
         this._element = makeElement('video', {

@@ -35,8 +35,15 @@ var VideoMediaObject = React.createClass({
         var videoUrl = isVimeo ? getVimeoId(mediaObject._obj.url) : mediaObject._obj.url;
         self.state.looping = !(mediaObject._obj.autoreplay == undefined || mediaObject._obj.autoreplay < 1);
         self.state.volume = self.getVolume(mediaObject);
-        self.state.player = new EmbeddedVimeoPlayer(isVimeo, videoUrl, videoInfo);
-        // APEP TODO surprised a setState call is not needed
+        try{
+            self.state.player = new EmbeddedVimeoPlayer(isVimeo, videoUrl, videoInfo);
+        }
+        catch(E){
+            console.log("err EVP",E)
+        }
+
+        // APEP TODO surprised a setState call is not needed.
+
         if (!self.state.player.supported) {
             console.log("unsupported")
             self.props.data.moDoneHandler(self);
