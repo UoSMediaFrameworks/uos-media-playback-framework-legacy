@@ -24,21 +24,32 @@ var ImageMediaObject = React.createClass({
         );
     },
     transition: function () {
-        // console.log("ImageMediaObject - transition - Image transition call made", this);
 
         //APEP Clear the time out if transition is called outside rather than trigger by self
-        if (playTimeout) clearTimeout(playTimeout);
+
+        try {
+            if (playTimeout) clearTimeout(playTimeout);
+        } catch (e) {
+            console.log("ImageMediaObject - failed to clear timeout for playTimeout");
+        }
 
         var self = this;
         try {
             self.setState({shown: false});
+
+            console.log("ImageMediaObject - transition - Image transition call made", this);
+
             if (self.props.data.mediaObject) {
                 self.props.data.mediaObject.emit("transition", self.props.data.mediaObject);
+
+                console.log("ImageMediaObject - transition - Image transition call made 2", this);
+
                 setTimeout(function () {
-                    self.props.data.mediaObject.emit("done", self.props.data.mediaObject);
+                    console.log("ImageMediaObject - transition - Image transition call made 3", self);
                     self.props.data.moDoneHandler(self);
                 }, self.props.data.transitionDuration);
             }
+
         } catch (e) {
             console.log("ImageMediaObject - Failed to transition - this: ", this);
         }
