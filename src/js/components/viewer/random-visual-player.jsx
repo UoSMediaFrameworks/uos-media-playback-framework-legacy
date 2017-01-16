@@ -114,7 +114,7 @@ var RandomVisualPlayer = React.createClass({
         var previous = arr.length;
 
         lodash.remove(arr, function (currentObject) {
-            return currentObject.guid == mediaObject.props.data.mediaObject.guid;
+            return currentObject.guid === mediaObject.props.data.mediaObject.guid;
         });
 
         var now = arr.length;
@@ -124,12 +124,17 @@ var RandomVisualPlayer = React.createClass({
             console.log(mediaObject);
             console.log(mediaObject.props.data.mediaObject);
             console.log(mediaObject.props.data.mediaObject._obj);
+
+            lodash.remove(arr, function (currentObject) {
+                console.log("remove - guid, mediaObject.guid: ", currentObject.guid, mediaObject.props.data.mediaObject.guid);
+                return currentObject.guid === mediaObject.props.data.mediaObject.guid;
+            });
         }
 
         console.log("RandomVisualPlayer - clearMediaObject - previous, now: ", previous, now);
 
         var self = this;
-        
+
         var q = this.state.arr.map(function (mediaObject, index) {
 
             var data = {
