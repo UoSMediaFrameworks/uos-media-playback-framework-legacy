@@ -51,7 +51,7 @@ var VideoMediaObject = React.createClass({
             self.state.player = new EmbeddedVimeoPlayer(isVimeo, videoUrl, videoInfo);
             // APEP TODO surprised a setState call is not needed.
             if (!self.state.player.isVimeo) { //APEP: ##Hack## for buffering media removal at the end
-                if (self.state.player.raw_player.transcoded) {
+                if (self.state.player.transcoded) {
                     try {
                         //APEP: ##Hack## for buffering media removal at the end
                         self.state.player.raw_player.retrieveManifest(self.state.player.player_url, function (manifest, err) {
@@ -71,6 +71,9 @@ var VideoMediaObject = React.createClass({
             var element = this.refs[this.props.data.mediaObject._obj._id];
             console.log(this.state.player)
             element.appendChild(this.state.player._element);
+            if(!self.state.player.transcoded){
+                self.state.player.raw_player.load();
+            }
             this.play();
         }
 
@@ -120,7 +123,7 @@ var VideoMediaObject = React.createClass({
             } else {
                 console.log("nontranscoded")
                 this.state.player.raw_player.volume= this.state.volume || 0.0;
-                this.state.player.raw_player.load();
+                // this.state.player.raw_player.load();
             }
             this.state.player.raw_player.play();
         }
@@ -170,7 +173,7 @@ var VideoMediaObject = React.createClass({
         }
     },
     play: function () {
-
+        console.log("video play",this)
         var self = this;
 
         try {
@@ -178,7 +181,6 @@ var VideoMediaObject = React.createClass({
             self.playVideoAndSetVolume();
 
             var transitionSeconds = self.setAndGetElementTransitionInOutPeriod();
-            console.log("showing video")
             self.setState({shown: true});
 
             if (!self.state.looping) {
@@ -235,10 +237,8 @@ var VideoMediaObject = React.createClass({
                 // APEP TODO this needs to be after the transition out animation and before the start of it again
                 if (!self.state.player.isVimeo) {
                     // APEP reset the player to remove GPU memory and memory growth over time
-                    if(self.state.player.raw_player.transcoded){
+                    if(self.state.player.raw_player.transcoded) {
                         self.state.player.raw_player.reset();
-                    }else{
-                        self.state.player.raw_player.load();
                     }
                 }
             } catch (e) {

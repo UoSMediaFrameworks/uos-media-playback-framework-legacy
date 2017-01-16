@@ -12,6 +12,8 @@ var TWEEN = require('tween.js');
 function VideoMediaObject(obj, ops) {
     this._loading = false;
     //Angel P: this will call the asset store to try and gather data for the videos
+    //if its not vimeo, might be worth to attach is vimeo to the mediaObject at first chance
+    console.log("VideoMediaObject",obj);
     SceneActions.getVideoMediaObjectData(obj);
     this._playbackTimeInterval = null; //APEP: ##Hack## for buffering media removal at the end
     MediaObject.call(this, obj, ops);
@@ -85,16 +87,16 @@ VideoMediaObject.prototype.makeElement = function (callback) {
         try {
             //APEP: ##Hack## for buffering media removal at the end
             this._player.raw_player.retrieveManifest(this._player.player_url, function(manifest) {
-                
+
                 console.log("VideoMediaObject.prototype.makeElement - retrieveManifest - manifest: ", manifest);
-                
+
                 try {
                     this.play_duration = manifest.Period.duration;
                 } catch (e) {
                     console.log("VideoMediaObject.prototype.makeElement - retrieveManifest - error with manifest: ", e);
                 }
                 return callback();
-                
+
             }.bind(this));
         } catch(e) {
             console.log("e: ", e);

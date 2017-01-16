@@ -148,6 +148,7 @@ var SceneListener = React.createClass({
             event.preventDefault();
         }
         var tagFilter = this.mergeTagAndThemeFilters();
+        console.log('new filter: ' + tagFilter.toString());
         if(this.state.mediaObjectQueue)
             this.state.mediaObjectQueue.setTagMatcher(tagFilter);
     },
