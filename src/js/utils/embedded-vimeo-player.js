@@ -48,7 +48,7 @@ function registerPlayer(id, player) {
 
 function unregisterPlayer(id) {
     delete players[id];
-}   
+}
 function addSourceToRawVideo(element, transcodedUrl, rawSourceInfo, videoInfo) {
     var source = document.createElement('source');
     if (videoInfo.data.hasTranscoded) {
@@ -62,20 +62,26 @@ function addSourceToRawVideo(element, transcodedUrl, rawSourceInfo, videoInfo) {
 }
 function EmbeddedVimeoPlayer(isVimeo, videoUrl, videoInfo) {
     this._ready = false;
+    this.unsupported = false;
     this.id = hat();
     this.isVimeo = isVimeo;
 
     var transcodedUrl = videoUtils.getTranscodedUrl(videoUrl)
     registerPlayer(this.id, this);
 
-    if (isVimeo)
+    if (isVimeo) {
         this.setupAsVimeoPlayer(videoUrl);
-    else
-        this.setupAsRawPlayer(transcodedUrl, videoInfo);
+        this.url = videoUrl;
+    } else {
+        if (videoInfo) {
+            videoInfo.data.hasTranscoded ? transcodedUrl : videoUrl
+            this.setupAsRawPlayer(transcodedUrl, videoInfo);
+        } else {
+            this._element = document.createELement("div");
+            this.unsupported = true;
+        }
+    }
 
-    this.url = videoInfo.data.hasTranscoded ? transcodedUrl : videoUrl;
-
-    this.url = this._element.attributes.src.value.split('?')[0];
     document.body.appendChild(this._element);
     //https://github.com/vimeo/player.js
     if (isVimeo) {
@@ -117,8 +123,10 @@ EmbeddedVimeoPlayer.prototype.setupAsVimeoPlayer = function (vimeoId) {
 };
 
 EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedInfo, videoInfo) {
-    var fallbackSource = videoUtils.getRawVideoDirectPlaybackSupport(videoInfo.data.video.url)
-    if(!videoInfo.data.hasTranscoded && fallbackSource.type == "unsupported"){
+    if (videoInfo)
+        var fallbackSource = videoUtils.getRawVideoDirectPlaybackSupport(videoInfo.data.video.url)
+    if (!videoInfo.data.hasTranscoded && fallbackSource.type == "unsupported") {
+        this.unsupported = true;
         var div = document.createElement("div");
         div.innerHTML ="not supported"
         this._element = div;
