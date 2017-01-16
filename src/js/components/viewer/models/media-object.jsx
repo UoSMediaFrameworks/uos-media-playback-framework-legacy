@@ -20,6 +20,9 @@ var MediaObject = React.createClass({
     componentDidMount: function () {
         var element = this.refs.object.refs[this.props.data.mediaObject._obj._id];
 
+        // APEP allow the visualiser to obtain a reference
+        this.props.onRef(this);
+
         //APEP When mounting component, apply the declared style rules and position if not declared by media objects CSS
 
         this.addStyle(element,this.props.data.mediaObject.style);
@@ -28,6 +31,16 @@ var MediaObject = React.createClass({
         }
 
     },
+    componentWillUnmount: function() {
+        
+        //APEP ensure the reference is removed when removed from display
+        this.props.onRef(null);
+    },
+    
+    getObject: function() {
+        return this.refs.object;
+    },
+    
     doesStyleDeclareMediaObjectPosition: function(style) {
 
         //APEP Find if the style declares the media objects position to be defined by the style tags provided

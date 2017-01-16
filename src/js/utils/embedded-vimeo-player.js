@@ -99,8 +99,8 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl) {
 
     this.url = this._element.attributes.src.value.split('?')[0];
     document.body.appendChild(this._element);
-    //https://github.com/vimeo/player.js
-    if (isVimeo) {
+    
+    if (isVimeo) { //https://github.com/vimeo/player.js
         this.vimeo_player = new Vimeo(this._element);
     } else {
         var url = getTranscodedUrl(videoUrl);
@@ -110,7 +110,6 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl) {
         player.initialize(this._element, url, true);
         this.raw_player = player;
         this.player_url = url;
-        console.log("EmbeddedVimeoPlayer - Raw Player initialised with url", player, url)
     }
 
     return this;

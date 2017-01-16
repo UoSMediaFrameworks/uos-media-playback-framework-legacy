@@ -7,6 +7,8 @@ var TextMediaObject = require('../../utils/media-object/text-media-object');
 var uuid = require('node-uuid');
 var hat = require('hat');
 
+var mediaObjectRefs = {};
+
 var RandomVisualPlayer = React.createClass({
     getInitialState: function () {
         return {
@@ -21,39 +23,42 @@ var RandomVisualPlayer = React.createClass({
         var self = this;
 
         lodash.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject], function (moType) {
-
             var obj = queue.mediaQueue.take([moType]);
-            if (obj != undefined) {
-                obj.guid = uuid();
+            if (obj !== undefined) {
+                obj.guid = obj.guid || uuid();
+
                 self.state.arr.push(obj);
+
+                // APEP refactored to avoid async issues
+                var q = self.state.arr.map(function (mediaObject, index) {
+
+                    var data = {
+                        mediaObject: mediaObject,
+                        player: self.refs.player,
+                        //Attach the done handler using react props
+                        moDoneHandler: self.moDoneHandler,
+                        displayDuration: self.props.mediaQueue.displayDuration,
+                        transitionDuration: self.props.mediaQueue.transitionDuration,
+                        key: index
+                    };
+                    var mO =  (
+                        <MediaObject key={mediaObject.guid} data={data} onRef={function(ref){
+                            mediaObjectRefs[mediaObject.guid] = ref
+                        }}></MediaObject>
+                    );
+
+                    return mO;
+                });
+
+                self.setState({mediaQueue: self.props.mediaQueue, queue: q});
             }
         });
 
-        var q = this.state.arr.map(function (mediaObject, index) {
-
-            var data = {
-                mediaObject: mediaObject,
-                player: self.refs.player,
-                //Attach the done handler using react props
-                moDoneHandler: self.moDoneHandler,
-                displayDuration: self.props.mediaQueue.displayDuration,
-                transitionDuration: self.props.mediaQueue.transitionDuration,
-                mediaObjectUniqueKey: hat(),
-                key: index
-            };
-            var mO =  (
-                <MediaObject key={mediaObject.guid} data={data}></MediaObject>
-            );
-
-            return mO;
-        });
-
-        this.setState({mediaQueue: this.props.mediaQueue, queue: q});
     },
 
     moDoneHandler: function (mediaObject) {
 
-        console.log("randomVisualPlayer - moDoneHandler - mediaObject: ", mediaObject.props.data.mediaObject);
+        // console.log("randomVisualPlayer - moDoneHandler - mediaObject: ", mediaObject.props.data.mediaObject);
 
         // APEP for any non video type media, we can similarly clear the video media object
         if (mediaObject.props.data.mediaObject.type !== "video") {
@@ -86,8 +91,6 @@ var RandomVisualPlayer = React.createClass({
         var self = this;
 
         var vmo = videoMediaObject.props.data.mediaObject;
-
-        console.log("randomVisualPlayer - vmoDoneHandler - vmo: ", vmo);
 
         if (vmo._obj.autoreplay === 0 || vmo._obj.autoreplay === 1) {
             self.vmoWithAutoReplayZeroOrOne(videoMediaObject, vmo);
@@ -133,29 +136,39 @@ var RandomVisualPlayer = React.createClass({
         this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
     },
 
+    // APEP function given to the media queue object to provide object transition out functionality
     mediaObjectTransition: function(mediaObject) {
+
         var queue = this.state.queue;
+        // APEP find the queue react media object within the queue (rendered media objects)
         var reactMediaObject = lodash.find(queue, function (currentObject) {
-            console.log("currentObject: ", currentObject);
             return currentObject.props.data.mediaObject.guid == mediaObject.guid;
         });
 
-        console.log("mediaObjectTransition - reactMediaObject: ", reactMediaObject);
-
         if(reactMediaObject) {
-            this.moDoneHandler(reactMediaObject);
+            // APEP if we have a rendered media object, look up for referenced media object
+            var reactComponentMediaObject = mediaObjectRefs[reactMediaObject.props.data.mediaObject.guid];
+
+            if(reactComponentMediaObject) {
+                // APEP if we have a referenced media object, we can call the transition
+                reactComponentMediaObject.getObject().transition();
+
+                console.log("Transition");
+            } else {
+                // APEP without the correct reference, the minimum we can do if force the media object to be removed
+                this.moDoneHandler(reactMediaObject);
+                console.log("Force Remove");
+            }
+        } else {
+            console.log("ERROR: No value for transition media found in the queue");
         }
     },
 
-    mediaObjectDone: function(mediaObject){
-
-    },
-
     componentDidUpdate: function () {
-        //TODO APEP I think we may need to clean up the existing media if we update with a new scene
-
-        console.log("randomVisualPlayer - componentDidUpdate"); 
-        // APEP if we update - transition media or get queues media that has been removed
+        // console.log("randomVisualPlayer - componentDidUpdate");
+        
+        // APEP if we update - give the queue the correct transition handler to allow it to purge media from the active list
+        // APEP Allows the queue to clean up existing media
         this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
 
         var self = this;

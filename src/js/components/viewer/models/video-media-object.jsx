@@ -33,8 +33,6 @@ var VideoMediaObject = React.createClass({
         self.state.volume = self.getVolume(mediaObject);
         self.state.player = new EmbeddedVimeoPlayer(isVimeo, videoUrl);
 
-        // APEP TODO surprised a setState call is not needed
-
         if (!self.state.player.isVimeo) { //APEP: ##Hack## for buffering media removal at the end
             try {
                 //APEP: ##Hack## for buffering media removal at the end
@@ -62,7 +60,8 @@ var VideoMediaObject = React.createClass({
     // Allow component to clear up during removing from DOM
     componentWillUnmount: function() {
 
-        //TODO investigation to resolving video media object errors during graph viewer
+        // APEP TODO investigation to resolving video media object errors during graph viewer
+        // APEP TODO I really think each object should be responsible for cleaning up after it self...
         // var self = this;
         //
         // if(self.state.timeoutOnIntervalTimeout) {

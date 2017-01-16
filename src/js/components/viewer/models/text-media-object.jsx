@@ -1,6 +1,9 @@
 'use strict';
 var React = require('react');
 var classNames = require('classnames');
+
+var playTimeout;
+
 var TextMediaObject = React.createClass({
     getInitialState: function () {
         return {
@@ -15,14 +18,16 @@ var TextMediaObject = React.createClass({
         var element = self.refs[self.props.data.mediaObject._obj._id];
         element.style.transition = 'opacity ' + (self.props.data.transitionDuration / 1000) + 's ease-in-out';
         self.setState({shown: true});
-        setTimeout(function () {
+        playTimeout = setTimeout(function () {
                 self.transition()
             }, self.props.data.displayDuration
         );
-
     },
     transition: function () {
         // console.log("TextMediaObject - transition - Text transition call made", this);
+
+        if(playTimeout) clearTimeout(playTimeout);
+
         var self = this;
         self.setState({shown: false});
         if(self.props.data.mediaObject) {
