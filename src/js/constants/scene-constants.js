@@ -23,6 +23,9 @@ module.exports = {
         STATUS_MESSAGE: null,
         STATUS_MESSAGE_UPDATE: null,
         STATUS_MESSAGE_REMOVE: null,
+        
+        /* APEP Full Scene (v1.5 Scene with V2 Objects appended */
+        RECIEVE_FULL_SCENE: null,
 
         /* APEP Scene Graph Document Authoring */
         SCENE_GRAPH_UPDATE: null,

@@ -11,6 +11,7 @@ var VIDEO_FILE_TYPES = require('./allowed-upload-file-extensions').VIDEO_FILE_TY
 var assetUploadApi = process.env.ASSET_STORE + '/api/';
 var removeUnusedImagesUrl = process.env.ASSET_STORE + '/api/remove-unused-images';
 var resumableFinalAssetUploadApi = assetUploadApi + "resumable/final";
+var getFullSceneUrl = assetUploadApi + "scene/full";
 
 function getMediaObjectType(file) {
 
@@ -28,6 +29,25 @@ function getMediaObjectType(file) {
 
 
 module.exports = {
+
+    getFullScene: function(sceneId, callback) {
+        var data = new FormData();
+        data.append('sceneId', sceneId);
+        data.append('token', connectionCache.getToken());
+
+        var xhr = apiRequest.makeRequest({
+            url: getFullSceneUrl,
+            responseParser: jsonParser,
+            method: 'POST',
+            formData: data,
+            onLoad: function(err,data) {
+                callback(err, data);
+            },
+            onError: function(err) {
+                callback(err, null);
+            }
+        });
+    },
 
     resumableCreate: function(file, resumableFile, callback) {
 
