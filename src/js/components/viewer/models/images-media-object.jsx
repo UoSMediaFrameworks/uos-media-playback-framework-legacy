@@ -2,9 +2,11 @@
 var React = require('react');
 var classNames = require('classnames');
 
-var playTimeout;
 
 var ImageMediaObject = React.createClass({
+
+    playTimeout: null,
+
     getInitialState: function () {
         return {
             shown: false
@@ -18,7 +20,7 @@ var ImageMediaObject = React.createClass({
         var element = self.refs[self.props.data.mediaObject._obj._id];
         element.style.transition = 'opacity ' + (self.props.data.transitionDuration / 1000) + 's ease-in-out';
         self.setState({shown: true});
-        playTimeout = setTimeout(function () {
+        this.playTimeout = setTimeout(function () {
                 self.transition();
             }, self.props.data.displayDuration
         );
@@ -26,9 +28,8 @@ var ImageMediaObject = React.createClass({
     transition: function () {
 
         //APEP Clear the time out if transition is called outside rather than trigger by self
-
         try {
-            if (playTimeout) clearTimeout(playTimeout);
+            if (this.playTimeout) clearTimeout(this.playTimeout);
         } catch (e) {
             console.log("ImageMediaObject - failed to clear timeout for playTimeout");
         }
