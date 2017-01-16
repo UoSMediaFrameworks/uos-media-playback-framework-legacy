@@ -30,14 +30,19 @@ var ImageMediaObject = React.createClass({
         if (playTimeout) clearTimeout(playTimeout);
 
         var self = this;
-        self.setState({shown: false});
-        if (self.props.data.mediaObject) {
-            self.props.data.mediaObject.emit("transition", self.props.data.mediaObject);
-            setTimeout(function () {
-                self.props.data.mediaObject.emit("done", self.props.data.mediaObject);
-                self.props.data.moDoneHandler(self);
-            }, self.props.data.transitionDuration);
+        try {
+            self.setState({shown: false});
+            if (self.props.data.mediaObject) {
+                self.props.data.mediaObject.emit("transition", self.props.data.mediaObject);
+                setTimeout(function () {
+                    self.props.data.mediaObject.emit("done", self.props.data.mediaObject);
+                    self.props.data.moDoneHandler(self);
+                }, self.props.data.transitionDuration);
+            }
+        } catch (e) {
+            console.log("ImageMediaObject - Failed to transition - this: ", this);
         }
+
     },
     render: function () {
         var objectClasses = classNames({
