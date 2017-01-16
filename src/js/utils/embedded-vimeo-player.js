@@ -49,16 +49,24 @@ function registerPlayer(id, player) {
 function unregisterPlayer(id) {
     delete players[id];
 }
+function addFallbackSource(source, rawSourceInfo) {
+    source.src = rawSourceInfo.url;
+    source.type = rawSourceInfo.type;
+
+    return source;
+}
 function addSourceToRawVideo(element, transcodedUrl, rawSourceInfo, videoInfo) {
     var source = document.createElement('source');
+    var fallbackSource = document.createElement('source');
     if (videoInfo.data.hasTranscoded) {
         source.src = transcodedUrl;
         source.type = "application/dash+xml";
-    } else {
-        source.src = rawSourceInfo.url;
-        source.type = rawSourceInfo.type;
+        element.appendChild(source);
+        addFallbackSource(fallbackSource,rawSourceInfo)
     }
-    element.appendChild(source);
+    addFallbackSource(fallbackSource,rawSourceInfo)
+    element.appendChild(fallbackSource);
+
 }
 function EmbeddedVimeoPlayer(isVimeo, videoUrl, videoInfo) {
 
@@ -75,36 +83,20 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl, videoInfo) {
     if (isVimeo) {
         this.setupAsVimeoPlayer(videoUrl);
         this.url = videoUrl;
+    } else if (videoInfo) {
+        console.log("non Vimeo", videoInfo)
+
+        this.setupAsRawPlayer(transcodedUrl, videoInfo);
     } else {
-        console.log("non Vimeo",videoInfo)
-        if (videoInfo) {
-            videoInfo.data.hasTranscoded ? transcodedUrl : videoUrl
-            this.setupAsRawPlayer(transcodedUrl, videoInfo);
-        } else {
-            this._element =  document.createElement("div");
-            this.unsupported = true;
-        }
+        //Do something to clear this object from queue
     }
 
-    document.body.appendChild(this._element);
-    //https://github.com/vimeo/player.js
-    if (isVimeo) {
-        this.vimeo_player = new Vimeo(this._element);
-    } else {
-
-        //var url = "Transcoding_3/video_manifest.mpd"; //APEP see other comment (_getRawPlayerForMediaObject)
-        var player = dashjs.MediaPlayer().create();
-        player.getDebug().setLogToBrowserConsole(false);
-        player.initialize(this._element, transcodedUrl, true);
-        this.raw_player = player;
-        this.player_url = transcodedUrl;
-        console.log("getting transcoded url and initializing player", player, transcodedUrl)
-    }
 
     return this;
 }
 
 EmbeddedVimeoPlayer.prototype.setupAsVimeoPlayer = function (vimeoId) {
+    //https://github.com/vimeo/player.js
     var urlAttrsStr = urlAttrs({
             player_id: this.id,
             title: 0,
@@ -122,36 +114,63 @@ EmbeddedVimeoPlayer.prototype.setupAsVimeoPlayer = function (vimeoId) {
         frameborder: 0,
         class: ' embedded-vimeo-player'
     });
+    document.body.appendChild(this._element);
+    this.vimeo_player = new Vimeo(this._element);
 
 
 };
 
-EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedInfo, videoInfo) {
+EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedUrl, videoInfo) {
+
     if (videoInfo)
         var fallbackSource = videoUtils.getRawVideoDirectPlaybackSupport(videoInfo.data.video.url)
     if (!videoInfo.data.hasTranscoded && fallbackSource.type == "unsupported") {
         this.unsupported = true;
-        var div = document.createElement("div");
-        div.innerHTML ="not supported";
-        this._element = div;
-    }else{
+        var video = makeElement("video", {
+            id: this.id,
+            class: ' embedded-vimeo-player not-supported',
+        });
+        video.innerHTML = "not supported";
+        this._element = video;
+        document.body.appendChild(this._element);
+
+        video.load();
+        this.raw_player = video;
+        this.player_url = videoInfo.data.video.url;
+        console.log("NonSupported", video, videoInfo.data.video.url)
+    } else {
         this._element = makeElement('video', {
             id: this.id,
             class: ' embedded-vimeo-player',
             'data-dashjs-player': 'data-dashjs-player'
         });
-        addSourceToRawVideo(this._element, transcodedInfo, fallbackSource, videoInfo);
+        addSourceToRawVideo(this._element, transcodedUrl, fallbackSource, videoInfo);
         var dimensions = checkDisplayRatio(window.innerWidth, window.innerHeight);
 
         this._element.style.width = dimensions.width + 'px';
         this._element.style.height = dimensions.height + 'px';
 
         this._element.controls = false;
+
+        document.body.appendChild(this._element);
+        if(videoInfo.data.hasTranscoded){
+            var player = dashjs.MediaPlayer().create();
+            player.getDebug().setLogToBrowserConsole(false);
+            player.initialize(this._element, transcodedUrl, true);
+            this.raw_player = player;
+            this.player_url = transcodedUrl;
+            this.transcoded = true;
+        }else{
+            this.raw_player = this._element;
+            this.player_url =videoInfo.data.video.url
+            this.transcoded = false;
+        }
+
+
+        console.log("getting transcoded url and initializing player",    this.raw_player, this.player_url)
     }
 
-
 };
-
 
 
 EmbeddedVimeoPlayer.prototype.remove = function () {

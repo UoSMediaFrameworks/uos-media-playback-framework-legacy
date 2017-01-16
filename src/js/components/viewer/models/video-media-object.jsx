@@ -30,50 +30,55 @@ var VideoMediaObject = React.createClass({
         var self = this;
         var mediaObject = this.props.data.mediaObject;
 
-        var videoInfo = VideoStore.getVideoInfo(mediaObject._obj._id);
+
         var isVimeo = mediaObject._obj.url.indexOf("vimeo.com") !== -1;
+            var videoInfo = VideoStore.getVideoInfo(mediaObject._obj._id);
+        console.log("componentDidMount videoInfo", videoInfo)
         var videoUrl = isVimeo ? getVimeoId(mediaObject._obj.url) : mediaObject._obj.url;
         self.state.looping = !(mediaObject._obj.autoreplay == undefined || mediaObject._obj.autoreplay < 1);
         self.state.volume = self.getVolume(mediaObject);
-        try{
-            self.state.player = new EmbeddedVimeoPlayer(isVimeo, videoUrl, videoInfo);
-        }
-        catch(E){
-            console.log("err EVP",E)
-        }
 
-        // APEP TODO surprised a setState call is not needed.
 
-        if (!self.state.player.supported) {
-            console.log("unsupported")
+        //Angel P: TODO if !isVimeo and videoInfo === undefined , just trigger doen events for it to reload in the queue with the video info.
+        //TODO: !isVimeo and videoInfo type unsupported  - remove from queue
+        //
+
+        if (!isVimeo && videoInfo == undefined) {
+            self.state.player = null;
+            self.props.data.mediaObject.emit("transition", self.props.data.mediaObject);
             self.props.data.moDoneHandler(self);
-        }
-        if (!self.state.player.isVimeo) { //APEP: ##Hack## for buffering media removal at the end
-            try {
-                //APEP: ##Hack## for buffering media removal at the end
-                self.state.player.raw_player.retrieveManifest(self.state.player.player_url, function (manifest, err) {
-
-                    // APEP TODO Not sure how this async function works inside this sync environment - will likely cause state.play_duration nulls where we may want it
-                    if (err) {
-                        console.log("Video-Media-Object - componentDidMount - retrieveManifest err: ", err);
-                        self.state.play_duration = null;
-                    } else {
-                        self.state.play_duration = manifest.Period.duration;
+        } else {
+            self.state.player = new EmbeddedVimeoPlayer(isVimeo, videoUrl, videoInfo);
+            // APEP TODO surprised a setState call is not needed.
+            if (!self.state.player.isVimeo) { //APEP: ##Hack## for buffering media removal at the end
+                if (self.state.player.raw_player.transcoded) {
+                    try {
+                        //APEP: ##Hack## for buffering media removal at the end
+                        self.state.player.raw_player.retrieveManifest(self.state.player.player_url, function (manifest, err) {
+                            // APEP TODO Not sure how this async function works inside this sync environment - will likely cause state.play_duration nulls where we may want it
+                            if (err) {
+                                console.log("Video-Media-Object - componentDidMount - retrieveManifest err: ", err);
+                                self.state.play_duration = null;
+                            } else {
+                                self.state.play_duration = manifest.Period.duration;
+                            }
+                        });
+                    } catch (e) {
+                        console.log("e component did mount: ", e);
                     }
-                });
-
-            } catch (e) {
-                console.log("e component did mount: ", e);
+                }
             }
+            var element = this.refs[this.props.data.mediaObject._obj._id];
+            console.log(this.state.player)
+            element.appendChild(this.state.player._element);
+            this.play();
         }
 
-        var element = this.refs[this.props.data.mediaObject._obj._id];
-        element.appendChild(this.state.player._element);
-        this.play();
     },
 
     // Allow component to clear up during removing from DOM
-    componentWillUnmount: function() {
+    componentWillUnmount: function () {
+        console.log("video Unmounting");
 
         // APEP TODO investigation to resolving video media object errors during graph viewer
         // APEP TODO I really think each object should be responsible for cleaning up after it self...
@@ -110,28 +115,34 @@ var VideoMediaObject = React.createClass({
             this.state.player.vimeo_player.play();
             // this.state.player.vimeo_player.setLoop(this.state.looping || false);
         } else {
+            if (this.state.player.transcoded) {
+                this.state.player.raw_player.setVolume(this.state.volume || 0.0);
+            } else {
+                console.log("nontranscoded")
+                this.state.player.raw_player.volume= this.state.volume || 0.0;
+                this.state.player.raw_player.load();
+            }
             this.state.player.raw_player.play();
-            this.state.player.raw_player.setVolume(this.state.volume || 0.0);
         }
     },
 
-    setAndGetElementTransitionInOutPeriod: function() {
-        var self =  this;
+    setAndGetElementTransitionInOutPeriod: function () {
+        var self = this;
         var element = self.refs[self.props.data.mediaObject._obj._id];
         var transitionSeconds = self.props.data.transitionDuration / 1000;
         element.style.transition = 'opacity ' + (self.props.data.transitionDuration / 1000) + 's ease-in-out';
         return transitionSeconds;
     },
 
-    setVideoTimeoutOnInterval: function() {
+    setVideoTimeoutOnInterval: function () {
         var self = this;
-        self.state.timeoutOnIntervalTimeout = setTimeout(function() {
+        self.state.timeoutOnIntervalTimeout = setTimeout(function () {
             console.log("Video-Media-Object - setVideoTimeoutOnInterval - video with autoreplay 0 has played for displayDuration");
             self.transition();
         }, self.props.data.displayDuration)
     },
 
-    setVimeoVideoEndedListeners: function(transitionSeconds) {
+    setVimeoVideoEndedListeners: function (transitionSeconds) {
         var self = this;
         self.state.player.vimeo_player.on('ended', function (e) {
             console.log("Video-Media-Object - setVimeoVideoEndedListeners - Transition video player out - ended");
@@ -139,16 +150,16 @@ var VideoMediaObject = React.createClass({
         });
     },
 
-    setDashVideoEndedListeners: function() {
+    setDashVideoEndedListeners: function () {
         var self = this;
         self.state.player._element.addEventListener('ended', function (e) {
             console.log("Video-Media-Object - setDashVideoEndedListeners - Transition video player out - dashjs player event Ended", e);
             self.transition();
         }, false);
 
-
         // APEP TODO the state.play_duration is out of sync scope so probably is null here - will need to review
-        //APEP: ##Hack## for buffering media removal at the end
+        // APEP: ##Hack## for buffering media removal at the end
+
         if (self.state.play_duration !== null && self.state.play_duration > 0) {
             if (self.state._playbackTimeInterval) clearTimeout(self.state._playbackTimeInterval);
 
@@ -158,7 +169,6 @@ var VideoMediaObject = React.createClass({
             }, self.state.play_duration * 1.15 * 1000);
         }
     },
-
     play: function () {
 
         var self = this;
@@ -168,7 +178,7 @@ var VideoMediaObject = React.createClass({
             self.playVideoAndSetVolume();
 
             var transitionSeconds = self.setAndGetElementTransitionInOutPeriod();
-
+            console.log("showing video")
             self.setState({shown: true});
 
             if (!self.state.looping) {
@@ -183,14 +193,13 @@ var VideoMediaObject = React.createClass({
                 try {
                     self.setDashVideoEndedListeners();
                 } catch (e) {
-                   console.log("MediaVideoObject - play - Raw Player Error setting listeners", e)
+                    console.log("MediaVideoObject - play - Raw Player Error setting listeners", e)
                 }
 
             }
         } catch (e) {
             console.log("VideoMediaObject - play - err: ", e);
         }
-
 
 
     },
@@ -202,7 +211,7 @@ var VideoMediaObject = React.createClass({
 
         var self = this;
 
-        if(self.state.timeoutOnIntervalTimeout) {
+        if (self.state.timeoutOnIntervalTimeout) {
             try {
                 clearTimeout(self.state.timeoutOnIntervalTimeout);
             } catch (e) {
@@ -226,7 +235,11 @@ var VideoMediaObject = React.createClass({
                 // APEP TODO this needs to be after the transition out animation and before the start of it again
                 if (!self.state.player.isVimeo) {
                     // APEP reset the player to remove GPU memory and memory growth over time
-                    self.state.player.raw_player.reset();
+                    if(self.state.player.raw_player.transcoded){
+                        self.state.player.raw_player.reset();
+                    }else{
+                        self.state.player.raw_player.load();
+                    }
                 }
             } catch (e) {
                 console.log("VideoMediaObject - transition - failed to complete clean up with error: ", e);
