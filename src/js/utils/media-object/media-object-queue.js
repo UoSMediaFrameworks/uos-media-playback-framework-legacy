@@ -33,6 +33,8 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
         return _.filter(active, function(mo) { return mo.constructor.typeName === typeName; }).length;
     }
 
+    this.moTransitionHandler = moTransitionHandler;
+
     function moTransitionHandler (mediaObject) {
 
         // console.log("Media-object-queue - transitionHandler handler - mediaObject: ", mediaObject);
@@ -45,6 +47,8 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
 
         // console.log("Media-object-queue - transitionHandler handler - active.length after: ", active);
     }
+
+    this.moDoneHandler = moDoneHandler;
 
     function moDoneHandler (mediaObject) {
 
@@ -60,8 +64,8 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
 
             // console.log("Media-object-queue - done handler - removing listeners ");
 
-            mediaObject.removeListener('transition', moTransitionHandler);
-            mediaObject.removeListener('done', moDoneHandler);
+            // mediaObject.removeListener('transition', moTransitionHandler);
+            // mediaObject.removeListener('done', moDoneHandler);
         }
 
         // console.log("Media-object-queue - done handler - queue end: ", queue);
@@ -127,8 +131,8 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
                 displayDuration: this.displayDuration,
                 transitionDuration: this.transitionDuration
             });
-            newMo.on('transition', moTransitionHandler);
-            newMo.on('done', moDoneHandler);
+            // newMo.on('transition', moTransitionHandler);
+            // newMo.on('done', moDoneHandler);
 
             return newMo;
         }.bind(this));

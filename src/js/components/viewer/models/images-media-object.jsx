@@ -37,19 +37,11 @@ var ImageMediaObject = React.createClass({
         try {
             self.setState({shown: false});
 
-            console.log("ImageMediaObject - transition - Image transition call made", this);
-
             if (self.props.data.mediaObject) {
-                self.props.data.mediaObject.emit("transition", self.props.data.mediaObject);
-
-                console.log("ImageMediaObject - transition - Image transition call made 2", this);
-
                 setTimeout(function () {
-                    console.log("ImageMediaObject - transition - Image transition call made 3", self);
                     self.props.data.moDoneHandler(self);
                 }, self.props.data.transitionDuration);
             }
-
         } catch (e) {
             console.log("ImageMediaObject - Failed to transition - this: ", this);
         }

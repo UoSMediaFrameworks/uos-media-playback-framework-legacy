@@ -31,9 +31,7 @@ var TextMediaObject = React.createClass({
         var self = this;
         self.setState({shown: false});
         if(self.props.data.mediaObject) {
-            self.props.data.mediaObject.emit("transition",self.props.data.mediaObject);
             setTimeout(function () {
-                self.props.data.mediaObject.emit("done",self.props.data.mediaObject);
                 self.props.data.moDoneHandler(self);
             }, self.props.data.transitionDuration)
         }

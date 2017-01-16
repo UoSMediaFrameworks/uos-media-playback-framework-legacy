@@ -206,8 +206,6 @@ var VideoMediaObject = React.createClass({
             console.log("VideoMediaObject - transition - emitting transition for mediaObject and calling done handler");
 
             try {
-                self.props.data.mediaObject.emit("transition", self.props.data.mediaObject);
-
                 self.props.data.moDoneHandler(self);
 
                 // APEP TODO this needs to be after the transition out animation and before the start of it again

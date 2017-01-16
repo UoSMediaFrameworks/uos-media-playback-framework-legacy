@@ -77,13 +77,11 @@ var RandomVisualPlayer = React.createClass({
     vmoAtEndOfLooping: function(videoMediaObject, vmo) {
 
         this.clearMediaObject(videoMediaObject);
-        this.vmoClearActiveFromQueue(videoMediaObject);
     },
 
     vmoWithAutoReplayZeroOrOne: function (videoMediaObject, vmo) {
 
         this.clearMediaObject(videoMediaObject);
-        this.vmoClearActiveFromQueue(videoMediaObject);
     },
 
     vmoDoneHandler: function (videoMediaObject) {
@@ -121,40 +119,16 @@ var RandomVisualPlayer = React.createClass({
 
         if(previous === now) {
             console.log("RandomVisualPlayer - clearMediaObject - PREVIOUS AND NOW THE SAME ISSUE");
-            console.log(mediaObject);
-            console.log(mediaObject.props.data.mediaObject);
-            console.log(mediaObject.props.data.mediaObject._obj);
-
-            lodash.remove(arr, function (currentObject) {
-                console.log("remove - guid, mediaObject.guid: ", currentObject.guid, mediaObject.props.data.mediaObject.guid);
-                return currentObject.guid === mediaObject.props.data.mediaObject.guid;
-            });
+            console.log(mediaObject.props.data.mediaObject._obj.url);
+        } else {
+            this.props.mediaQueue.moTransitionHandler(mediaObject.props.data.mediaObject);
+            this.props.mediaQueue.moDoneHandler(mediaObject.props.data.mediaObject);
+            console.log("clearMediaObject - REMOVED guid: ", mediaObject.props.data.mediaObject.guid);
         }
 
         console.log("RandomVisualPlayer - clearMediaObject - previous, now: ", previous, now);
 
-        var self = this;
-
-        var q = this.state.arr.map(function (mediaObject, index) {
-
-            var data = {
-                mediaObject: mediaObject,
-                player: self.refs.player,
-                //Attach the done handler using react props
-                moDoneHandler: self.moDoneHandler,
-                displayDuration: self.props.mediaQueue.displayDuration,
-                transitionDuration: self.props.mediaQueue.transitionDuration,
-                key: index
-            };
-
-            return (
-                <MediaObject key={mediaObject.guid} data={data} onRef={function(ref){
-                            mediaObjectRefs[mediaObject.guid] = ref
-                        }}></MediaObject>
-            );
-        });
-
-        this.setState({arr: arr, queue: q});
+        this.setState({arr: arr});
     },
     shouldComponentUpdate(nextProps, nextState){
         var stateUpdate = this.state === nextState;
