@@ -8,6 +8,9 @@ var _ = require('lodash');
 
 var saveTimeout;  //APEP global timeout variable to allow us storage the id for clear intervals.
 
+//TODO APEP: Github issue raised about issue with regex. https://github.com/Microsoft/monaco-editor/issues/216
+var sceneMediaObjectRegex = "{[\\s\\S\\n]{1,10}tags[\\s\\S\\n]*?type[\\s\\S\\n]*?[\\s\\S\\n]}"; //APEP Full media object selection
+
 var SceneMonacoTextEditor = React.createClass({
 
     getHumanReadableScene: function() {
@@ -166,7 +169,6 @@ var SceneMonacoTextEditor = React.createClass({
     onTextSelection: function(e) {
         // console.log("MONACO - On Text Selection: ", e);
 
-        var sceneMediaObjectRegex = "{[\\s\\S\\n]{1,10}tags[\\s\\S\\n]*?type[\\s\\S\\n]*?}[\\s\\S\\n]*?}"; //Full media object selection
 
         var matches = this.refs.monaco.editor.getModel().findMatches(sceneMediaObjectRegex, false, true, false, false);
 
@@ -252,10 +254,6 @@ var SceneMonacoTextEditor = React.createClass({
 
 
         if(this.props.focusedMediaObject !== previousProps.focusedMediaObject) {
-            var sceneMediaObjectRegex = "tags[\\s\\S\\n]*?type";
-
-            //TODO APEP: Github issue raised about issue with regex. https://github.com/Microsoft/monaco-editor/issues/216
-            sceneMediaObjectRegex = "{[\\s\\S\\n]{1,10}tags[\\s\\S\\n]*?type[\\s\\S\\n]*?}[\\s\\S\\n]*?}"; //Full media object selection
 
             var matches = this.refs.monaco.editor.getModel().findMatches(sceneMediaObjectRegex, false, true, false, false);
             var match = matches[this.props.focusedMediaObject];
@@ -264,11 +262,8 @@ var SceneMonacoTextEditor = React.createClass({
                 console.log("No selection for media object available");
                 return;
             }
-            
             this.refs.monaco.editor.setPosition(match.getStartPosition());
             this.refs.monaco.editor.revealPosition(match.getStartPosition());
-            //this.refs.monaco.editor.setSelection(match);
-
         }
     },
 

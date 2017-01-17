@@ -20,20 +20,18 @@ var MediaObjectPreviewPlayer = React.createClass({
     },
 
     previewMediaObject: function (props) {
-        var self = this;
-        var previewContainer = document.getElementsByClassName("media-object-item-preview-player");
-        previewContainer.innerHTML = '';
-
         var uniqueComponentKey = hat();
         if (props.focusedMediaObject === null) {
-            console.log("NO FOCUSED MEDIA")
+            var preview = <span></span>;
+            this.setState({preview: preview, previewClass: ''});
             return;
         }
 
         var mediaObject = this._getMediaObject(props);
 
         if (!mediaObject) {
-            console.log("NO MEDIA OBJECT")
+            var preview = <span></span>;
+            this.setState({preview: preview, previewClass: ''});
             return;
         }
 
@@ -67,7 +65,6 @@ var MediaObjectPreviewPlayer = React.createClass({
                 this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;
         }
-        previewContainer.innerHTML = this.state.preview
     },
 
     setupState: function (props) {
