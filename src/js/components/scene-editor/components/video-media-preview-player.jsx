@@ -83,9 +83,9 @@ var VideoMediaPreviewPlayer = React.createClass({
             var rawVideoObjSource = videoUtils.getRawVideoDirectPlaybackSupport(mediaObject.url);
             var fallbackSource = rawVideoObjSource.type !== "unsupported" ?
                 <source src={rawVideoObjSource.url} type={rawVideoObjSource.type}></source> : "";
-            console.log("fallbackSource ",this.state.videoInfo)
+            console.log("fallbackSource ", this.state.videoInfo)
             var video = <div> Video is not transcoded and/or not supported for direct playback</div>;
-            if(this.state.videoInfo.data){
+            if (this.state.videoInfo.data) {
                 if (this.state.videoInfo.data.hasTranscoded) {
                     console.log("transcoded")
                     video = <video data-dashjs-player id="videoPreview" width="100%" height="320px" controls>
@@ -94,9 +94,11 @@ var VideoMediaPreviewPlayer = React.createClass({
                     </video>;
                 } else {
                     console.log("untranscoded")
-                    video = <video data-dashjs-player id="videoPreview" width="100%" height="320px" controls>
-                        {fallbackSource}
-                    </video>;
+                    if (rawVideoObjSource.type !== "unsupported" ) {
+                        video = <video data-dashjs-player id="videoPreview" width="100%" height="320px" controls>
+                            {fallbackSource}
+                        </video>;
+                    }
                 }
             }
             return video;
@@ -116,7 +118,7 @@ var VideoMediaPreviewPlayer = React.createClass({
         },
 
         getVideoPlayerForMediaObject: function (mediaObject) {
-            console.log(mediaObject,this.state)
+            console.log(mediaObject, this.state)
             if (!mediaObject) {
                 return;
             }
