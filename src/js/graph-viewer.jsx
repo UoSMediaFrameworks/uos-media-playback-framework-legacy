@@ -10,15 +10,21 @@ var hashHistory = require('react-router').hashHistory;
 var HubSendActions = require('./actions/hub-send-actions');
 
 var LoginPage = require('./pages/login-page.jsx');
+var ClientStore = require('./stores/client-store');
 
 var GraphViewerApp = require('./components/graph-viewer-app.jsx');
 var GraphViewer = require('./pages/viewer/graph-viewer.jsx');
 
 HubSendActions.tryTokenLogin();
 
+function requireAuth(nextState, replaceState) {
+    if (!ClientStore.loggedIn())
+        replaceState({ nextPathname: nextState.location.pathname }, '/login')
+}
+
 ReactDOM.render((<Router history={hashHistory}>
     <Route path="/" component={GraphViewerApp}>
-        <IndexRoute component={GraphViewer} />
+        <IndexRoute component={GraphViewer} onEnter={requireAuth}/>
         <Route name='login'  path='login' component={LoginPage} />
     </Route>
 </Router>), document.getElementById('main'));
