@@ -32,7 +32,8 @@ var VideoMediaObject = React.createClass({
 
 
         var isVimeo = mediaObject._obj.url.indexOf("vimeo.com") !== -1;
-        var videoInfo =mediaObject._obj.vmo
+        console.log("componentDidMount",this.props.data)
+        var videoInfo =mediaObject._obj.vmob;
 
         var videoUrl = isVimeo ? getVimeoId(mediaObject._obj.url) : mediaObject._obj.url;
         self.state.looping = !(mediaObject._obj.autoreplay == undefined || mediaObject._obj.autoreplay < 1);
