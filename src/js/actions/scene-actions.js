@@ -130,7 +130,9 @@ var SceneActions = {
             scene: copy
         });
 
-        HubClient.save(copy);
+        //ANGEL P: Got the issue of the hubclient being null
+        var hC = require('../utils/HubClient');
+        hC.save(copy);
     },
 
     logout: function () {

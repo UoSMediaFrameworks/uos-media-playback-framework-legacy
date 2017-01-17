@@ -29,11 +29,8 @@ var VideoMediaObject = React.createClass({
     componentDidMount: function () {
         var self = this;
         var mediaObject = this.props.data.mediaObject;
-
-
         var isVimeo = mediaObject._obj.url.indexOf("vimeo.com") !== -1;
-        console.log("componentDidMount",this.props.data)
-        var videoInfo =mediaObject._obj.vmob;
+        var videoInfo = mediaObject._obj.vmob;
 
         var videoUrl = isVimeo ? getVimeoId(mediaObject._obj.url) : mediaObject._obj.url;
         self.state.looping = !(mediaObject._obj.autoreplay == undefined || mediaObject._obj.autoreplay < 1);
@@ -72,10 +69,10 @@ var VideoMediaObject = React.createClass({
             }
             var element = this.refs[this.props.data.mediaObject._obj._id];
             element.appendChild(this.state.player._element);
-            if(!self.state.player.transcoded){
+            if (!self.state.player.transcoded) {
                 self.state.player.raw_player.load();
             }
-            this.play();
+            this.playerConfigurations();
         }
 
     },
@@ -114,16 +111,18 @@ var VideoMediaObject = React.createClass({
     },
 
     playVideoAndSetVolume: function () {
-        if (this.state.player.isVimeo) {
-            this.state.player.vimeo_player.setVolume(this.state.volume || 0.00001);
-            this.state.player.vimeo_player.play();
+        var self =this;
+        if (self.state.player.isVimeo) {
+            self.state.player.vimeo_player.setVolume(self.state.volume || 0.00001);
+            self.state.player.vimeo_player.play();
         } else {
-            if (this.state.player.transcoded) {
-                this.state.player.raw_player.setVolume(this.state.volume || 0.0);
+            if (self.state.player.transcoded) {
+                self.state.player.raw_player.setVolume(self.state.volume || 0.0);
             } else {
-                this.state.player.raw_player.volume= this.state.volume || 0.0;
+                self.state.player.raw_player.load();
+                self.state.player.raw_player.volume = self.state.volume || 0.0;
             }
-            this.state.player.raw_player.play();
+            self.state.player.raw_player.play();
         }
     },
 
@@ -170,11 +169,8 @@ var VideoMediaObject = React.createClass({
             }, self.state.play_duration * 1.15 * 1000);
         }
     },
-    play: function () {
-        console.log("VideoMediaObject - play - this: ",this);
-
+    playerConfigurations: function () {
         var self = this;
-
         try {
             //APEP Play the video and set the volume for playback
             self.playVideoAndSetVolume();
@@ -201,7 +197,61 @@ var VideoMediaObject = React.createClass({
         } catch (e) {
             console.log("VideoMediaObject - play - err: ", e);
         }
+    },
+    play: function () {
 
+        var self = this;
+        self.playVideoAndSetVolume();
+
+
+    },
+    resetGPUforTranscoded: function () {
+        var self = this;
+        //console.log("VideoMediaObject - transition - emitting transition for mediaObject and calling done handler");
+        try {
+            if (!self.state.player.isVimeo) {
+                // APEP reset the player to remove GPU memory and memory growth over time
+                if (self.state.player.raw_player.transcoded) {
+                    self.state.player.raw_player.reset();
+                }
+            }
+            // APEP TODO this needs to be after the transition out animation and before the start of it again
+        } catch (e) {
+            console.log("VideoMediaObject - transition - failed to complete clean up with error: ", e);
+        }
+
+    },
+    loopingHandler: function () {
+        console.log("loopingHandler");
+
+        var vmo = this.props.data.mediaObject;
+        if (this.state.player) {
+            this.props.data.moDoneHandler(this);
+        }
+        if (vmo._obj) {
+            if (vmo._obj.autoreplay === 0 || vmo._obj.autoreplay === 1) {
+                this.setState({shown: false});
+                this.props.data.moDoneHandler(this);
+                this.resetGPUforTranscoded();
+                return;
+            }
+
+            if (vmo.currentLoop == undefined) {
+                vmo.currentLoop = 1;
+                //TODO if not vimeo
+                this.play();
+            } else if (vmo.currentLoop < vmo._obj.autoreplay) {
+                console.log("current loop", vmo.currentLoop)
+                vmo.currentLoop++;
+                //TODO if not vimeo
+                this.play();
+            } else {
+                console.log("remove looping video")
+                this.setState({shown: false});
+                vmo.currentLoop = 0;
+                this.props.data.moDoneHandler(this);
+            }
+        }
 
     },
     transition: function () {
@@ -221,29 +271,7 @@ var VideoMediaObject = React.createClass({
         }
 
         if (self.state._playbackTimeInterval) clearTimeout(self.state._playbackTimeInterval);
-
-        if (self.props.data.mediaObject.type === "video" && self.props.data.mediaObject._obj.autoreplay <= 1) {
-            self.setState({shown: false});
-        }
-
-        if (self.props.data.mediaObject) {
-
-            console.log("VideoMediaObject - transition - emitting transition for mediaObject and calling done handler");
-
-            try {
-                self.props.data.moDoneHandler(self);
-
-                // APEP TODO this needs to be after the transition out animation and before the start of it again
-                if (!self.state.player.isVimeo) {
-                    // APEP reset the player to remove GPU memory and memory growth over time
-                    if(self.state.player.raw_player.transcoded) {
-                        self.state.player.raw_player.reset();
-                    }
-                }
-            } catch (e) {
-                console.log("VideoMediaObject - transition - failed to complete clean up with error: ", e);
-            }
-        }
+        self.loopingHandler();
     },
 
     render: function () {

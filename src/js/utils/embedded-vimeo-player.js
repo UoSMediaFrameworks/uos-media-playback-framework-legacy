@@ -62,8 +62,10 @@ function addSourceToRawVideo(element, transcodedUrl, rawSourceInfo, videoInfo) {
         source.src = transcodedUrl;
         source.type = "application/dash+xml";
         element.appendChild(source);
-        (rawSourceInfo != "unsupported")
-        addFallbackSource(fallbackSource, rawSourceInfo)
+        if(rawSourceInfo.type != "unsupported"){
+            addFallbackSource(fallbackSource, rawSourceInfo)
+        }
+
     }
     addFallbackSource(fallbackSource, rawSourceInfo)
     element.appendChild(fallbackSource);
@@ -88,8 +90,6 @@ function EmbeddedVimeoPlayer(isVimeo, videoUrl, videoInfo) {
         console.log("non Vimeo", videoInfo)
 
         this.setupAsRawPlayer(transcodedUrl, videoInfo);
-    } else {
-        //Do something to clear this object from queue
     }
 
 
@@ -145,6 +145,7 @@ EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedUrl, videoI
         this.player_url = videoInfo.video.url;
 
     } else {
+        this.unsupported = false;
         console.log("setupAsRawPlayer", videoInfo.hasTranscoded)
         this._element = makeElement('video', {
             id: this.id,
