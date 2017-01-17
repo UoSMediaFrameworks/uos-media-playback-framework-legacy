@@ -139,7 +139,7 @@ var SceneMonacoTextEditor = React.createClass({
 
                 var shouldSave = mediaWithoutTagOrType.length === 0;
 
-                if (!_.isEqual(this.props.scene, newScene) && shouldSave) { //TODO ensure a save occurs for scene media without id - must update view with _id
+                if (!_.isEqual(this.props.scene, newScene) || shouldSave) { //TODO ensure a save occurs for scene media without id - must update view with _id
                     SceneActions.updateScene(newScene);
                     this.handleSceneJSONSave(true);
                 }

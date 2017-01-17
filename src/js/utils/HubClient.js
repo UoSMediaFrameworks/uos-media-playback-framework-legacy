@@ -115,10 +115,12 @@ var HubClient = {
             if (err) {
                 HubRecieveActions.errorMessage('Couldn\'t save scene, please try again');
             } else {
-                toastr.success('Save successful')
+                toastr.success('Save successful');
                 if (cb) {
                     cb(newScene);
                 }
+
+                HubRecieveActions.recieveScene(newScene);
             }
         });
     },
