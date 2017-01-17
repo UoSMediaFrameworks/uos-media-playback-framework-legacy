@@ -19,6 +19,7 @@ var VideoMediaPreviewPlayer = React.createClass({
             return scenes.scene[currentMediaItemIndex] || null;
         },
         _onChange: function () {
+            console.log("onChange")
             var currentVideoObject = this._getMediaObject(this.props);
             if (!currentVideoObject) {
                 return;
@@ -82,20 +83,22 @@ var VideoMediaPreviewPlayer = React.createClass({
             var rawVideoObjSource = videoUtils.getRawVideoDirectPlaybackSupport(mediaObject.url);
             var fallbackSource = rawVideoObjSource.type !== "unsupported" ?
                 <source src={rawVideoObjSource.url} type={rawVideoObjSource.type}></source> : "";
+            console.log("fallbackSource ",this.state.videoInfo)
             var video = <div> Video is not transcoded and/or not supported for direct playback</div>;
-            if (this.state.videoInfo.data.hasTranscoded) {
-                video = <video data-dashjs-player id="videoPreview" width="100%" height="320px" controls>
-                    {fallbackSource}
-                    <source src={dashUrl} type="application/dash+xml"></source>
-                </video>;
-            } else {
-                if (fallbackSource) {
+            if(this.state.videoInfo.data){
+                if (this.state.videoInfo.data.hasTranscoded) {
+                    console.log("transcoded")
+                    video = <video data-dashjs-player id="videoPreview" width="100%" height="320px" controls>
+                        {fallbackSource}
+                        <source src={dashUrl} type="application/dash+xml"></source>
+                    </video>;
+                } else {
+                    console.log("untranscoded")
                     video = <video data-dashjs-player id="videoPreview" width="100%" height="320px" controls>
                         {fallbackSource}
                     </video>;
                 }
             }
-            console.log(video)
             return video;
         },
         /**
@@ -113,6 +116,7 @@ var VideoMediaPreviewPlayer = React.createClass({
         },
 
         getVideoPlayerForMediaObject: function (mediaObject) {
+            console.log(mediaObject,this.state)
             if (!mediaObject) {
                 return;
             }
