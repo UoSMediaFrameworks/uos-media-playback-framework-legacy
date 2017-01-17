@@ -72,7 +72,7 @@ var ThemesList = React.createClass({
         return (
             <div>
                 { this.props.tagList.map(function(tag){
-                    return <ThemeForList value={tag} />
+                    return <ThemeForList key={tag} value={tag} />
                 })}
             </div>
         )
@@ -84,8 +84,8 @@ var SceneTheme = React.createClass({
         return (
             <ul>
                 { this.props.themes.map(function(theme){
-                    return <ThemeForList value={theme} />
-                })}
+                    return <ThemeForList key={this.props.scene._id + "_" + theme} value={theme} />
+                }.bind(this))}
             </ul>
         )
     }
@@ -119,8 +119,6 @@ var generateTagListFromThemeList = function(selectedScene) {
 };
 
 var SceneGraph = React.createClass({
-
-    mixins: [Router.State],
 
     loadAllScenesForSceneGraph: function(sceneGraph) {
 
@@ -259,7 +257,7 @@ var SceneGraph = React.createClass({
                         <h4>Add a scene to the graph</h4>
                         <select className="form-control scene-list" onChange={this.onSceneSelected} value={this.state.selectedSceneId}>
                             {this.state.scenes.map(function(sc){
-                                return <SceneItem  scene={sc} />;
+                                return <SceneItem key={sc._id} scene={sc} />;
                             })}
                         </select>
                     </div>

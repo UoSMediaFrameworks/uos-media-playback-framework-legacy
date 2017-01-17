@@ -59,34 +59,6 @@ var graphThemes = [
     "Tour",
 ];
 
-/**
- * Calculates the type for the new child node, using the parent type and child node id
- * @param parentType
- * @param nodeId
- * @returns {*}
- */
-var getChildTypeFromParentType = function(parentType, nodeId) {
-    switch(parentType) {
-        case 'root':
-            if(cities.indexOf(nodeId.toLowerCase()) !== -1) {
-                return 'city';
-            } else {
-                return 'subgraphtheme'
-            }
-        case 'city':
-            if(graphThemes.indexOf(nodeId) !== -1) {
-                return 'theme';
-            } else {
-                return 'subgraphtheme'
-            }
-        case 'theme':
-            return 'theme';
-        case 'subgraphtheme':
-            return 'theme';
-        case 'scene':
-            return 'scene';
-    }
-};
 
 /**
  * Parses the node instance to return type for graph naming type
@@ -95,6 +67,7 @@ var getChildTypeFromParentType = function(parentType, nodeId) {
  * @returns {*}
  */
 var getChildTypeFromNodeType = function(node) {
+
     switch(node.type) {
         case 'root':
         case 'city':
@@ -102,8 +75,10 @@ var getChildTypeFromNodeType = function(node) {
         case 'chapter':
             return node.type;
         case 'gtheme':
+        case 'subgraphtheme':
             return 'subgraphtheme';
         case 'stheme':
+        case 'theme':
             return 'theme';
     }
 };
@@ -204,9 +179,10 @@ var dedupeChildren = function(children) {
     var uniqueChildren = [];
 
     _.forEach(children, function(child) {
+        // APEP we've already dealt with the child if exists in uniqueChildren
         if(countChildrenByChild(child, uniqueChildren) !== 0) {
             return;
-        } 
+        }
 
         if(countChildrenByChild(child, children) <= 1) {
             uniqueChildren.push(child);

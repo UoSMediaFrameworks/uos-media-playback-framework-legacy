@@ -58,7 +58,7 @@ var manifest2015Bundler = bundlerBuilder('./src/js/manifest2015.js', 'manifest20
 var graphViewerBundler = bundlerBuilder('./src/js/graph-viewer.jsx', 'graph-viewer.js', true);
 
 function bundlerBuilder (startPath, finishName, useReactify) {
-    var bundler = watchify(browserify(startPath, objectAssign({debug: true}, watchify.args)));
+    var bundler = watchify(browserify(startPath, objectAssign({debug: true, cache: {}, packageCache: {}}, watchify.args)));
     if (useReactify) {
         bundler.transform(reactify);
     }

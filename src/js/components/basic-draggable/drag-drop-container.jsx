@@ -23,7 +23,7 @@ var ItemGroupForThemeUnion = React.createClass({
             //city is added to the class name to allow css hiding.  This is to ensure city logins do not have direct access to city nodes in the drag drop structure :: GDC 2016
 
             return (
-                <div className={classNames}>
+                <div key={parent + "_" + property} className={classNames}>
                     <TreePositionLandingContainer indentation="rootLevel" parent={parent} parentList={parentList} graphTheme={parent[property]} node={property} sceneGraph={sg}>
                         <ul className="graph-themes-list">
                             {Object.keys(parent[property].children).map(function(nestedProperty){
@@ -44,8 +44,8 @@ var ItemGroupForThemeUnion = React.createClass({
                     <h4>Theme Union</h4>
                     <div className="row">
                         {this.props.themeUnion.map(function(theme){
-                            return <Item name={theme} sceneGraph={this.props.sceneGraph}/>
-                        }, this)}    
+                            return <Item key={theme} name={theme} sceneGraph={this.props.sceneGraph}/>
+                        }, this)}
                     </div>
                 </div>
 
