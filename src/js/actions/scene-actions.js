@@ -21,7 +21,10 @@ var SceneActions = {
             scene: scene
         });
 
-        HubClient.save(scene);
+        // APEP This is very unusual to get a null for HubClient here, we've seen this in another file
+        // Something wrong is definitely happening ( potentially misuse of SceneActions )
+        var hC = require('../utils/HubClient');
+        hC.save(scene);
     },
 
     addMediaObject: function (sceneId, mediaObject) {
