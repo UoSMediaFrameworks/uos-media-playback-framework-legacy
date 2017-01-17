@@ -58,7 +58,7 @@ function addFallbackSource(source, rawSourceInfo) {
 function addSourceToRawVideo(element, transcodedUrl, rawSourceInfo, videoInfo) {
     var source = document.createElement('source');
     var fallbackSource = document.createElement('source');
-    if (videoInfo.data.hasTranscoded) {
+    if (videoInfo.hasTranscoded) {
         source.src = transcodedUrl;
         source.type = "application/dash+xml";
         element.appendChild(source);
@@ -123,8 +123,8 @@ EmbeddedVimeoPlayer.prototype.setupAsVimeoPlayer = function (vimeoId) {
 EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedUrl, videoInfo) {
 
     if (videoInfo)
-        var fallbackSource = videoUtils.getRawVideoDirectPlaybackSupport(videoInfo.data.video.url)
-    if (!videoInfo.data.hasTranscoded && fallbackSource.type == "unsupported") {
+        var fallbackSource = videoUtils.getRawVideoDirectPlaybackSupport(videoInfo.video.url)
+    if (!videoInfo.hasTranscoded && fallbackSource.type == "unsupported") {
         this.unsupported = true;
         var video = makeElement("video", {
             id: this.id,
@@ -136,8 +136,8 @@ EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedUrl, videoI
 
         video.load();
         this.raw_player = video;
-        this.player_url = videoInfo.data.video.url;
-        console.log("NonSupported", video, videoInfo.data.video.url)
+        this.player_url = videoInfo.video.url;
+        console.log("NonSupported", video, videoInfo.video.url)
     } else {
         this._element = makeElement('video', {
             id: this.id,
@@ -153,7 +153,7 @@ EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedUrl, videoI
         this._element.controls = false;
 
         document.body.appendChild(this._element);
-        if(videoInfo.data.hasTranscoded){
+        if(videoInfo.hasTranscoded){
             var player = dashjs.MediaPlayer().create();
             player.getDebug().setLogToBrowserConsole(false);
             player.initialize(this._element, transcodedUrl, true);
@@ -162,7 +162,7 @@ EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedUrl, videoI
             this.transcoded = true;
         }else{
             this.raw_player = this._element;
-            this.player_url =videoInfo.data.video.url
+            this.player_url =videoInfo.video.url
             this.transcoded = false;
         }
 
