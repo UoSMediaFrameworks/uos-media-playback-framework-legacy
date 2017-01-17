@@ -46,9 +46,8 @@ var VideoMediaObject = React.createClass({
 
 
         if (!isVimeo && videoInfo == undefined) {
-            console.log("VIDEO does not have video info")
+            console.log("VideoMediaObject - componentDidMount - does not have video info");
             self.state.player = null;
-            self.props.data.mediaObject.emit("transition", self.props.data.mediaObject);
             self.props.data.moDoneHandler(self);
         } else {
             self.state.player = new EmbeddedVimeoPlayer(isVimeo, videoUrl, videoInfo);
@@ -172,7 +171,8 @@ var VideoMediaObject = React.createClass({
         }
     },
     play: function () {
-        console.log("video play",this)
+        console.log("VideoMediaObject - play - this: ",this);
+
         var self = this;
 
         try {

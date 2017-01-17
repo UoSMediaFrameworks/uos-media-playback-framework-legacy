@@ -4,7 +4,7 @@ var React = require('react');
 var GraphViewerStore = require('../../stores/graph-viewer-store');
 var SceneStore = require('../../stores/scene-store');
 var _ = require('lodash');
-var HubClient = require('../../utils/HubClient');
+var SceneActions = require('../../actions/scene-actions');
 var SceneListener = require('../scene-listener.jsx');
 
 var sceneDisplayTimeout;
@@ -135,7 +135,7 @@ var GraphViewer = React.createClass({
 
         // APEP we should really do something more suitable with the react pattern here
         // var newScene = SceneStore.getScene(currentSceneId);
-        HubClient.loadSceneWithCb(currentSceneId, function(newScene){
+        SceneActions.getFullScene(currentSceneId, function(newScene){
 
             if(!newScene) {
                 // console.log("No scene in the store");

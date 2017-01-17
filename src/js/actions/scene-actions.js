@@ -21,7 +21,10 @@ var SceneActions = {
             scene: scene
         });
 
-        HubClient.save(scene);
+        // APEP This is very unusual to get a null for HubClient here, we've seen this in another file
+        // Something wrong is definitely happening ( potentially misuse of SceneActions )
+        var hC = require('../utils/HubClient');
+        hC.save(scene);
     },
 
     addMediaObject: function (sceneId, mediaObject) {
@@ -260,13 +263,20 @@ var SceneActions = {
     // APEP this is not async - this could be changed if required but like other scene store, this should be preloaded
     // Probably shouldn't add callback as react component can have a listener for FullSceneStore (will just need to
     // make sure this is called to load the data from server)
-    getFullScene: function(sceneId) {
+    getFullScene: function(sceneId, cb) {
         assetStore.getFullScene(sceneId, function(err, scene){
             if(!err && scene) {
-                AppDispatcher.handleServerAction({
-                    type: ActionTypes.RECIEVE_FULL_SCENE,
-                    scene: scene
-                });
+
+                if(cb) {
+                    cb (scene);
+                } else {
+                    AppDispatcher.handleServerAction({
+                        type: ActionTypes.RECIEVE_FULL_SCENE,
+                        scene: scene
+                    });
+                }
+            } else {
+                cb (null);
             }
         });
     }
