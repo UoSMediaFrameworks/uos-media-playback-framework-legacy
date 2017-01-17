@@ -21,11 +21,10 @@ var VideoUtils = {
         var extension = mediaObjectUrl.substr(mediaObjectUrl.lastIndexOf('.') + 1);
         var type = "unsupported";
         if (supportedVideoFallback.indexOf(extension) != -1) {
-            var codecs = VideoUtils.getExtensionCodecs(extension);
             if(extension =="ogv"){
                 extension = "ogg";
             }
-            type = "video/" + extension+ "; " + codecs;
+            type = "video/" + extension;
         }
         return {url: mediaObjectUrl, type: type}
     },
