@@ -140,7 +140,6 @@ var MediaObjectList = React.createClass({
                            placeholder="Search for media by tag"/>
                 </form>
 
-                <p className='media-object-list-instructions'>Drag and drop images here to add to scene</p>
                 <ul className=''>{items}</ul>
             </div>
         );
