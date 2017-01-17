@@ -7,6 +7,8 @@ var TextMediaObject = require('../../utils/media-object/text-media-object');
 var variableThrottle = require('../../utils/variable-throttle');
 var hat = require('hat');
 
+var mediaObjectRefs = {};
+
 var RandomVisualPlayer = React.createClass({
     getInitialState: function () {
         return {
@@ -27,27 +29,27 @@ var RandomVisualPlayer = React.createClass({
                 obj.guid = obj.guid || hat();
                 self.state.arr.push(obj);
             }
-        });
 
-                // APEP refactored to avoid async issues
-                var q = self.state.arr.map(function (mediaObject, index) {
-                    var data = {
-                        mediaObject: mediaObject,
-                        player: self.refs.player,
-                        //Attach the done handler using react props
-                        moDoneHandler: self.moDoneHandler,
-                        displayDuration: self.props.mediaQueue.displayDuration,
-                        transitionDuration: self.props.mediaQueue.transitionDuration,
-                        key: index
-                    };
+            // APEP refactored to avoid async issues
+            var q = self.state.arr.map(function (mediaObject, index) {
+                var data = {
+                    mediaObject: mediaObject,
+                    player: self.refs.player,
+                    //Attach the done handler using react props
+                    moDoneHandler: self.moDoneHandler,
+                    displayDuration: self.props.mediaQueue.displayDuration,
+                    transitionDuration: self.props.mediaQueue.transitionDuration,
+                    key: index
+                };
 
-                    return (
-                        <MediaObject key={mediaObject.guid} data={data} onRef={function(ref){
+                return (
+                    <MediaObject key={mediaObject.guid} data={data} onRef={function(ref){
                             mediaObjectRefs[mediaObject.guid] = ref
                         }}></MediaObject>
-                    );
-                });
-                self.setState({mediaQueue: self.props.mediaQueue, queue: q});
+                );
+            });
+            self.setState({mediaQueue: self.props.mediaQueue, queue: q});
+        });
     },
 
     moDoneHandler: function (mediaObject) {
@@ -64,21 +66,14 @@ var RandomVisualPlayer = React.createClass({
         this.vmoDoneHandler(mediaObject)
     },
 
-    vmoClearActiveFromQueue: function(videoMediaObject) {
-        // APEP required for vanilla JS objects queue to be cleared of this active vmo ( need to review this )
-        videoMediaObject.props.data.mediaObject.emit("done", videoMediaObject.props.data.mediaObject);
-    },
-
     vmoAtEndOfLooping: function(videoMediaObject, vmo) {
 
         this.clearMediaObject(videoMediaObject);
-        this.vmoClearActiveFromQueue(videoMediaObject);
     },
 
     vmoWithAutoReplayZeroOrOne: function (videoMediaObject, vmo) {
 
         this.clearMediaObject(videoMediaObject);
-        this.vmoClearActiveFromQueue(videoMediaObject);
     },
 
     vmoDoneHandler: function (videoMediaObject) {
