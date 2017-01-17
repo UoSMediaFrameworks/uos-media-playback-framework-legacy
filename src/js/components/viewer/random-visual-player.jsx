@@ -150,11 +150,9 @@ var RandomVisualPlayer = React.createClass({
         var queue = this.state.queue;
         // APEP find the queue react media object within the queue (rendered media objects)
         var reactMediaObject = lodash.find(queue, function (currentObject) {
-            console.log("currentObject: ", currentObject);
             return currentObject.props.data.mediaObject.guid == mediaObject.guid;
         });
 
-        console.log("mediaObjectTransition - reactMediaObject: ", reactMediaObject);
 
         if(reactMediaObject) {
             // APEP if we have a rendered media object, look up for referenced media object
@@ -163,20 +161,11 @@ var RandomVisualPlayer = React.createClass({
             if(reactComponentMediaObject) {
                 // APEP if we have a referenced media object, we can call the transition
                 reactComponentMediaObject.getObject().transition();
-
-                console.log("Transition");
             } else {
                 // APEP without the correct reference, the minimum we can do if force the media object to be removed
                 this.moDoneHandler(reactMediaObject);
-                console.log("Force Remove");
             }
-        } else {
-            console.log("ERROR: No value for transition media found in the queue");
         }
-    },
-
-    mediaObjectDone: function (mediaObject) {
-
     },
 
     componentDidUpdate: function () {
