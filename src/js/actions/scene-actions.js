@@ -266,13 +266,14 @@ var SceneActions = {
     getFullScene: function(sceneId, cb) {
         assetStore.getFullScene(sceneId, function(err, scene){
             if(!err && scene) {
-                AppDispatcher.handleServerAction({
-                    type: ActionTypes.RECIEVE_FULL_SCENE,
-                    scene: scene
-                });
 
                 if(cb) {
                     cb (scene);
+                } else {
+                    AppDispatcher.handleServerAction({
+                        type: ActionTypes.RECIEVE_FULL_SCENE,
+                        scene: scene
+                    });
                 }
             } else {
                 cb (null);
