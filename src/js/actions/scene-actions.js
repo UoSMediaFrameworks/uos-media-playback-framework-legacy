@@ -263,13 +263,19 @@ var SceneActions = {
     // APEP this is not async - this could be changed if required but like other scene store, this should be preloaded
     // Probably shouldn't add callback as react component can have a listener for FullSceneStore (will just need to
     // make sure this is called to load the data from server)
-    getFullScene: function(sceneId) {
+    getFullScene: function(sceneId, cb) {
         assetStore.getFullScene(sceneId, function(err, scene){
             if(!err && scene) {
                 AppDispatcher.handleServerAction({
                     type: ActionTypes.RECIEVE_FULL_SCENE,
                     scene: scene
                 });
+
+                if(cb) {
+                    cb (scene);
+                }
+            } else {
+                cb (null);
             }
         });
     }
