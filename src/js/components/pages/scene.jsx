@@ -111,12 +111,8 @@ var Scene = React.createClass({
                                                scene={this.state.scene || {} } focusHandler={this.thumbClickHandler}/>
                     </div>
 
-
-
-
                 </div>
-                <TagUnion scene={this.state.scene}
-                 focusedMediaObject={this.state.focusedMediaObject}/>
+                <TagUnion scene={this.state.scene}  focusedMediaObject={this.state.focusedMediaObject}/>
             </div>
         );
     }
