@@ -131,27 +131,21 @@ var SceneMonacoTextEditor = React.createClass({
 
                 this.handleSceneJSONSave(false);
 
-
-                var shouldSave = false;
-                _.forEach(this.props.scene.scene, function(sceneObj){
-                    if(!shouldSave) {
-                        shouldSave = ! sceneObj.hasOwnProperty("_id");
-                    }
-                });
-
                 var newScene = this.getMonacoEditorVersionOfScene();
 
-                if (! _.isEqual(this.props.scene, newScene) || shouldSave) { //TODO ensure a save occurs for scene media without id - must update view with _id
+                var mediaWithoutTagOrType = _.filter(newScene.scene, function(sceneObj){
+                    return !sceneObj.hasOwnProperty("tags") || !sceneObj.hasOwnProperty("type");
+                });
+
+                var shouldSave = mediaWithoutTagOrType.length === 0;
+
+                if (!_.isEqual(this.props.scene, newScene) && shouldSave) { //TODO ensure a save occurs for scene media without id - must update view with _id
                     SceneActions.updateScene(newScene);
+                    this.handleSceneJSONSave(true);
                 }
-
-                //this.setState({error: null});
-
-                this.handleSceneJSONSave(true);
 
             } catch (e) {
                 if (e instanceof SyntaxError) {
-                    //this.setState({error: e.message});
                 } else {
                     throw e;
                 }
