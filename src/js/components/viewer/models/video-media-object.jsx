@@ -32,18 +32,20 @@ var VideoMediaObject = React.createClass({
 
 
         var isVimeo = mediaObject._obj.url.indexOf("vimeo.com") !== -1;
-            var videoInfo = VideoStore.getVideoInfo(mediaObject._obj._id);
-        console.log("componentDidMount videoInfo", videoInfo)
+        var videoInfo =mediaObject._obj.vmo
+
         var videoUrl = isVimeo ? getVimeoId(mediaObject._obj.url) : mediaObject._obj.url;
         self.state.looping = !(mediaObject._obj.autoreplay == undefined || mediaObject._obj.autoreplay < 1);
         self.state.volume = self.getVolume(mediaObject);
 
 
-        //Angel P: TODO if !isVimeo and videoInfo === undefined , just trigger doen events for it to reload in the queue with the video info.
+        //Angel P:
+        // TODO if !isVimeo and videoInfo === undefined , just trigger doen events for it to reload in the queue with the video info.
         //TODO: !isVimeo and videoInfo type unsupported  - remove from queue
-        //
+
 
         if (!isVimeo && videoInfo == undefined) {
+            console.log("VIDEO does not have video info")
             self.state.player = null;
             self.props.data.mediaObject.emit("transition", self.props.data.mediaObject);
             self.props.data.moDoneHandler(self);

@@ -5,38 +5,39 @@ var assign = require('object-assign');
 var _ = require('lodash');
 var EventEmitter = require('events').EventEmitter;
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
+var SceneActions = require('../actions/scene-actions');
 var HubClient = require('../utils/HubClient');
 var CHANGE_EVENT = "change";
 var _scenes = {};
 
-function _updateScene (scene) {
+function _updateScene(scene) {
     _scenes[scene._id] = scene;
 }
 
 var SceneStore = assign({}, EventEmitter.prototype, {
-    getScene: function(id) {
+    getScene: function (id) {
         if (_scenes.hasOwnProperty(id)) {
             return _.cloneDeep(_scenes[id]);
         }
     },
-    emitChange: function(){
+    emitChange: function () {
         this.emit(CHANGE_EVENT);
     },
 
-    addChangeListener: function(callback){
+    addChangeListener: function (callback) {
         this.on(CHANGE_EVENT, callback);
     },
 
-    removeChangeListener: function(callback){
+    removeChangeListener: function (callback) {
         this.removeListener(CHANGE_EVENT, callback);
     },
 
-    dispatcherIndex: AppDispatcher.register(function(payload){
+    dispatcherIndex: AppDispatcher.register(function (payload) {
         var action = payload.action; // this is our action from handleViewAction
 
         var hC = HubClient;
 
-        switch(action.type){
+        switch (action.type) {
             case ActionTypes.SCENE_CHANGE:
                 _updateScene(action.scene);
                 SceneStore.emitChange();
@@ -65,6 +66,7 @@ var SceneStore = assign({}, EventEmitter.prototype, {
 
             // should only be triggered when server sends data back, so no need to save
             case ActionTypes.RECIEVE_SCENE:
+                SceneActions.getFullScene(action.scene._id)
                 _updateScene(action.scene);
                 SceneStore.emitChange();
                 break;

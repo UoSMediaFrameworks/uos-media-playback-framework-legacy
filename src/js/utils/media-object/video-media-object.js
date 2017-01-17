@@ -11,10 +11,6 @@ var TWEEN = require('tween.js');
 
 function VideoMediaObject(obj, ops) {
     this._loading = false;
-    //Angel P: this will call the asset store to try and gather data for the videos
-    //if its not vimeo, might be worth to attach is vimeo to the mediaObject at first chance
-    console.log("VideoMediaObject",obj);
-    SceneActions.getVideoMediaObjectData(obj);
     this._playbackTimeInterval = null; //APEP: ##Hack## for buffering media removal at the end
     MediaObject.call(this, obj, ops);
 }

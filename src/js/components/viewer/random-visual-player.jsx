@@ -80,8 +80,13 @@ var RandomVisualPlayer = React.createClass({
         var self = this;
 
         var vmo = videoMediaObject.props.data.mediaObject;
-
         console.log("randomVisualPlayer - vmoDoneHandler - vmo: ", vmo);
+        if(!videoMediaObject.state.player){
+            console.log("randomVisualPlayer - vmoDoneHandler - vmo: ", vmo);
+            self.vmoAtEndOfLooping(videoMediaObject, vmo);
+            return;
+        }
+
 
         if (vmo._obj.autoreplay === 0 || vmo._obj.autoreplay === 1) {
             self.vmoWithAutoReplayZeroOrOne(videoMediaObject, vmo);
@@ -120,7 +125,7 @@ var RandomVisualPlayer = React.createClass({
             console.log("clearMediaObject - REMOVED guid: ", mediaObject.props.data.mediaObject.guid);
         }
 
-        console.log("RandomVisualPlayer - clearMediaObject - previous, now: ", previous, now);
+        //console.log("RandomVisualPlayer - clearMediaObject - previous, now: ", previous, now);
 
         this.setState({arr: arr});
     },
@@ -128,6 +133,7 @@ var RandomVisualPlayer = React.createClass({
         var stateUpdate = this.state === nextState;
         var propsUpdate = this.props === nextProps;
         var intervalUpdate = this.state.interval == nextState.interval;
+
         var willUpdate;
 
         if (!intervalUpdate) {
@@ -165,7 +171,7 @@ var RandomVisualPlayer = React.createClass({
                 // APEP without the correct reference, the minimum we can do if force the media object to be removed
                 this.moDoneHandler(reactMediaObject);
             }
-        }
+            }
     },
 
     componentDidUpdate: function () {
@@ -174,7 +180,6 @@ var RandomVisualPlayer = React.createClass({
        // console.log("randomVisualPlayer - componentDidUpdate");
         // APEP if we update - transition media or get queues media that has been removed
         this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
-
         var self = this;
         if (self.props.mediaQueue.displayInterval != undefined && !self.state.interval) {
             self.loadMediaObject(self.props);

@@ -2,7 +2,7 @@
 
 var React = require('react');
 var ReactDOM = require('react-dom');
-var SceneStore = require('../stores/scene-store');
+var SceneStore = require('../stores/full-scene-store');
 var ThemeSelector = require('../components/theme-selector.jsx');
 var HubSendActions = require('../actions/hub-send-actions');
 var FormHelper = require('../mixins/form-helper');

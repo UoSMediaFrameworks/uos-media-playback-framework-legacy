@@ -11,6 +11,7 @@ var VIDEO_FILE_TYPES = require('./allowed-upload-file-extensions').VIDEO_FILE_TY
 var assetUploadApi = process.env.ASSET_STORE + '/api/';
 var removeUnusedImagesUrl = process.env.ASSET_STORE + '/api/remove-unused-images';
 var resumableFinalAssetUploadApi = assetUploadApi + "resumable/final";
+var getFullSceneUrl = assetUploadApi + "scene/full";
 
 function getMediaObjectType(file) {
 
@@ -59,6 +60,7 @@ module.exports = {
             method: 'POST',
             formData: data,
             onLoad: function(err,data) {
+                console.log(data)
                 callback(err, data);
             },
             onError: function(err) {
