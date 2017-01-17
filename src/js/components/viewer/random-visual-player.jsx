@@ -26,12 +26,11 @@ var RandomVisualPlayer = React.createClass({
             if (obj != undefined) {
                 obj.guid = obj.guid || hat();
                 self.state.arr.push(obj);
-
-
+            }
+        });
 
                 // APEP refactored to avoid async issues
                 var q = self.state.arr.map(function (mediaObject, index) {
-
                     var data = {
                         mediaObject: mediaObject,
                         player: self.refs.player,
@@ -48,30 +47,29 @@ var RandomVisualPlayer = React.createClass({
                         }}></MediaObject>
                     );
                 });
-
                 self.setState({mediaQueue: self.props.mediaQueue, queue: q});
-            }
-        });
     },
 
     moDoneHandler: function (mediaObject) {
 
         console.log("randomVisualPlayer - moDoneHandler - mediaObject: ", mediaObject.props.data.mediaObject);
+
         // APEP for any non video type media, we can similarly clear the video media object
         if (mediaObject.props.data.mediaObject.type !== "video") {
             this.clearMediaObject(mediaObject);
             return;
         }
+
         // APEP video done handler must be handled separately for autoreplay feature
         this.vmoDoneHandler(mediaObject)
     },
 
-    vmoClearActiveFromQueue: function (videoMediaObject) {
+    vmoClearActiveFromQueue: function(videoMediaObject) {
         // APEP required for vanilla JS objects queue to be cleared of this active vmo ( need to review this )
         videoMediaObject.props.data.mediaObject.emit("done", videoMediaObject.props.data.mediaObject);
     },
 
-    vmoAtEndOfLooping: function (videoMediaObject, vmo) {
+    vmoAtEndOfLooping: function(videoMediaObject, vmo) {
 
         this.clearMediaObject(videoMediaObject);
         this.vmoClearActiveFromQueue(videoMediaObject);
@@ -88,7 +86,7 @@ var RandomVisualPlayer = React.createClass({
 
         var vmo = videoMediaObject.props.data.mediaObject;
 
-        //console.log("randomVisualPlayer - vmoDoneHandler - vmo: ", vmo);
+        console.log("randomVisualPlayer - vmoDoneHandler - vmo: ", vmo);
 
         if (vmo._obj.autoreplay === 0 || vmo._obj.autoreplay === 1) {
             self.vmoWithAutoReplayZeroOrOne(videoMediaObject, vmo);
@@ -97,11 +95,11 @@ var RandomVisualPlayer = React.createClass({
         if (vmo.currentLoop == undefined) {
             videoMediaObject.props.data.mediaObject.currentLoop = 1;
             //TODO if not vimeo
-            videoMediaObject.play();
+             videoMediaObject.play();
         } else if (vmo.currentLoop < vmo._obj.autoreplay) {
             videoMediaObject.props.data.mediaObject.currentLoop++;
             //TODO if not vimeo
-            videoMediaObject.play();
+             videoMediaObject.play();
         } else {
             videoMediaObject.props.data.mediaObject.currentLoop = 0;
             self.vmoAtEndOfLooping(videoMediaObject, vmo);
@@ -109,10 +107,27 @@ var RandomVisualPlayer = React.createClass({
     },
     clearMediaObject: function (mediaObject) {
         var arr = this.state.arr;
+
+        var previous = arr.length;
+
         lodash.remove(arr, function (currentObject) {
-            return currentObject.guid == mediaObject.props.data.mediaObject.guid;
+            return currentObject.guid === mediaObject.props.data.mediaObject.guid;
         });
-        this.setState({arr: arr})
+
+        var now = arr.length;
+
+        if(previous === now) {
+            console.log("RandomVisualPlayer - clearMediaObject - PREVIOUS AND NOW THE SAME ISSUE");
+            console.log(mediaObject.props.data.mediaObject._obj.url);
+        } else {
+            this.props.mediaQueue.moTransitionHandler(mediaObject.props.data.mediaObject);
+            this.props.mediaQueue.moDoneHandler(mediaObject.props.data.mediaObject);
+            console.log("clearMediaObject - REMOVED guid: ", mediaObject.props.data.mediaObject.guid);
+        }
+
+        console.log("RandomVisualPlayer - clearMediaObject - previous, now: ", previous, now);
+
+        this.setState({arr: arr});
     },
     shouldComponentUpdate(nextProps, nextState){
         var stateUpdate = this.state === nextState;
@@ -130,12 +145,15 @@ var RandomVisualPlayer = React.createClass({
         return willUpdate;
     },
 
-    componentDidMount: function () {
+    componentDidMount: function() {
         this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
     },
 
-    mediaObjectTransition: function (mediaObject) {
+    // APEP function given to the media queue object to provide object transition out functionality
+    mediaObjectTransition: function(mediaObject) {
+
         var queue = this.state.queue;
+        // APEP find the queue react media object within the queue (rendered media objects)
         var reactMediaObject = lodash.find(queue, function (currentObject) {
             console.log("currentObject: ", currentObject);
             return currentObject.props.data.mediaObject.guid == mediaObject.guid;
@@ -143,8 +161,22 @@ var RandomVisualPlayer = React.createClass({
 
         console.log("mediaObjectTransition - reactMediaObject: ", reactMediaObject);
 
-        if (reactMediaObject) {
-            this.moDoneHandler(reactMediaObject);
+        if(reactMediaObject) {
+            // APEP if we have a rendered media object, look up for referenced media object
+            var reactComponentMediaObject = mediaObjectRefs[reactMediaObject.props.data.mediaObject.guid];
+
+            if(reactComponentMediaObject) {
+                // APEP if we have a referenced media object, we can call the transition
+                reactComponentMediaObject.getObject().transition();
+
+                console.log("Transition");
+            } else {
+                // APEP without the correct reference, the minimum we can do if force the media object to be removed
+                this.moDoneHandler(reactMediaObject);
+                console.log("Force Remove");
+            }
+        } else {
+            console.log("ERROR: No value for transition media found in the queue");
         }
     },
 
