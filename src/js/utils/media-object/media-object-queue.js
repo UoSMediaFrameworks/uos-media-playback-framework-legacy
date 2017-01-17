@@ -113,12 +113,6 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
             }
         }, {});
 
-        // unhook events from mediaobjects that aren't in the new scene
-        _.forEach(queue, function(mo) {
-            mo.removeListener('transition', moTransitionHandler);
-            mo.removeListener('done', moDoneHandler);
-        });
-
         // process the mediaObjects
         var newMo,
             index,
