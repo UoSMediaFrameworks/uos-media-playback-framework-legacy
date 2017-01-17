@@ -62,9 +62,10 @@ function addSourceToRawVideo(element, transcodedUrl, rawSourceInfo, videoInfo) {
         source.src = transcodedUrl;
         source.type = "application/dash+xml";
         element.appendChild(source);
-        addFallbackSource(fallbackSource,rawSourceInfo)
+        (rawSourceInfo != "unsupported")
+        addFallbackSource(fallbackSource, rawSourceInfo)
     }
-    addFallbackSource(fallbackSource,rawSourceInfo)
+    addFallbackSource(fallbackSource, rawSourceInfo)
     element.appendChild(fallbackSource);
 
 }
@@ -121,10 +122,16 @@ EmbeddedVimeoPlayer.prototype.setupAsVimeoPlayer = function (vimeoId) {
 };
 
 EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedUrl, videoInfo) {
+    try{
+        var fallbackSource = videoUtils.getRawVideoDirectPlaybackSupport(videoInfo.video.url);
+        console.log(fallbackSource)
+    }
+    catch(e){
+        console.log(e)
+    }
 
-    if (videoInfo)
-        var fallbackSource = videoUtils.getRawVideoDirectPlaybackSupport(videoInfo.video.url)
     if (!videoInfo.hasTranscoded && fallbackSource.type == "unsupported") {
+        console.log("NonSupported", videoInfo.video.url);
         this.unsupported = true;
         var video = makeElement("video", {
             id: this.id,
@@ -133,12 +140,12 @@ EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedUrl, videoI
         video.innerHTML = "not supported";
         this._element = video;
         document.body.appendChild(this._element);
-
-        video.load();
+        ;
         this.raw_player = video;
         this.player_url = videoInfo.video.url;
-        console.log("NonSupported", video, videoInfo.video.url)
+
     } else {
+        console.log("setupAsRawPlayer", videoInfo.hasTranscoded)
         this._element = makeElement('video', {
             id: this.id,
             class: ' embedded-vimeo-player',
@@ -153,21 +160,21 @@ EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedUrl, videoI
         this._element.controls = false;
 
         document.body.appendChild(this._element);
-        if(videoInfo.hasTranscoded){
+        if (videoInfo.hasTranscoded) {
             var player = dashjs.MediaPlayer().create();
             player.getDebug().setLogToBrowserConsole(false);
             player.initialize(this._element, transcodedUrl, true);
             this.raw_player = player;
             this.player_url = transcodedUrl;
             this.transcoded = true;
-        }else{
+        } else {
             this.raw_player = this._element;
-            this.player_url =videoInfo.video.url
+            this.player_url = videoInfo.video.url
             this.transcoded = false;
         }
 
 
-        console.log("getting transcoded url and initializing player",    this.raw_player, this.player_url)
+        console.log("getting transcoded url and initializing player", this.raw_player, this.player_url)
     }
 
 };

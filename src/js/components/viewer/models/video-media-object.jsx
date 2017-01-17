@@ -72,7 +72,6 @@ var VideoMediaObject = React.createClass({
                 }
             }
             var element = this.refs[this.props.data.mediaObject._obj._id];
-            console.log(this.state.player)
             element.appendChild(this.state.player._element);
             if(!self.state.player.transcoded){
                 self.state.player.raw_player.load();
@@ -119,14 +118,11 @@ var VideoMediaObject = React.createClass({
         if (this.state.player.isVimeo) {
             this.state.player.vimeo_player.setVolume(this.state.volume || 0.00001);
             this.state.player.vimeo_player.play();
-            // this.state.player.vimeo_player.setLoop(this.state.looping || false);
         } else {
             if (this.state.player.transcoded) {
                 this.state.player.raw_player.setVolume(this.state.volume || 0.0);
             } else {
-                console.log("nontranscoded")
                 this.state.player.raw_player.volume= this.state.volume || 0.0;
-                // this.state.player.raw_player.load();
             }
             this.state.player.raw_player.play();
         }

@@ -17,7 +17,8 @@ var VideoUtils = {
     },
 
     getRawVideoDirectPlaybackSupport: function (mediaObjectUrl) {
-        var supportedVideoFallback = ["ogv", "ogv", "mp4", "webm"];
+        //Web M is supported as well but we are having some issues with it.
+        var supportedVideoFallback = ["ogv", "mp4"];
         var extension = mediaObjectUrl.substr(mediaObjectUrl.lastIndexOf('.') + 1);
         var type = "unsupported";
         if (supportedVideoFallback.indexOf(extension) != -1) {
