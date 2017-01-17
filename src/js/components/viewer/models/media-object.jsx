@@ -19,9 +19,6 @@ var MediaObject = React.createClass({
 
         this.setupState();
     },
-    componentWillUnmount:function(){
-        console.log("media object unmouting",this.props.data);
-    },
     componentDidMount: function () {
         var element = this.refs.object.refs[this.props.data.mediaObject._obj._id];
 
