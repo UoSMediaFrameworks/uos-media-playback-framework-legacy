@@ -35,7 +35,7 @@ var LoginPage = React.createClass({
             //NextPathName exists if the requiredAuth check fails (due to async nature of our login system) but does have a forwarding path available
             var location = this.props.location;
             if (location.state && location.state.nextPathname) {
-                hashHistory.push(location.state.nextPathname)
+                hashHistory.push(location.state.nextPathname + location.search);
             } else {
                 hashHistory.push('/')
             }

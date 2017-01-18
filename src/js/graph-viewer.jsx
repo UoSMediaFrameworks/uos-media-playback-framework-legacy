@@ -18,8 +18,9 @@ var GraphViewer = require('./pages/viewer/graph-viewer.jsx');
 HubSendActions.tryTokenLogin();
 
 function requireAuth(nextState, replaceState) {
-    if (!ClientStore.loggedIn())
-        replaceState({ nextPathname: nextState.location.pathname }, '/login')
+    if (!ClientStore.loggedIn()) {
+        replaceState({ nextPathname: nextState.location.pathname }, '/login' + nextState.location.search)
+    }
 }
 
 ReactDOM.render((<Router history={hashHistory}>
