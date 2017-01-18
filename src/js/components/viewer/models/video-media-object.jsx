@@ -73,6 +73,7 @@ var VideoMediaObject = React.createClass({
             if (!self.state.player.transcoded && !self.state.player.isVimeo) {
                 self.state.player.raw_player.load();
             }
+
             this.playerConfigurations();
         }
 
@@ -112,20 +113,26 @@ var VideoMediaObject = React.createClass({
     },
 
     playVideoAndSetVolume: function () {
-        var self =this;
+        var self = this;
         if (self.state.player.isVimeo) {
             self.state.player.vimeo_player.setVolume(self.state.volume || 0.00001);
+            // APEP give vimeo a small time window between playout, we should really use ready listener for this
             setTimeout(function() {
                 self.state.player.vimeo_player.play();
             }, 150);
         } else {
-            if (self.state.player.transcoded) {
-                self.state.player.raw_player.setVolume(self.state.volume || 0.0);
-            } else {
-                self.state.player.raw_player.load();
-                self.state.player.raw_player.volume = self.state.volume || 0.0;
+            try {
+                if (self.state.player.transcoded) {
+                    self.state.player.raw_player.setVolume(self.state.volume || 0.0);
+                } else {
+                    self.state.player.raw_player.load();
+                    self.state.player.raw_player.volume = self.state.volume || 0.0;
+                }
+            } catch(e) {
+                console.log("VideoMediaObject - playVideoAndSetVolume - error handling volume /w load if not dash - e: ", e);
+            } finally {
+                self.state.player.raw_player.play();
             }
-            self.state.player.raw_player.play();
         }
     },
 
@@ -202,11 +209,7 @@ var VideoMediaObject = React.createClass({
         }
     },
     play: function () {
-
-        var self = this;
-        self.playVideoAndSetVolume();
-
-
+        this.playVideoAndSetVolume();
     },
     resetGPUforTranscoded: function () {
         var self = this;
@@ -224,6 +227,13 @@ var VideoMediaObject = React.createClass({
         }
 
     },
+
+    videoDone: function() {
+        this.setState({shown: false});
+        this.props.data.moDoneHandler(this);
+        this.resetGPUforTranscoded();
+    },
+
     loopingHandler: function () {
         console.log("loopingHandler");
 
@@ -231,26 +241,21 @@ var VideoMediaObject = React.createClass({
 
         if (vmo._obj) {
             if (vmo._obj.autoreplay === 0 || vmo._obj.autoreplay === 1) {
-                this.setState({shown: false});
-                this.props.data.moDoneHandler(this);
-                this.resetGPUforTranscoded();
+                this.videoDone();
                 return;
             }
 
             if (vmo.currentLoop == undefined) {
                 vmo.currentLoop = 1;
-                //TODO if not vimeo
                 this.play();
             } else if (vmo.currentLoop < vmo._obj.autoreplay) {
                 console.log("current loop", vmo.currentLoop);
                 vmo.currentLoop++;
-                //TODO if not vimeo
                 this.play();
             } else {
                 console.log("remove looping video");
-                this.setState({shown: false});
                 vmo.currentLoop = 0;
-                this.props.data.moDoneHandler(this);
+                this.videoDone();
             }
         }
 
@@ -279,8 +284,7 @@ var VideoMediaObject = React.createClass({
         if (ignoreLooping) {
             // APEP forcefully ignore logging to remove media object
             console.log("Forcefully removing looping video");
-            this.props.data.moDoneHandler(this);
-            this.resetGPUforTranscoded();
+            this.videoDone();
         } else {
             self.loopingHandler();
         }
