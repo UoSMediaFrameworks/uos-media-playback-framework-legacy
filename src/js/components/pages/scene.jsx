@@ -80,7 +80,7 @@ var Scene = React.createClass({
 
 
         return (
-            <DropZone className='flex-container' handler={this.fileHandler}>
+            <DropZone className='flex-container monaco-editor vs-dark' handler={this.fileHandler}>
                 <div className='top-bar'>
                     <div className='page-nav'>
                         <Link className='btn' to='scenes'>&lt; Back to Scene List</Link>
