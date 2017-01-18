@@ -2,6 +2,8 @@
 var React = require('react');
 var classNames = require('classnames');
 
+var imageMount = 0;
+var imageWillUnmount = 0;
 
 var ImageMediaObject = React.createClass({
 
@@ -14,6 +16,12 @@ var ImageMediaObject = React.createClass({
     },
     componentDidMount: function () {
         this.play();
+        imageMount++;
+        // console.log("Image - componentDidMount - imageMount, imageWillUnmount: ", imageMount, imageWillUnmount);
+    },
+    componentWillUnmount: function() {
+        imageWillUnmount++;
+        // console.log("Image - componentDidMount - imageMount, imageWillUnmount: ", imageMount, imageWillUnmount);
     },
     play: function () {
         var self = this;
@@ -30,21 +38,15 @@ var ImageMediaObject = React.createClass({
         //APEP Clear the time out if transition is called outside rather than trigger by self
         try {
             if (this.playTimeout) clearTimeout(this.playTimeout);
+
+            var self = this;
+            self.setState({shown: false});
+            setTimeout(function () {
+                self.props.data.moDoneHandler(self);
+            }, self.props.data.transitionDuration);
+
         } catch (e) {
             console.log("ImageMediaObject - failed to clear timeout for playTimeout");
-        }
-
-        var self = this;
-        try {
-            self.setState({shown: false});
-
-            if (self.props.data.mediaObject) {
-                setTimeout(function () {
-                    self.props.data.moDoneHandler(self);
-                }, self.props.data.transitionDuration);
-            }
-        } catch (e) {
-            console.log("ImageMediaObject - Failed to transition - this: ", this);
         }
 
     },

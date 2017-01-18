@@ -255,7 +255,10 @@ var VideoMediaObject = React.createClass({
         }
 
     },
-    transition: function () {
+
+    //APEP ignoreLooping is for queue to purge media objects - this currently only happens when the scene is changed in SceneListener
+    // Graph Viewer brought through this change
+    transition: function (ignoreLooping) {
 
         // console.log("VideoMediaObject - transition - Video transition call made");
 
@@ -273,7 +276,15 @@ var VideoMediaObject = React.createClass({
 
         if (self.state._playbackTimeInterval) clearTimeout(self.state._playbackTimeInterval);
 
-        self.loopingHandler();
+        if (ignoreLooping) {
+            // APEP forcefully ignore logging to remove media object
+            console.log("Forcefully removing looping video");
+            this.props.data.moDoneHandler(this);
+            this.resetGPUforTranscoded();
+        } else {
+            self.loopingHandler();
+        }
+
     },
 
     render: function () {

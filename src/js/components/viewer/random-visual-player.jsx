@@ -7,8 +7,6 @@ var TextMediaObject = require('../../utils/media-object/text-media-object');
 var variableThrottle = require('../../utils/variable-throttle');
 var hat = require('hat');
 
-var mediaObjectRefs = {};
-
 var RandomVisualPlayer = React.createClass({
     getInitialState: function () {
         return {
@@ -100,24 +98,22 @@ var RandomVisualPlayer = React.createClass({
     // APEP function given to the media queue object to provide object transition out functionality
     mediaObjectTransition: function (mediaObject) {
 
-        var queue = this.state.queue;
-        // APEP find the queue react media object within the queue (rendered media objects)
-        var reactMediaObject = lodash.find(queue, function (currentObject) {
-            return currentObject.props.data.mediaObject.guid == mediaObject.guid;
-        });
+        // console.log("mediaObjectTransition - mediaObjectTransition - this.state.arr.length: ", this.state.arr.length);
 
+        // APEP find the ref media object created from arr.map to queue in render function
+        // This gives us the react component required to transition
+        var reactMediaObject = this.refs[mediaObject.guid];
 
         if (reactMediaObject) {
-            // APEP if we have a rendered media object, look up for referenced media object
-            var reactComponentMediaObject = mediaObjectRefs[reactMediaObject.props.data.mediaObject.guid];
+            // console.log("mediaObjectTransition - mediaObjectTransition - reactMediaObject - transitioning: ", reactMediaObject);
 
-            if (reactComponentMediaObject) {
-                // APEP if we have a referenced media object, we can call the transition
-                reactComponentMediaObject.getObject().transition();
-            } else {
-                // APEP without the correct reference, the minimum we can do if force the media object to be removed
-                this.moDoneHandler(reactMediaObject);
-            }
+            //APEP get the non generic Object and call transition (true is an opts flag for override looping)
+            reactMediaObject.getObject().transition(true);
+        } else {
+            // console.log("mediaObjectTransition - found reactComponentMediaObject for done - error: ", reactComponentMediaObject);
+
+            // APEP without the correct reference, the minimum we can do if force the media object to be removed
+            this.moDoneHandler(reactMediaObject);
         }
     },
 
@@ -152,9 +148,7 @@ var RandomVisualPlayer = React.createClass({
             };
 
             return (
-                <MediaObject key={mediaObject.guid} data={data} onRef={function (ref) {
-                        mediaObjectRefs[mediaObject.guid] = ref
-                }}></MediaObject>
+                <MediaObject ref={mediaObject.guid} key={mediaObject.guid} data={data}></MediaObject>
             );
         });
 
