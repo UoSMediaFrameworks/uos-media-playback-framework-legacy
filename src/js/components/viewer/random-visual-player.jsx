@@ -20,37 +20,20 @@ var RandomVisualPlayer = React.createClass({
     },
 
     loadMediaObject: function (queue) {
-        console.log("loading mo")
         var self = this;
         try {
             lodash.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject], function (moType) {
 
                 var obj = queue.mediaQueue.take([moType]);
-                if (obj != undefined) {
+
+                if (obj !== undefined) {
 
                     obj.guid = obj.guid || hat();
                     self.state.arr.push(obj);
+
+                    //APEP Setting state will trigger a new render, with a new render components will be unmounted/mounted
+                    self.setState({mediaQueue: self.props.mediaQueue, arr: self.state.arr});
                 }
-
-                // APEP refactored to avoid async issues
-                var q = self.state.arr.map(function (mediaObject, index) {
-                    var data = {
-                        mediaObject: mediaObject,
-                        player: self.refs.player,
-                        //Attach the done handler using react props
-                        moDoneHandler: self.moDoneHandler,
-                        displayDuration: self.props.mediaQueue.displayDuration,
-                        transitionDuration: self.props.mediaQueue.transitionDuration,
-                        key: index
-                    };
-
-                    return (
-                        <MediaObject key={mediaObject.guid} data={data} onRef={function (ref) {
-                            mediaObjectRefs[mediaObject.guid] = ref
-                        }}></MediaObject>
-                    );
-                });
-                self.setState({mediaQueue: self.props.mediaQueue, queue: q});
             });
         } catch (e) {
             console.log("rsvp error", e)
@@ -67,39 +50,26 @@ var RandomVisualPlayer = React.createClass({
 
     },
 
-    vmoAtEndOfLooping: function (videoMediaObject, vmo) {
-
-        this.clearMediaObject(videoMediaObject);
-    },
-
-    vmoWithAutoReplayZeroOrOne: function (videoMediaObject, vmo) {
-
-        this.clearMediaObject(videoMediaObject);
-    },
     clearMediaObject: function (mediaObject) {
         var arr = this.state.arr;
 
         var previous = arr.length;
 
         lodash.remove(arr, function (currentObject) {
-            if(currentObject.guid === mediaObject.props.data.mediaObject.guid){
-                console.log("object removed",currentObject)
-            }
             return currentObject.guid === mediaObject.props.data.mediaObject.guid;
         });
 
         var now = arr.length;
 
         if (previous === now) {
-            console.log("RandomVisualPlayer - clearMediaObject - PREVIOUS AND NOW THE SAME ISSUE");
-            console.log(mediaObject.props.data.mediaObject._obj.url);
+            console.log("RandomVisualPlayer - clearMediaObject - PREVIOUS AND NOW THE SAME - potential issue");
         } else {
             this.props.mediaQueue.moTransitionHandler(mediaObject.props.data.mediaObject);
             this.props.mediaQueue.moDoneHandler(mediaObject.props.data.mediaObject);
-            console.log("clearMediaObject - REMOVED guid: ", mediaObject.props.data.mediaObject.guid);
+            console.log("clearMediaObject - REMOVED : ", mediaObject.props.data.mediaObject);
         }
 
-        //console.log("RandomVisualPlayer - clearMediaObject - previous, now: ", previous, now);
+        // console.log("RandomVisualPlayer - clearMediaObject - previous, now: ", previous, now);
 
         this.setState({arr: arr});
     },
@@ -120,10 +90,10 @@ var RandomVisualPlayer = React.createClass({
         return willUpdate;
     },
     componentWillMount: function () {
-        console.log("will mount")
+        console.log("RVS - will mount");
     },
     componentDidMount: function () {
-        console.log("mounted", this.props)
+        console.log("RVS - mounted", this.props);
         this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
     },
 
@@ -166,9 +136,31 @@ var RandomVisualPlayer = React.createClass({
         }
     },
     render: function () {
+
+        var self = this;
+
+        // APEP refactored to avoid async issues
+        var q = self.state.arr.map(function (mediaObject, index) {
+            var data = {
+                mediaObject: mediaObject,
+                player: self.refs.player,
+                //Attach the done handler using react props
+                moDoneHandler: self.moDoneHandler,
+                displayDuration: self.props.mediaQueue.displayDuration,
+                transitionDuration: self.props.mediaQueue.transitionDuration,
+                key: index
+            };
+
+            return (
+                <MediaObject key={mediaObject.guid} data={data} onRef={function (ref) {
+                        mediaObjectRefs[mediaObject.guid] = ref
+                }}></MediaObject>
+            );
+        });
+
         return (
             <div className="player" ref="player">
-                {this.state.queue}
+                {q}
             </div>
         );
     }

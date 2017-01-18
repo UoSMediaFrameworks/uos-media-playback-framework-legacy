@@ -69,7 +69,8 @@ var VideoMediaObject = React.createClass({
             }
             var element = this.refs[this.props.data.mediaObject._obj._id];
             element.appendChild(this.state.player._element);
-            if (!self.state.player.transcoded) {
+            // APEP for non transcoded videos that have fallen back to single html5 player fallback, load the html 5 video
+            if (!self.state.player.transcoded && !self.state.player.isVimeo) {
                 self.state.player.raw_player.load();
             }
             this.playerConfigurations();
@@ -114,7 +115,9 @@ var VideoMediaObject = React.createClass({
         var self =this;
         if (self.state.player.isVimeo) {
             self.state.player.vimeo_player.setVolume(self.state.volume || 0.00001);
-            self.state.player.vimeo_player.play();
+            setTimeout(function() {
+                self.state.player.vimeo_player.play();
+            }, 150);
         } else {
             if (self.state.player.transcoded) {
                 self.state.player.raw_player.setVolume(self.state.volume || 0.0);
@@ -225,9 +228,7 @@ var VideoMediaObject = React.createClass({
         console.log("loopingHandler");
 
         var vmo = this.props.data.mediaObject;
-        if (this.state.player) {
-            this.props.data.moDoneHandler(this);
-        }
+
         if (vmo._obj) {
             if (vmo._obj.autoreplay === 0 || vmo._obj.autoreplay === 1) {
                 this.setState({shown: false});
@@ -241,12 +242,12 @@ var VideoMediaObject = React.createClass({
                 //TODO if not vimeo
                 this.play();
             } else if (vmo.currentLoop < vmo._obj.autoreplay) {
-                console.log("current loop", vmo.currentLoop)
+                console.log("current loop", vmo.currentLoop);
                 vmo.currentLoop++;
                 //TODO if not vimeo
                 this.play();
             } else {
-                console.log("remove looping video")
+                console.log("remove looping video");
                 this.setState({shown: false});
                 vmo.currentLoop = 0;
                 this.props.data.moDoneHandler(this);
@@ -271,6 +272,7 @@ var VideoMediaObject = React.createClass({
         }
 
         if (self.state._playbackTimeInterval) clearTimeout(self.state._playbackTimeInterval);
+
         self.loopingHandler();
     },
 

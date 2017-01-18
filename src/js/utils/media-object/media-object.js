@@ -26,6 +26,9 @@ function parseTagString (tagString) {
 }
 
 MediaObject.prototype.play = function() {
+
+    console.log("Deprecated - MediaObject - play");
+
     this._playing = true;
 };
 
@@ -46,6 +49,9 @@ MediaObject.prototype.transition = function() {
 
 // triggers a hard stop
 MediaObject.prototype.stop = function() {
+
+    console.log("Deprecated - MediaObject - stop");
+
     if (this._playing) {
         this._playing = false;
         this.emit('transition', this);

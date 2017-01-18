@@ -15,7 +15,7 @@ var MediaObject = React.createClass({
         this.setState(this.getInitialState());
     },
     componentWillMount: function () {
-        console.log("Mo will mount",this.props);
+        // console.log("Mo will mount",this.props);
 
         this.setupState();
     },
