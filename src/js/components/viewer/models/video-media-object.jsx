@@ -109,6 +109,11 @@ var VideoMediaObject = React.createClass({
         // }
     },
 
+    dashPlayerSeeked: function(e) {
+        console.log("VideoMediaObject - PLAYBACK_SEEKED - e: ", e);
+        this.state.player.raw_player.play();
+    },
+
     playVideoAndSetVolume: function () {
         var self = this;
         if (self.state.player.isVimeo) {
@@ -128,11 +133,13 @@ var VideoMediaObject = React.createClass({
             } catch(e) {
                 console.log("VideoMediaObject - playVideoAndSetVolume - error handling volume /w load if not dash - e: ", e);
             } finally {
-                console.log("VideoMediaObject - playVideoAndSetVolume - self.state.player.raw_player.play");
-                // TODO APEP give the dash player a small time window between playout, we should really use some event for this
-                setTimeout(function() {
-                    self.state.player.raw_player.play();
-                });
+                console.log("VideoMediaObject - playVideoAndSetVolume - seek to begin and start");
+
+                //APEP Add a seeked event listener, this allows use to start the player when it's ready
+                //APEP this handles both cases for initial playback and replaying, when replaying the dashjs player
+                //needs a little time before we can call play again, seeked provides us a handle for when it's ready
+                self.state.player._element.addEventListener('seeked', this.dashPlayerSeeked);
+                self.state.player.raw_player.seek(0);
             }
         }
     },
@@ -219,6 +226,8 @@ var VideoMediaObject = React.createClass({
             if (!self.state.player.isVimeo) {
                 // APEP reset the player to remove GPU memory and memory growth over time
                 if (self.state.player.raw_player.transcoded) {
+                    // APEP remove the event listener in case it tries to replay
+                    self.state.player._element.removeEventListener('seeked', self.dashPlayerSeeked);
                     self.state.player.raw_player.reset();
                 }
             }
