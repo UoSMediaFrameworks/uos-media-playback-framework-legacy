@@ -131,6 +131,7 @@ var VideoMediaObject = React.createClass({
             } catch(e) {
                 console.log("VideoMediaObject - playVideoAndSetVolume - error handling volume /w load if not dash - e: ", e);
             } finally {
+                console.log("VideoMediaObject - playVideoAndSetVolume - self.state.player.raw_player.play");
                 self.state.player.raw_player.play();
             }
         }
