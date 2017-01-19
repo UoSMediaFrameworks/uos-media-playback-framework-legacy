@@ -51,20 +51,17 @@ var VideoMediaObject = React.createClass({
             // APEP TODO surprised a setState call is not needed.
             if (!self.state.player.isVimeo) { //APEP: ##Hack## for buffering media removal at the end
                 if (self.state.player.transcoded) {
-                    try {
-                        //APEP: ##Hack## for buffering media removal at the end
-                        self.state.player.raw_player.retrieveManifest(self.state.player.player_url, function (manifest, err) {
-                            // APEP TODO Not sure how this async function works inside this sync environment - will likely cause state.play_duration nulls where we may want it
-                            if (err) {
-                                console.log("Video-Media-Object - componentDidMount - retrieveManifest err: ", err);
-                                self.state.play_duration = null;
-                            } else {
-                                self.state.play_duration = manifest.Period.duration;
-                            }
-                        });
-                    } catch (e) {
-                        console.log("e component did mount: ", e);
-                    }
+
+                    //APEP: ##Hack## for buffering media removal at the end
+                    self.state.player.raw_player.retrieveManifest(self.state.player.player_url, function (manifest, err) {
+                        // APEP TODO Not sure how this async function works inside this sync environment - will likely cause state.play_duration nulls where we may want it
+                        if (err) {
+                            console.log("Video-Media-Object - componentDidMount - retrieveManifest err: ", err);
+                            self.state.play_duration = null;
+                        } else {
+                            self.state.play_duration = manifest.Period.duration;
+                        }
+                    });
                 }
             }
             var element = this.refs[this.props.data.mediaObject._obj._id];
@@ -116,7 +113,7 @@ var VideoMediaObject = React.createClass({
         var self = this;
         if (self.state.player.isVimeo) {
             self.state.player.vimeo_player.setVolume(self.state.volume || 0.00001);
-            // APEP give vimeo a small time window between playout, we should really use ready listener for this
+            // TODO APEP give vimeo a small time window between playout, we should really use ready listener for this
             setTimeout(function() {
                 self.state.player.vimeo_player.play();
             }, 150);
@@ -132,7 +129,10 @@ var VideoMediaObject = React.createClass({
                 console.log("VideoMediaObject - playVideoAndSetVolume - error handling volume /w load if not dash - e: ", e);
             } finally {
                 console.log("VideoMediaObject - playVideoAndSetVolume - self.state.player.raw_player.play");
-                self.state.player.raw_player.play();
+                // TODO APEP give the dash player a small time window between playout, we should really use some event for this
+                setTimeout(function() {
+                    self.state.player.raw_player.play();
+                });
             }
         }
     },
@@ -164,7 +164,7 @@ var VideoMediaObject = React.createClass({
     setDashVideoEndedListeners: function () {
         var self = this;
         self.state.player._element.addEventListener('ended', function (e) {
-            console.log("Video-Media-Object - setDashVideoEndedListeners - Transition video player out - dashjs player event Ended", e);
+            console.log("Video-Media-Object - setDashVideoEndedListeners - Transition video player out - 'ended' dashjs player event Ended", e);
             self.transition();
         }, false);
 
