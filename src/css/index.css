@@ -4,14 +4,14 @@ html, body, #main, .app {
 
 .media-object-item-preview-player-hidden {
     flex: 1;
-    border: 1px solid #ccc;
+    border: 1px solid #5a5a5a; /*Monaco grey - should probably change to use monaco css class*/
     overflow-y: auto;
     position: relative;
     display: none;
 }
 
 .media-object-item-preview-player {
-    border: 1px solid #ccc;
+    border: 1px solid #5a5a5a; /*Monaco grey - should probably change to use monaco css class*/
     overflow-y: auto;
     position: relative;
     flex: 1;
@@ -21,7 +21,6 @@ html, body, #main, .app {
 
 .react-audio-player {
     width: 100%;
-
 }
 
 .react-image-preview {
@@ -35,11 +34,20 @@ html, body, #main, .app {
     flex: 1;
     display: flex;
     flex-direction: column;
+
+    /* APEP Monaco */
+    color: #bbb;
+    background: #1e1e1e;
+    overflow: auto;
 }
 
 .app {
     display: flex;
     flex-direction: column;
+
+    /* APEP Monaco */
+    color: #bbb;
+    background: #1e1e1e;
 }
 
 .thumbs-and-json {
@@ -319,8 +327,9 @@ html, body, #main, .app {
     position: relative;
 }
 
-.media-object-list, .CodeMirror {
-    border: 1px solid #ccc;
+.media-object-list {
+    /* APEP colour taken from Monaco Vs-dark, we should probably reference the class so we don't have to keep updated */
+    border: 1px solid #5a5a5a;
 }
 
 .CodeMirror-activeline-background {
@@ -349,7 +358,22 @@ html, body, #main, .app {
 
 .header {
     position: relative;
-    background-color: #ddd;
+    background-color: #5a5a5a;
+    color: #bbb;
+}
+
+/* APEP override bootstraps border radius for more consistent look and feel */
+
+.form-control {
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+}
+
+.btn {
+    -webkit-border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    border-radius: 0 !important;
 }
 
 .header a {
@@ -451,6 +475,11 @@ html, body, #main, .app {
 
 .non-highlighted-media-object {
     border: none;
+}
+
+.scene-saved-status-bar {
+    width:100%;
+    color: white;
 }
 
 .green-save-flag {

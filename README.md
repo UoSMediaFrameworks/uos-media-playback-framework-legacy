@@ -40,3 +40,8 @@ env.sh gulp build-dist
 ```
 
 The copy the contents of `dist/` to whereever you'd like to host the files.
+
+
+## Cross Browser Testing
+
+![Screenshot](https://www.browserstack.com/images/layout/browserstack-logo-600x315.png)

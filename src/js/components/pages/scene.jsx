@@ -35,7 +35,8 @@ var Scene = React.createClass({
         HubSendActions.loadScene(this.props.params.id);
         SceneStore.addChangeListener(this._onChange);
     },
-    componentWillUnmount:function(){
+
+    onWillUnmount: function() {
         SceneStore.removeChangeListener(this._onChange);
     },
 
@@ -78,7 +79,7 @@ var Scene = React.createClass({
 
 
         return (
-            <div className='flex-container'>
+            <div className='flex-container monaco-editor vs-dark'>
                 <div className='top-bar'>
                     <div className='page-nav'>
                         <Link className='btn' to='scenes'>&lt; Back to Scene List</Link>
