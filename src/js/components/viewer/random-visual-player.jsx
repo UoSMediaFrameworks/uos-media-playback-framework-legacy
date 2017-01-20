@@ -100,21 +100,26 @@ var RandomVisualPlayer = React.createClass({
 
         // console.log("mediaObjectTransition - mediaObjectTransition - this.state.arr.length: ", this.state.arr.length);
 
-        // APEP find the ref media object created from arr.map to queue in render function
-        // This gives us the react component required to transition
-        var reactMediaObject = this.refs[mediaObject.guid];
+        try {
+            // APEP find the ref media object created from arr.map to queue in render function
+            // This gives us the react component required to transition
+            var reactMediaObject = this.refs[mediaObject.guid];
 
-        if (reactMediaObject) {
-            // console.log("mediaObjectTransition - mediaObjectTransition - reactMediaObject - transitioning: ", reactMediaObject);
+            if (reactMediaObject) {
+                // console.log("mediaObjectTransition - mediaObjectTransition - reactMediaObject - transitioning: ", reactMediaObject);
 
-            //APEP get the non generic Object and call transition (true is an opts flag for override looping)
-            reactMediaObject.getObject().transition(true);
-        } else {
-            // console.log("mediaObjectTransition - found reactComponentMediaObject for done - error: ", reactComponentMediaObject);
+                //APEP get the non generic Object and call transition (true is an opts flag for override looping)
+                reactMediaObject.getObject().transition(true);
+            } else {
+                // console.log("mediaObjectTransition - found reactComponentMediaObject for done - error: ", reactComponentMediaObject);
 
-            // APEP without the correct reference, the minimum we can do if force the media object to be removed
-            this.moDoneHandler(reactMediaObject);
+                // APEP without the correct reference, the minimum we can do if force the media object to be removed
+                this.moDoneHandler(reactMediaObject);
+            }
+        } catch (e) {
+            console.log("FAILED TO TRANSITION MEDIA OBJECT E: ", e);
         }
+
     },
 
     componentDidUpdate: function () {
