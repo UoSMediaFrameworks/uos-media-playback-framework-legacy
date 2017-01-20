@@ -139,7 +139,10 @@ var SceneActions = {
         AppDispatcher.handleViewAction({
             type: ActionTypes.HUB_LOGOUT
         });
-        HubClient.logout();
+
+        //APEP: HubClient null pointer
+        var hC = require('../utils/HubClient');
+        hC.logout();
 
         hashHistory.push('login');
     },
