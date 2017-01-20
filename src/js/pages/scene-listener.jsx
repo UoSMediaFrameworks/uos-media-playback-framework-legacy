@@ -69,13 +69,24 @@ var SceneListener = React.createClass({
         return this.props.activeScene || this.state.scene;
     },
 
+    _setPlayerClassCssForScene: function(style) {
+        _.forEach(Object.keys(style), function(styleKey){
+            var styleValue = style[styleKey];
+
+            $('.player').css(styleKey, styleValue);
+        });
+    },
+
     _maybeUpdatePlayer: function() {
 
         var scene = this._getSceneForUpdatingPlayerComponent();
 
         if (scene) {
+
+            // APEP Remove the old style added ready for new style or fallback to css class
+            $('.player').removeAttr("style");
             if (scene.style) {
-                $('.player').css(scene.style);
+                this._setPlayerClassCssForScene(scene.style);
             }
 
             // console.log("SceneListenr - setScene for mediaObjectQueue - this.props.activeScene:", this.props.activeScene);
