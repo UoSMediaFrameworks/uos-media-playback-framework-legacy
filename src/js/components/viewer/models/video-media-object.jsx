@@ -225,10 +225,11 @@ var VideoMediaObject = React.createClass({
         try {
             if (!self.state.player.isVimeo) {
                 // APEP reset the player to remove GPU memory and memory growth over time
-                if (self.state.player.raw_player.transcoded) {
+                if (self.state.player.transcoded) {
+
                     // APEP remove the event listener in case it tries to replay
-                    self.state.player._element.removeEventListener('seeked', self.dashPlayerSeeked);
                     self.state.player.raw_player.reset();
+                    self.state.player._element.removeEventListener('seeked', self.dashPlayerSeeked);
                 }
             }
             // APEP TODO this needs to be after the transition out animation and before the start of it again
@@ -239,9 +240,12 @@ var VideoMediaObject = React.createClass({
     },
 
     videoDone: function() {
-        this.setState({shown: false});
-        this.props.data.moDoneHandler(this);
-        this.resetGPUforTranscoded();
+        try {
+            this.setState({shown: false});
+            this.props.data.moDoneHandler(this);
+        } finally {
+            this.resetGPUforTranscoded();
+        }
     },
 
     loopingHandler: function () {
