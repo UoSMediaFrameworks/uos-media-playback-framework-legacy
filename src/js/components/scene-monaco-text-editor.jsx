@@ -261,6 +261,10 @@ var SceneMonacoTextEditor = React.createClass({
         }
     },
 
+    componentWillUnmount: function() {
+        if (saveTimeout) clearTimeout(saveTimeout);
+    },
+
     render: function() {
 
         var options = {

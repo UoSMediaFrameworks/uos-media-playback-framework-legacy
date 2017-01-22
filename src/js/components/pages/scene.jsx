@@ -36,7 +36,7 @@ var Scene = React.createClass({
         SceneStore.addChangeListener(this._onChange);
     },
 
-    onWillUnmount: function() {
+    componentWillUnmount: function() {
         SceneStore.removeChangeListener(this._onChange);
     },
 
