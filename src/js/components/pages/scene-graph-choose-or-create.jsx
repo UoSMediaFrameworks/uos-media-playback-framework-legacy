@@ -4,6 +4,13 @@ var HubSendActions = require('../../actions/hub-send-actions');
 var SceneGraphList = require('../scene-graph-list.jsx');
 var FormHelper = require('../../mixins/form-helper');
 
+var mediaHubGraphURL = process.env.MEDIA_HUB_GRAPH_URL || "";
+var presentationNamespaceQueryParams = "?roomId=presentation";
+var presentationMediaHubGraphURL = mediaHubGraphURL.length > 0 ? mediaHubGraphURL + presentationNamespaceQueryParams : "";
+var graphViewerUrl = "graph-viewer.html#/";
+var presentationViewerNamespaceQueryParams = "?room=presentation";
+var presentationGraphViewerUrl = graphViewerUrl + presentationViewerNamespaceQueryParams;
+
 var SceneGraphChooser = React.createClass({
 
     mixins: [FormHelper],
@@ -31,7 +38,6 @@ var SceneGraphChooser = React.createClass({
                     <div className='col-md-6'>
                         <h2>Edit an Existing Scene Graph</h2>
                         <SceneGraphList />
-
                     </div>
                     <div className='col-md-6'>
                         <h2>Create a new Scene Graph</h2>
@@ -48,6 +54,13 @@ var SceneGraphChooser = React.createClass({
                                 <button type='submit' className='btn btn-default'>Create</button>
                             </div>
                         </form>
+                    </div>
+                    <div className="col-md-6">
+                        <h2>Open Presentation Graphs</h2>
+                        <ul>
+                            <a className='btn' href={presentationMediaHubGraphURL}><li key="primary">Default Graph</li></a>
+                            <a className='btn' href={presentationGraphViewerUrl}><li key="primary">Default Viewer</li></a>
+                        </ul>
                     </div>
                 </div>
             </div>
