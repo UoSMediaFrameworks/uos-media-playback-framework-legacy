@@ -6,6 +6,12 @@ var TextMediaObject = require('../models/text-media-object.jsx');
 var ImageMediaObject = require('../models/images-media-object.jsx');
 
 var MediaObject = React.createClass({
+
+    //ZINDEX counter to be used for continuous bring to front, allows the next z index to be used
+    statics: {
+        zIndexCounter: 10000
+    },
+
     getInitialState: function () {
         return {
 
@@ -74,6 +80,17 @@ var MediaObject = React.createClass({
         element.style.left = this.calcDimension(player, 'clientWidth', element);
         element.style.top = this.calcDimension(player, 'clientHeight', element);
     },
+
+    mediaObjectClicked: function(e) {
+        e.preventDefault(); //APEP ensure no default action such as form submission is triggered from click
+
+        var element = this.refs.object.refs[this.props.data.mediaObject._obj._id];
+
+        // APEP set the z index for the media object to the next z-index
+        // APEP we will eventually run out, but z index goes up to max 32bit int.. should be large enough
+        element.style["z-index"] = MediaObject.zIndexCounter++;
+    },
+
     render: function () {
         var components = {
             text: TextMediaObject,
@@ -85,7 +102,7 @@ var MediaObject = React.createClass({
 
         return (
             <div className="mO">
-                <Object ref="object" data={this.props.data}/>
+                <Object ref="object" data={this.props.data} clickHandler={this.mediaObjectClicked}/>
             </div>
         );
     }

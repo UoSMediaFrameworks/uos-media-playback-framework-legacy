@@ -313,7 +313,7 @@ var VideoMediaObject = React.createClass({
         });
 
         return (
-            <div key={this.state.playerId} ref={this.props.data.mediaObject._obj._id} className={objectClasses}></div>
+            <div key={this.state.playerId} ref={this.props.data.mediaObject._obj._id} className={objectClasses} onClick={this.props.clickHandler}></div>
         );
     }
 });

@@ -56,8 +56,10 @@ var ImageMediaObject = React.createClass({
             "media-object": true,
             "show-media-object": this.state.shown
         });
-        return <img ref={this.props.data.mediaObject._obj._id} className={objectClasses}
-                    src={this.props.data.mediaObject._obj.url}></img>;
+        return <img ref={this.props.data.mediaObject._obj._id}
+                    className={objectClasses}
+                    src={this.props.data.mediaObject._obj.url}
+                    onClick={this.props.clickHandler}/>;
     }
 });
 module.exports = ImageMediaObject;

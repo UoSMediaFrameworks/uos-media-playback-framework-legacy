@@ -44,8 +44,9 @@ var TextMediaObject = React.createClass({
             "show-media-object": this.state.shown
         });
 
-        return <p ref={this.props.data.mediaObject._obj._id}
-                  className={objectClasses}>{this.props.data.mediaObject._obj.text}</p>;
+        return <p ref={this.props.data.mediaObject._obj._id} className={objectClasses} onClick={this.props.clickHandler}>
+                    {this.props.data.mediaObject._obj.text}
+              </p>;
     }
 });
 module.exports = TextMediaObject;
