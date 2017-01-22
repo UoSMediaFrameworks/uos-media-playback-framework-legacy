@@ -18,7 +18,6 @@ var ImageMediaObject = require('../utils/media-object/image-media-object');
 var VideoMediaObject = require('../utils/media-object/video-media-object');
 var AudioMediaObject = require('../utils/media-object/audio-media-object');
 var RandomVisualPlayer = require('../components/viewer/random-visual-player.jsx');
-var RandomAudioPlayer = require('../utils/random-audio-player');
 var ActiveTheme = require('../components/viewer/viewer-active-theme.jsx');
 
 var SceneListener = React.createClass({
@@ -98,7 +97,6 @@ var SceneListener = React.createClass({
                 var themeQry = scene.themes[this.props.themeQuery];
                 this.mediaObjectQueue.setTagMatcher(new TagMatcher(themeQry));
             }
-            this.randomAudioPlayer.start();
         }
     },
     componentWillMount:function(){
@@ -115,7 +113,6 @@ var SceneListener = React.createClass({
             [TextMediaObject, AudioMediaObject, VideoMediaObject, ImageMediaObject],
             {image: 3, text: 1, video: 1, audio: 1}
         );
-        this.randomAudioPlayer = new RandomAudioPlayer(this.mediaObjectQueue);
         this.setState({mediaObjectQueue: this.mediaObjectQueue});
         this._maybeUpdatePlayer();
     },
@@ -126,16 +123,10 @@ var SceneListener = React.createClass({
 
     componentDidUpdate: function(prevProps, prevState) {
 
-        // console.log("SceneListenr - componentDidUpdate");
-
         if (! _.isEqual(prevState.scene, this.state.scene) ) {
-            // console.log("SceneListenr - componentDidUpdate - _maybeUpdatePlayer - 1");
             this._maybeUpdatePlayer();
         } else if (! _.isEqual(prevProps.activeScene, this.props.activeScene)) {
-            // APEP TODO investigate if this is necessary
-            // console.log("SceneListenr - componentDidUpdate - _maybeUpdatePlayer - 2");
             this._maybeUpdatePlayer();
-
         }
 
         this.updateTags();
@@ -159,7 +150,6 @@ var SceneListener = React.createClass({
             event.preventDefault();
         }
         var tagFilter = this.mergeTagAndThemeFilters();
-        console.log('new filter: ' + tagFilter.toString());
         if(this.state.mediaObjectQueue)
             this.state.mediaObjectQueue.setTagMatcher(tagFilter);
     },

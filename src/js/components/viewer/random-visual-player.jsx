@@ -4,7 +4,7 @@ var lodash = require('lodash');
 var VideoMediaObject = require('../../utils/media-object/video-media-object');
 var ImageMediaObject = require('../../utils/media-object/image-media-object');
 var TextMediaObject = require('../../utils/media-object/text-media-object');
-var variableThrottle = require('../../utils/variable-throttle');
+var AudioMediaObject = require('../../utils/media-object/audio-media-object');
 var hat = require('hat');
 
 var RandomVisualPlayer = React.createClass({
@@ -20,12 +20,11 @@ var RandomVisualPlayer = React.createClass({
     loadMediaObject: function (queue) {
         var self = this;
         try {
-            lodash.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject], function (moType) {
+            lodash.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject, AudioMediaObject], function (moType) {
 
                 var obj = queue.mediaQueue.take([moType]);
 
                 if (obj !== undefined) {
-
                     obj.guid = obj.guid || hat();
                     self.state.arr.push(obj);
 

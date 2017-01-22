@@ -4,6 +4,7 @@ var lodash = require('lodash');
 var VideoMediaObject = require('../models/video-media-object.jsx');
 var TextMediaObject = require('../models/text-media-object.jsx');
 var ImageMediaObject = require('../models/images-media-object.jsx');
+var AudioMediaObject = require('../models/audio-media-object.jsx');
 
 var MediaObject = React.createClass({
 
@@ -95,7 +96,8 @@ var MediaObject = React.createClass({
         var components = {
             text: TextMediaObject,
             image: ImageMediaObject,
-            video: VideoMediaObject
+            video: VideoMediaObject,
+            audio: AudioMediaObject
         };
 
         var Object = components[this.props.data.mediaObject._obj.type];
