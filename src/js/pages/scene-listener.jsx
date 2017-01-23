@@ -158,7 +158,7 @@ var SceneListener = React.createClass({
             var themeQry = scene.themes[this.props.themeQuery];
 
             if(this.state.mediaObjectQueue)
-                this.state.mediaObjectQueue.setTagMatcher(new TagMatcher(themeQry));
+                this.state.mediaObjectQueue.setTagMatcher(new TagMatcher("(" + themeQry + ")"));
         } else {
             // APEP create a new Tag Matcher instance combining selected themes and written tags
             var tagFilter = this.mergeTagAndThemeFilters();
