@@ -80,7 +80,6 @@ var SceneListener = React.createClass({
         var scene = this._getSceneForUpdatingPlayerComponent();
 
         if (scene) {
-
             // APEP Remove the old style added ready for new style or fallback to css class
             $('.player').removeAttr("style");
             if (scene.style) {
@@ -89,13 +88,7 @@ var SceneListener = React.createClass({
 
             // console.log("SceneListenr - setScene for mediaObjectQueue - this.props.activeScene:", this.props.activeScene);
 
-            this.mediaObjectQueue.setScene(scene, {hardReset: true}); // TODO APEP {hardReset: true} I don't think we want to forcefully removal all
-            // APEP the tag matcher will make sure all active media not related to new scene is removed
-
-            if(this.props.themeQuery) {
-                var themeQry = scene.themes[this.props.themeQuery];
-                this.mediaObjectQueue.setTagMatcher(new TagMatcher(themeQry));
-            }
+            this.mediaObjectQueue.setScene(scene); // TODO APEP {hardReset: true} I don't think we want to forcefully removal all
         }
     },
     componentWillMount:function(){
@@ -122,9 +115,14 @@ var SceneListener = React.createClass({
 
     componentDidUpdate: function(prevProps, prevState) {
 
-        if (! _.isEqual(prevState.scene, this.state.scene) ) {
+        if (!_.isEqual(prevState.scene, this.state.scene) ) {
+            console.log("state.scene changed - update player");
             this._maybeUpdatePlayer();
-        } else if (! _.isEqual(prevProps.activeScene, this.props.activeScene)) {
+        } else if (!_.isEqual(prevProps.activeScene, this.props.activeScene)) {
+            console.log("activeScene changed - update player");
+            this._maybeUpdatePlayer();
+        } else if (!_.isEqual(prevState.activeThemes, this.state.activeThemes)) {
+            console.log("ActiveTheme changed - update player");
             this._maybeUpdatePlayer();
         }
 
@@ -138,9 +136,13 @@ var SceneListener = React.createClass({
 
         var tagsInput = this.refs['tags'];
         if (tagsInput) {
-            tagsInput = tagsInput.value.trim();
-            filterStrings.push('(' + tagsInput + ')');
+            if(tagsInput.value.length > 0 && tagsInput.value.trim().length > 0) {
+                tagsInput = tagsInput.value.trim();
+                filterStrings.push('(' + tagsInput + ')');
+            }
         }
+
+        console.log("mergeTagAndThemeFilters: ", filterStrings.join(' OR '));
 
         return new TagMatcher(filterStrings.join(' OR '));
     },
@@ -149,9 +151,20 @@ var SceneListener = React.createClass({
         if (event) {
             event.preventDefault();
         }
-        var tagFilter = this.mergeTagAndThemeFilters();
-        if(this.state.mediaObjectQueue)
-            this.state.mediaObjectQueue.setTagMatcher(tagFilter);
+
+        if(this.props.themeQuery) {
+            // APEP the tag matcher will make sure all active media not related to new scene is removed
+            var themeQry = scene.themes[this.props.themeQuery];
+
+            if(this.state.mediaObjectQueue)
+                this.state.mediaObjectQueue.setTagMatcher(new TagMatcher(themeQry));
+        } else {
+            // APEP create a new Tag Matcher instance combining selected themes and written tags
+            var tagFilter = this.mergeTagAndThemeFilters();
+
+            if(this.state.mediaObjectQueue)
+                this.state.mediaObjectQueue.setTagMatcher(tagFilter);
+        }
     },
 
     handleBlur: function(event) {

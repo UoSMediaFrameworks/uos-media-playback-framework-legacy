@@ -4,6 +4,7 @@
 var HubRecieveActions = require('../actions/hub-recieve-actions');
 var io = require('socket.io-client');
 var HubSendActions = require('../actions/hub-send-actions');
+var SceneActions = require('../actions/scene-actions');
 var assetStore = require('./asset-store');
 var connectionCache = require('./connection-cache');
 var NodeListGeneration = require('./scene-graph/node-list-generation');
@@ -121,6 +122,9 @@ var HubClient = {
                 }
 
                 HubRecieveActions.recieveScene(newScene);
+
+                // APEP Make sure the V2 scene store is up to date
+                SceneActions.getFullScene(newScene._id);
             }
         });
     },
