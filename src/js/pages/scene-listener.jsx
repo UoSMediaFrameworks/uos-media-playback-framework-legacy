@@ -136,9 +136,9 @@ var SceneListener = React.createClass({
             return '(' + this.state.scene.themes[themeName] + ')';
         }.bind(this));
 
-        var tagsInput = this.getRefVal('tags');
-        if (tagsInput !== '') {
-            tagsInput = tagsInput.trim();
+        var tagsInput = this.refs['tags'];
+        if (tagsInput) {
+            tagsInput = tagsInput.value.trim();
             filterStrings.push('(' + tagsInput + ')');
         }
 
