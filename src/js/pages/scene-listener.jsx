@@ -22,8 +22,6 @@ var ActiveTheme = require('../components/viewer/viewer-active-theme.jsx');
 
 var SceneListener = React.createClass({
 
-    mixins: [Router.State, FormHelper, Authentication],
-
     statics: {
         willTransitionFrom: function(transition, component) {
             HubSendActions.unsubscribeScene(component.getParams().id);
@@ -56,7 +54,8 @@ var SceneListener = React.createClass({
     getInitialState: function() {
         return {
             scene: this._getScene(),
-            activeThemes: []
+            activeThemes: [],
+            fromGraphViewer: this.props.activeScene ? true : false
         };
     },
 
@@ -168,16 +167,20 @@ var SceneListener = React.createClass({
 
     render: function() {
 
+        // APEP Display Active Theme if available, if not provide a theme selector
         var ThemeDisplay = this.props.themeQuery ? <ActiveTheme themeQuery={this.props.themeQuery}/> : <ThemeSelector themeChange={this.handleThemeChange} scene={this._getSceneForUpdatingPlayerComponent()} />;
+
+        // APEP Only display the tag form when this component is not used within the graph viewer
+        var TagForm = ! this.state.fromGraphViewer ? <form className='tag-filter' onSubmit={this.updateTags}>
+            <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...' className='form-control scene-listener-tag-input' />
+        </form> : <span></span>;
 
         return (
             <div className='scene-listener'>
                 <Loader loaded={this.state.scene ? true : false}></Loader>
                 <RandomVisualPlayer mediaQueue={this.state.mediaObjectQueue} />
                 {ThemeDisplay}
-                <form className='tag-filter' onSubmit={this.updateTags}>
-                    <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...' className='form-control scene-listener-tag-input' />
-                </form>
+                {TagForm}
             </div>
         );
     }
