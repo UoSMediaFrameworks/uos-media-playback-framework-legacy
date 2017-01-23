@@ -89,6 +89,8 @@ var SceneListener = React.createClass({
             // console.log("SceneListenr - setScene for mediaObjectQueue - this.props.activeScene:", this.props.activeScene);
 
             this.mediaObjectQueue.setScene(scene); // TODO APEP {hardReset: true} I don't think we want to forcefully removal all
+
+            this.updateTags();
         }
     },
     componentWillMount:function(){
@@ -126,7 +128,6 @@ var SceneListener = React.createClass({
             this._maybeUpdatePlayer();
         }
 
-        this.updateTags();
     },
 
     mergeTagAndThemeFilters: function() {
