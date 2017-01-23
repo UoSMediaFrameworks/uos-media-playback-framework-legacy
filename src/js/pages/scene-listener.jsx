@@ -153,6 +153,8 @@ var SceneListener = React.createClass({
             event.preventDefault();
         }
 
+        var scene = this._getSceneForUpdatingPlayerComponent();
+        
         if(this.props.themeQuery) {
             // APEP the tag matcher will make sure all active media not related to new scene is removed
             var themeQry = scene.themes[this.props.themeQuery];
