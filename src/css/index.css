@@ -315,7 +315,6 @@ html, body, #main, .app {
 
 .scene-controls {
     text-align: right;
-    padding-right: 8px;
     right: 0px;
 }
 
@@ -498,10 +497,50 @@ html, body, #main, .app {
 
 #media-upload-drop-target {
     width: 90%;
-    margin: 0 auto;
     border: 2px black dashed;
+    margin: 5px auto;
 }
 
 #media-upload-drop-target p {
     display: none;
 }
+.monaco-editor-container{
+    border: 1px solid #5a5a5a;
+}
+.btn-dark{
+    color: #999;
+    background-color: #222;
+    border-color: #363636;
+}
+.btn-dark:hover{
+    color: #999;
+    background-color: #1e1e1e;
+    border-color: #303030;
+}
+.btn-dark:active{
+    color: #999;
+    background-color: #111111;
+    border-color: #292929;
+}
+.file-upload:active{
+    color: #999;
+}
+.file-upload:hover{
+    color: #999;
+}
+#image-upload:active{
+    color: #999;
+}
+#image-upload:hover{
+    color: #999;
+}
+
+#image-upload .btn{
+    background-color: #222;
+    border-color: #363636;
+}
+#image-upload .btn:active    {
+    background-color: #222;
+    border-color: #363636;
+}
+

@@ -1,5 +1,3 @@
-
-
 /* Hides the city nodes for GDC-2016*/
 
 .Chicago, .Manchester, .Beijing, .Dalian, .KualaLumpur, .Seoul, .Chengdu, .HongKong, .Shenyang, .Panjin {
@@ -9,3 +7,75 @@
 .display-none {
     display: none;
 }
+
+.navbar-nav li {
+    background: #222;
+    color: #999;
+}
+
+.navbar-nav li:hover {
+    background: #000000;
+    color: #999;
+}
+
+.navbar {
+    margin-bottom: 0;
+}
+
+.scene-list-loader ul {
+    list-style: none;
+    padding-left: 0px;
+}
+
+.nav-pills {
+    padding-left: 0;
+}
+
+.nav-pills a {
+    color: #bbb;
+    text-decoration: none;
+    background-color: transparent;
+}
+
+.nav-pills li {
+    padding-left: 0;
+    color:#bbb;
+    background-color:#222;
+}
+
+.nav-pills li:hover {
+    background-color: #2f2f2f;
+}
+
+.nav-pills li:active {
+    background-color: #000;
+}
+.nav-pills >button{
+    background: #222;
+}
+.scene-options{
+    float:right;
+    text-align: right;
+}
+.remove-scene {
+    background: transparent;
+    border:none;
+    color: red;
+}
+
+.edit-scene {
+    background: transparent;
+    border:none
+
+}
+.nav-pills>li+li {
+    margin-left: 0px;
+}
+#media-upload-drop-target p{
+    color:#bbb;
+}
+.graph-type-buttons{
+    list-style: none;
+    padding-left:0px;
+}
+
