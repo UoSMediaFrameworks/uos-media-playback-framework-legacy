@@ -3,7 +3,8 @@
 
 var HUB_TOKEN = 'HUB_TOKEN',
     HUB_URL = 'HUB_URL',
-	GROUP_ID = '-1'; //AJF: initialise groupID
+	GROUP_ID = '-1',
+    groupNames = []; //AJF: initialise groupID
 
 module.exports = {
 	getToken: function() {
