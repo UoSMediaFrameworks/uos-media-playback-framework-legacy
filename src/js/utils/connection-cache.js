@@ -39,6 +39,7 @@ module.exports = {
 		groupNames.set(109, "Shenyang");
 		groupNames.set(110, "Panjin");
         groupNames.set(111, "Memoir");
+        groupNames.set(112, "NARM");
 
 		//console.log("The groupID was set to: " + groupID);
 
