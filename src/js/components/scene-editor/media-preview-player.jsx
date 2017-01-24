@@ -55,17 +55,12 @@ var MediaObjectPreviewPlayer = React.createClass({
                 break;
 
             case 'video':
-
                 var preview = <VideoMediaPreviewPlayer id={uniqueComponentKey} scene={this.props.scene}
                                                        focusedMediaObject={this.props.focusedMediaObject}></VideoMediaPreviewPlayer>
                 this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;
             case 'image':
-                preview = <img id={uniqueComponentKey} className="react-image-preview" src={mediaObject.url}></img>
-                this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
-                break;
-            case 'image':
-                preview = <img width="640" height="320" src={mediaObject.url}></img>
+                preview = <img id={uniqueComponentKey} width="640" height="320" src={mediaObject.url}></img>
                 this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;
         }

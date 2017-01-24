@@ -82,12 +82,12 @@ var Scene = React.createClass({
             <div className='flex-container monaco-editor vs-dark'>
                 <div className='top-bar'>
                     <div className='page-nav'>
-                        <Link className='btn' to='scenes'>&lt; Back to Scene List</Link>
-                        <a className='btn' href={viewerUrl}>Open in Scene Viewer</a>
+                        <Link className='btn btn-dark' to='scenes'>&lt; Back to Scene List</Link>
+                        <a className='btn btn-dark' href={viewerUrl}>Open in Scene Viewer</a>
                     </div>
 
                     <div className='scene-controls'>
-                        <a className='btn' onClick={this.deleteSceneHandler}>Delete Scene</a>
+                        <a className='btn btn-danger' onClick={this.deleteSceneHandler}>Delete Scene</a>
                     </div>
                     <Loader loaded={this.state.scene ? true: false} message='Loading Scene...'>
                         <h4 className='scene-name'>{this.state.scene ? this.state.scene.name : ''}</h4>
@@ -104,7 +104,7 @@ var Scene = React.createClass({
                         <MediaPreviewComponent  focusedMediaObject={this.state.focusedMediaObject} scene={this.state.scene}  />
                     </div>
 
-                    <div className="flex-container">
+                    <div className="flex-container monaco-editor-container">
                         <SceneMonacoTextEditor focusedMediaObject={this.state.focusedMediaObject} sceneSavingHandler={this.sceneSavingHandler}
                                                scene={this.state.scene || {} } focusHandler={this.thumbClickHandler}/>
                     </div>

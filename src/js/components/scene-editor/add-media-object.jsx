@@ -120,7 +120,7 @@ var SceneEditor = React.createClass({
 				       placeholder='vimeo url, soundcloud url or text'
 				       required />
 
-				<button className='btn btn-primary' type='submit'
+				<button className='btn btn-dark' type='submit'
 				 disabled={this.state.loading}>
 				 	{text}
 				</button>

@@ -22,25 +22,29 @@ module.exports = {
 	getGroupID: function() {
 		return localStorage.getItem(GROUP_ID);
 	},
-	getShortGroupName: function(groupID) {
-
-		var groupNames = new Map(); //AJF: @todo: load map from config file
-		groupNames.set(0, "Admin");
-		groupNames.set(1, "Test1");
-		groupNames.set(2, "Test2");
-		groupNames.set(101, "Chicago");
-		groupNames.set(102, "Beijing");
-		groupNames.set(103, "Dalian");
-		groupNames.set(104, "Kuala Lumpur");
-		groupNames.set(105, "Seoul");
-		groupNames.set(106, "Manchester");
-		groupNames.set(107, "Chengdu");
-		groupNames.set(108, "Hong Kong");
-		groupNames.set(109, "Shenyang");
-		groupNames.set(110, "Panjin");
+    setGroupNameArray:function(){
+        groupNames = new Map(); //AJF: @todo: load map from config file
+        groupNames.set(0, "Admin");
+        groupNames.set(1, "Test1");
+        groupNames.set(2, "Test2");
+        groupNames.set(101, "Chicago");
+        groupNames.set(102, "Beijing");
+        groupNames.set(103, "Dalian");
+        groupNames.set(104, "Kuala Lumpur");
+        groupNames.set(105, "Seoul");
+        groupNames.set(106, "Manchester");
+        groupNames.set(107, "Chengdu");
+        groupNames.set(108, "Hong Kong");
+        groupNames.set(109, "Shenyang");
+        groupNames.set(110, "Panjin");
         groupNames.set(111, "Memoir");
         groupNames.set(112, "NARM");
 
+    },
+    getGroupNameArray:function(){
+        return groupNames;
+    },
+	getShortGroupName: function(groupID) {
 		//console.log("The groupID was set to: " + groupID);
 
 		return groupNames.get(parseInt(groupID));
