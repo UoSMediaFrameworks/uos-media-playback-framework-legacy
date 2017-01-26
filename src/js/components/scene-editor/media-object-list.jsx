@@ -26,7 +26,11 @@ var MediaObjectList = React.createClass({
     handleDelete: function (scene, index) {
         return function (e) {
             e.preventDefault();
-            SceneActions.removeMediaObject(scene, index);
+            // APEP using default browser implementation, force the user to accept or decline action
+            if (confirm('Are you sure you wish to remove this media object from the scene?')) {
+                SceneActions.removeMediaObject(scene, index);
+            }
+
         }.bind(this);
     },
 
