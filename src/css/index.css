@@ -444,7 +444,11 @@ html, body, #main, .app {
 
 /** Editor UI **/
 .scene-graph-scene-list-container {
+    margin-top:12px;
     margin-bottom: 20px;
+}
+.scene-graph-scene-list-container h4{
+    padding-right:6px;
 }
 
 .collapsed-container {
@@ -453,6 +457,7 @@ html, body, #main, .app {
 }
 
 .collapse-icon {
+    padding: 4px;
     font-size: 1.5em;
 }
 
@@ -462,6 +467,7 @@ html, body, #main, .app {
 
 .graph-themes-list {
     list-style: none;
+
 }
 
 .display-none {
@@ -508,18 +514,18 @@ html, body, #main, .app {
     border: 1px solid #5a5a5a;
 }
 .btn-dark{
-    color: #999;
-    background-color: #222;
+    color: #0D0C0C;
+    background-color: #7F7E7E;
     border-color: #363636;
 }
 .btn-dark:hover{
-    color: #999;
-    background-color: #1e1e1e;
+    color: #0D0C0C;
+    background-color: #ABAAAA;
     border-color: #303030;
 }
 .btn-dark:active{
-    color: #999;
-    background-color: #111111;
+    color: #0D0C0C;
+    background-color: #4E4D4D;
     border-color: #292929;
 }
 .file-upload:active{
@@ -539,8 +545,27 @@ html, body, #main, .app {
     background-color: #222;
     border-color: #363636;
 }
-#image-upload .btn:active    {
+#image-upload .btn:active{
     background-color: #222;
     border-color: #363636;
 }
-
+.scene-graph-title{
+    text-align: center;
+}
+.no-side-padding{
+    padding-left:0;
+    padding-right:0;
+}
+.theme-container-colors{
+    color:black;
+    background-color:#908E8E;
+}
+.panel-body{
+    color:black;
+}
+.collapse-icon:hover{
+    color:green;
+}
+.collapse-icon:active{
+    color:darkgreen;
+}

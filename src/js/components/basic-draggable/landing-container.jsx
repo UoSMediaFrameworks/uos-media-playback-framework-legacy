@@ -3,10 +3,10 @@ var PropTypes = React.PropTypes;
 var ItemTypes = require('../draggable/item-types.jsx').ItemTypes;
 var DropTarget = require('react-dnd').DropTarget;
 var SceneGraphActions = require('../../actions/scene-graph-actions');
-
+var hat = require("hat");
 var landingContainerTarget = {
-    drop: function() {
-        return { name: 'drop-target' }
+    drop: function () {
+        return {name: 'drop-target'}
     }
 };
 
@@ -20,11 +20,11 @@ function collect(connect, monitor) {
 
 var ExcludedTheme = React.createClass({
 
-    removeExcludedTheme: function(event) {
+    removeExcludedTheme: function (event) {
         SceneGraphActions.includeTheme(this.props.excludedTheme, this.props.sceneGraph._id);
     },
 
-    render: function() {
+    render: function () {
         return (
             <div>
                 {this.props.excludedTheme}
@@ -47,35 +47,26 @@ var LandingContainer = React.createClass({
         var canDrop = this.props.canDrop;
         var isActive = canDrop && isOver;
 
-        var backgroundColor = '#222';
+        var backgroundColor = 'black';
         if (isActive) {
             backgroundColor = 'darkgreen';
         } else if (canDrop) {
-            backgroundColor = 'darkkhaki';
+            backgroundColor = 'darkgreen';
         }
 
         var sceneGraph = this.props.sceneGraph;
         var excludedThemes = Object.keys(sceneGraph.excludedThemes);
 
         return connectDropTarget(
-            <div style={{
-                minHeight: '200px',
+            <div className="panel-body" style={{
                 width: '100%',
-                borderColor: backgroundColor,
-                borderStyle: 'solid',
-                borderWidth: '1px',
                 paddingLeft: '15px',
                 paddingRight: '15px'
             }}>
-                <h4>
-                    {isActive ?
-                        'Release to drop' :
-                        'Drag a theme here to exclude'
-                    }
-                </h4>
 
-                {excludedThemes.map(function(excludedTheme){
-                    return <ExcludedTheme excludedTheme={excludedTheme} sceneGraph={sceneGraph}></ExcludedTheme>
+                {excludedThemes.map(function (excludedTheme) {
+                    var key = hat();
+                    return <ExcludedTheme key={key} excludedTheme={excludedTheme} sceneGraph={sceneGraph}></ExcludedTheme>
                 })}
             </div>
         );

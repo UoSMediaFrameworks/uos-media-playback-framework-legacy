@@ -7,16 +7,16 @@ var Item = require('./item.jsx');
 var _ = require('lodash');
 
 var ItemGroupForThemeUnion = React.createClass({
-    render: function() {
+    render: function () {
 
         function renderItem(parent, property, sg, parentList) {
 
             var classNames = "firstLevel ";
-            if(parent[property].type === 'city') {
+            if (parent[property].type === 'city') {
                 classNames += property;
             }
 
-            if(parentList.length < 2) {
+            if (parentList.length < 2) {
                 classNames += " col-lg-4"; //If root nodes add into bootstrap column system.
             }
 
@@ -24,9 +24,10 @@ var ItemGroupForThemeUnion = React.createClass({
 
             return (
                 <div key={parent + "_" + property} className={classNames}>
-                    <TreePositionLandingContainer indentation="rootLevel" parent={parent} parentList={parentList} graphTheme={parent[property]} node={property} sceneGraph={sg}>
+                    <TreePositionLandingContainer indentation="rootLevel" parent={parent} parentList={parentList}
+                                                  graphTheme={parent[property]} node={property} sceneGraph={sg}>
                         <ul className="graph-themes-list">
-                            {Object.keys(parent[property].children).map(function(nestedProperty){
+                            {Object.keys(parent[property].children).map(function (nestedProperty) {
                                 var updatedParentList = _.clone(parentList);
                                 updatedParentList.push(nestedProperty);
                                 return renderItem(parent[property].children, nestedProperty, sg, updatedParentList);
@@ -40,24 +41,34 @@ var ItemGroupForThemeUnion = React.createClass({
 
         return (
             <div>
-                <div className="col-md-6 scene-graph-theme-drag-containers" style={{ border: 'solid green 1px', overflow: 'hidden'}}>
-                    <h4>Theme Union</h4>
-                    <div className="row">
-                        {this.props.themeUnion.map(function(theme){
-                            return <Item key={theme} name={theme} sceneGraph={this.props.sceneGraph}/>
-                        }, this)}
+                <div className="col-md-6" style={{ overflow: 'hidden'}}>
+                    <div className="panel panel-default scenes-themes-tags margin-top-34">
+                        <div className="panel-heading">Theme Union</div>
+                        <div className="panel-body row">
+                            {this.props.themeUnion.map(function (theme) {
+                                return <Item key={theme} name={theme} sceneGraph={this.props.sceneGraph}/>
+                            }, this)}
+                        </div>
                     </div>
                 </div>
 
-                <div className="col-md-6 scene-graph-theme-drag-containers" style={{ overflow: 'hidden'}}>
-                    <LandingContainer sceneGraph={this.props.sceneGraph ? this.props.sceneGraph : {excludedThemes: []}}/>
+                <div className="col-md-6 scene-graph-theme-drag-containers"
+                     style={{ overflow: 'hidden'}}>
+                    <div className="panel panel-default scenes-themes-tags margin-top-34">
+                        <div className="panel-heading">
+                            Drag a theme here to exclude
+                        </div>
+                            <LandingContainer
+                                sceneGraph={this.props.sceneGraph ? this.props.sceneGraph : {excludedThemes: []}}/>
+
+                    </div>
                 </div>
 
                 <div className="col-md-12">
                     <h4>SceneGraph</h4>
 
-                    <ul className="graph-themes-list">
-                        { Object.keys(this.props.graphThemes.children || {}).map(function(property){
+                    <ul className="graph-themes-list" style={{paddingLeft:0}}>
+                        { Object.keys(this.props.graphThemes.children || {}).map(function (property) {
                             var parentList = [property];
                             return renderItem(this.props.graphThemes.children, property, this.props.sceneGraph, parentList);
                         }, this)}

@@ -7,7 +7,7 @@ var Loader = require('./loader.jsx');
 var _ = require('lodash');
 var Link = require('react-router').Link;
 
-function _getState () {
+function _getState() {
     return {
         sceneGraphs: SceneGraphListStore.getAll(),
         loading: SceneGraphListStore.loadingScenes()
@@ -16,40 +16,41 @@ function _getState () {
 
 var SceneGraphList = React.createClass({
 
-    getInitialState: function() {
+    getInitialState: function () {
         return _getState();
     },
 
-    componentDidMount: function() {
+    componentDidMount: function () {
         SceneGraphListStore.addChangeListener(this._onChange);
     },
 
-    componentWillUnmount: function() {
+    componentWillUnmount: function () {
         SceneGraphListStore.removeChangeListener(this._onChange);
     },
 
-    _onChange: function() {
+    _onChange: function () {
         this.setState(_getState());
     },
 
-    render: function() {
+    render: function () {
         var self = this;
-        var filteredSceneGraph =  this.state.sceneGraphs;
+        var filteredSceneGraph = this.state.sceneGraphs;
         if (this.props.filterText) {
             filteredSceneGraph = _.filter(filteredSceneGraph, function (scene) {
                 return scene.name.toLowerCase().indexOf(self.props.filterText.toLowerCase()) !== -1;
             });
         }
-        if(this.props.sortBy){
-
-            filteredSceneGraph.sort(function(a,b) {return (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0);} );
-
-
+        if (this.props.sortBy) {
+            filteredSceneGraph.sort(function (a, b) {
+                if(a.name.toLowerCase() < b.name.toLowerCase() ) return -1;
+                if(a.name.toLowerCase()  > b.name.toLowerCase() ) return 1;
+                return 0;
+            });
         }
-        if(this.props.sortBy == "desc"){
+        if (this.props.sortBy == "desc") {
             filteredSceneGraph.reverse();
         }
-        var links = filteredSceneGraph.map(function(sceneGraph) {
+        var links = filteredSceneGraph.map(function (sceneGraph) {
             return (
                 <li key={sceneGraph._id} className="col-xs-12">
                     <div className="col-md-9">
@@ -60,8 +61,9 @@ var SceneGraphList = React.createClass({
         });
 
         return (
-            <Loader className='scene-graph-list-loader' message='Retrieving Scene Graph list...' loaded={! this.state.loading}>
-                <ul  className="nav nav-pills .nav-stacked col-xs-12">
+            <Loader className='scene-graph-list-loader' message='Retrieving Scene Graph list...'
+                    loaded={!this.state.loading}>
+                <ul className="nav nav-pills .nav-stacked col-xs-12">
                     {links}
                 </ul>
             </Loader>

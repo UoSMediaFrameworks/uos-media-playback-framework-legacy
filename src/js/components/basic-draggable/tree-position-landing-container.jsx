@@ -69,8 +69,8 @@ var TreePositionLandingContainer = React.createClass({
 
         var classNames = '' + this.props.indentation + ' ';
 
-        var dropDownClassNames = 'glyphicon glyphicon-hand-up collapse-icon';
-        var dropUpClassNames = 'glyphicon glyphicon-hand-down collapse-icon';
+        var dropDownClassNames = 'fa fa-expand collapse-icon';
+        var dropUpClassNames = 'fa fa-compress collapse-icon';
         var iconClassNames = dropUpClassNames;
 
         if(this.state._collapsed) {
@@ -78,7 +78,7 @@ var TreePositionLandingContainer = React.createClass({
             iconClassNames = dropDownClassNames;
         }
 
-        var removeNodeClassNames = "glyphicon glyphicon-remove";
+        var removeNodeClassNames = "fa fa-times";
 
         if(this.props.graphTheme.type !== 'stheme') {
             removeNodeClassNames += " display-none";

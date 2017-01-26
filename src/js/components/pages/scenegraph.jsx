@@ -243,18 +243,14 @@ var SceneGraph = React.createClass({
         return (
             <div className="container scene-graph">
 
-                <div className='scene-controls' style={{margin: '10px'}}>
-                    <button className='btn' onClick={this.deleteSceneGraphHandler}>Delete Scene Graph</button>
-                </div>
-
                 <div className="row">
-                    <div className="col-md-12">
-                        <Link className='btn' to='scenegraphs'>&lt; Back to Scene Graph List</Link>
-                        <h3>SceneGraph: {this.state.name}</h3>
-                        <a className='btn' href={viewerUrl}>Open Graph</a>
+                    <div className="col-md-12" style={{"paddingTop":"12px"}}>
+                        <Link className='btn btn-dark' to='scenegraphs'>&lt; Back to Scene Graph List</Link> <button className='btn btn-danger' style={{"float":"right"}} onClick={this.deleteSceneGraphHandler}>Delete Scene Graph</button>
+                        <h3 className="scene-graph-title" >SceneGraph:{this.state.name}</h3>
+                        <a className='btn btn-dark' href={viewerUrl}>Open Graph</a>
                     </div>
                     <div className="col-md-12 scene-graph-scene-list-container">
-                        <h4>Add a scene to the graph</h4>
+                        <h4 style={{float:"left"}}>Add a scene to the graph</h4>
                         <select className="form-control scene-list" onChange={this.onSceneSelected} value={this.state.selectedSceneId}>
                             {this.state.scenes.map(function(sc){
                                 return <SceneItem key={sc._id} scene={sc} />;
@@ -263,7 +259,7 @@ var SceneGraph = React.createClass({
                     </div>
 
                     <div className="col-md-12">
-                        <div className="col-md-4">
+                        <div className="no-side-padding col-md-4">
                             <button className="btn btn-info add-scene-button" onClick={this.addSelectedScene}>Add Scene</button>
                             <div className="panel panel-default scenes-themes-tags no-margin-bottom">
                                 <div className="panel-heading">Scenes</div>
@@ -284,7 +280,7 @@ var SceneGraph = React.createClass({
                                 </div>
                             </div>
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-md-4 no-side-padding">
                             <div className="panel panel-default scenes-themes-tags margin-top-34">
                                 <div className="panel-heading">Tags</div>
                                 <div className="panel-body">
