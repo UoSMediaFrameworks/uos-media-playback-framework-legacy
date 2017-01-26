@@ -15,7 +15,6 @@ var ImageMediaObject = React.createClass({
         };
     },
     componentDidMount: function () {
-        this.play();
         imageMount++;
         // console.log("Image - componentDidMount - imageMount, imageWillUnmount: ", imageMount, imageWillUnmount);
     },
@@ -50,6 +49,14 @@ var ImageMediaObject = React.createClass({
         }
 
     },
+
+    // APEP when the image has loaded can call the play function after positioning the element now we have the sizes
+    handleImageLoaded: function() {
+        var element = this.refs[this.props.data.mediaObject._obj._id];
+        this.props.positionElementHandler(element);
+        this.play();
+    },
+
     render: function () {
         var objectClasses = classNames({
             "image-media-object": true,
@@ -59,7 +66,8 @@ var ImageMediaObject = React.createClass({
         return <img ref={this.props.data.mediaObject._obj._id}
                     className={objectClasses}
                     src={this.props.data.mediaObject._obj.url}
-                    onClick={this.props.clickHandler}/>;
+                    onClick={this.props.clickHandler}
+                    onLoad={this.handleImageLoaded}/>;
     }
 });
 module.exports = ImageMediaObject;

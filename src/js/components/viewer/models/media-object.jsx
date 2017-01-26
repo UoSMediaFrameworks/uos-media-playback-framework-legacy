@@ -29,17 +29,9 @@ var MediaObject = React.createClass({
     componentDidMount: function () {
         var element = this.refs.object.refs[this.props.data.mediaObject._obj._id];
 
-
         //APEP When mounting component, apply the declared style rules and position if not declared by media objects CSS
-
         this.addStyle(element,this.props.data.mediaObject.style);
-        if(! this.doesStyleDeclareMediaObjectPosition(this.props.data.mediaObject.style)) {
-            this.placeAtRandomPosition(element);
-        }
-
-    },
-    componentWillUnmount: function() {
-
+        this.positionElement();
     },
 
     getObject: function() {
@@ -73,6 +65,15 @@ var MediaObject = React.createClass({
         var finalPosition = lodash.random(min,max);
         return Math.round(finalPosition) + 'px';
     },
+
+    positionElement: function(el) {
+        var element = el || this.refs.object.refs[this.props.data.mediaObject._obj._id];
+        //APEP When mounting component, apply the declared style rules and position if not declared by media objects CSS
+        if(! this.doesStyleDeclareMediaObjectPosition(this.props.data.mediaObject.style)) {
+            this.placeAtRandomPosition(element);
+        }
+    },
+
     placeAtRandomPosition: function (element) {
         var player = this.props.data.player;
         if (!element.style) {
@@ -104,7 +105,7 @@ var MediaObject = React.createClass({
 
         return (
             <div className="mO">
-                <Object ref="object" data={this.props.data} clickHandler={this.mediaObjectClicked}/>
+                <Object ref="object" data={this.props.data} clickHandler={this.mediaObjectClicked} positionElementHandler={this.positionElement}/>
             </div>
         );
     }
