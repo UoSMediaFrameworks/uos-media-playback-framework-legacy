@@ -139,7 +139,16 @@ var VideoMediaObject = React.createClass({
                 //APEP this handles both cases for initial playback and replaying, when replaying the dashjs player
                 //needs a little time before we can call play again, seeked provides us a handle for when it's ready
                 self.state.player._element.addEventListener('seeked', this.dashPlayerSeeked);
-                self.state.player.raw_player.seek(0);
+                if(self.state.player.raw_player.transcoded){
+                    self.state.player.raw_player.seek(0);
+                }else{
+                    //ANGEL P: added a seek and play for the non transcoded video, it does not autoplay and current time is the form
+                    //of seek functionality needed
+                    self.state.player.raw_player.currentTime=0;
+                    self.state.player.raw_player.play();
+
+                }
+
             }
         }
     },

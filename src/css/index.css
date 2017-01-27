@@ -16,7 +16,11 @@ html, body, #main, .app {
     position: relative;
     flex: 1;
     text-align: center;
-
+}
+.media-object-item-preview-player img{
+    height:100%;
+    width:auto;
+    max-width: 100%;
 }
 
 .react-audio-player {

@@ -123,7 +123,7 @@ EmbeddedVimeoPlayer.prototype.setupAsVimeoPlayer = function (vimeoId) {
 EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedUrl, videoInfo) {
     try {
         var fallbackSource = videoUtils.getRawVideoDirectPlaybackSupport(videoInfo.video.url);
-        console.log(fallbackSource)
+        console.log("fallback",fallbackSource)
     } catch(e){
         console.log("Embedded-Visual-Player - RawPlayerFailure", e)
     }

@@ -17,9 +17,10 @@
 }
 
 .image-media-object {
-    width: auto;
+    max-width: 40%;
     height: auto;
-    max-width: 50%;
+    max-height:40%
+
 }
 
 .embedded-vimeo-player {
