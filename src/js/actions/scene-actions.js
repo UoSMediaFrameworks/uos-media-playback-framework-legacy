@@ -281,7 +281,9 @@ var SceneActions = {
                     });
                 }
             } else {
-                cb (null);
+                if(cb) {
+                    cb (null);
+                }
             }
         });
     }
