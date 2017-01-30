@@ -5,6 +5,7 @@ var getVimeoId = require('../../utils/get-vimeo-id');
 var toastr = require('toastr');
 var hat = require('hat');
 var VideoMediaPreviewPlayer = require('./components/video-media-preview-player.jsx');
+var _ = require('lodash');
 
 var MediaObjectPreviewPlayer = React.createClass({
     getInitialState: function () {
@@ -18,7 +19,21 @@ var MediaObjectPreviewPlayer = React.createClass({
         var currentMediaItemIndex = props.focusedMediaObject;
         return scenes.scene[currentMediaItemIndex] || null;
     },
+    _cssToReactCSS: function (styleObject) {
+        var ReactStyleObj = {};
+        if (!styleObject) {
+            throw new Error('missing css text to transform');
+        }
 
+        _.forEach(Object.keys(styleObject), function (styleKey) {
+            var styleValue = styleObject[styleKey];
+            var name = styleKey.replace(/(-.)/g, function (v) {
+                return v[1].toUpperCase();
+            });
+            ReactStyleObj[name] = styleValue;
+        });
+        return ReactStyleObj;
+    },
     previewMediaObject: function (props) {
         var uniqueComponentKey = hat();
         if (props.focusedMediaObject === null) {
@@ -36,6 +51,18 @@ var MediaObjectPreviewPlayer = React.createClass({
         }
 
         switch (mediaObject.type) {
+            case 'text':
+                var preview;
+                var self = this;
+                var text = "Undefined";
+                var style = {};
+                if (self.props.focusedMediaObject != undefined) {
+                    style =props.scene.scene[props.focusedMediaObject].style;
+                    text = props.scene.scene[props.focusedMediaObject].text;
+                }
+                preview = <p style={ this._cssToReactCSS(style)}>{text}</p>;
+                self.setState({preview: preview, previewClass: 'media-object-item-preview-player text-container'});
+                break;
             case 'audio':
                 var self = this; //APEP required for scope resolution within the soundcloud stream URL callback.
                 soundCloud.streamUrl(mediaObject.url, function (err, streamUrl) {
@@ -65,9 +92,9 @@ var MediaObjectPreviewPlayer = React.createClass({
                 break;
         }
     },
-
     setupState: function (props) {
         this.setState(this.getInitialState());
+        console.log("componentWillReceiveProps",props)
         if (props) {
             this.previewMediaObject(props);
         }
@@ -78,6 +105,7 @@ var MediaObjectPreviewPlayer = React.createClass({
     },
 
     componentWillReceiveProps: function (nextProps) {
+
         this.setupState(nextProps);
     },
     componentWillUnmount: function () {
@@ -85,7 +113,14 @@ var MediaObjectPreviewPlayer = React.createClass({
     },
 
     render: function () {
-        return <div className={this.state.previewClass}>
+        var reactStyle = {};
+
+        if(this.props.scene !=undefined){
+            reactStyle = this._transform(this.props.scene.style);
+        }
+
+
+        return <div ref="preview" className={this.state.previewClass} style={reactStyle}>
             {this.state.preview}
         </div>;
     }

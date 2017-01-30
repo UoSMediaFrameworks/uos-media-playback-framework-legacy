@@ -9,7 +9,10 @@ html, body, #main, .app {
     position: relative;
     display: none;
 }
-
+.text-container{
+ display:flex;
+    align-items: center;
+}
 .media-object-item-preview-player {
     border: 1px solid #5a5a5a; /*Monaco grey - should probably change to use monaco css class*/
     overflow-y: auto;
