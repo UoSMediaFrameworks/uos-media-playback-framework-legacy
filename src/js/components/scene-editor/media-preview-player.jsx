@@ -116,7 +116,7 @@ var MediaObjectPreviewPlayer = React.createClass({
         var reactStyle = {};
 
         if(this.props.scene !=undefined){
-            reactStyle = this._transform(this.props.scene.style);
+            reactStyle = this._cssToReactCSS(this.props.scene.style);
         }
 
 
