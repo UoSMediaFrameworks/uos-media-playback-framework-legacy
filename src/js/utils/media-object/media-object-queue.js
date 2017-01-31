@@ -27,6 +27,11 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
         tagMatcher = new TagMatcher(),
         maximumOnScreen = {};
 
+    // APEP allow the queue to be referenced outside the object (this is a short term addition)
+    this.getQueue = function() {
+        return queue;
+    };
+
     var transitionFunc;
 
     function activeCount (typeName) {

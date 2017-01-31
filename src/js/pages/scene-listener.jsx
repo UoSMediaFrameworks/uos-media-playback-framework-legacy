@@ -20,6 +20,8 @@ var AudioMediaObject = require('../utils/media-object/audio-media-object');
 var RandomVisualPlayer = require('../components/viewer/random-visual-player.jsx');
 var ActiveTheme = require('../components/viewer/viewer-active-theme.jsx');
 
+var MINIMUM_NUMBER_OF_MEDIA_TO_BE_MATCHED_WITH_THEME_QUERY = 0;
+
 var SceneListener = React.createClass({
 
     statics: {
@@ -161,6 +163,10 @@ var SceneListener = React.createClass({
 
             if(this.state.mediaObjectQueue) {
                 this.state.mediaObjectQueue.setTagMatcher(new TagMatcher("(" + themeQry + ")"));
+                // APEP if using the theme query provides no media, set the tag matcher with an empty rule
+                if(this.state.mediaObjectQueue.getQueue().length <= MINIMUM_NUMBER_OF_MEDIA_TO_BE_MATCHED_WITH_THEME_QUERY) {
+                    this.state.mediaObjectQueue.setTagMatcher(new TagMatcher("()"));
+                }
             }
         } else {
             // APEP create a new Tag Matcher instance combining selected themes and written tags
