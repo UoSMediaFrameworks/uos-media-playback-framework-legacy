@@ -144,15 +144,14 @@ var GraphViewer = React.createClass({
                 delay = (Number(newScene.sceneTransition) || 15) * 1000;
             }
 
-            var themeQuery = self.getRandomThemeName(newScene);
-
             if (self.state.scenes.length < 2) {
-                // console.log("GraphViewer - nextScene - no more scenes to iterate through");
-                // console.log("GraphViewer - singleScene set - nextScene - activeScene, activeSceneId: ", newScene, currentSceneId);
-
-                self.setState({activeScene: newScene, activeSceneId: currentSceneId, themeQuery: themeQuery});
+                console.log("GraphViewer - nextScene - no more scenes to iterate through");
+                // APEP when we are playing just a single scene given by the graph, pass through an empty themeQuery to allow the full scene to play back
+                self.setState({activeScene: newScene, activeSceneId: currentSceneId, themeQuery: ""});
                 return;
             }
+
+            var themeQuery = self.getRandomThemeName(newScene);
 
             currentSceneIndex++;
 

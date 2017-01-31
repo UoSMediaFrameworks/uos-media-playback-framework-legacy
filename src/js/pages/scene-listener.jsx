@@ -154,13 +154,14 @@ var SceneListener = React.createClass({
         }
 
         var scene = this._getSceneForUpdatingPlayerComponent();
-        
+
         if(this.props.themeQuery) {
             // APEP the tag matcher will make sure all active media not related to new scene is removed
             var themeQry = scene.themes[this.props.themeQuery];
 
-            if(this.state.mediaObjectQueue)
+            if(this.state.mediaObjectQueue) {
                 this.state.mediaObjectQueue.setTagMatcher(new TagMatcher("(" + themeQry + ")"));
+            }
         } else {
             // APEP create a new Tag Matcher instance combining selected themes and written tags
             var tagFilter = this.mergeTagAndThemeFilters();
@@ -185,7 +186,7 @@ var SceneListener = React.createClass({
     render: function() {
 
         // APEP Display Active Theme if available, if not provide a theme selector
-        var ThemeDisplay = this.props.themeQuery ? <ActiveTheme themeQuery={this.props.themeQuery}/> : <ThemeSelector themeChange={this.handleThemeChange} scene={this._getSceneForUpdatingPlayerComponent()} />;
+        var ThemeDisplay = this.state.fromGraphViewer ? <ActiveTheme themeQuery={this.props.themeQuery}/> : <ThemeSelector themeChange={this.handleThemeChange} scene={this._getSceneForUpdatingPlayerComponent()} />;
 
         // APEP Only display the tag form when this component is not used within the graph viewer
         var TagForm = ! this.state.fromGraphViewer ? <form className='tag-filter' onSubmit={this.updateTags}>
