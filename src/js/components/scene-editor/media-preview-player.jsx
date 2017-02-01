@@ -87,7 +87,10 @@ var MediaObjectPreviewPlayer = React.createClass({
                 this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;
             case 'image':
-                preview = <img id={uniqueComponentKey} width="640" height="320" src={mediaObject.url}></img>
+                var style ={};
+                var style =props.scene.scene[props.focusedMediaObject].style ? props.scene.scene[props.focusedMediaObject].style: {};
+                console.log("image style",style)
+                preview = <img id={uniqueComponentKey} width="640" height="320" src={mediaObject.url} style={ this._cssToReactCSS(style)}></img>
                 this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;
         }
