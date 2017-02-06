@@ -144,7 +144,9 @@ var VideoMediaObject = React.createClass({
             self.state.player.vimeo_player.on('timeupdate',self.triggerEventHandler);
         } else {
             if (self.state.player.transcoded) {
-                self.state.player.raw_player.on("PLAYBACK_PROGRESS",self.triggerEventHandler)
+                self.state.player.raw_player.on("PLAYBACK_PROGRESS",function(e){
+                    console.log("playback progress",e)
+                })
             }
         }
     },
