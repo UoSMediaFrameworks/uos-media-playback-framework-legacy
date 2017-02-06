@@ -17,7 +17,7 @@ var SCENE_PROP_DEFAULTS = {
     types - Array of constructors
     defaultDisplayCounts - {typeName: num, typeName, num, ...}
 */
-function MediaObjectQueue(types, defaultDisplayCounts) {
+function MediaObjectQueue(types, defaultDisplayCounts, manager) {
         // objects that are up for display
     var queue = [],
         // list of objects that are currently out on loan from the queue
@@ -25,6 +25,7 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
         // all objects in the scene
         masterList = [],
         tagMatcher = new TagMatcher(),
+        queueManager = manager,
         maximumOnScreen = {};
 
     // APEP allow the queue to be referenced outside the object (this is a short term addition)
@@ -64,13 +65,6 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
             if (tagMatcher.match(mediaObject.tags)) {
                 queue.push(mediaObject);
             }
-        // otherwise it's from an older scene, so remove any event listeners
-        } else {
-
-            // console.log("Media-object-queue - done handler - removing listeners ");
-
-            // mediaObject.removeListener('transition', moTransitionHandler);
-            // mediaObject.removeListener('done', moDoneHandler);
         }
 
         // console.log("Media-object-queue - done handler - queue end: ", queue);
@@ -118,17 +112,13 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
             }
         }, {});
 
-        // unhook events from mediaobjects that aren't in the new scene
-        _.forEach(queue, function(mo) {
-            mo.removeListener('transition', moTransitionHandler);
-            mo.removeListener('done', moDoneHandler);
-        });
 
         // process the mediaObjects
         var newMo,
             index,
             oldMo;
 
+        // APEP TODO masterList might need some logic for removing things that are sequenced, potentially if isLinear
         // make new masterList
         masterList = _.map(newScene.scene, function(mo) {
             var TypeConstructor = getTypeByName(mo.type);
@@ -136,8 +126,6 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
                 displayDuration: this.displayDuration,
                 transitionDuration: this.transitionDuration
             });
-            // newMo.on('transition', moTransitionHandler);
-            // newMo.on('done', moDoneHandler);
 
             return newMo;
         }.bind(this));
@@ -200,11 +188,11 @@ function MediaObjectQueue(types, defaultDisplayCounts) {
                         // ensure it's set to be playing
                         matchedMo._playing = true;
 
-                        return matchedMo;
+                        return [matchedMo];
                     } else {
                         // there is a solo waiting at the front of the queue
                         // so return nothing and wait till next time
-                        return undefined;
+                        return [];
                     }
                 }
             }

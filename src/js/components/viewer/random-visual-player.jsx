@@ -20,18 +20,17 @@ var RandomVisualPlayer = React.createClass({
     loadMediaObject: function (queue) {
         var self = this;
         try {
-            lodash.forEach([VideoMediaObject, ImageMediaObject, TextMediaObject, AudioMediaObject], function (moType) {
+            var objs = queue.mediaQueue.take([VideoMediaObject, ImageMediaObject, TextMediaObject, AudioMediaObject]);
 
-                var obj = queue.mediaQueue.take([moType]);
-
+            lodash.forEach(objs, function(obj){
                 if (obj !== undefined) {
                     obj.guid = obj.guid || hat();
                     self.state.arr.push(obj);
-
-                    //APEP Setting state will trigger a new render, with a new render components will be unmounted/mounted
-                    self.setState({mediaQueue: self.props.mediaQueue, arr: self.state.arr});
                 }
             });
+
+            //APEP Setting state will trigger a new render, with a new render components will be unmounted/mounted
+            self.setState({mediaQueue: self.props.mediaQueue, arr: self.state.arr});
         } catch (e) {
             console.log("rsvp error", e)
         }
@@ -87,10 +86,8 @@ var RandomVisualPlayer = React.createClass({
         return willUpdate;
     },
     componentWillMount: function () {
-        console.log("RVS - will mount");
     },
     componentDidMount: function () {
-        console.log("RVS - mounted", this.props);
         this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
     },
 
@@ -113,6 +110,7 @@ var RandomVisualPlayer = React.createClass({
                 // console.log("mediaObjectTransition - found reactComponentMediaObject for done - error: ", reactComponentMediaObject);
 
                 // APEP without the correct reference, the minimum we can do if force the media object to be removed
+                // APEP TODO check if the below should be calling the doneHandler with mediaObject, rather than ReactMediaObject
                 this.moDoneHandler(reactMediaObject);
             }
         } catch (e) {
@@ -123,17 +121,21 @@ var RandomVisualPlayer = React.createClass({
 
     componentDidUpdate: function () {
         //TODO APEP I think we may need to clean up the existing media if we update with a new scene
-        // console.log("randomVisualPlayer - componentDidUpdate");
-        // APEP if we update - transition media or get queues media that has been removed
-        this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
         var self = this;
-        if (self.props.mediaQueue.displayInterval != undefined && !self.state.interval) {
-            self.loadMediaObject(self.props);
-            setInterval(function () {
-                self.loadMediaObject(self.props)
-            }, self.props.mediaQueue.displayInterval);
-            self.setState({interval: true})
+        // APEP if we update - transition media or get queues media that has been removed
+        try {
+            this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
+            if (self.props.mediaQueue.getDisplayInterval() !== undefined && !self.state.interval) {
+                self.loadMediaObject(self.props);
+                setInterval(function () {
+                    self.loadMediaObject(self.props)
+                }, self.props.mediaQueue.getDisplayInterval());
+                self.setState({interval: true});
+            }
+        } catch (e) {
+            console.log("RVP - didUpdateError - e: ", e);
         }
+
     },
     render: function () {
 
@@ -146,8 +148,11 @@ var RandomVisualPlayer = React.createClass({
                 player: self.refs.player,
                 //Attach the done handler using react props
                 moDoneHandler: self.moDoneHandler,
-                displayDuration: self.props.mediaQueue.displayDuration,
-                transitionDuration: self.props.mediaQueue.transitionDuration,
+                // APEP we may want to assign below [displayDuration, transitionDuration] within mediaObject these within the state.arr push.
+                // It's something we need to see if this change of props would cause any of the media objects to update when we might
+                // not want them to update.
+                displayDuration: self.props.mediaQueue.getDisplayDuration(),
+                transitionDuration: self.props.mediaQueue.getTransitionDuration(),
                 key: index
             };
 

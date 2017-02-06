@@ -12,7 +12,7 @@ var Loader = require('../components/loader.jsx');
 var _ = require('lodash');
 var $ = require('jquery');
 var TagMatcher = require('../utils/tag-matcher');
-var MediaObjectQueue = require('../utils/media-object/media-object-queue');
+var MediaObjectQueueManager = require('../utils/media-object/media-object-queue-manager');
 var TextMediaObject = require('../utils/media-object/text-media-object');
 var ImageMediaObject = require('../utils/media-object/image-media-object');
 var VideoMediaObject = require('../utils/media-object/video-media-object');
@@ -57,7 +57,8 @@ var SceneListener = React.createClass({
         return {
             scene: this._getScene(),
             activeThemes: [],
-            fromGraphViewer: this.props.activeScene ? true : false
+            fromGraphViewer: this.props.activeScene ? true : false,
+            triggeredActiveThemes: {}
         };
     },
 
@@ -95,22 +96,34 @@ var SceneListener = React.createClass({
             this.updateTags();
         }
     },
-    componentWillMount:function(){
-        this.mediaObjectQueue = new MediaObjectQueue(
-            [TextMediaObject, AudioMediaObject, VideoMediaObject, ImageMediaObject],
-            {image: 3, text: 1, video: 1, audio: 1}
-        );
+
+    // APEP func to update after queue has made internal switch between modes
+    mediaQueueManagerUpdate: function() {
         this.setState({mediaObjectQueue: this.mediaObjectQueue});
+        this._maybeUpdatePlayer(); // APEP unsure if needed
+    },
+
+    componentWillMount: function() {
+        try {
+            this.mediaObjectQueue = new MediaObjectQueueManager(
+                [TextMediaObject, AudioMediaObject, VideoMediaObject, ImageMediaObject],
+                {image: 3, text: 1, video: 1, audio: 1},
+                this.mediaQueueManagerUpdate
+            );
+            this.setState({mediaObjectQueue: this.mediaObjectQueue});
+        } catch (e) {
+            console.log("componentWillMount - e: ", e);
+        }
+
     },
     componentDidMount: function() {
         HubSendActions.subscribeScene(this._getSceneId());
-        SceneStore.addChangeListener(this._onChange);
-        this.mediaObjectQueue = new MediaObjectQueue(
-            [TextMediaObject, AudioMediaObject, VideoMediaObject, ImageMediaObject],
-            {image: 3, text: 1, video: 1, audio: 1}
-        );
-        this.setState({mediaObjectQueue: this.mediaObjectQueue});
-        this._maybeUpdatePlayer();
+        try {
+            SceneStore.addChangeListener(this._onChange);
+            this._maybeUpdatePlayer();
+        } catch (e) {
+            console.log("componentDidMount - e: ", e);
+        }
     },
 
     componentWillUnmount: function() {
@@ -128,12 +141,25 @@ var SceneListener = React.createClass({
         } else if (!_.isEqual(prevState.activeThemes, this.state.activeThemes)) {
             console.log("ActiveTheme changed - update player");
             this._maybeUpdatePlayer();
+        } else if (!_.isEqual(prevState.triggeredActiveThemes, this.state.triggeredActiveThemes)) {
+            console.log("TriggeredActiveTheme changed - update player");
+            this._maybeUpdatePlayer();
         }
 
     },
 
     mergeTagAndThemeFilters: function() {
-        var filterStrings = _.map(this.state.activeThemes, function(themeName) {
+        // APEP Merge the active themes && triggeredActiveThemes
+        // This way we can keep any active themes from user selection while providing
+        var activeThemesToBeUsed = this.state.activeThemes.concat(Object.keys(this.state.triggeredActiveThemes));
+
+        // APEP to avoid duplication from triggers or user selection, we ensure that this list is uniq,
+        // while this most likely would not cause any issues, it's there for consistency
+        activeThemesToBeUsed = _.uniq(activeThemesToBeUsed);
+
+        console.log("mergeTagAndThemeFilters - activeThemesToBeUsed: ", activeThemesToBeUsed);
+
+        var filterStrings = _.map(activeThemesToBeUsed, function(themeName) {
             return '(' + this.state.scene.themes[themeName] + ')';
         }.bind(this));
 
@@ -145,9 +171,10 @@ var SceneListener = React.createClass({
             }
         }
 
-        console.log("mergeTagAndThemeFilters: ", filterStrings.join(' OR '));
-
-        return new TagMatcher(filterStrings.join(' OR '));
+        // APEP join all the individual sets of tags from themes in a bool OR statement
+        var tagsJoinedForBoolStatement = filterStrings.join(' OR ');
+        console.log("mergeTagAndThemeFilters: ", tagsJoinedForBoolStatement);
+        return new TagMatcher(tagsJoinedForBoolStatement);
     },
 
     updateTags: function(event) {
@@ -172,8 +199,9 @@ var SceneListener = React.createClass({
             // APEP create a new Tag Matcher instance combining selected themes and written tags
             var tagFilter = this.mergeTagAndThemeFilters();
 
-            if(this.state.mediaObjectQueue)
+            if(this.state.mediaObjectQueue) {
                 this.state.mediaObjectQueue.setTagMatcher(tagFilter);
+            }
         }
     },
 
@@ -189,6 +217,40 @@ var SceneListener = React.createClass({
         this.setState({activeThemes: newThemes});
     },
 
+    // APEP function for adding themes triggered by a piece of media
+    // APEP a reference counter is used to ensure that we track overlapping or duplicate triggers
+    triggerMediaActiveTheme: function(themes) {
+
+        var triggeredActiveThemes = this.state.triggeredActiveThemes;
+        _.forEach(themes, function(theme) {
+            if(!triggeredActiveThemes.hasOwnProperty(theme)) {
+                triggeredActiveThemes[theme] = 1;
+            } else {
+                triggeredActiveThemes[theme]++;
+            }
+        });
+
+        this.setState({triggeredActiveThemes: triggeredActiveThemes});
+    },
+
+    // APEP function handled for each media object to remove themes from the active list
+    // APEP this is to be used by any media object that has triggered active themes and is done
+    removeMediaActiveThemesAfterDone: function(themes) {
+
+        var triggeredActiveThemes = this.state.triggeredActiveThemes;
+        _.forEach(themes, function(theme) {
+            if(triggeredActiveThemes.hasOwnProperty(theme)) {
+                triggeredActiveThemes[theme]--;
+
+                if(triggeredActiveThemes[theme] === 0) {
+                    delete triggeredActiveThemes[theme];
+                }
+            }
+        });
+
+        this.setState({triggeredActiveThemes: triggeredActiveThemes});
+    },
+
     render: function() {
 
         // APEP Display Active Theme if available, if not provide a theme selector
@@ -202,7 +264,7 @@ var SceneListener = React.createClass({
         return (
             <div className='scene-listener'>
                 <Loader loaded={this.state.scene ? true : false}></Loader>
-                <RandomVisualPlayer mediaQueue={this.state.mediaObjectQueue} />
+                <RandomVisualPlayer mediaQueue={this.state.mediaObjectQueue} triggerMediaActiveTheme={this.triggerMediaActiveTheme} removeMediaActiveThemesAfterDone={this.removeMediaActiveThemesAfterDone} />
                 {ThemeDisplay}
                 {TagForm}
             </div>
