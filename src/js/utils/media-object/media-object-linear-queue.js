@@ -164,6 +164,9 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
 
         var nexButtonIndex = currentButtonIndex === buckets.length - 1 ? 0 : currentButtonIndex + 1;
 
+        // APEP set the linear queues index pointer to its own bucket as the next one, a circular index is used
+        masterBucketListIndex = parseInt(buckets[nexButtonIndex]);
+
         // APEP if the linearOption defined specifies we should play media randomly after a single full set
         // And we are back at the start of the buckets, transition from linear queue to random queue
         if(isLinearOption === LINEAR_OPT_LOOP_ONCE_ALL_RANDOM && nexButtonIndex === 0) {
@@ -173,8 +176,6 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
                 return;
             }
         }
-
-        masterBucketListIndex = parseInt(buckets[nexButtonIndex]);
 
         // TODO APEP might have to filter based on active
         queue = _(masterBucketsList[masterBucketListIndex])

@@ -26,7 +26,12 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
         masterList = [],
         tagMatcher = new TagMatcher(),
         queueManager = manager,
+        isRandomOptions = "default",
         maximumOnScreen = {};
+
+    this.setIsRandomOptions = function(randomOption) {
+        isRandomOptions = randomOption;
+    };
 
     // APEP allow the queue to be referenced outside the object (this is a short term addition)
     this.getQueue = function() {
@@ -63,7 +68,12 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
         // make sure it's still in the masterList
         if (_.find(masterList, function(mo) { return mediaObject === mo; })) {
             if (tagMatcher.match(mediaObject.tags)) {
-                queue.push(mediaObject);
+
+                // APEP pushing ended active media back to the queue is optional, this allows remaining media to be played only once
+                if(isRandomOptions === "default") {
+                    console.log("media-object-queue - add from active to queue");
+                    queue.push(mediaObject);
+                }
             }
         }
 
@@ -79,6 +89,16 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
 
         return t;
     }
+
+    this.refreshQueueValuesForNonDefaultBehaviour = function() {
+        // fill the queue with matching mediaObjects
+        queue = _(masterList)
+            .filter(function(mo) {
+                return tagMatcher.match(mo.tags);
+            })
+            .shuffle()
+            .value();
+    };
 
     this.setScene = function(newScene, ops) {
         ops = ops || {};
@@ -118,9 +138,19 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
             index,
             oldMo;
 
-        // APEP TODO masterList might need some logic for removing things that are sequenced, potentially if isLinear
-        // make new masterList
-        masterList = _.map(newScene.scene, function(mo) {
+        var masterListMediaObjects = _.filter(newScene.scene, function(mo) {
+            // APEP if we are not in default mode, only non sequenced media can be included
+           if(isRandomOptions === "playRemainingMedia") {
+               return !mo.hasOwnProperty("sequenceByNumber");
+           } else {
+               return true;
+           }
+        });
+
+        console.log("media-object-queue - newScene.scene.length, masterListMediaObjects.length: ", newScene.scene.length, masterListMediaObjects.length);
+
+        // make new masterList using media Object list built for optional logic
+        masterList = _.map(masterListMediaObjects, function(mo) {
             var TypeConstructor = getTypeByName(mo.type);
             newMo = new TypeConstructor(mo, {
                 displayDuration: this.displayDuration,
@@ -172,6 +202,16 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
 
         if (eligibleTypes.length > 0) {
             var matchedType, matchedMo;
+
+            // APEP if we are not in the default mode, we must see if we have ran out of remaining media to transition back to linear
+            if(isRandomOptions !== "default") {
+                console.log("We are not in default mode, check if we need to transition - queue: ", queue);
+                if(queue.length === 0) {
+                    console.log("the queue is empty, transition from random to linear");
+                    queueManager.transitionFromRandom();
+                    return;
+                }
+            }
 
             for (var i = 0; i < queue.length; i++) {
                 matchedType = checkType(queue[i]);

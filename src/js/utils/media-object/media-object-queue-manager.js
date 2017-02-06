@@ -31,7 +31,29 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
     };
 
     this.setScene = function(newScene, ops) {
+
+        // APEP the isLinearOptions define the behaviour of the linear Playback
+        if(newScene.hasOwnProperty("isLinearOptions")) {
+            // APEP designed potential values playOnlySequencedMedia||playRemainingMedia||playAllMedia
+            var isLinearOption = newScene.isLinearOptions;
+            // APEP for now we only support either sequence only or play all media
+            var isValid = isLinearOption ===  "playOnlySequencedMedia" || isLinearOption === "playAllMedia";
+            if(isValid) {
+                this.linearMediaObjectQueue.setIsLinearOption(isLinearOption);
+            }
+
+            var isValidRandomOption = isLinearOption === "playRemainingMedia" || isLinearOption === "playAllMedia";
+            // APEP ensure that the random queue options are set correctly
+            if(isValidRandomOption) {
+                // APEP for playRemaining we are not in the default mode for the random playback
+                this.randomMediaObjectQueue.setIsRandomOptions(isLinearOption);
+            } else {
+                this.randomMediaObjectQueue.setIsRandomOptions("default");
+            }
+        }
+
         try {
+            // APEP the random queue needs a way to filter out sequence media
             this.randomMediaObjectQueue.setScene(newScene, ops);
         } catch (e) {
             console.log("MediaObjectQueueManager - randomMediaObjectQueue - setScene error: ", e);
@@ -49,17 +71,6 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
             this.setActiveQueue(true);
         } else {
             this.setActiveQueue(false);
-        }
-
-        // APEP the isLinearOptions define the behaviour of the linear Playback
-        if(newScene.hasOwnProperty("isLinearOptions")) {
-            // APEP designed potential values playOnlySequencedMedia||playRemainingMedia||playAllMedia
-            var isLinearOption = newScene.isLinearOptions;
-            // APEP for now we only support either sequence only or play all media
-            var isValid = isLinearOption ===  "playOnlySequencedMedia" || isLinearOption === "playAllMedia";
-            if(isValid) {
-                this.linearMediaObjectQueue.setIsLinearOption(isLinearOption);
-            }
         }
     };
 
@@ -101,7 +112,8 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
     };
 
     this.moDoneHandler = function(mediaObject) {
-        this.activeQueue.moDoneHandler(mediaObject);
+        this.randomMediaObjectQueue.moDoneHandler(mediaObject);
+        this.linearMediaObjectQueue.moDoneHandler(mediaObject);
     };
 
     this.setActiveQueue = function(isLinear) {
@@ -109,6 +121,11 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
             this.activeQueue = this.linearMediaObjectQueue;
         } else {
             this.activeQueue = this.randomMediaObjectQueue;
+
+            // APEP when the activeQueue is set to the random media object queue, we should ensure the queue
+            // is fully populated from the master list.  this is necessary for queue modes that do not return
+            // active back to the queue
+            this.randomMediaObjectQueue.refreshQueueValuesForNonDefaultBehaviour();
         }
     };
 
@@ -118,7 +135,7 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
         this.setActiveQueue(false);
 
         if(this.afterQueueChangeFunc) {
-            console.log("queueChangeFunc");
+            console.log("MediaObjectQueueManager - transitionFromLinear - queueChangeFunc");
             this.afterQueueChangeFunc();
         }
     };
@@ -129,6 +146,7 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
         this.setActiveQueue(true);
 
         if(this.afterQueueChangeFunc) {
+            console.log("MediaObjectQueueManager - transitionFromRandom - queueChangeFunc");
             this.afterQueueChangeFunc();
         }
     }
