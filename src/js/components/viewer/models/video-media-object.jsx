@@ -32,9 +32,6 @@ var VideoMediaObject = React.createClass({
         var isVimeo = mediaObject._obj.url.indexOf("vimeo.com") !== -1;
         var videoInfo = mediaObject._obj.vmob;
 
-        var triggers = this.props.data.triggers || {};
-        console.log("mounted triggers", triggers)
-
         var videoUrl = isVimeo ? getVimeoId(mediaObject._obj.url) : mediaObject._obj.url;
         self.state.looping = !(mediaObject._obj.autoreplay == undefined || mediaObject._obj.autoreplay < 1);
         self.state.volume = self.getVolume(mediaObject);
@@ -117,9 +114,20 @@ var VideoMediaObject = React.createClass({
         this.state.player.raw_player.play();
     },
     triggerEventHandler: function (e) {
-        var currentTime = e.seconds || e.time;
+
+        var currentTime = 0;
+        if(e.seconds){
+            currentTime = e.seconds;
+        }
+        if(e.time){
+            currentTime =e.time;
+        }
+        if(e.target.currentTime){
+
+        }
+
         var triggers = this.props.data.mediaObject._obj.triggers || [];
-        console.log(currentTime);
+        currentTime = e.target.currentTime;
         for (var i = 0; i < triggers.length; i++) {
             try {
                 //We need to turn the time to seconds not miliseconds
@@ -128,8 +136,8 @@ var VideoMediaObject = React.createClass({
                         triggers[i].locked = false;
                     }
                     if (!triggers[i].locked) {
-                        console.log("I am switching themes at", triggers[i].timeSinceStartOfVideo,triggers[i], triggers[i].locked)
                         triggers[i].locked = true;
+                        //Put theme changing function here.
                     }
                 }
             } catch (e) {
@@ -139,13 +147,19 @@ var VideoMediaObject = React.createClass({
     },
     attachTriggers: function () {
         var self = this;
-        console.log("attachTriggers data", self.props.data.mediaObject._obj.triggers);
-        var triggers = self.props.data.mediaObject._obj.triggers || [];
+        var triggers = this.props.data.mediaObject._obj.triggers || [];
+        for (var i = 0; i < triggers.length; i++) {
+            if(triggers[i].locked){
+                triggers[i].locked = false;
+            }
+        }
         if (self.state.player.isVimeo) {
             self.state.player.vimeo_player.on('timeupdate', self.triggerEventHandler);
         } else {
             if (self.state.player.transcoded) {
                 self.state.player.raw_player.on("playbackTimeUpdated", self.triggerEventHandler)
+            }else{
+                self.state.player._element.ontimeupdate=self.triggerEventHandler;
             }
         }
     },
@@ -237,6 +251,7 @@ var VideoMediaObject = React.createClass({
             //APEP Play the video and set the volume for playback
             self.playVideoAndSetVolume();
             self.attachTriggers();
+
             var transitionSeconds = self.setAndGetElementTransitionInOutPeriod();
             self.setState({shown: true});
 
@@ -262,6 +277,7 @@ var VideoMediaObject = React.createClass({
     },
     play: function () {
         this.playVideoAndSetVolume();
+        this.attachTriggers();
     },
     resetGPUforTranscoded: function () {
         var self = this;
@@ -274,6 +290,7 @@ var VideoMediaObject = React.createClass({
                     // APEP remove the event listener in case it tries to replay
                     self.state.player.raw_player.reset();
                     self.state.player._element.removeEventListener('seeked', self.dashPlayerSeeked);
+                    self.state.player.raw_player.off('playbackTimeUpdated',  self.triggerEventHandler);
                 }
             }
             // APEP TODO this needs to be after the transition out animation and before the start of it again
