@@ -32,6 +32,9 @@ var VideoMediaObject = React.createClass({
         var isVimeo = mediaObject._obj.url.indexOf("vimeo.com") !== -1;
         var videoInfo = mediaObject._obj.vmob;
 
+        var triggers = this.props.data.triggers || {};
+        console.log("mounted triggers", triggers)
+
         var videoUrl = isVimeo ? getVimeoId(mediaObject._obj.url) : mediaObject._obj.url;
         self.state.looping = !(mediaObject._obj.autoreplay == undefined || mediaObject._obj.autoreplay < 1);
         self.state.volume = self.getVolume(mediaObject);
@@ -109,17 +112,48 @@ var VideoMediaObject = React.createClass({
         // }
     },
 
-    dashPlayerSeeked: function(e) {
+    dashPlayerSeeked: function (e) {
         console.log("VideoMediaObject - PLAYBACK_SEEKED - e: ", e);
         this.state.player.raw_player.play();
     },
-
+    triggerEventHandler :function(e){
+        var currentTime = e.seconds || e;
+        console.log(currentTime);
+        for (var i = 0; i < triggers.length; i++) {
+            try{
+                //We need to turn the time to seconds not miliseconds
+                if(currentTime >= triggers[i].timeSinceStartOfVideo && currentTime < triggers[i].timeSinceStartOfVideo+1){
+                    if(triggers[i].locked == undefined){
+                        triggers[i].locked=false;
+                    }
+                    if(!triggers[i].locked){
+                        console.log("I am switching themes at", triggers[i].timeSinceStartOfVideo,triggers[i].locked)
+                        triggers[i].locked=true;
+                    }
+                }
+            }catch(e){
+                console.log("err",e)
+            }
+        }
+    },
+    attachTriggers: function () {
+        var self = this;
+        console.log("attachTriggers data", self.props.data.mediaObject._obj.triggers);
+        var triggers = self.props.data.mediaObject._obj.triggers || [];
+        if (self.state.player.isVimeo) {
+            self.state.player.vimeo_player.on('timeupdate',self.triggerEventHandler);
+        } else {
+            if (self.state.player.transcoded) {
+                self.state.player.raw_player.on("PLAYBACK_PROGRESS",self.triggerEventHandler)
+            }
+        }
+    },
     playVideoAndSetVolume: function () {
         var self = this;
         if (self.state.player.isVimeo) {
             self.state.player.vimeo_player.setVolume(self.state.volume || 0.00001);
             // TODO APEP give vimeo a small time window between playout, we should really use ready listener for this
-            setTimeout(function() {
+            setTimeout(function () {
                 self.state.player.vimeo_player.play();
             }, 150);
         } else {
@@ -130,7 +164,7 @@ var VideoMediaObject = React.createClass({
                     self.state.player.raw_player.load();
                     self.state.player.raw_player.volume = self.state.volume || 0.0;
                 }
-            } catch(e) {
+            } catch (e) {
                 console.log("VideoMediaObject - playVideoAndSetVolume - error handling volume /w load if not dash - e: ", e);
             } finally {
                 console.log("VideoMediaObject - playVideoAndSetVolume - seek to begin and start");
@@ -139,12 +173,12 @@ var VideoMediaObject = React.createClass({
                 //APEP this handles both cases for initial playback and replaying, when replaying the dashjs player
                 //needs a little time before we can call play again, seeked provides us a handle for when it's ready
                 self.state.player._element.addEventListener('seeked', this.dashPlayerSeeked);
-                if(self.state.player.raw_player.transcoded){
+                if (self.state.player.raw_player.transcoded) {
                     self.state.player.raw_player.seek(0);
-                }else{
+                } else {
                     //ANGEL P: added a seek and play for the non transcoded video, it does not autoplay and current time is the form
                     //of seek functionality needed
-                    self.state.player.raw_player.currentTime=0;
+                    self.state.player.raw_player.currentTime = 0;
                     self.state.player.raw_player.play();
 
                 }
@@ -201,7 +235,7 @@ var VideoMediaObject = React.createClass({
         try {
             //APEP Play the video and set the volume for playback
             self.playVideoAndSetVolume();
-
+            self.attachTriggers();
             var transitionSeconds = self.setAndGetElementTransitionInOutPeriod();
             self.setState({shown: true});
 
@@ -248,7 +282,7 @@ var VideoMediaObject = React.createClass({
 
     },
 
-    videoDone: function() {
+    videoDone: function () {
         try {
             this.setState({shown: false});
             this.props.data.moDoneHandler(this);
@@ -322,7 +356,8 @@ var VideoMediaObject = React.createClass({
         });
 
         return (
-            <div key={this.state.playerId} ref={this.props.data.mediaObject._obj._id} className={objectClasses} onClick={this.props.clickHandler}></div>
+            <div key={this.state.playerId} ref={this.props.data.mediaObject._obj._id} className={objectClasses}
+                 onClick={this.props.clickHandler}></div>
         );
     }
 });
