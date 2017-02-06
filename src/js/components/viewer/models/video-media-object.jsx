@@ -116,23 +116,24 @@ var VideoMediaObject = React.createClass({
         console.log("VideoMediaObject - PLAYBACK_SEEKED - e: ", e);
         this.state.player.raw_player.play();
     },
-    triggerEventHandler :function(e){
-        var currentTime = e.seconds || e;
+    triggerEventHandler: function (e) {
+        var currentTime = e.seconds || e.time;
+        var triggers = self.props.data.mediaObject._obj.triggers || [];
         console.log(currentTime);
         for (var i = 0; i < triggers.length; i++) {
-            try{
+            try {
                 //We need to turn the time to seconds not miliseconds
-                if(currentTime >= triggers[i].timeSinceStartOfVideo && currentTime < triggers[i].timeSinceStartOfVideo+1){
-                    if(triggers[i].locked == undefined){
-                        triggers[i].locked=false;
+                if (currentTime >= triggers[i].timeSinceStartOfVideo && currentTime < triggers[i].timeSinceStartOfVideo + 1) {
+                    if (triggers[i].locked == undefined) {
+                        triggers[i].locked = false;
                     }
-                    if(!triggers[i].locked){
-                        console.log("I am switching themes at", triggers[i].timeSinceStartOfVideo,triggers[i].locked)
-                        triggers[i].locked=true;
+                    if (!triggers[i].locked) {
+                        console.log("I am switching themes at", triggers[i].timeSinceStartOfVideo,triggers[i], triggers[i].locked)
+                        triggers[i].locked = true;
                     }
                 }
-            }catch(e){
-                console.log("err",e)
+            } catch (e) {
+                console.log("err", e)
             }
         }
     },
@@ -141,12 +142,10 @@ var VideoMediaObject = React.createClass({
         console.log("attachTriggers data", self.props.data.mediaObject._obj.triggers);
         var triggers = self.props.data.mediaObject._obj.triggers || [];
         if (self.state.player.isVimeo) {
-            self.state.player.vimeo_player.on('timeupdate',self.triggerEventHandler);
+            self.state.player.vimeo_player.on('timeupdate', self.triggerEventHandler);
         } else {
             if (self.state.player.transcoded) {
-                self.state.player.raw_player.on("playbackProgress",function(e){
-                    console.log("playback progress",e)
-                })
+                self.state.player.raw_player.on("playbackTimeUpdated", self.triggerEventHandler)
             }
         }
     },
