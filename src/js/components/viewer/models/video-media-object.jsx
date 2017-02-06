@@ -116,18 +116,35 @@ var VideoMediaObject = React.createClass({
     triggerEventHandler: function (e) {
 
         var currentTime = 0;
-        if(e.seconds){
-            currentTime = e.seconds;
+
+        // APEP try parse each for of getting time
+        try {
+            if(e.seconds){
+                currentTime = e.seconds;
+            }
+        } catch (e) {
+            console.log("e: ", e);
         }
-        if(e.time){
-            currentTime =e.time;
+
+        try {
+            if(e.time){
+                currentTime =e.time;
+            }
+        } catch (e) {
+            console.log("e: ", e);
         }
-        if(e.target.currentTime){
-            currentTime = e.target.currentTime;
+
+        //APEP TODO probably the only one that needs try catch due e.target.currentTime throws errors for target undefined
+        try {
+            if(e.target.currentTime){
+                currentTime = e.target.currentTime;
+            }
+        } catch (e) {
+            console.log("e: ", e);
         }
 
         var triggers = this.props.data.mediaObject._obj.triggers || [];
-        console.log(currentTime);
+
         var self = this;
         for (var i = 0; i < triggers.length; i++) {
             try {
@@ -139,7 +156,6 @@ var VideoMediaObject = React.createClass({
                     }
                     if (!trigger.locked) {
                         self.props.data.triggerMediaActiveTheme(trigger.themes);
-                        console.log("I am switching themes at", trigger.timeSinceStartOfVideo, trigger, trigger.locked)
                         trigger.locked = true;
                     }
                     triggers[i] = trigger;
