@@ -58,6 +58,12 @@ var AudioMediaObject = React.createClass({
                     if(self.state.playing) {
                         this.load(streamUrl);
                         this.volume(0);
+                        var triggers = mediaObject.triggers || [];
+                        for (var i = 0; i < triggers.length; i++) {
+                            if(triggers[i].locked){
+                                triggers[i].locked = false;
+                            }
+                        }
                         this.play();
 
                         var _ops = self.props.data.mediaObject._ops;
@@ -68,6 +74,23 @@ var AudioMediaObject = React.createClass({
                         var transitionSeconds = (_ops.transitionDuration || 10) / 1000;
 
                         this.on('timeupdate', function (position, duration) {
+                            for (var i = 0; i < triggers.length; i++) {
+                                try {
+                                    //We need to turn the time to seconds not miliseconds
+                                    if (position >= triggers[i].timeSinceStartOfVideo && position < triggers[i].timeSinceStartOfVideo + 1) {
+                                        if (triggers[i].locked == undefined) {
+                                            triggers[i].locked = false;
+                                        }
+                                        if (!triggers[i].locked) {
+                                            triggers[i].locked = true;
+                                            console.log("triggered")
+                                            //Put theme changing function here.
+                                        }
+                                    }
+                                } catch (e) {
+                                    console.log("err", e)
+                                }
+                            }
                             if ((duration - position) < transitionSeconds || duration < transitionSeconds) {
                                 self.transition();
                             }
