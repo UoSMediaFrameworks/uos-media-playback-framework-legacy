@@ -4,6 +4,8 @@
 var RandomMediaObjectQueue = require('./media-object-queue');
 var LinearMediaObjectQueue = require('./media-object-linear-queue');
 
+var IS_LINEAR_SEQUENCE_BY_NUMBER = "sequenceByNumber";
+
 // APEP I think we need to take a func in the constructor, something to call when a queue changes
 function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFunc) {
 
@@ -15,9 +17,6 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
     this.afterQueueChangeFunc = afterQueueChangeFunc;
 
     this.take = function(args) {
-
-        console.log("MediaObjectQueueManager - take");
-
         if (this.activeQueue) {
             return this.activeQueue.take(args);
         } else {
@@ -41,6 +40,26 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
             this.linearMediaObjectQueue.setScene(newScene, ops);
         }  catch (e) {
             console.log("MediaObjectQueueManager - linearMediaObjectQueue - setScene error: ", e);
+        }
+
+        // APEP toggle the active scene based on the Scene JSON
+        if(newScene.hasOwnProperty("isLinear") && newScene.isLinear === IS_LINEAR_SEQUENCE_BY_NUMBER) {
+            // APEP if the Scene JSON contains the isLinear property and is marked as sequenceByNumber we can use the linear queue
+            // APEP In the future we are looking to implement sequenceByTime, and this will have to change
+            this.setActiveQueue(true);
+        } else {
+            this.setActiveQueue(false);
+        }
+
+        // APEP the isLinearOptions define the behaviour of the linear Playback
+        if(newScene.hasOwnProperty("isLinearOptions")) {
+            // APEP designed potential values playOnlySequencedMedia||playRemainingMedia||playAllMedia
+            var isLinearOption = newScene.isLinearOptions;
+            // APEP for now we only support either sequence only or play all media
+            var isValid = isLinearOption ===  "playOnlySequencedMedia" || isLinearOption === "playAllMedia";
+            if(isValid) {
+                this.linearMediaObjectQueue.setIsLinearOption(isLinearOption);
+            }
         }
     };
 
@@ -97,8 +116,6 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
         console.log("MediaObjectQueueManager - transitionFromLinear - called");
 
         this.setActiveQueue(false);
-
-        // this.randomMediaObjectQueue.setActive(this.linearMediaObjectQueue.getActive());s
 
         if(this.afterQueueChangeFunc) {
             console.log("queueChangeFunc");

@@ -9,11 +9,15 @@ var SCENE_PROP_DEFAULTS = {
     transitionDuration: 1.4
 };
 
+var LINEAR_OPT_LOOP_SEQUENCE = "playOnlySequencedMedia";
+var LINEAR_OPT_LOOP_ONCE_REMAINING_RANDOM = "playRemainingMedia";
+var LINEAR_OPT_LOOP_ONCE_ALL_RANDOM = "playAllMedia";
+
 /*
  types - Array of constructors
  defaultDisplayCounts - {typeName: num, typeName, num, ...}
  */
-function MediaObjectQueue(types, defaultDisplayCounts, manager) {
+function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
     // objects that are up for display
     var queue = [],
     // list of objects that are currently out on loan from the queue
@@ -23,7 +27,13 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
     // index for which bucket we are up to
         masterBucketListIndex = null,
         queueManager = manager,
+    // APEP isLinearOption defines how
+        isLinearOption = LINEAR_OPT_LOOP_ONCE_ALL_RANDOM,
         tagMatcher = new TagMatcher();
+
+    this.setIsLinearOption = function(linearOption) {
+        isLinearOption = linearOption;
+    };
 
     this.getActive = function() {
         return active;
@@ -154,16 +164,13 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
 
         var nexButtonIndex = currentButtonIndex === buckets.length - 1 ? 0 : currentButtonIndex + 1;
 
-        // APEP this is the transition between types of queues, we should probably handle this a bit better
-        if(nexButtonIndex === 0) {
+        // APEP if the linearOption defined specifies we should play media randomly after a single full set
+        // And we are back at the start of the buckets, transition from linear queue to random queue
+        if(isLinearOption === LINEAR_OPT_LOOP_ONCE_ALL_RANDOM && nexButtonIndex === 0) {
             if(queueManager) {
                 queue = [];
-                // _.forEach(_.clone(active), function(activeMo) {
-                //     if(transitionFunc) {
-                //         transitionFunc(activeMo);
-                //     }
-                // });
                 queueManager.transitionFromLinear();
+                return;
             }
         }
 
@@ -184,7 +191,9 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
             return [];
         }
 
-        // APEP TODO Discuss as dev group if we want no overlap between sequences
+        // APEP sequences can overlap, as in the take and next bucket, we do not transition out the media from the old sequence bucket
+        // this is something we may wish to configure later in the future but for now interval and duration time make the
+        // overlap possible or not
         var bucketMediaObjects = [];
 
         for (var i = 0; i < queue.length; i++) {
@@ -201,7 +210,7 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
 
         queue = []; // APEP TODO not sure if this is needed
 
-        this.nextBucket(); // APEP Resolve
+        this.nextBucket();
 
         return bucketMediaObjects;
     };
@@ -240,4 +249,4 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
     };
 }
 
-module.exports = MediaObjectQueue;
+module.exports = MediaObjectLinearQueue;

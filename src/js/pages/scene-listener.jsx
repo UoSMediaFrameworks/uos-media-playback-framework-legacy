@@ -100,7 +100,6 @@ var SceneListener = React.createClass({
     // APEP func to update after queue has made internal switch between modes
     mediaQueueManagerUpdate: function() {
         this.setState({mediaObjectQueue: this.mediaObjectQueue});
-        this._maybeUpdatePlayer(); // APEP unsure if needed
     },
 
     componentWillMount: function() {
