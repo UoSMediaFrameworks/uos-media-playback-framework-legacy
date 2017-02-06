@@ -135,6 +135,7 @@ var VideoMediaObject = React.createClass({
         }
 
         //APEP TODO probably the only one that needs try catch due e.target.currentTime throws errors for target undefined
+        // APEP TODO refactor checks to use, isVimeo, isTranscoded etc, no need for this parse attempts really 
         try {
             if(e.target.currentTime){
                 currentTime = e.target.currentTime;
