@@ -177,11 +177,11 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
             }
         }
 
-        // TODO APEP might have to filter based on active
         queue = _(masterBucketsList[masterBucketListIndex])
             .filter(function(mo) {
                 return tagMatcher.match(mo.tags);
             })
+            .difference(active) // APEP filter active out, as they must be still playing
             .value();
     };
 
