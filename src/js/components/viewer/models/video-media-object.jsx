@@ -118,7 +118,7 @@ var VideoMediaObject = React.createClass({
     },
     triggerEventHandler: function (e) {
         var currentTime = e.seconds || e.time;
-        var triggers = self.props.data.mediaObject._obj.triggers || [];
+        var triggers = this.props.data.mediaObject._obj.triggers || [];
         console.log(currentTime);
         for (var i = 0; i < triggers.length; i++) {
             try {
