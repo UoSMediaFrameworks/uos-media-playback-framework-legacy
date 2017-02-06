@@ -19,8 +19,19 @@ var VideoMediaObject = require('../utils/media-object/video-media-object');
 var AudioMediaObject = require('../utils/media-object/audio-media-object');
 var RandomVisualPlayer = require('../components/viewer/random-visual-player.jsx');
 var ActiveTheme = require('../components/viewer/viewer-active-theme.jsx');
+var hat = require('hat');
 
 var MINIMUM_NUMBER_OF_MEDIA_TO_BE_MATCHED_WITH_THEME_QUERY = 0;
+
+function getTypeByName (typeName) {
+    var t = _.find([TextMediaObject, ImageMediaObject, VideoMediaObject, AudioMediaObject], function(t) { return t.typeName === typeName; });
+
+    if (! t) {
+        throw 'type "' + typeName + '" not found.  Needs to be passed to constructor.';
+    }
+
+    return t;
+}
 
 var SceneListener = React.createClass({
 
@@ -58,7 +69,8 @@ var SceneListener = React.createClass({
             scene: this._getScene(),
             activeThemes: [],
             fromGraphViewer: this.props.activeScene ? true : false,
-            triggeredActiveThemes: {}
+            triggeredActiveThemes: {},
+            cuePointMediaObjects: []
         };
     },
 
@@ -148,17 +160,7 @@ var SceneListener = React.createClass({
     },
 
     mergeTagAndThemeFilters: function() {
-        // APEP Merge the active themes && triggeredActiveThemes
-        // This way we can keep any active themes from user selection while providing
-        var activeThemesToBeUsed = this.state.activeThemes.concat(Object.keys(this.state.triggeredActiveThemes));
-
-        // APEP to avoid duplication from triggers or user selection, we ensure that this list is uniq,
-        // while this most likely would not cause any issues, it's there for consistency
-        activeThemesToBeUsed = _.uniq(activeThemesToBeUsed);
-
-        console.log("mergeTagAndThemeFilters - activeThemesToBeUsed: ", activeThemesToBeUsed);
-
-        var filterStrings = _.map(activeThemesToBeUsed, function(themeName) {
+        var filterStrings = _.map(this.state.activeThemes, function(themeName) {
             return '(' + this.state.scene.themes[themeName] + ')';
         }.bind(this));
 
@@ -176,6 +178,7 @@ var SceneListener = React.createClass({
         return new TagMatcher(tagsJoinedForBoolStatement);
     },
 
+    // APEP Updates the mediaQueue with the correct tag matcher
     updateTags: function(event) {
         if (event) {
             event.preventDefault();
@@ -216,9 +219,32 @@ var SceneListener = React.createClass({
         this.setState({activeThemes: newThemes});
     },
 
+    cueMediaObjectDoneHandler: function(mediaObjectGuid) {
+
+        console.log("cueMediaObjectDoneHandler - mediaObject.guid: ", mediaObjectGuid);
+
+        var moFoundIndex = _.findIndex(this.state.cuePointMediaObjects, function(mo) { return mo.guid === mediaObjectGuid});
+
+        if(moFoundIndex !== -1) {
+            var cuePointsMediaObjects = this.state.cuePointMediaObjects;
+
+            cuePointsMediaObjects.splice(moFoundIndex, 1);
+
+            console.log("SPLICE - old length, new length: ", this.state.cuePointMediaObjects.length, cuePointsMediaObjects.length);
+
+            this.setState({cuePointMediaObjects: cuePointsMediaObjects});
+        }
+
+    },
+
     // APEP function for adding themes triggered by a piece of media
     // APEP a reference counter is used to ensure that we track overlapping or duplicate triggers
+    // TODO additional comments
     triggerMediaActiveTheme: function(themes) {
+
+        var self = this;
+
+        console.log("scene-listener - triggerMediaActiveTheme - called");
 
         var triggeredActiveThemes = this.state.triggeredActiveThemes;
         _.forEach(themes, function(theme) {
@@ -229,7 +255,29 @@ var SceneListener = React.createClass({
             }
         });
 
-        this.setState({triggeredActiveThemes: triggeredActiveThemes});
+        // APEP for all of the newly triggered active themes, create a tag matcher instance matching each of these themes
+        var tagMatcherStatements = _.map(themes, function(themeName) { // TODO can use Object.keys(triggeredActiveThemes)
+            return '(' + this.state.scene.themes[themeName] + ')';
+        }.bind(this));
+        var tagMatcher = new TagMatcher(tagMatcherStatements.join(" OR "));
+
+        var scene = this._getSceneForUpdatingPlayerComponent();
+
+        // APEP search media objects for matching tags and create a local state copy of wanted media objects to be force to screen
+        var cuePointMediaObjects = _(scene.scene)
+            .filter(function(mo){ return tagMatcher.match(mo.tags)})
+            .map(function(mo) {
+                var TypeConstructor = getTypeByName(mo.type);
+                var newMo = new TypeConstructor(mo, {
+                    displayDuration: self.mediaObjectQueue.getDisplayDuration(),
+                    transitionDuration: self.mediaObjectQueue.getTransitionDuration()
+                });
+                newMo.guid = hat();
+                return newMo;
+            }).value();
+
+        // APEP merge the current cuePointMediaObjects with the new set from trigger
+        this.setState({triggeredActiveThemes: triggeredActiveThemes, cuePointMediaObjects: this.state.cuePointMediaObjects.concat(cuePointMediaObjects)});
     },
 
     // APEP function handled for each media object to remove themes from the active list
@@ -263,7 +311,7 @@ var SceneListener = React.createClass({
         return (
             <div className='scene-listener'>
                 <Loader loaded={this.state.scene ? true : false}></Loader>
-                <RandomVisualPlayer mediaQueue={this.state.mediaObjectQueue} triggerMediaActiveTheme={this.triggerMediaActiveTheme} removeMediaActiveThemesAfterDone={this.removeMediaActiveThemesAfterDone} />
+                <RandomVisualPlayer mediaQueue={this.state.mediaObjectQueue} triggerMediaActiveTheme={this.triggerMediaActiveTheme} removeMediaActiveThemesAfterDone={this.removeMediaActiveThemesAfterDone} cuePointMediaObjects={this.state.cuePointMediaObjects} cueMediaObjectDoneHandler={this.cueMediaObjectDoneHandler} />
                 {ThemeDisplay}
                 {TagForm}
             </div>

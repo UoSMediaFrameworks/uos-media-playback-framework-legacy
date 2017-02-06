@@ -34,16 +34,21 @@ var RandomVisualPlayer = React.createClass({
         } catch (e) {
             console.log("rsvp error", e)
         }
-
     },
 
     moDoneHandler: function (mediaObject) {
-
         //console.log("randomVisualPlayer - moDoneHandler - mediaObject: ", mediaObject.props.data.mediaObject);
 
         // APEP for any non video type media, we can similarly clear the video media object
         this.clearMediaObject(mediaObject);
+    },
 
+    cueMoDoneHandler: function (mediaObject) {
+        console.log("randomVisualPlayer - cueMoDoneHandler - mediaObject: ", mediaObject.props.data.mediaObject);
+
+        // APEP currently not sure what is most suitable for done from this process
+        if(this.props.cueMediaObjectDoneHandler)
+            this.props.cueMediaObjectDoneHandler(mediaObject.props.data.mediaObject.guid);
     },
 
     clearMediaObject: function (mediaObject) {
@@ -153,7 +158,25 @@ var RandomVisualPlayer = React.createClass({
                 // not want them to update.
                 displayDuration: self.props.mediaQueue.getDisplayDuration(),
                 transitionDuration: self.props.mediaQueue.getTransitionDuration(),
+                triggerMediaActiveTheme: self.props.triggerMediaActiveTheme,
                 key: index
+            };
+
+            return (
+                <MediaObject ref={mediaObject.guid} key={mediaObject.guid} data={data}></MediaObject>
+            );
+        });
+
+        var cueMediaObjects = self.props.cuePointMediaObjects.map(function(mediaObject, index){
+            var data = {
+                mediaObject: mediaObject,
+                player: self.refs.player,
+                //Attach the done handler using react props
+                moDoneHandler: self.cueMoDoneHandler,
+                displayDuration: self.props.mediaQueue.getDisplayDuration(),
+                transitionDuration: self.props.mediaQueue.getTransitionDuration(),
+                triggerMediaActiveTheme: self.props.triggerMediaActiveTheme,
+                key: mediaObject.guid
             };
 
             return (
@@ -164,6 +187,7 @@ var RandomVisualPlayer = React.createClass({
         return (
             <div className="player" ref="player">
                 {q}
+                {cueMediaObjects}
             </div>
         );
     }

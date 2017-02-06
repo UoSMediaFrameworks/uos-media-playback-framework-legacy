@@ -119,18 +119,22 @@ var VideoMediaObject = React.createClass({
     triggerEventHandler: function (e) {
         var currentTime = e.seconds || e.time;
         var triggers = this.props.data.mediaObject._obj.triggers || [];
+        var self = this;
         console.log(currentTime);
         for (var i = 0; i < triggers.length; i++) {
             try {
+                var trigger = triggers[i];
                 //We need to turn the time to seconds not miliseconds
-                if (currentTime >= triggers[i].timeSinceStartOfVideo && currentTime < triggers[i].timeSinceStartOfVideo + 1) {
-                    if (triggers[i].locked == undefined) {
-                        triggers[i].locked = false;
+                if (currentTime >= trigger.timeSinceStartOfVideo && currentTime < trigger.timeSinceStartOfVideo + 1) {
+                    if (trigger.locked == undefined) {
+                        trigger.locked = false;
                     }
-                    if (!triggers[i].locked) {
-                        console.log("I am switching themes at", triggers[i].timeSinceStartOfVideo,triggers[i], triggers[i].locked)
-                        triggers[i].locked = true;
+                    if (!trigger.locked) {
+                        self.props.data.triggerMediaActiveTheme(trigger.themes);
+                        console.log("I am switching themes at", trigger.timeSinceStartOfVideo, trigger, trigger.locked)
+                        trigger.locked = true;
                     }
+                    triggers[i] = trigger;
                 }
             } catch (e) {
                 console.log("err", e)
