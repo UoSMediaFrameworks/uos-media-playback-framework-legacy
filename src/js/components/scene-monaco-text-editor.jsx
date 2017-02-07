@@ -10,11 +10,16 @@ var saveTimeout;  //APEP global timeout variable to allow us storage the id for 
 
 //TODO APEP: Github issue raised about issue with regex. https://github.com/Microsoft/monaco-editor/issues/216
 var sceneMediaObjectRegex = "{[\\s\\S\\n]{1,10}tags[\\s\\S\\n]*?type[\\s\\S\\n]*?[\\s\\S\\n]}"; //APEP Full media object selection
+var SCHEMA_URL = window.location.origin + "/schemas/scene-schema.json"; // "http://mediaframework.salford.ac.uk/schemas/scene-schema.json";
 
 var SceneMonacoTextEditor = React.createClass({
 
     getHumanReadableScene: function() {
-        return _.omit(this.props.scene, ['_id', '_groupID']); // APEP Strip out the IDs so they are not displayed
+        // APEP Strip out the IDs so they are not displayed
+        var sceneVal = _.omit(this.props.scene, ['_id', '_groupID']);
+        // APEP Add schema property for monaco editor
+        sceneVal.$schema = SCHEMA_URL;
+        return sceneVal; 
     },
 
     getSceneStringForSceneObj: function(scene) {
@@ -111,6 +116,9 @@ var SceneMonacoTextEditor = React.createClass({
             newScene._id = this.props.scene._id;
             newScene._groupID = this.props.scene._groupID;
 
+            // APEP remove the schema attribute
+            delete newScene.$schema;
+
             return newScene;
         }
         catch (e) {
@@ -184,29 +192,45 @@ var SceneMonacoTextEditor = React.createClass({
         // console.log("MONACO - On Cursor Position: ", e);
     },
 
+    editorWillMount: function(m) {
+        try {
+            m.languages.json.jsonDefaults.setDiagnosticsOptions({
+                schemas: [{
+                    uri: "http://localhost:5000/schemas/scene-schema.json",
+                    schema: {
+                        type: "object",
+                        properties: {
+                            _id: {
+                                type: "string",
+                                description: "Scene Identifier"
+                            },
+                            name: {
+                                type: "string",
+                                description: "Scene Name"
+                            },
+                            "isLinear": {
+                                "type": "string",
+                                "description": "Is Linear allows media to be sequenced by number, use sequenceByNumber as value",
+                                "enum": ["sequenceByNumber"]
+                            },
+                            "isLinearOptions": {
+                                "type": "string",
+                                "description": "The isLinear playback rules",
+                                'enum': ["playOnlySequencedMedia", "playRemainingMedia", "playAllMedia"]
+                            }
+                        }
+                    }
+                }]
+            });
+        } catch (e) {
+            console.log("Monaco - editorWillMount - e: ", e)
+        }
+    },
+
     onDidMount: function(editor, monaco) {
         // console.log('MONACO - onDidMount', editor);
 
         editor.focus();
-
-        //APEP work in process awaiting github issue for language support
-        // this.refs.monaco.editor.languages.json.jsonDefaults.setDiagnosticsOptions({
-        //     schemas: [{
-        //         schema: {
-        //             type: "object",
-        //             properties: {
-        //                 _id: {
-        //                     type: "string",
-        //                     description: "Scene Identifier"
-        //                 },
-        //                 name: {
-        //                     type: "string",
-        //                     description: "Scene Name"
-        //                 }
-        //             }
-        //         }
-        //     }]
-        // });
 
         this.refs.monaco.editor.setValue(this.getInitialState().code);
 
@@ -288,7 +312,8 @@ var SceneMonacoTextEditor = React.createClass({
                     options={options}
                     requireConfig={requireConfig}
                     onChange={this.onChange}
-                    onDidMount={this.onDidMount}
+                    editorDidMount={this.onDidMount}
+                    editorWillMount={this.editorWillMount}
                     theme="vs-dark"
                 />
             </div>

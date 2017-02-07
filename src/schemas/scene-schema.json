@@ -9,6 +9,16 @@
         "name": {
             "type": "string",
             "description": "Scene Name"
+        },
+        "isLinear": {
+            "type": "string",
+            "description": "Is Linear allows media to be sequenced by number, use sequenceByNumber as value",
+            "enum": ["sequenceByNumber"]
+        },
+        "isLinearOptions": {
+            "type": "string",
+            "description": "The isLinear playback rules",
+            "enum": ["playOnlySequencedMedia", "playRemainingMedia", "playAllMedia"]
         }
     }
 }
