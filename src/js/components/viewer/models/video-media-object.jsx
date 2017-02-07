@@ -117,31 +117,14 @@ var VideoMediaObject = React.createClass({
 
         var currentTime = 0;
 
-        // APEP try parse each for of getting time
-        try {
-            if(e.seconds){
-                currentTime = e.seconds;
-            }
-        } catch (e) {
-            console.log("e: ", e);
+        if(e.seconds){
+            currentTime = e.seconds;
         }
-
-        try {
-            if(e.time){
-                currentTime =e.time;
-            }
-        } catch (e) {
-            console.log("e: ", e);
+        if(e.time){
+            currentTime = e.time;
         }
-
-        //APEP TODO probably the only one that needs try catch due e.target.currentTime throws errors for target undefined
-        // APEP TODO refactor checks to use, isVimeo, isTranscoded etc, no need for this parse attempts really 
-        try {
-            if(e.target.currentTime){
-                currentTime = e.target.currentTime;
-            }
-        } catch (e) {
-            console.log("e: ", e);
+        if(e.target && e.target.currentTime){
+            currentTime = e.target.currentTime;
         }
 
         var triggers = this.props.data.mediaObject._obj.triggers || [];
@@ -216,9 +199,7 @@ var VideoMediaObject = React.createClass({
                     //of seek functionality needed
                     self.state.player.raw_player.currentTime = 0;
                     self.state.player.raw_player.play();
-
                 }
-
             }
         }
     },

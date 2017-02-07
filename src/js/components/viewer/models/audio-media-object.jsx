@@ -77,15 +77,17 @@ var AudioMediaObject = React.createClass({
                             for (var i = 0; i < triggers.length; i++) {
                                 try {
                                     //We need to turn the time to seconds not miliseconds
-                                    if (position >= triggers[i].timeSinceStartOfVideo && position < triggers[i].timeSinceStartOfVideo + 1) {
-                                        if (triggers[i].locked == undefined) {
-                                            triggers[i].locked = false;
+                                    var trigger = triggers[i];
+                                    if (position >= trigger.timeSinceStartOfVideo && position < trigger.timeSinceStartOfVideo + 1) {
+                                        if (trigger.locked == undefined) {
+                                            trigger.locked = false;
                                         }
-                                        if (!triggers[i].locked) {
-                                            triggers[i].locked = true;
-                                            console.log("triggered")
-                                            //Put theme changing function here.
+                                        if (!trigger.locked) {
+                                            trigger.locked = true;
+                                            console.log("audio-media-object trigger");
+                                            self.props.data.triggerMediaActiveTheme(trigger.themes);
                                         }
+                                        triggers[i] = trigger;
                                     }
                                 } catch (e) {
                                     console.log("err", e)
