@@ -58,10 +58,10 @@ var AudioMediaObject = React.createClass({
                     if(self.state.playing) {
                         this.load(streamUrl);
                         this.volume(0);
-                        var triggers = mediaObject.triggers || [];
-                        for (var i = 0; i < triggers.length; i++) {
-                            if(triggers[i].locked){
-                                triggers[i].locked = false;
+                        var cues = mediaObject.cues || [];
+                        for (var i = 0; i < cues.length; i++) {
+                            if(cues[i].locked){
+                                cues[i].locked = false;
                             }
                         }
                         this.play();
@@ -74,27 +74,29 @@ var AudioMediaObject = React.createClass({
                         var transitionSeconds = (_ops.transitionDuration || 10) / 1000;
 
                         this.on('timeupdate', function (position, duration) {
-                            for (var i = 0; i < triggers.length; i++) {
-                                try {
-                                    //We need to turn the time to seconds not miliseconds
-                                    var trigger = triggers[i];
-                                    if (position >= trigger.timeSinceStartOfVideo && position < trigger.timeSinceStartOfVideo + 1) {
-                                        if (trigger.locked == undefined) {
-                                            trigger.locked = false;
+                            if (cues != []) {
+                                for (var i = 0; i < cues.length; i++) {
+                                    try {
+                                        //We need to turn the time to seconds not miliseconds
+                                        var cue = cues[i];
+                                        if (position >= cue.timeSinceStartOfVideo && position < cue.timeSinceStartOfVideo + 1) {
+                                            if (cue.locked == undefined) {
+                                                cue.locked = false;
+                                            }
+                                            if (!cue.locked) {
+                                                cue.locked = true;
+                                                console.log("audio-media-object cue");
+                                                self.props.data.triggerMediaActiveTheme(cue.themes);
+                                            }
+                                            cues[i] = cue;
                                         }
-                                        if (!trigger.locked) {
-                                            trigger.locked = true;
-                                            console.log("audio-media-object trigger");
-                                            self.props.data.triggerMediaActiveTheme(trigger.themes);
-                                        }
-                                        triggers[i] = trigger;
+                                    } catch (e) {
+                                        console.log("err", e)
                                     }
-                                } catch (e) {
-                                    console.log("err", e)
                                 }
-                            }
-                            if ((duration - position) < transitionSeconds || duration < transitionSeconds) {
-                                self.transition();
+                                if ((duration - position) < transitionSeconds || duration < transitionSeconds) {
+                                    self.transition();
+                                }
                             }
                         });
                         this.on('error', function(err) {

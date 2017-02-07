@@ -117,32 +117,32 @@ var VideoMediaObject = React.createClass({
 
         var currentTime = 0;
 
-        if(e.seconds){
+        if (e.seconds) {
             currentTime = e.seconds;
         }
-        if(e.time){
+        if (e.time) {
             currentTime = e.time;
         }
-        if(e.target && e.target.currentTime){
+        if (e.target && e.target.currentTime) {
             currentTime = e.target.currentTime;
         }
 
-        var triggers = this.props.data.mediaObject._obj.triggers || [];
+        var cues = this.props.data.mediaObject._obj.cues || [];
 
         var self = this;
-        for (var i = 0; i < triggers.length; i++) {
+        for (var i = 0; i < cues.length; i++) {
             try {
-                var trigger = triggers[i];
+                var cue = cues[i];
                 //We need to turn the time to seconds not miliseconds
-                if (currentTime >= trigger.timeSinceStartOfVideo && currentTime < trigger.timeSinceStartOfVideo + 1) {
-                    if (trigger.locked == undefined) {
-                        trigger.locked = false;
+                if (currentTime >= cue.timeSinceStartOfVideo && currentTime < cue.timeSinceStartOfVideo + 1) {
+                    if (cue.locked == undefined) {
+                        cue.locked = false;
                     }
-                    if (!trigger.locked) {
-                        self.props.data.triggerMediaActiveTheme(trigger.themes);
-                        trigger.locked = true;
+                    if (!cue.locked) {
+                        self.props.data.triggerMediaActiveTheme(cue.themes);
+                        cue.locked = true;
                     }
-                    triggers[i] = trigger;
+                    cues[i] = cue;
                 }
             } catch (e) {
                 console.log("err", e)
@@ -151,19 +151,21 @@ var VideoMediaObject = React.createClass({
     },
     attachTriggers: function () {
         var self = this;
-        var triggers = this.props.data.mediaObject._obj.triggers || [];
-        for (var i = 0; i < triggers.length; i++) {
-            if(triggers[i].locked){
-                triggers[i].locked = false;
+        var cues = this.props.data.mediaObject._obj.cues || [];
+        if (cues != []) {
+            for (var i = 0; i < cues.length; i++) {
+                if (cues[i].locked) {
+                    cues[i].locked = false;
+                }
             }
-        }
-        if (self.state.player.isVimeo) {
-            self.state.player.vimeo_player.on('timeupdate', self.triggerEventHandler);
-        } else {
-            if (self.state.player.transcoded) {
-                self.state.player.raw_player.on("playbackTimeUpdated", self.triggerEventHandler)
-            }else{
-                self.state.player._element.ontimeupdate=self.triggerEventHandler;
+            if (self.state.player.isVimeo) {
+                self.state.player.vimeo_player.on('timeupdate', self.triggerEventHandler);
+            } else {
+                if (self.state.player.transcoded) {
+                    self.state.player.raw_player.on("playbackTimeUpdated", self.triggerEventHandler)
+                } else {
+                    self.state.player._element.ontimeupdate = self.triggerEventHandler;
+                }
             }
         }
     },
@@ -291,7 +293,7 @@ var VideoMediaObject = React.createClass({
                     // APEP remove the event listener in case it tries to replay
                     self.state.player.raw_player.reset();
                     self.state.player._element.removeEventListener('seeked', self.dashPlayerSeeked);
-                    self.state.player.raw_player.off('playbackTimeUpdated',  self.triggerEventHandler);
+                    self.state.player.raw_player.off('playbackTimeUpdated', self.triggerEventHandler);
                 }
             }
             // APEP TODO this needs to be after the transition out animation and before the start of it again
