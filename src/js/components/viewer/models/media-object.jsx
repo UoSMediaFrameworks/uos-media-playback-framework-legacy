@@ -1,6 +1,6 @@
 'use strict';
 var React = require('react');
-var lodash = require('lodash');
+var _ = require('lodash');
 var VideoMediaObject = require('../models/video-media-object.jsx');
 var TextMediaObject = require('../models/text-media-object.jsx');
 var ImageMediaObject = require('../models/images-media-object.jsx');
@@ -14,9 +14,7 @@ var MediaObject = React.createClass({
     },
 
     getInitialState: function () {
-        return {
-
-        };
+        return {};
     },
     setupState: function () {
         this.setState(this.getInitialState());
@@ -30,19 +28,19 @@ var MediaObject = React.createClass({
         var element = this.refs.object.refs[this.props.data.mediaObject._obj._id];
 
         //APEP When mounting component, apply the declared style rules and position if not declared by media objects CSS
-        this.addStyle(element,this.props.data.mediaObject.style);
+        this.addStyle(element, this.props.data.mediaObject.style)
         this.positionElement();
     },
 
-    getObject: function() {
+    getObject: function () {
         return this.refs.object;
     },
 
-    doesStyleDeclareMediaObjectPosition: function(style) {
+    doesStyleDeclareMediaObjectPosition: function (style) {
 
         //APEP Find if the style declares the media objects position to be defined by the style tags provided
 
-        var positionStyleTag  = lodash.find(Object.keys(style), function(styleKey) {
+        var positionStyleTag = _.find(Object.keys(style), function (styleKey) {
             return styleKey === "position" && style[styleKey] === "absolute";
         });
 
@@ -50,26 +48,32 @@ var MediaObject = React.createClass({
 
         return positionStyleTag !== undefined;
     },
-    addStyle:function(element, style) {
-        lodash.forEach(Object.keys(style), function(styleKey) {
-            // APEP Only apply CSS rules that are not position absolute declaration, the media-object CSS class already implements this rule.  This is a hack for an ugly bug
-            if(! (styleKey === "position" && style[styleKey] === "absolute"))
-                element.style[styleKey] = style[styleKey];
-        });
+    addStyle: function (element, style) {
+            var cssText = element.style.cssText;
+            _.forEach(Object.keys(style), function (styleKey) {
+                // APEP Only apply CSS rules that are not position absolute declaration, the media-object CSS class already implements this rule.  This is a hack for an ugly bug
+                // Angel P:For the specific case of seeting border-image before border, which results in it being discarded
+                // I have switched this to build up css text instead applying values to keys in the element style
+                if (!(styleKey === "position" && style[styleKey] === "absolute")) {
+                    // element.style[styleKey] = style[styleKey]
+                    cssText =  styleKey + ":" + style[styleKey] +";" + cssText;
+                }
+            });
+            element.style.cssText = cssText;
     },
     calcDimension: function (player, dim, element) {
         var elementDimensionSize = element[dim];
         var playerDimensionSize = player[dim];
         var min = 0;
         var max = playerDimensionSize - elementDimensionSize;
-        var finalPosition = lodash.random(min,max);
+        var finalPosition = _.random(min, max);
         return Math.round(finalPosition) + 'px';
     },
 
-    positionElement: function(el) {
+    positionElement: function (el) {
         var element = el || this.refs.object.refs[this.props.data.mediaObject._obj._id];
         //APEP When mounting component, apply the declared style rules and position if not declared by media objects CSS
-        if(! this.doesStyleDeclareMediaObjectPosition(this.props.data.mediaObject.style)) {
+        if (!this.doesStyleDeclareMediaObjectPosition(this.props.data.mediaObject.style)) {
             this.placeAtRandomPosition(element);
         }
     },
@@ -83,7 +87,7 @@ var MediaObject = React.createClass({
         element.style.top = this.calcDimension(player, 'clientHeight', element);
     },
 
-    mediaObjectClicked: function(e) {
+    mediaObjectClicked: function (e) {
         e.preventDefault(); //APEP ensure no default action such as form submission is triggered from click
 
         var element = this.refs.object.refs[this.props.data.mediaObject._obj._id];
@@ -105,7 +109,8 @@ var MediaObject = React.createClass({
 
         return (
             <div className="mO">
-                <Object ref="object" data={this.props.data} clickHandler={this.mediaObjectClicked} positionElementHandler={this.positionElement}/>
+                <Object ref="object" data={this.props.data} clickHandler={this.mediaObjectClicked}
+                        positionElementHandler={this.positionElement}/>
             </div>
         );
     }
