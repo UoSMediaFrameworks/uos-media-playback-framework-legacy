@@ -239,13 +239,17 @@ var SceneListener = React.createClass({
 
     // APEP function for adding themes triggered by a piece of media
     // APEP a reference counter is used to ensure that we track overlapping or duplicate triggers
-    // TODO additional comments
+    // We also create cue point media objects directly from a trigger request, these are stored and
+    // managed locally for this object
     triggerMediaActiveTheme: function(themes) {
 
         var self = this;
 
         console.log("scene-listener - triggerMediaActiveTheme - called");
 
+        // APEP using the themes given, we add the themes into the triggered mapping object
+        // We either create a new counter for the theme
+        // Or increment the counter
         var triggeredActiveThemes = this.state.triggeredActiveThemes;
         _.forEach(themes, function(theme) {
             if(!triggeredActiveThemes.hasOwnProperty(theme)) {
@@ -256,7 +260,7 @@ var SceneListener = React.createClass({
         });
 
         // APEP for all of the newly triggered active themes, create a tag matcher instance matching each of these themes
-        var tagMatcherStatements = _.map(themes, function(themeName) { // TODO can use Object.keys(triggeredActiveThemes)
+        var tagMatcherStatements = _.map(themes, function(themeName) { 
             return '(' + this.state.scene.themes[themeName] + ')';
         }.bind(this));
         var tagMatcher = new TagMatcher(tagMatcherStatements.join(" OR "));
@@ -272,7 +276,7 @@ var SceneListener = React.createClass({
                     displayDuration: self.mediaObjectQueue.getDisplayDuration(),
                     transitionDuration: self.mediaObjectQueue.getTransitionDuration()
                 });
-                newMo.guid = hat();
+                newMo.guid = hat(); // APEP create a new instance ID per additional themes media being forced to the screen
                 return newMo;
             }).value();
 

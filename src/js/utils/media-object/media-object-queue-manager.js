@@ -108,7 +108,8 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
     };
 
     this.moTransitionHandler = function(mediaObject) {
-        this.activeQueue.moTransitionHandler(mediaObject);
+        this.randomMediaObjectQueue.moTransitionHandler(mediaObject);
+        this.linearMediaObjectQueue.moTransitionHandler(mediaObject);
     };
 
     this.moDoneHandler = function(mediaObject) {
