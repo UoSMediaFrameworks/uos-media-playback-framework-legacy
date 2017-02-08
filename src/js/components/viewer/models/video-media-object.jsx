@@ -167,14 +167,14 @@ var VideoMediaObject = React.createClass({
                     cues[i].locked = false;
                 }
             }
-        }
-        if (self.state.player.isVimeo) {
-            self.state.player.vimeo_player.on('timeupdate', self.triggerEventHandler);
-        } else {
-            if (self.state.player.transcoded) {
-                self.state.player.raw_player.on("playbackTimeUpdated", self.triggerEventHandler)
+            if (self.state.player.isVimeo) {
+                self.state.player.vimeo_player.on('timeupdate', self.triggerEventHandler);
             } else {
-                self.state.player._element.ontimeupdate = self.triggerEventHandler;
+                if (self.state.player.transcoded) {
+                    self.state.player.raw_player.on("playbackTimeUpdated", self.triggerEventHandler)
+                } else {
+                    self.state.player._element.ontimeupdate = self.triggerEventHandler;
+                }
             }
         }
     },
