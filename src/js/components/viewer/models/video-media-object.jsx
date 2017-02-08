@@ -79,16 +79,7 @@ var VideoMediaObject = React.createClass({
     // Allow component to clear up during removing from DOM
     componentWillUnmount: function () {
         console.log("video Unmounting");
-        var self = this;
-        if (self.state.player.isVimeo) {
-            self.state.player.vimeo_player.off('timeupdate', self.triggerEventHandler);
-        } else {
-            if (self.state.player.transcoded) {
-                self.state.player.raw_player.off("playbackTimeUpdated", self.triggerEventHandler)
-            } else {
-                self.state.player._element.ontimeupdate ="";
-            }
-        }
+
         // APEP TODO investigation to resolving video media object errors during graph viewer
         // APEP TODO I really think each object should be responsible for cleaning up after it self...
         // var self = this;
@@ -167,7 +158,15 @@ var VideoMediaObject = React.createClass({
                     cues[i].locked = false;
                 }
             }
-           d
+            if (self.state.player.isVimeo) {
+                self.state.player.vimeo_player.on('timeupdate', self.triggerEventHandler);
+            } else {
+                if (self.state.player.transcoded) {
+                    self.state.player.raw_player.on("playbackTimeUpdated", self.triggerEventHandler)
+                } else {
+                    self.state.player._element.ontimeupdate = self.triggerEventHandler;
+                }
+            }
         }
     },
     playVideoAndSetVolume: function () {
