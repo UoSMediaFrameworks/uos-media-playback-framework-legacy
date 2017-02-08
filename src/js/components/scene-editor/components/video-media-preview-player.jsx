@@ -176,7 +176,7 @@ var VideoMediaPreviewPlayer = React.createClass({
                 video = this.getVideoPlayerForMediaObject(currentVideoObject)
             }
             return (
-                <div style={{width: '100%', height: '320px'}}>
+                <div style={this.props.style ||{width: '100%', height: '320px'}}>
                     {video}
                 </div>
             );

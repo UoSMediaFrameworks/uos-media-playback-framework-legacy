@@ -56,10 +56,8 @@ var MediaObjectPreviewPlayer = React.createClass({
                 var self = this;
                 var text = "Undefined";
                 var style = {};
-                if (self.props.focusedMediaObject != undefined) {
                     style =props.scene.scene[props.focusedMediaObject].style;
                     text = props.scene.scene[props.focusedMediaObject].text;
-                }
                 preview = <p style={ this._cssToReactCSS(style)}>{text}</p>;
                 self.setState({preview: preview, previewClass: 'media-object-item-preview-player text-container'});
                 break;
@@ -82,14 +80,16 @@ var MediaObjectPreviewPlayer = React.createClass({
                 break;
 
             case 'video':
+                var style ={};
+                var style =props.scene.scene[props.focusedMediaObject].style ? props.scene.scene[props.focusedMediaObject].style: {};
+
                 var preview = <VideoMediaPreviewPlayer id={uniqueComponentKey} scene={this.props.scene}
-                                                       focusedMediaObject={this.props.focusedMediaObject}></VideoMediaPreviewPlayer>
+                                                       focusedMediaObject={this.props.focusedMediaObject}  style={ this._cssToReactCSS(style)}></VideoMediaPreviewPlayer>
                 this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;
             case 'image':
                 var style ={};
                 var style =props.scene.scene[props.focusedMediaObject].style ? props.scene.scene[props.focusedMediaObject].style: {};
-                console.log("image style",style)
                 preview = <img id={uniqueComponentKey} width="640" height="320" src={mediaObject.url} style={ this._cssToReactCSS(style)}></img>
                 this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;
