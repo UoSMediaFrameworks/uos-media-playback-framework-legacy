@@ -136,14 +136,14 @@ var VideoMediaObject = React.createClass({
             currentTime = e.target.currentTime;
         }
 
-        var cues = this.props.data.mediaObject._obj.cues || [];
+        var cues = this.props.data.mediaObject._obj.cuePointEvents || [];
 
         var self = this;
         for (var i = 0; i < cues.length; i++) {
             try {
                 var cue = cues[i];
                 //We need to turn the time to seconds not miliseconds
-                if (currentTime >= cue.timeSinceStartOfVideo && currentTime < cue.timeSinceStartOfVideo + 1) {
+                if (currentTime >= cue.timeElapsed && currentTime < cue.timeElapsed + 1) {
                     if (cue.locked == undefined) {
                         cue.locked = false;
                     }
@@ -160,7 +160,7 @@ var VideoMediaObject = React.createClass({
     },
     attachTriggers: function () {
         var self = this;
-        var cues = this.props.data.mediaObject._obj.cues || [];
+        var cues = this.props.data.mediaObject._obj.cuePointEvents || [];
         if (cues != []) {
             for (var i = 0; i < cues.length; i++) {
                 if (cues[i].locked) {

@@ -58,7 +58,7 @@ var AudioMediaObject = React.createClass({
                     if(self.state.playing) {
                         this.load(streamUrl);
                         this.volume(0);
-                        var cues = mediaObject.cues || [];
+                        var cues = mediaObject.cuePointEvents || [];
                         for (var i = 0; i < cues.length; i++) {
                             if(cues[i].locked){
                                 cues[i].locked = false;
@@ -79,7 +79,7 @@ var AudioMediaObject = React.createClass({
                                     try {
                                         //We need to turn the time to seconds not miliseconds
                                         var cue = cues[i];
-                                        if (position >= cue.timeSinceStartOfVideo && position < cue.timeSinceStartOfVideo + 1) {
+                                        if (position >= cue.timeElapsed && position < cue.timeElapsed + 1) {
                                             if (cue.locked == undefined) {
                                                 cue.locked = false;
                                             }
