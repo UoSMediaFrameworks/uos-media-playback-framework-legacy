@@ -19,7 +19,7 @@ var SceneMonacoTextEditor = React.createClass({
         var sceneVal = _.omit(this.props.scene, ['_id', '_groupID']);
         // APEP Add schema property for monaco editor
         sceneVal.$schema = SCHEMA_URL;
-        return sceneVal; 
+        return sceneVal;
     },
 
     getSceneStringForSceneObj: function(scene) {
@@ -196,7 +196,7 @@ var SceneMonacoTextEditor = React.createClass({
         try {
             m.languages.json.jsonDefaults.setDiagnosticsOptions({
                 schemas: [{
-                    uri: "http://localhost:5000/schemas/scene-schema.json",
+                    uri: SCHEMA_URL,
                     schema: {
                         type: "object",
                         properties: {
