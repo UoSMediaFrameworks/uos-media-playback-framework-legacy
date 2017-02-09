@@ -81,8 +81,13 @@ var SceneChooser = React.createClass({
                             </div>
                         </div>
                     </div>
-                    <div className='col-md-12'>
+                    <div className='col-md-6'>
                         <h4> Example Scenes </h4>
+                        <ul className="nav nav-pills .nav-stacked col-xs-12">
+                            <li  className="col-xs-12" >
+                                <a href="http://uos-sceneeditor.azurewebsites.net/#/scene/589c9dc3f0b2aca4bdfe444a">MF Audio Example</a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
