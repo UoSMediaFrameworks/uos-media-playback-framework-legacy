@@ -13,7 +13,7 @@ var TOKEN_REGEXP = /\s+AND\s+|\s+OR\s+|\s?\(\s?|\s?\)\s?/;
 \****************************************************/
 
 function EmptyRule () {
-	
+
 }
 
 EmptyRule.prototype.match = function(tagList) {
@@ -34,6 +34,7 @@ function TagRule (tag) {
 }
 
 TagRule.prototype.match = function(tagList) {
+    // APEP this match can cause problems - TODO update this to be full word
 	return tagList.indexOf(this._value) !== -1 ? true : false;
 };
 
@@ -56,13 +57,13 @@ AndRule.prototype.match = function(tagList) {
 };
 
 AndRule.prototype.equalTo = function(andRule) {
-	return andRule instanceof AndRule && 
-		this._left.equalTo(andRule._left) && 
+	return andRule instanceof AndRule &&
+		this._left.equalTo(andRule._left) &&
 		this._right.equalTo(andRule._right);
 };
 
 AndRule.prototype.toString = function() {
-	return this._left.toString() + ' AND ' + this._right.toString(); 
+	return this._left.toString() + ' AND ' + this._right.toString();
 };
 
 
@@ -76,13 +77,13 @@ OrRule.prototype.match = function(tagList) {
 };
 
 OrRule.prototype.equalTo = function(orRule) {
-	return orRule instanceof OrRule && 
-		this._left.equalTo(orRule._left) && 
+	return orRule instanceof OrRule &&
+		this._left.equalTo(orRule._left) &&
 		this._right.equalTo(orRule._right);
 };
 
 OrRule.prototype.toString = function() {
-	return this._left.toString() + ' OR ' + this._right.toString(); 
+	return this._left.toString() + ' OR ' + this._right.toString();
 };
 
 
@@ -96,7 +97,7 @@ ParethesisRule.prototype.match = function(tagList) {
 };
 
 ParethesisRule.prototype.equalTo = function(rule) {
-	return rule instanceof ParethesisRule && 
+	return rule instanceof ParethesisRule &&
 		this._rule.equalTo(rule._rule);
 };
 
@@ -121,13 +122,13 @@ function parseQuery (tokens) {
 
 	// catch the easy case first, single tag
 	if (tokens.length === 0) {
-		return new EmptyRule();	
+		return new EmptyRule();
 	} else if (tokens.length === 1) {
 		var toke = tokens[0];
 		if (toke instanceof ParethesisRule) {
 			return toke;
 		} else {
-			return new TagRule(tokens[0]);	
+			return new TagRule(tokens[0]);
 		}
 	} else {
 		// first look for wrapped parenthesis
@@ -166,7 +167,7 @@ function parseQuery (tokens) {
 		if (orIndex !== -1) {
 			leftTokens = tokens.slice(0, orIndex);
 			rightTokens = tokens.slice(orIndex + 1);
-			return new OrRule(parseQuery(leftTokens), parseQuery(rightTokens));	
+			return new OrRule(parseQuery(leftTokens), parseQuery(rightTokens));
 		} else {
 			// look for AND
 			var andIndex = tokens.indexOf(AND_TOKEN);
@@ -201,7 +202,7 @@ function tokenizeQuery (query) {
 			if (match.index !== 0) {
 				var tagToke = matchString.substring(0, match.index).trim();
 				tokens.push(tagToke);
-			} 
+			}
 
 			// now put on the matched token
 			tokens.push(match[0].trim());
@@ -213,11 +214,11 @@ function tokenizeQuery (query) {
 				offset--;
 			}
 
-			matchString = matchString.substring(offset); 
+			matchString = matchString.substring(offset);
 		}
-		
+
 	}
-	
+
 
 	return tokens;
 }
