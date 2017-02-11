@@ -14,6 +14,7 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
     this.linearMediaObjectQueue = new LinearMediaObjectQueue(types, defaultDisplayCounts, this);
 
     this.activeQueue = this.linearMediaObjectQueue;
+    this.isLinear = true;
     this.afterQueueChangeFunc = afterQueueChangeFunc;
 
     this.take = function(args) {
@@ -42,6 +43,7 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
                 this.linearMediaObjectQueue.setIsLinearOption(isLinearOption);
             }
 
+
             var isValidRandomOption = isLinearOption === "playRemainingMedia" || isLinearOption === "playAllMedia";
             // APEP ensure that the random queue options are set correctly
             if(isValidRandomOption) {
@@ -51,6 +53,10 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
                 this.randomMediaObjectQueue.setIsRandomOptions("default");
             }
         }
+
+        // APEP check to see if we have forceFullSequencePlayback and if not initial to default value - this is to allow scenes
+        // to require sequences are fully played before allowing the next sequence of media to play
+        this.linearMediaObjectQueue.setIsForceFullSequencePlayback(newScene.hasOwnProperty("forceFullSequencePlayback") ? newScene.forceFullSequencePlayback : false );
 
         try {
             // APEP the random queue needs a way to filter out sequence media
@@ -118,8 +124,11 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
     };
 
     this.setActiveQueue = function(isLinear) {
+        this.isLinear = isLinear;
         if(isLinear) {
             this.activeQueue = this.linearMediaObjectQueue;
+            // APEP make sure initialise the linearMediaObjectQueue to the first bucket
+            this.linearMediaObjectQueue.initialiseToFirstBucket();
         } else {
             this.activeQueue = this.randomMediaObjectQueue;
 
@@ -150,6 +159,12 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
             console.log("MediaObjectQueueManager - transitionFromRandom - queueChangeFunc");
             this.afterQueueChangeFunc();
         }
+    };
+
+    this.isLinearQueueEmpty = function() {
+        // APEP TODO we could check to ensure that linear queue is the active queue
+
+        return this.linearMediaObjectQueue.isLinearQueueEmpty();
     }
 
 }

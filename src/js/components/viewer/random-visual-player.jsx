@@ -13,7 +13,8 @@ var RandomVisualPlayer = React.createClass({
             queue: [],
             arr: [],
             mediaQueue: {},
-            interval: false
+            interval: false,
+            loadMediaObjectInterval: null
         };
     },
 
@@ -41,6 +42,19 @@ var RandomVisualPlayer = React.createClass({
 
         // APEP for any non video type media, we can similarly clear the video media object
         this.clearMediaObject(mediaObject);
+
+        // APEP if queue is in linear mode, check to see if we should change buckets or not.
+        // if queue is linear and queue && isLinearQueueEmpty we should take and reset timer
+        // the linear queue and mode is responsible for allowing the player to request media earlier than the
+        // scene duration, this is toggled inside the Scene JSON
+        if(this.props.mediaQueue && this.props.mediaQueue.isLinear) {
+            console.log("moDoneHandler - isLinear");
+            if(this.props.mediaQueue.isLinearQueueEmpty()) {
+                console.log("moDoneHandler - linearQueue allowing the next linear bucket to be take early");
+                this.props.mediaQueue.linearMediaObjectQueue.nextBucket();
+                this.startLoadMediaObjectsInterval();
+            }
+        }
     },
 
     cueMoDoneHandler: function (mediaObject) {
@@ -124,6 +138,23 @@ var RandomVisualPlayer = React.createClass({
 
     },
 
+    startLoadMediaObjectsInterval: function() {
+        console.log("startLoadMediaObjectsInterval - startLoadMediaObjectsInterval");
+
+        if(this.state.loadMediaObjectInterval)
+            clearInterval(this.state.loadMediaObjectInterval);
+
+        this.loadMediaObject(this.props);
+
+        var self = this;
+
+        var interval = setInterval(function () {
+            self.loadMediaObject(self.props)
+        }, self.props.mediaQueue.getDisplayInterval());
+
+        this.setState({loadMediaObjectInterval: interval});
+    },
+
     componentDidUpdate: function () {
         //TODO APEP I think we may need to clean up the existing media if we update with a new scene
         var self = this;
@@ -131,10 +162,7 @@ var RandomVisualPlayer = React.createClass({
         try {
             this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
             if (self.props.mediaQueue.getDisplayInterval() !== undefined && !self.state.interval) {
-                self.loadMediaObject(self.props);
-                setInterval(function () {
-                    self.loadMediaObject(self.props)
-                }, self.props.mediaQueue.getDisplayInterval());
+                self.startLoadMediaObjectsInterval();
                 self.setState({interval: true});
             }
         } catch (e) {

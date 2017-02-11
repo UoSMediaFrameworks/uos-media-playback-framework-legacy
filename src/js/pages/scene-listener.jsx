@@ -221,7 +221,7 @@ var SceneListener = React.createClass({
 
     cueMediaObjectDoneHandler: function(mediaObjectGuid) {
 
-        console.log("cueMediaObjectDoneHandler - mediaObject.guid: ", mediaObjectGuid);
+        // console.log("cueMediaObjectDoneHandler - mediaObject.guid: ", mediaObjectGuid);
 
         var moFoundIndex = _.findIndex(this.state.cuePointMediaObjects, function(mo) { return mo.guid === mediaObjectGuid});
 
@@ -230,7 +230,7 @@ var SceneListener = React.createClass({
 
             cuePointsMediaObjects.splice(moFoundIndex, 1);
 
-            console.log("SPLICE - old length, new length: ", this.state.cuePointMediaObjects.length, cuePointsMediaObjects.length);
+            // console.log("SPLICE - old length, new length: ", this.state.cuePointMediaObjects.length, cuePointsMediaObjects.length);
 
             this.setState({cuePointMediaObjects: cuePointsMediaObjects});
         }
@@ -260,7 +260,7 @@ var SceneListener = React.createClass({
         });
 
         // APEP for all of the newly triggered active themes, create a tag matcher instance matching each of these themes
-        var tagMatcherStatements = _.map(themes, function(themeName) { 
+        var tagMatcherStatements = _.map(themes, function(themeName) {
             return '(' + this.state.scene.themes[themeName] + ')';
         }.bind(this));
         var tagMatcher = new TagMatcher(tagMatcherStatements.join(" OR "));

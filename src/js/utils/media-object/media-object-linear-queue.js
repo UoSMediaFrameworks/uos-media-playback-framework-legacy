@@ -29,10 +29,16 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
         queueManager = manager,
     // APEP isLinearOption defines how
         isLinearOption = LINEAR_OPT_LOOP_ONCE_ALL_RANDOM,
+    // APEP scenes can overide default behaviour to force each sequence to fully play
+        isForceFullSequencePlayback = false,
         tagMatcher = new TagMatcher();
 
     this.setIsLinearOption = function(linearOption) {
         isLinearOption = linearOption;
+    };
+
+    this.setIsForceFullSequencePlayback = function (isForceFullSequencePlaybackOption) {
+        isForceFullSequencePlayback = isForceFullSequencePlaybackOption;
     };
 
     this.getActive = function() {
@@ -68,7 +74,8 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
         // make sure it's still in the masterList
         if (_.find(masterBucketsList[masterBucketListIndex], function(mo) { return mediaObject === mo; })) {
             if (tagMatcher.match(mediaObject.tags)) {
-                queue.push(mediaObject);
+                // APEP for the linear playback mode, we never recycle media in a sequence so we don't really need this
+                //queue.push(mediaObject);
             }
         }
 
@@ -127,15 +134,7 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
             return;
         }
 
-        // APEP first bucket
-        masterBucketListIndex = _.min(Object.keys(masterBucketsList));
-
-        // APEP fill the queue with the first bucket of media objects matching the tags
-        queue = _(masterBucketsList[masterBucketListIndex])
-            .filter(function(mo) {
-                return tagMatcher.match(mo.tags);
-            })
-            .value();
+        this.initialiseToFirstBucket();
 
         // transition out all active mediaObjects
         if (ops.hardReset) {
@@ -146,6 +145,19 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
             });
         }
 
+    };
+
+    // APEP allow the first bucket to be assigned to local state
+    this.initialiseToFirstBucket = function() {
+        // APEP first bucket
+        masterBucketListIndex = _.min(Object.keys(masterBucketsList));
+
+        // APEP fill the queue with the first bucket of media objects matching the tags
+        queue = _(masterBucketsList[masterBucketListIndex])
+            .filter(function(mo) {
+                return tagMatcher.match(mo.tags);
+            })
+            .value();
     };
 
     // APEP use the bucket keys as a circular list, allowing next buckets to go through the cycle
@@ -192,9 +204,6 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
             return [];
         }
 
-        // APEP sequences can overlap, as in the take and next bucket, we do not transition out the media from the old sequence bucket
-        // this is something we may wish to configure later in the future but for now interval and duration time make the
-        // overlap possible or not
         var bucketMediaObjects = [];
 
         for (var i = 0; i < queue.length; i++) {
@@ -209,11 +218,61 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
             bucketMediaObjects.push(matchedMo);
         }
 
-        queue = []; // APEP TODO not sure if this is needed
+        // APEP as we'e made all queue elements active, we do not need to track them
+        queue = [];
 
-        this.nextBucket();
+        // APEP depending on the default or overidden behaviour - go to the next bucket ready for the next take(..) call
+        if(!this.isCurrentBucketSolo()) {
+            console.log("Current Bucket is not solo - go to the next");
+            this.nextBucket();
+        }
 
         return bucketMediaObjects;
+    };
+
+    // APEP function for queue to know if we should wait for transition of last media to go to the next bucket
+    this.isCurrentBucketSolo = function() {
+
+        // APEP if the scene does not require full playback, we exit out of this branch early
+        if (!isForceFullSequencePlayback) {
+            return false;
+        }
+
+        var autoreplayMedia = _.filter(masterBucketsList[masterBucketListIndex], function(mo) { return (mo.hasOwnProperty("autoreplay") && mo.autoreplay > 0) || (mo._obj.hasOwnProperty("autoreplay") && mo._obj.autoreplay > 0) });
+
+        console.log("isCurrentBucketSolo: ", autoreplayMedia.length > 0);
+
+        if(!autoreplayMedia.length > 0) {
+            console.log("isCurrentBucketSolo: masterBucketsList[masterBucketListIndex], ", masterBucketsList[masterBucketListIndex])
+        }
+
+        return autoreplayMedia.length > 0;
+    };
+
+    this.isLinearQueueEmpty = function() {
+
+        // APEP if the scene does not require full playback, we exit out of this branch early
+        if (!isForceFullSequencePlayback) {
+            return false;
+        }
+
+        // APEP check if the current bucket has any autoreplay > 0 if so, we need to respect the active or not
+        var autoreplayMedia = _.filter(masterBucketsList[masterBucketListIndex], function(mo) { return (mo.hasOwnProperty("autoreplay") && mo.autoreplay > 0) || (mo._obj.hasOwnProperty("autoreplay") && mo._obj.autoreplay > 0) });
+
+        console.log("isLinearQueueEmpty - autoreplayMedia.length: ", autoreplayMedia.length);
+        console.log("isLinearQueueEmpty - active.length: ", active.length);
+
+        // APEP if the current bucket has autoreplay media, we need to inspect the active list before we can allow the process to the next bucket
+        var hasAutoReplayMediaAndActiveNotEmpty = autoreplayMedia.length > 0;
+
+        // APEP if we have some auto replay media, we need to check if active is empty
+        if(hasAutoReplayMediaAndActiveNotEmpty) {
+            hasAutoReplayMediaAndActiveNotEmpty = hasAutoReplayMediaAndActiveNotEmpty && active.length > 0;
+            return !hasAutoReplayMediaAndActiveNotEmpty;
+        }
+
+        // APEP else, don't let the player change buckets
+        return false;
     };
 
     this.setTagMatcher = function(newTagMatcher) {
