@@ -217,7 +217,13 @@ var SceneMonacoTextEditor = React.createClass({
                                 "type": "string",
                                 "description": "The isLinear playback rules",
                                 'enum': ["playOnlySequencedMedia", "playRemainingMedia", "playAllMedia"]
+                            },
+                            "forceFullSequencePlayback": {
+                                "type": "Boolean",
+                                "description": "Force sequences to fully play before displaying the next",
+                                "enum": [ true, false ]
                             }
+
                         }
                     }
                 }]
