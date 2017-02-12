@@ -516,6 +516,7 @@ module.exports = {
     tryCreateScene: function(name, cb) {
     	var scene = {
     		'name': name,
+            'version': "0.1",
             'maximumOnScreen': {
                 'image': 3,
                 'text': 1,
