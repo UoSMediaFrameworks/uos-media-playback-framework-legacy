@@ -141,7 +141,7 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
         var masterListMediaObjects = _.filter(newScene.scene, function(mo) {
             // APEP if we are not in default mode, only non sequenced media can be included
            if(isRandomOptions === "playRemainingMedia") {
-               return !mo.hasOwnProperty("sequenceByNumber");
+               return !mo.hasOwnProperty("sequenceNumber");
            } else {
                return true;
            }

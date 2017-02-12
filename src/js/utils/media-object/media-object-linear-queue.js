@@ -107,7 +107,7 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
         try {
             masterBucketsList = {};
             // APEP get all media objects with sequenceByNumber
-            var sceneMediaObjectsForLinearPlayback = _.filter(newScene.scene, function(mo) { return mo.hasOwnProperty("sequenceByNumber"); });
+            var sceneMediaObjectsForLinearPlayback = _.filter(newScene.scene, function(mo) { return mo.hasOwnProperty("sequenceNumber"); });
             // APEP for all media objects that are sequenced, add to buckets
             _.forEach(sceneMediaObjectsForLinearPlayback, function(mo) {
 
@@ -118,11 +118,11 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
                 });
 
 
-                if(!masterBucketsList.hasOwnProperty(mo.sequenceByNumber)) {
-                    masterBucketsList[mo.sequenceByNumber] = [];
+                if(!masterBucketsList.hasOwnProperty(mo.sequenceNumber)) {
+                    masterBucketsList[mo.sequenceNumber] = [];
                 }
 
-                masterBucketsList[mo.sequenceByNumber].push(newMo);
+                masterBucketsList[mo.sequenceNumber].push(newMo);
             }.bind(this));
         } catch (e) {
             console.log("e: ", e);
