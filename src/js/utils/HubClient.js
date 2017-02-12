@@ -180,6 +180,11 @@ var HubClient = {
         socket.emit('unsubScene', id);
     },
 
+    publishScoreCommand: function(score, roomId) {
+        // APEP allow the score playback functionality to publish commands
+        socket.emit("sendCommand", roomId, 'showScenesAndThemes', score);
+    },
+
     registerToGraphPlayerRoom: function(roomId) {
 
         console.log("HubClient - registerToGraphPlayerRoom - roomId: " + roomId);
@@ -193,14 +198,10 @@ var HubClient = {
             console.log("HubClient - on command - data: ", data);
 
             if (data.name === 'showScenes') {
-                // APEP TODO Include in scene store refactor for loading the scene for graph viewer player
-                // _.forEach(data.value, function(sceneId){
-                //     self.loadScene(sceneId);
-                // });
-
                 // APEP publish scene ID list
                 HubRecieveActions.recieveSceneListForPlayer(data.value);
-
+            } else if (data.name === 'showScenesAndThemes') {
+                HubRecieveActions.recieveSceneAndThemeListForPlayer(data.value);
             } else {
                 HubRecieveActions.errorMessage("Failed to receive scene list for playback");
             }

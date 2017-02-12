@@ -576,3 +576,13 @@ html, body, #main, .app {
 .collapse-icon:active{
     color:darkgreen;
 }
+
+
+/* SCORE RELATED WORK */
+
+.score-page .score-editor-container {
+    width: 100%;
+    height: 100%;
+}
+
+/* END OF SCORE RELATED WORK */

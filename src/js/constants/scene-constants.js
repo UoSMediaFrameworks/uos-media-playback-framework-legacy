@@ -44,7 +44,8 @@ module.exports = {
 
         DELETE_SCENE_GRAPH: null,
         /* APEP Scene Graph Viewer */
-        RECEIVE_SCENES_FROM_GRAPH: null
+        RECEIVE_SCENES_FROM_GRAPH: null,
+        RECIEVE_SCENES_AND_THEMES_FROM_SCORE: null
     }),
     PayloadSources: keymirror({
         VIEW_ACTION: null,

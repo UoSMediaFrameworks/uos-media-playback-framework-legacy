@@ -26,6 +26,7 @@ var GraphViewer = React.createClass({
 
         return {
             scenes: this.getSceneIdsFromGraphViewerStore(),
+            themes: GraphViewerStore.getThemesForPlayback(),
             activeSceneId: null,
             activeScene: null
         }
@@ -43,7 +44,7 @@ var GraphViewer = React.createClass({
         // console.log("graph-viewer - _onChange");
 
         // APEP we have a new scene list
-        this.setState({scenes: this.getSceneIdsFromGraphViewerStore()});
+        this.setState({scenes: this.getSceneIdsFromGraphViewerStore(), themes: GraphViewerStore.getThemesForPlayback()});
 
         this.showScenes();
 
@@ -151,7 +152,14 @@ var GraphViewer = React.createClass({
                 return;
             }
 
-            var themeQuery = self.getRandomThemeName(newScene);
+            // APEP find the themeQuery, if we've been given themes, use the first one
+            // if choose from the theme bucket for the scene
+            var themeQuery = null;
+            if  (self.state.themes && self.state.themes.length > 0) {
+                themeQuery = self.state.themes[0];
+            } else {
+                themeQuery = self.getRandomThemeName(newScene);
+            }
 
             currentSceneIndex++;
 

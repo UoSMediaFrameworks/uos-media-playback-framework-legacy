@@ -18,6 +18,7 @@ var SceneGraphChooser = require('./components/pages/scene-graph-choose-or-create
 var LoginPage = require('./pages/login-page.jsx');
 var Scene = require('./components/pages/scene.jsx');
 var SceneGraph = require('./components/pages/scenegraph.jsx');
+var Score = require('./components/pages/score.jsx');
 
 var ClientStore = require('./stores/client-store');
 var appVersion = require('./utils/app-version');
@@ -41,6 +42,7 @@ ReactDOM.render((<Router history={hashHistory}>
         <Route name='scene'        path="scene/:id" component={Scene} onEnter={requireAuth}/>
         <Route name='scenegraphs'  path='scenegraphs' component={SceneGraphChooser} onEnter={requireAuth}/>
         <Route name='scenegraph'   path='scenegraph/:id' component={SceneGraph} onEnter={requireAuth}/>
+        <Route name='score'        path='score' component={Score} onEnter={requireAuth}/>
     </Route>
 </Router>), document.getElementById('main'));
 

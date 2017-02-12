@@ -28,7 +28,7 @@ var MediaObject = React.createClass({
         var element = this.refs.object.refs[this.props.data.mediaObject._obj._id];
 
         //APEP When mounting component, apply the declared style rules and position if not declared by media objects CSS
-        this.addStyle(element, this.props.data.mediaObject.style)
+        this.addStyle(element, this.props.data.mediaObject.style);
         this.positionElement();
     },
 

@@ -55,6 +55,18 @@ var HubRecieveActions = {
             type: ActionTypes.RECEIVE_SCENES_FROM_GRAPH,
             sceneIds: scenes
         });
+    },
+
+    recieveSceneAndThemeListForPlayer: function(scoreCommand) {
+
+        var sceneIds = scoreCommand.play.scenes;
+        var themes = scoreCommand.play.themes;
+
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.RECIEVE_SCENES_AND_THEMES_FROM_SCORE,
+            sceneIds: sceneIds,
+            themes: themes
+        });
     }
 };
 
