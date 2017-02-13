@@ -14,7 +14,7 @@ var SceneChooser = React.createClass({
     getInitialState: function () {
         var initFilters = '{"filterText":"test","filterGroupId":null,"sortBy":null}';
         try{
-            return  JSON.parse(localStorage.getItem('filters')|| initFilters);
+            return  JSON.parse(localStorage.getItem('scene-filters')|| initFilters);
         }catch(E){
             console.log("err",E)
         }
@@ -31,6 +31,9 @@ var SceneChooser = React.createClass({
             this.setState({filterText: input.value});
         }
     },
+    componentDidMount:function(){
+        this.refs["filter"].value=this.state.filterText;
+    },
     componentDidUpdate:function(){
         this.refs["filter"].value=this.state.filterText;
     },
@@ -44,7 +47,7 @@ var SceneChooser = React.createClass({
         this.setState({sortBy: null});
     },
     render: function () {
-        localStorage.setItem('filters', JSON.stringify(this.state));
+        localStorage.setItem('scene-filters', JSON.stringify(this.state));
         var options = ConnectionCache.getGroupNameArray();
         var optionsArr = [{value:"None",label:"None"}];
         options.forEach(function(value,key){

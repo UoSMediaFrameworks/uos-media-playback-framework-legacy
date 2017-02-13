@@ -17,16 +17,18 @@ var SceneGraphChooser = React.createClass({
 
     mixins: [FormHelper],
 
-    getInitialState: function() {
-        return {
-            value: "GDC_SCENE_GRAPH", //APEP store the value of the select HTML element
-            filterText: null,
-            filterGroupId: null,
-            sortBy:null
+    getInitialState: function () {
+
+        var initFilters = '{"value": "GDC_SCENE_GRAPH","filterText": null,"filterGroupId": null,"sortBy":null}'
+        try {
+            return JSON.parse(localStorage.getItem('scene-graph-filters') || initFilters);
+        } catch (E) {
+            console.log("err", E)
         }
     },
 
-    handleSubmit: function(event) {
+
+    handleSubmit: function (event) {
         event.preventDefault();
         HubSendActions.tryCreateSceneGraph(this.getRefVal('name'), this.state.value);
     },
@@ -36,40 +38,50 @@ var SceneGraphChooser = React.createClass({
             this.setState({filterText: input.value});
         }
     },
-    handleChange(event) {
+    componentDidMount: function () {
+        this.refs["filter"].value = this.state.filterText;
+    },
+    componentDidUpdate: function () {
+        this.refs["filter"].value = this.state.filterText;
+    },
+    handleChange(event)
+    {
         this.setState({value: event.target.value});
     },
-    _onSort(event){
+    _onSort(event)
+    {
         this.setState({sortBy: event.target.value});
     },
-    render: function() {
+    render: function () {
+        localStorage.setItem('scene-graph-filters', JSON.stringify(this.state));
         var options = ConnectionCache.getGroupNameArray();
-        var optionsArr = [{value:"None",label:"None"}];
-        options.forEach(function(value,key){
-            optionsArr.push({value:key,label:value});
+        var optionsArr = [{value: "None", label: "None"}];
+        options.forEach(function (value, key) {
+            optionsArr.push({value: key, label: value});
         });
         return (
             <div className='container'>
                 <div className='row'>
                     <div className='col-xs-6'>
                         <h2>Edit an Existing Scene Graph</h2>
-                        <SceneGraphList  filterText={this.state.filterText} sortBy={this.state.sortBy}/>
+                        <SceneGraphList filterText={this.state.filterText} sortBy={this.state.sortBy}/>
                     </div>
                     <div className='col-xs-6'>
                         <div className="col-xs-12">
-                        <h2>Create a new Scene Graph</h2>
-                        <form className='form-inline' onSubmit={this.handleSubmit} role='form'>
-                            <div >
-                                <input type='text' ref='name' className='form-control' placeholder='name' />
-                                <span  id="basic-addon2">
-                                    <select className="form-control" value={this.state.value} onChange={this.handleChange}>
+                            <h2>Create a new Scene Graph</h2>
+                            <form className='form-inline' onSubmit={this.handleSubmit} role='form'>
+                                <div >
+                                    <input type='text' ref='name' className='form-control' placeholder='name'/>
+                                    <span id="basic-addon2">
+                                    <select className="form-control" value={this.state.value}
+                                            onChange={this.handleChange}>
                                         <option value="GDC_SCENE_GRAPH">GDC</option>
                                         <option value="MEMOIR_SCENE_GRAPH">Memoir</option>
                                     </select>
                                 </span>
-                                <button type='submit' className='btn btn-default'>Create</button>
-                            </div>
-                        </form>
+                                    <button type='submit' className='btn btn-default'>Create</button>
+                                </div>
+                            </form>
                         </div>
                         <div className="col-xs-12">
                             <div className="sort-section">
@@ -81,16 +93,24 @@ var SceneGraphChooser = React.createClass({
                         <div className="col-xs-12">
                             <div className="sort-section">
                                 <h2>Sort by</h2>
-                                <button type="button" className="btn btn-dark" value="asc" onClick={this._onSort}>Name Asc</button>
-                                <button type="button" className="btn btn-dark" value="desc" onClick={this._onSort}>Name Desc</button>
+                                <button type="button" className="btn btn-dark" value="asc" onClick={this._onSort}>
+                                    Name Asc
+                                </button>
+                                <button type="button" className="btn btn-dark" value="desc" onClick={this._onSort}>
+                                    Name Desc
+                                </button>
                             </div>
                         </div>
                     </div>
                     <div className="col-xs-12">
                         <h2>Open Presentation Graphs</h2>
                         <ul className="graph-type-buttons">
-                            <a className='btn btn-dark' href={presentationMediaHubGraphURL}><li key="primary">Default Graph</li></a>
-                            <a className='btn btn-dark' href={presentationGraphViewerUrl}><li key="primary">Default Viewer</li></a>
+                            <a className='btn btn-dark' href={presentationMediaHubGraphURL}>
+                                <li key="primary">Default Graph</li>
+                            </a>
+                            <a className='btn btn-dark' href={presentationGraphViewerUrl}>
+                                <li key="primary">Default Viewer</li>
+                            </a>
                         </ul>
                     </div>
                 </div>
