@@ -107,11 +107,9 @@ EmbeddedVimeoPlayer.prototype.setupAsVimeoPlayer = function (vimeoId) {
         }),
         playerUrl = 'https://player.vimeo.com/video/' + vimeoId + '?' + urlAttrsStr;
 
-    var dimensions = checkDisplayRatio(window.innerWidth, window.innerHeight);
+    // var dimensions = checkDisplayRatio(window.innerWidth, window.innerHeight);
     this._element = makeElement('iframe', {
         id: this.id,
-        width: dimensions.width,
-        height: dimensions.height,
         src: playerUrl,
         frameborder: 0,
         class: ' embedded-vimeo-player'
@@ -151,10 +149,10 @@ EmbeddedVimeoPlayer.prototype.setupAsRawPlayer = function (transcodedUrl, videoI
             'data-dashjs-player': 'data-dashjs-player'
         });
         addSourceToRawVideo(this._element, transcodedUrl, fallbackSource, videoInfo);
-        var dimensions = checkDisplayRatio(window.innerWidth, window.innerHeight);
-
-        this._element.style.width = dimensions.width + 'px';
-        this._element.style.height = dimensions.height + 'px';
+        // var dimensions = checkDisplayRatio(window.innerWidth, window.innerHeight);
+        //
+        // this._element.style.width = dimensions.width + 'px';
+        // this._element.style.height = dimensions.height + 'px';
         this._element.controls = false;
 
         document.body.appendChild(this._element);

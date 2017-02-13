@@ -51,7 +51,6 @@ var VideoMediaObject = React.createClass({
             // APEP TODO surprised a setState call is not needed.
             if (!self.state.player.isVimeo) { //APEP: ##Hack## for buffering media removal at the end
                 if (self.state.player.transcoded) {
-
                     //APEP: ##Hack## for buffering media removal at the end
                     self.state.player.raw_player.retrieveManifest(self.state.player.player_url, function (manifest, err) {
                         // APEP TODO Not sure how this async function works inside this sync environment - will likely cause state.play_duration nulls where we may want it

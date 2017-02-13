@@ -12,11 +12,14 @@ var SceneChooser = React.createClass({
 
     mixins: [FormHelper],
     getInitialState: function () {
-        return {
-            filterText: null,
-            filterGroupId: null,
-            sortBy:null
+        var initFilters = '{"filterText":"test","filterGroupId":null,"sortBy":null}';
+        try{
+            return  JSON.parse(localStorage.getItem('filters')|| initFilters);
+        }catch(E){
+            console.log("err",E)
         }
+
+
     },
     handleSubmit: function (event) {
         event.preventDefault();
@@ -28,6 +31,9 @@ var SceneChooser = React.createClass({
             this.setState({filterText: input.value});
         }
     },
+    componentDidUpdate:function(){
+        this.refs["filter"].value=this.state.filterText;
+    },
     _onSelect: function (e) {
         var element = this.refs['group-filter'];
 
@@ -38,6 +44,7 @@ var SceneChooser = React.createClass({
         this.setState({sortBy: null});
     },
     render: function () {
+        localStorage.setItem('filters', JSON.stringify(this.state));
         var options = ConnectionCache.getGroupNameArray();
         var optionsArr = [{value:"None",label:"None"}];
         options.forEach(function(value,key){

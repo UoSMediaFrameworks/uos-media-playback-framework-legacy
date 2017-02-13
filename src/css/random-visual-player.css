@@ -19,12 +19,18 @@
 .image-media-object {
     max-width: 40%;
     height: auto;
-    max-height:40%
-
+    max-height:40%;
 }
-
+video-media-object{
+    max-width: 40%;
+    height: auto;
+    max-height:40%;
+}
 .embedded-vimeo-player {
     z-index: 1;
+    /*max-width: 40%;*/
+    /*height: auto;*/
+    /*max-height:40%*/
 }
 
 .text-media-object {
