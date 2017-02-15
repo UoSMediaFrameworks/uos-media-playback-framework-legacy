@@ -34,8 +34,15 @@ function TagRule (tag) {
 }
 
 TagRule.prototype.match = function(tagList) {
-    // APEP this match can cause problems - TODO update this to be full word
-	return tagList.indexOf(this._value) !== -1 ? true : false;
+    var self = this;
+
+    // APEP Split the tag list using the delimiter we've enforced on the user
+    var matches = _.filter(tagList.split(","), function(tag) {
+        // APEP we can then compare each tag to find a match - trim is something we may or may not want
+        return tag.trim() === self._value;
+    });
+
+    return matches.length > 0;
 };
 
 TagRule.prototype.equalTo = function(tagRule) {
