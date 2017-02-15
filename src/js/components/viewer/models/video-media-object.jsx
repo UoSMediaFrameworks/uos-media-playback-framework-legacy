@@ -59,6 +59,10 @@ var VideoMediaObject = React.createClass({
                             self.state.play_duration = null;
                         } else {
                             self.state.play_duration = manifest.Period.duration;
+                            
+                            console.log("Video-Media-Object - dash manifest loaded and play_duration state set - play_duration: ", self.state.play_duration);
+                            
+                            self.setDashVideoStuckBufferingListener();
                         }
                     });
                 }
@@ -238,16 +242,9 @@ var VideoMediaObject = React.createClass({
         });
     },
 
-    setDashVideoEndedListeners: function () {
+    setDashVideoStuckBufferingListener: function() {
         var self = this;
-        self.state.player._element.addEventListener('ended', function (e) {
-            console.log("Video-Media-Object - setDashVideoEndedListeners - Transition video player out - 'ended' dashjs player event Ended", e);
-            self.transition();
-        }, false);
-
-        // APEP TODO the state.play_duration is out of sync scope so probably is null here - will need to review
         // APEP: ##Hack## for buffering media removal at the end
-
         if (self.state.play_duration !== null && self.state.play_duration > 0) {
             if (self.state._playbackTimeInterval) clearTimeout(self.state._playbackTimeInterval);
 
@@ -257,6 +254,15 @@ var VideoMediaObject = React.createClass({
             }, self.state.play_duration * 1.15 * 1000);
         }
     },
+
+    setDashVideoEndedListeners: function () {
+        var self = this;
+        self.state.player._element.addEventListener('ended', function (e) {
+            console.log("Video-Media-Object - setDashVideoEndedListeners - Transition video player out - 'ended' dashjs player event Ended", e);
+            self.transition();
+        }, false);
+    },
+
     playerConfigurations: function () {
         var self = this;
         try {
