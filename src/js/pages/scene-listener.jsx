@@ -23,10 +23,12 @@ var hat = require('hat');
 
 var MINIMUM_NUMBER_OF_MEDIA_TO_BE_MATCHED_WITH_THEME_QUERY = 0;
 
-function getTypeByName (typeName) {
-    var t = _.find([TextMediaObject, ImageMediaObject, VideoMediaObject, AudioMediaObject], function(t) { return t.typeName === typeName; });
+function getTypeByName(typeName) {
+    var t = _.find([TextMediaObject, ImageMediaObject, VideoMediaObject, AudioMediaObject], function (t) {
+        return t.typeName === typeName;
+    });
 
-    if (! t) {
+    if (!t) {
         throw 'type "' + typeName + '" not found.  Needs to be passed to constructor.';
     }
 
@@ -36,13 +38,13 @@ function getTypeByName (typeName) {
 var SceneListener = React.createClass({
 
     statics: {
-        willTransitionFrom: function(transition, component) {
+        willTransitionFrom: function (transition, component) {
             HubSendActions.unsubscribeScene(component.getParams().id);
         }
     },
 
-    _getSceneId: function() {
-        if(this.props.activeScene) {
+    _getSceneId: function () {
+        if (this.props.activeScene) {
             return this.props.activeScene._id;
         }
 
@@ -51,9 +53,9 @@ var SceneListener = React.createClass({
         return sceneId;
     },
 
-    _getScene: function() {
+    _getScene: function () {
 
-        if(this.props.activeScene) {
+        if (this.props.activeScene) {
             return this.props.activeScene;
         }
 
@@ -64,33 +66,34 @@ var SceneListener = React.createClass({
         return SceneStore.getScene(sceneId);
     },
 
-    getInitialState: function() {
+    getInitialState: function () {
         return {
             scene: this._getScene(),
             activeThemes: [],
             fromGraphViewer: this.props.activeScene ? true : false,
             triggeredActiveThemes: {},
-            cuePointMediaObjects: []
+            cuePointMediaObjects: [],
+            shouldHide: false
         };
     },
 
-    getPlayerElem: function() {
+    getPlayerElem: function () {
         return this.refs.player;
     },
 
-    _getSceneForUpdatingPlayerComponent: function() {
+    _getSceneForUpdatingPlayerComponent: function () {
         return this.props.activeScene || this.state.scene;
     },
 
-    _setPlayerClassCssForScene: function(style) {
-        _.forEach(Object.keys(style), function(styleKey){
+    _setPlayerClassCssForScene: function (style) {
+        _.forEach(Object.keys(style), function (styleKey) {
             var styleValue = style[styleKey];
 
             $('.player').css(styleKey, styleValue);
         });
     },
 
-    _maybeUpdatePlayer: function() {
+    _maybeUpdatePlayer: function () {
 
         var scene = this._getSceneForUpdatingPlayerComponent();
 
@@ -110,11 +113,11 @@ var SceneListener = React.createClass({
     },
 
     // APEP func to update after queue has made internal switch between modes
-    mediaQueueManagerUpdate: function() {
+    mediaQueueManagerUpdate: function () {
         this.setState({mediaObjectQueue: this.mediaObjectQueue});
     },
 
-    componentWillMount: function() {
+    componentWillMount: function () {
         try {
             this.mediaObjectQueue = new MediaObjectQueueManager(
                 [TextMediaObject, AudioMediaObject, VideoMediaObject, ImageMediaObject],
@@ -127,7 +130,18 @@ var SceneListener = React.createClass({
         }
 
     },
-    componentDidMount: function() {
+    toggleTagMatcherAndThemes: function (event) {
+        if (event.altKey && event.keyCode === 72) {
+            var tag_form = this.refs["tag_form"];
+            if (!this.state.shouldHide) {
+                tag_form.style.display = "none";
+            } else {
+                tag_form.style.display = "block";
+            }
+            this.setState({shouldHide:!this.state.shouldHide});
+        }
+    },
+    componentDidMount: function () {
         HubSendActions.subscribeScene(this._getSceneId());
         try {
             SceneStore.addChangeListener(this._onChange);
@@ -135,15 +149,16 @@ var SceneListener = React.createClass({
         } catch (e) {
             console.log("componentDidMount - e: ", e);
         }
+        document.addEventListener("keyup", this.toggleTagMatcherAndThemes)
     },
 
-    componentWillUnmount: function() {
+    componentWillUnmount: function () {
         SceneStore.removeChangeListener(this._onChange);
     },
 
-    componentDidUpdate: function(prevProps, prevState) {
+    componentDidUpdate: function (prevProps, prevState) {
 
-        if (!_.isEqual(prevState.scene, this.state.scene) ) {
+        if (!_.isEqual(prevState.scene, this.state.scene)) {
             console.log("state.scene changed - update player");
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevProps.activeScene, this.props.activeScene)) {
@@ -159,14 +174,14 @@ var SceneListener = React.createClass({
 
     },
 
-    mergeTagAndThemeFilters: function() {
-        var filterStrings = _.map(this.state.activeThemes, function(themeName) {
+    mergeTagAndThemeFilters: function () {
+        var filterStrings = _.map(this.state.activeThemes, function (themeName) {
             return '(' + this.state.scene.themes[themeName] + ')';
         }.bind(this));
 
         var tagsInput = this.refs['tags'];
         if (tagsInput) {
-            if(tagsInput.value.length > 0 && tagsInput.value.trim().length > 0) {
+            if (tagsInput.value.length > 0 && tagsInput.value.trim().length > 0) {
                 tagsInput = tagsInput.value.trim();
                 filterStrings.push('(' + tagsInput + ')');
             }
@@ -179,21 +194,21 @@ var SceneListener = React.createClass({
     },
 
     // APEP Updates the mediaQueue with the correct tag matcher
-    updateTags: function(event) {
+    updateTags: function (event) {
         if (event) {
             event.preventDefault();
         }
 
         var scene = this._getSceneForUpdatingPlayerComponent();
 
-        if(this.props.themeQuery) {
+        if (this.props.themeQuery) {
             // APEP the tag matcher will make sure all active media not related to new scene is removed
             var themeQry = scene.themes[this.props.themeQuery];
 
-            if(this.state.mediaObjectQueue) {
+            if (this.state.mediaObjectQueue) {
                 this.state.mediaObjectQueue.setTagMatcher(new TagMatcher("(" + themeQry + ")"));
                 // APEP if using the theme query provides no media, set the tag matcher with an empty rule
-                if(this.state.mediaObjectQueue.getQueue().length <= MINIMUM_NUMBER_OF_MEDIA_TO_BE_MATCHED_WITH_THEME_QUERY) {
+                if (this.state.mediaObjectQueue.getQueue().length <= MINIMUM_NUMBER_OF_MEDIA_TO_BE_MATCHED_WITH_THEME_QUERY) {
                     this.state.mediaObjectQueue.setTagMatcher(new TagMatcher("()"));
                 }
             }
@@ -201,31 +216,33 @@ var SceneListener = React.createClass({
             // APEP create a new Tag Matcher instance combining selected themes and written tags
             var tagFilter = this.mergeTagAndThemeFilters();
 
-            if(this.state.mediaObjectQueue) {
+            if (this.state.mediaObjectQueue) {
                 this.state.mediaObjectQueue.setTagMatcher(tagFilter);
             }
         }
     },
 
-    handleBlur: function(event) {
+    handleBlur: function (event) {
         this.updateTags();
     },
 
-    _onChange: function() {
+    _onChange: function () {
         this.setState({scene: this._getScene()});
     },
 
-    handleThemeChange: function(newThemes) {
+    handleThemeChange: function (newThemes) {
         this.setState({activeThemes: newThemes});
     },
 
-    cueMediaObjectDoneHandler: function(mediaObjectGuid) {
+    cueMediaObjectDoneHandler: function (mediaObjectGuid) {
 
         // console.log("cueMediaObjectDoneHandler - mediaObject.guid: ", mediaObjectGuid);
 
-        var moFoundIndex = _.findIndex(this.state.cuePointMediaObjects, function(mo) { return mo.guid === mediaObjectGuid});
+        var moFoundIndex = _.findIndex(this.state.cuePointMediaObjects, function (mo) {
+            return mo.guid === mediaObjectGuid
+        });
 
-        if(moFoundIndex !== -1) {
+        if (moFoundIndex !== -1) {
             var cuePointsMediaObjects = this.state.cuePointMediaObjects;
 
             cuePointsMediaObjects.splice(moFoundIndex, 1);
@@ -241,7 +258,7 @@ var SceneListener = React.createClass({
     // APEP a reference counter is used to ensure that we track overlapping or duplicate triggers
     // We also create cue point media objects directly from a trigger request, these are stored and
     // managed locally for this object
-    triggerMediaActiveTheme: function(themes) {
+    triggerMediaActiveTheme: function (themes) {
 
         var self = this;
 
@@ -251,8 +268,8 @@ var SceneListener = React.createClass({
         // We either create a new counter for the theme
         // Or increment the counter
         var triggeredActiveThemes = this.state.triggeredActiveThemes;
-        _.forEach(themes, function(theme) {
-            if(!triggeredActiveThemes.hasOwnProperty(theme)) {
+        _.forEach(themes, function (theme) {
+            if (!triggeredActiveThemes.hasOwnProperty(theme)) {
                 triggeredActiveThemes[theme] = 1;
             } else {
                 triggeredActiveThemes[theme]++;
@@ -260,7 +277,7 @@ var SceneListener = React.createClass({
         });
 
         // APEP for all of the newly triggered active themes, create a tag matcher instance matching each of these themes
-        var tagMatcherStatements = _.map(themes, function(themeName) {
+        var tagMatcherStatements = _.map(themes, function (themeName) {
             return '(' + this.state.scene.themes[themeName] + ')';
         }.bind(this));
         var tagMatcher = new TagMatcher(tagMatcherStatements.join(" OR "));
@@ -269,8 +286,10 @@ var SceneListener = React.createClass({
 
         // APEP search media objects for matching tags and create a local state copy of wanted media objects to be force to screen
         var cuePointMediaObjects = _(scene.scene)
-            .filter(function(mo){ return tagMatcher.match(mo.tags)})
-            .map(function(mo) {
+            .filter(function (mo) {
+                return tagMatcher.match(mo.tags)
+            })
+            .map(function (mo) {
                 var TypeConstructor = getTypeByName(mo.type);
                 var newMo = new TypeConstructor(mo, {
                     displayDuration: self.mediaObjectQueue.getDisplayDuration(),
@@ -281,19 +300,22 @@ var SceneListener = React.createClass({
             }).value();
 
         // APEP merge the current cuePointMediaObjects with the new set from trigger
-        this.setState({triggeredActiveThemes: triggeredActiveThemes, cuePointMediaObjects: this.state.cuePointMediaObjects.concat(cuePointMediaObjects)});
+        this.setState({
+            triggeredActiveThemes: triggeredActiveThemes,
+            cuePointMediaObjects: this.state.cuePointMediaObjects.concat(cuePointMediaObjects)
+        });
     },
 
     // APEP function handled for each media object to remove themes from the active list
     // APEP this is to be used by any media object that has triggered active themes and is done
-    removeMediaActiveThemesAfterDone: function(themes) {
+    removeMediaActiveThemesAfterDone: function (themes) {
 
         var triggeredActiveThemes = this.state.triggeredActiveThemes;
-        _.forEach(themes, function(theme) {
-            if(triggeredActiveThemes.hasOwnProperty(theme)) {
+        _.forEach(themes, function (theme) {
+            if (triggeredActiveThemes.hasOwnProperty(theme)) {
                 triggeredActiveThemes[theme]--;
 
-                if(triggeredActiveThemes[theme] === 0) {
+                if (triggeredActiveThemes[theme] === 0) {
                     delete triggeredActiveThemes[theme];
                 }
             }
@@ -302,20 +324,29 @@ var SceneListener = React.createClass({
         this.setState({triggeredActiveThemes: triggeredActiveThemes});
     },
 
-    render: function() {
+    render: function () {
 
         // APEP Display Active Theme if available, if not provide a theme selector
-        var ThemeDisplay = this.state.fromGraphViewer ? <ActiveTheme themeQuery={this.props.themeQuery}/> : <ThemeSelector themeChange={this.handleThemeChange} scene={this._getSceneForUpdatingPlayerComponent()} />;
+        var ThemeDisplay = this.state.fromGraphViewer ?
+            <ActiveTheme ref="theme" themeQuery={this.props.themeQuery} shouldHide={this.state.shouldHide}/> :
+            <ThemeSelector ref="theme" shouldHide={this.state.shouldHide} themeChange={this.handleThemeChange}
+                           scene={this._getSceneForUpdatingPlayerComponent()}/>
 
         // APEP Only display the tag form when this component is not used within the graph viewer
-        var TagForm = ! this.state.fromGraphViewer ? <form className='tag-filter' onSubmit={this.updateTags}>
-            <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...' className='form-control scene-listener-tag-input' />
-        </form> : <span></span>;
+        var TagForm = !this.state.fromGraphViewer ?
+            <form className='tag-filter' ref="tag_form" onSubmit={this.updateTags}>
+                <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...'
+                       className='form-control scene-listener-tag-input'/>
+            </form> : <span></span>;
 
         return (
-            <div className='scene-listener'>
+            <div className='scene-listener' ref="scene_listener">
                 <Loader loaded={this.state.scene ? true : false}></Loader>
-                <RandomVisualPlayer mediaQueue={this.state.mediaObjectQueue} triggerMediaActiveTheme={this.triggerMediaActiveTheme} removeMediaActiveThemesAfterDone={this.removeMediaActiveThemesAfterDone} cuePointMediaObjects={this.state.cuePointMediaObjects} cueMediaObjectDoneHandler={this.cueMediaObjectDoneHandler} />
+                <RandomVisualPlayer mediaQueue={this.state.mediaObjectQueue}
+                                    triggerMediaActiveTheme={this.triggerMediaActiveTheme}
+                                    removeMediaActiveThemesAfterDone={this.removeMediaActiveThemesAfterDone}
+                                    cuePointMediaObjects={this.state.cuePointMediaObjects}
+                                    cueMediaObjectDoneHandler={this.cueMediaObjectDoneHandler}/>
                 {ThemeDisplay}
                 {TagForm}
             </div>

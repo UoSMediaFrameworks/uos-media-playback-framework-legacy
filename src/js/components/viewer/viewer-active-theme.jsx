@@ -10,11 +10,18 @@ var ActiveTheme = React.createClass({
         return {
         };
     },
+    componentWillUpdate:function(){
+        if(this.props.shouldHide){
+            this.refs["theme-name"].style.display ="none"
+        }else{
+            this.refs["theme-name"].style.display ="block"
+        }
+    },
 
     render: function() {
         var theme = this.props.themeQuery || "";
         return (
-            <div className='theme-viewer info-box' id="theme-name">
+            <div className='theme-viewer info-box' ref="theme-name" id="theme-name">
                 {theme}
             </div>
         );

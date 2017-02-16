@@ -10,7 +10,7 @@ var ThemeButton = React.createClass({
 	},
 
 	render: function() {
-		var klass = 'btn', 
+		var klass = 'btn',
 			aria = '';
 		if (this.props.selected) {
 			klass += ' active';
@@ -18,7 +18,7 @@ var ThemeButton = React.createClass({
 		}
 
 		return (
-			<button onClick={this.handleClick} type='button' className={klass} aria-pressed={aria}>{this.props.theme}</button>
+			<button onClick={this.handleClick} ref="theme-name" type='button' className={klass} aria-pressed={aria}>{this.props.theme}</button>
 		);
 	}
 });
@@ -27,7 +27,7 @@ var ThemeSelector = React.createClass({
 
 	getInitialState: function() {
 		return {
-			selected: {} 
+			selected: {}
 		};
 	},
 
@@ -45,11 +45,17 @@ var ThemeSelector = React.createClass({
 
 		this.setState({selected: selected});
 	},
-
+    componentWillUpdate:function(nextProps){
+        if(nextProps.shouldHide){
+            this.refs["theme-selector"].style.display = "none";
+        }else{
+            this.refs["theme-selector"].style.display ="block";
+        }
+    },
 	render: function() {
 		var scene = this.props.scene || {};
 		return (
-			<div className='theme-selector'>
+			<div className='theme-selector' ref="theme-selector">
 			{_.keys(scene.themes).map(function(key) {
 				return <ThemeButton onClick={this.handleClick} theme={key} selected={this.state.selected[key]} key={key} />;
 			}.bind(this))}
