@@ -72,12 +72,12 @@ var GraphViewer = React.createClass({
         // console.log("graph-viewer - componentDidMount");
 
         GraphViewerStore.addChangeListener(this._onChange);
-        SceneStore.addChangeListener(this._onSceneStoreChange);
+        //SceneStore.addChangeListener(this._onSceneStoreChange);
     },
 
     componentWillUnmount: function() {
         GraphViewerStore.removeChangeListener(this._onChange);
-        SceneStore.removeChangeListener(this._onSceneStoreChange);
+        //SceneStore.removeChangeListener(this._onSceneStoreChange);
     },
 
     showScenes: function() {
