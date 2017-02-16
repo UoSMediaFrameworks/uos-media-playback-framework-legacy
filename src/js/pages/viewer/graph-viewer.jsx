@@ -15,9 +15,8 @@ var GraphViewer = React.createClass({
 
 
     getSceneIdsFromGraphViewerStore: function() {
-        var sceneIds = GraphViewerStore.getScenesForPlayback();
-
-        return _.shuffle(sceneIds);
+        // APEP the shuffle has been moved inside the store, this allows us to differentiate between score and graph randomness
+        return GraphViewerStore.getScenesForPlayback();
     },
 
     getStateFromStores: function() {

@@ -9,10 +9,18 @@ var CHANGE_EVENT = 'CHANGE_EVENT';
 
 var _scenes = [];
 var _themes = [];
+var _isScore = false;
 
 var GraphViewerStore = assign({}, EventEmitter.prototype, {
 
     getScenesForPlayback: function() {
+
+        // APEP Hack so if we from graph shuffle, if score do not
+
+        if(_isScore) {
+            return _.shuffle(_scenes);
+        }
+
         return _scenes;
     },
 
@@ -37,7 +45,7 @@ var GraphViewerStore = assign({}, EventEmitter.prototype, {
 
         switch(action.type) {
             case ActionTypes.RECEIVE_SCENES_FROM_GRAPH:
-
+                _isScore = false; // APEP ensure we know we are from graph so we want shuffle
                 _scenes = action.sceneIds;
                 _themes = []; // APEP currently from graph we only get scenes so ensure we override any if used by scene and themes
                 // APEP we have received a new request from the graph
@@ -50,6 +58,7 @@ var GraphViewerStore = assign({}, EventEmitter.prototype, {
             case ActionTypes.RECIEVE_SCENES_AND_THEMES_FROM_SCORE:
                 console.log("GVS - _scenes: , _themes: ", _scenes, _themes);
                 // APEP handle errors - ie do hasOwnProperty or null checks
+                _isScore = true; // APEP ensure we know are from score so we do not wish to shuffle
                 _scenes = action.sceneIds;
                 _themes = action.themes;
             break;
