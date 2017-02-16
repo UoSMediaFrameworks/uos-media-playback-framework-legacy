@@ -35,12 +35,19 @@ function TagRule (tag) {
 
 TagRule.prototype.match = function(tagList) {
     var self = this;
-
+    if(typeof tagList === "string"){
+        var matches = _.filter(tagList.split(","), function(tag) {
+            // APEP we can then compare each tag to find a match - trim is something we may or may not want
+            return tag.trim() === self._value;
+        });
+    }else{
+        var matches = _.filter(tagList, function(tag) {
+            // APEP we can then compare each tag to find a match - trim is something we may or may not want
+            return tag === self._value;
+        });
+    }
     // APEP Split the tag list using the delimiter we've enforced on the user
-    var matches = _.filter(tagList.split(","), function(tag) {
-        // APEP we can then compare each tag to find a match - trim is something we may or may not want
-        return tag.trim() === self._value;
-    });
+    console.log("matches",matches);
 
     return matches.length > 0;
 };
@@ -231,6 +238,7 @@ function tokenizeQuery (query) {
 }
 
 TagMatcher.prototype.match = function(tagList) {
+    console.log("tag",tagList)
 	return this._query.match(tagList);
 };
 
