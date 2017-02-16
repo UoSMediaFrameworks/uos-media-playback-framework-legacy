@@ -49,15 +49,19 @@ var MediaObjectPreviewPlayer = React.createClass({
             this.setState({preview: preview, previewClass: ''});
             return;
         }
+        var unwanted_styles = ["position", "max-width", "width", "min-width", "max-height", "height", "min-height", "left", "right", "top", "bottom"]
+        var style = props.scene.scene[props.focusedMediaObject].style ? props.scene.scene[props.focusedMediaObject].style : {};
+        for (var i = 0; i < unwanted_styles.length;i++) {
+
+         delete style[unwanted_styles[i]]
+        }
 
         switch (mediaObject.type) {
             case 'text':
                 var preview;
                 var self = this;
                 var text = "Undefined";
-                var style = {};
-                    style =props.scene.scene[props.focusedMediaObject].style;
-                    text = props.scene.scene[props.focusedMediaObject].text;
+                text = props.scene.scene[props.focusedMediaObject].text;
                 preview = <p style={ this._cssToReactCSS(style)}>{text}</p>;
                 self.setState({preview: preview, previewClass: 'media-object-item-preview-player text-container'});
                 break;
@@ -80,24 +84,23 @@ var MediaObjectPreviewPlayer = React.createClass({
                 break;
 
             case 'video':
-                var style ={};
-                var style =props.scene.scene[props.focusedMediaObject].style ? props.scene.scene[props.focusedMediaObject].style: {};
-
+                var style = {};
                 var preview = <VideoMediaPreviewPlayer id={uniqueComponentKey} scene={this.props.scene}
-                                                       focusedMediaObject={this.props.focusedMediaObject}  style={ this._cssToReactCSS(style)}></VideoMediaPreviewPlayer>
+                                                       focusedMediaObject={this.props.focusedMediaObject}
+                                                       style={ this._cssToReactCSS(style)}></VideoMediaPreviewPlayer>
                 this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;
             case 'image':
-                var style ={};
-                var style =props.scene.scene[props.focusedMediaObject].style ? props.scene.scene[props.focusedMediaObject].style: {};
-                preview = <img id={uniqueComponentKey} width="640" height="320" src={mediaObject.url} style={ this._cssToReactCSS(style)}></img>
+
+                preview = <img id={uniqueComponentKey} width="640" height="320" src={mediaObject.url}
+                               style={ this._cssToReactCSS(style)}></img>
                 this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;
         }
     },
     setupState: function (props) {
         this.setState(this.getInitialState());
-        console.log("componentWillReceiveProps",props)
+        console.log("componentWillReceiveProps", props)
         if (props) {
             this.previewMediaObject(props);
         }
@@ -118,7 +121,7 @@ var MediaObjectPreviewPlayer = React.createClass({
     render: function () {
         var reactStyle = {};
 
-        if(this.props.scene !=undefined){
+        if (this.props.scene != undefined) {
             reactStyle = this._cssToReactCSS(this.props.scene.style);
         }
 
