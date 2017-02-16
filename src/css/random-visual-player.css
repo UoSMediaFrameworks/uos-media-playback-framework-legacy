@@ -33,7 +33,7 @@
 }
 
 .text-media-object {
-    background-color: rgba(0, 0, 0, .7);
+    background-color: rgba(0, 0, 0, 0);
     padding: 10pt;
     font-size: 2vmax;
     border-radius: 3pt;
