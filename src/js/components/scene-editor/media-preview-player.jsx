@@ -50,7 +50,7 @@ var MediaObjectPreviewPlayer = React.createClass({
             return;
         }
         var unwanted_styles = ["position", "max-width", "width", "min-width", "max-height", "height", "min-height", "left", "right", "top", "bottom"]
-        var style = props.scene.scene[props.focusedMediaObject].style ? props.scene.scene[props.focusedMediaObject].style : {};
+        var style = props.scene.scene[props.focusedMediaObject].style ? _.cloneDeep(props.scene.scene[props.focusedMediaObject].style) : {};
         for (var i = 0; i < unwanted_styles.length;i++) {
 
          delete style[unwanted_styles[i]]

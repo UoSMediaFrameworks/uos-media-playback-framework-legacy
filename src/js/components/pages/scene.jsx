@@ -101,7 +101,8 @@ var Scene = React.createClass({
                         <MediaObjectList focusedMediaObject={this.state.focusedMediaObject} focusHandler={this.thumbClickHandler}
                                          scene={this.state.scene} saveFlagKlass={saveFlagKlass}/>
 
-                        
+                        <MediaPreviewComponent  focusedMediaObject={this.state.focusedMediaObject} scene={this.state.scene}  />
+
                     </div>
 
                     <div className="flex-container monaco-editor-container">
