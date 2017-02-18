@@ -63,6 +63,7 @@
     "react-dom": "^15.3.2",
     "react-dropdown": "^1.2.0",
     "react-monaco-editor": "^0.7.3",
+    "react-newline-to-break": "^1.0.6",
     "react-resumable-js": "^1.1.18",
     "react-router": "^2.8.1",
     "react-select": "^1.0.0-rc.2",

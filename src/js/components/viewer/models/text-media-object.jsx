@@ -1,7 +1,7 @@
 'use strict';
 var React = require('react');
 var classNames = require('classnames');
-
+var nl2br = require('react-newline-to-break');
 
 var TextMediaObject = React.createClass({
     playTimeout: null,
@@ -54,8 +54,9 @@ var TextMediaObject = React.createClass({
             "show-media-object": this.state.shown
         });
 
+        // APEP nl2br is used to interpret any new line characters and producing valid html for this use case
         return <p style={style} ref={this.props.data.mediaObject._obj._id} className={objectClasses} onClick={this.props.clickHandler}>
-                    {this.props.data.mediaObject._obj.text}
+                    {nl2br(this.props.data.mediaObject._obj.text)}
               </p>;
     }
 });
