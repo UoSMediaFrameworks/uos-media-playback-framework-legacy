@@ -62,7 +62,7 @@ var MediaObjectPreviewPlayer = React.createClass({
                 var self = this;
                 var text = "Undefined";
                 text = props.scene.scene[props.focusedMediaObject].text;
-                preview = <p style={ this._cssToReactCSS(style)}>{text}</p>;
+                preview = <p style={ this._cssToReactCSS(style)} dangerouslySetInnerHTML={{__html: text}}></p>;
                 self.setState({preview: preview, previewClass: 'media-object-item-preview-player text-container'});
                 break;
             case 'audio':
