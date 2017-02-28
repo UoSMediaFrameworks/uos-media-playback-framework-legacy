@@ -244,9 +244,9 @@ var SceneMonacoTextEditor = React.createClass({
 
         this.refs.monaco.editor.setValue(this.getInitialState().code);
 
-        this.refs.monaco.editor.onDidChangeCursorPosition(this.onChangeCursorPosition);
-
-        this.refs.monaco.editor.onDidChangeCursorSelection(this.onTextSelection)
+        // this.refs.monaco.editor.onDidChangeCursorPosition(this.onChangeCursorPosition);
+        //
+        // this.refs.monaco.editor.onDidChangeCursorSelection(this.onTextSelection)
     },
 
     shouldComponentUpdate: function(nextProps, nextState) {
@@ -306,7 +306,7 @@ var SceneMonacoTextEditor = React.createClass({
         };
 
         var requireConfig = {
-            url: 'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.1/require.min.js',
+            url: 'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.1/require.js',
             paths: {
                 'vs': 'monaco-editor/min/vs'
             }
