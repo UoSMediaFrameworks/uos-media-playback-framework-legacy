@@ -164,13 +164,13 @@ var SceneMonacoTextEditor = React.createClass({
     onChange: function(newValue, e) {
         if (saveTimeout) clearTimeout(saveTimeout);
 
-        // saveTimeout = setTimeout(this.saveJSON(false), 1000);
+        saveTimeout = setTimeout(this.saveJSON(false), 1000);
     },
 
     // APEP temp solution for saves to only be conducted with the user initiation of the save
-    onSaveClick: function(e) {
-        this.saveJSON()()
-    },
+    // onSaveClick: function(e) {
+    //     this.saveJSON()()
+    // },
 
     onTextSelection: function(e) {
         // console.log("MONACO - On Text Selection: ", e);
@@ -314,7 +314,6 @@ var SceneMonacoTextEditor = React.createClass({
 
         return (
             <div className="scene-text-editor">
-                <button className="btn btn-primary" onClick={this.onSaveClick}>SAVE</button>
                 <MonacoEditor
                     ref="monaco"
                     width="100%"
