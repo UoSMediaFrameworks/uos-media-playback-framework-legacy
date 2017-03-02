@@ -89,8 +89,8 @@ var VideoMediaPreviewPlayer = React.createClass({
                 if (this.state.videoInfo.data.hasTranscoded) {
                     console.log("transcoded")
                     video = <video data-dashjs-player id="videoPreview" width="100%" height="320px" controls>
-                        {fallbackSource}
                         <source src={dashUrl} type="application/dash+xml"></source>
+                        {fallbackSource}
                     </video>;
                 } else {
                     console.log("untranscoded")
