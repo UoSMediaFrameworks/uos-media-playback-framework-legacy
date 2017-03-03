@@ -18,7 +18,7 @@ var AudioMediaObject = React.createClass({
     componentDidMount: function() {
         // APEP set the autoreply value based off the mediaObject, with an overriding default of 1
         if(this.props.data && this.props.data.mediaObject && this.props.data.mediaObject._obj) {
-             var autoreplay = this.props.data.mediaObject._obj.hasOwnProperty("autoreplay") ? this.props.data.mediaObject._obj.autoreplay : 1;
+            var autoreplay = this.props.data.mediaObject._obj.hasOwnProperty("autoreplay") ? this.props.data.mediaObject._obj.autoreplay : 1;
             this.setState({"autoreplay": autoreplay})
         }
 
@@ -54,6 +54,7 @@ var AudioMediaObject = React.createClass({
 
         this.setState({currentLoop: this.state.currentLoop + 1});
 
+        // APEP if the current loop matches or is higher, the audio element is complete
         if(this.state.currentLoop >= this.state.autoreplay) {
             self.transition();
         } else {
@@ -62,7 +63,6 @@ var AudioMediaObject = React.createClass({
             self.state.player.play();
             var mediaObject = self.props.data.mediaObject._obj;
             self.unlockCuePointsForMediaObject(mediaObject);
-
         }
 
     },
@@ -136,9 +136,24 @@ var AudioMediaObject = React.createClass({
                             }
                         }
 
-                        if ((duration - position) < transitionSeconds || duration < transitionSeconds) {
-                            self.loopingHandler();
+                        // APEP we need to allow an audio media object of 0 to only play for duration
+                        // if autoreplay 0, we want to use data.displayDuration to be able to end an audio track early
+                        console.log("audio - timeupdate - position:, duration: , self.props.data.displayDuration: ", position, duration, self.props.data.displayDuration / 1000);
+                        // APEP if autoreplay is 0, follow the displayDuration, else allow the audio object to fully play & handle looping
+                        if (self.state.autoreplay === 0) {
+                            console.log("audio - timeupdate - (position + transitionSeconds), (self.props.data.displayDuration / 1000)", (position + transitionSeconds), (self.props.data.displayDuration / 1000));
+                            if((position + transitionSeconds) > (self.props.data.displayDuration / 1000)) {
+                                console.log("position + transitionSeconds > self.props.data.displayDuration");
+                                self.loopingHandler();
+                            }
+                        } else {
+                            // APEP if we are within transitionSeconds of the end of the clip, or the duration of the full audio track is shorter than transitionSeconds
+                            // Loop or finish the audio media object
+                            if ((duration - position) < transitionSeconds || duration < transitionSeconds) {
+                                self.loopingHandler();
+                            }
                         }
+
                     });
 
                     this.on('error', function(err) {
