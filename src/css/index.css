@@ -577,6 +577,28 @@ html, body, #main, .app {
     color:darkgreen;
 }
 
+/* APEP WASH OUT for scene editor - used to block the UI while upload is happening */
+.show-overlay-when-uploading {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 99999;
+    background-color: rgba(54, 52, 55, 0.47);
+}
+
+.hide-overlay-when-uploading {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 99999;
+    background-color: rgba(54, 52, 55, 0.47);
+    display: none;
+}
+
 
 /* SCORE RELATED WORK */
 

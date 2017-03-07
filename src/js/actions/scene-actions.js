@@ -155,7 +155,8 @@ var SceneActions = {
         });
     },
 
-    _handleUploadAsset: function(alertId, sceneId, status, data, file){
+    // APEP OPTIONAL callback (cp) for allowing upload after upload
+    _handleUploadAsset: function(alertId, sceneId, status, data, file, cb){
         var msg;
         if(status === 'warning' ){
             msg = 'No tags found in ' + file.name;
@@ -207,9 +208,14 @@ var SceneActions = {
             }
 
         }
+        
+        // APEP 
+        if(cb) {
+            cb();
+        }
     },
 
-    finaliseResumableUploadAsset: function(sceneId, file, resumableFile) {
+    finaliseResumableUploadAsset: function(sceneId, file, resumableFile, cb) {
         var alertId = hat();
 
         AppDispatcher.handleViewAction({
@@ -222,7 +228,7 @@ var SceneActions = {
         var self = this;
 
         assetStore.resumableCreate(file, resumableFile, function (status, data){
-            self._handleUploadAsset(alertId, sceneId, status, data, file);
+            self._handleUploadAsset(alertId, sceneId, status, data, file, cb);
         });
     },
 

@@ -79,11 +79,16 @@ var SceneEditor = React.createClass({
         console.log("add-media-object - resumableOnFileSuccess");
         console.log(file, message);
 
-        SceneActions.finaliseResumableUploadAsset(this.props.scene._id, file.file, file);
+        var self = this;
+        // APEP use a callback to handle the async upload process to catch final completion for unlocking
+        SceneActions.finaliseResumableUploadAsset(this.props.scene._id, file.file, file, function() {
+            self.props.uploadEnded();
+        });
     },
 
     resumableOnFileAdded: function(file, resumable) {
         console.log("add-media-object - resumableOnFileAdded");
+        this.props.uploadStarted();
         resumable.upload();
     },
 

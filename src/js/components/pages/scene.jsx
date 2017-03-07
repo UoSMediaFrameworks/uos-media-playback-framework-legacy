@@ -27,7 +27,8 @@ var Scene = React.createClass({
     getStateFromStores: function() {
         return {
             scene: SceneStore.getScene(this.props.params.id),
-            saveStatus: true
+            saveStatus: true,
+            uploading: false
         };
     },
 
@@ -69,6 +70,14 @@ var Scene = React.createClass({
     sceneSavingHandler: function(saveStatus) {
         this.setState({saveStatus: saveStatus});
     },
+    
+    uploadStarted: function() {
+        this.setState({uploading: true});
+    },
+    
+    uploadEnded: function() {
+        this.setState({uploading: false});
+    },
 
     render: function() {
 
@@ -77,9 +86,11 @@ var Scene = React.createClass({
 
         var saveFlagKlass = this.state.saveStatus ? "green-save-flag" : "red-save-flag";
 
+        var showOverlay = this.state.uploading ? "show-overlay-when-uploading" : "hide-overlay-when-uploading";
 
         return (
             <div className='flex-container monaco-editor vs-dark'>
+                <div className={ showOverlay} ></div>
                 <div className='top-bar'>
                     <div className='page-nav'>
                         <Link className='btn btn-dark' to='scenes'>&lt; Back to Scene List</Link>
@@ -94,7 +105,7 @@ var Scene = React.createClass({
                     </Loader>
                 </div>
 
-                <AddMediaObject scene={this.state.scene} />
+                <AddMediaObject scene={this.state.scene} uploadStarted={this.uploadStarted} uploadEnded={this.uploadEnded} />
 
                 <div className="thumbs-and-json">
                     <div className="flex-container">
