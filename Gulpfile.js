@@ -74,10 +74,10 @@ function bundlerBuilder (startPath, finishName, useReactify) {
         return bundler.bundle()
             .on('error', gutil.log.bind(gutil, 'Browserify Error'))
             .pipe(source(finishName))
-            .pipe(gulpif(production, buffer()))
-            .pipe(gulpif(production, sourcemaps.init({loadMaps: true})))
-            .pipe(gulpif(production, uglify()))
-            .pipe(gulpif(production, sourcemaps.write('./')))
+            // .pipe(gulpif(production, buffer()))
+            // .pipe(gulpif(production, sourcemaps.init({loadMaps: true})))
+            // .pipe(gulpif(production, uglify()))
+            // .pipe(gulpif(production, sourcemaps.write('./')))
             .pipe(gulp.dest('dist/js'));
     };
 
