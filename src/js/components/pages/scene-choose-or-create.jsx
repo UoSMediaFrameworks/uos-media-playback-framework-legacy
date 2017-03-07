@@ -12,7 +12,7 @@ var SceneChooser = React.createClass({
 
     mixins: [FormHelper],
     getInitialState: function () {
-        var initFilters = '{"filterText":"test","filterGroupId":null,"sortBy":null}';
+        var initFilters = '{"filterText":"","filterGroupId":null,"sortBy":null}';
         try{
             return  JSON.parse(localStorage.getItem('scene-filters')|| initFilters);
         }catch(E){
