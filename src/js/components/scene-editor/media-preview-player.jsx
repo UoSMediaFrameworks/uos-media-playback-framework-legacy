@@ -85,8 +85,8 @@ var MediaObjectPreviewPlayer = React.createClass({
 
             case 'video':
                 var style = {};
-                var preview = <VideoMediaPreviewPlayer id={uniqueComponentKey} scene={this.props.scene}
-                                                       focusedMediaObject={this.props.focusedMediaObject}
+                var preview = <VideoMediaPreviewPlayer id={uniqueComponentKey} scene={props.scene}
+                                                       focusedMediaObject={props.focusedMediaObject}
                                                        style={ this._cssToReactCSS(style)}></VideoMediaPreviewPlayer>
                 this.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;

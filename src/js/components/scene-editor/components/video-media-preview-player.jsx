@@ -40,13 +40,13 @@ var VideoMediaPreviewPlayer = React.createClass({
                 var isVimeo;
                 isVimeo = currentVideoObject.url.indexOf("vimeo.com") !== -1;
                 this.setState({isVimeo: isVimeo})
-            } else {
-                if (!this.state.isVimeo) {
-                    SceneActions.getVideoMediaObjectData(currentVideoObject)
-                } else {
-                    this.setState({loading: false})
-                }
             }
+            if (!this.state.isVimeo) {
+                SceneActions.getVideoMediaObjectData(currentVideoObject)
+            } else {
+                this.setState({loading: false})
+            }
+
         },
         reinitializeVideo: function (currentVideoObject) {
             console.log("reinitializeVideo", currentVideoObject, this.state.videoInfo.data);
@@ -94,7 +94,7 @@ var VideoMediaPreviewPlayer = React.createClass({
                     </video>;
                 } else {
                     console.log("untranscoded")
-                    if (rawVideoObjSource.type !== "unsupported" ) {
+                    if (rawVideoObjSource.type !== "unsupported") {
                         video = <video data-dashjs-player id="videoPreview" width="100%" height="320px" controls>
                             {fallbackSource}
                         </video>;
@@ -139,6 +139,11 @@ var VideoMediaPreviewPlayer = React.createClass({
         },
         componentDidMount: function () {
             VideoStore.addChangeListener(this._onChange);
+            var currentVideoObject = this._getMediaObject(this.props);
+            if(currentVideoObject){
+                this.preloadVideoInfo(currentVideoObject)
+            }
+
         },
         componentWillUnmount: function () {
             //Angel P - Of amy set state issues happen it will be from this listener not unmounting
@@ -176,7 +181,7 @@ var VideoMediaPreviewPlayer = React.createClass({
                 video = this.getVideoPlayerForMediaObject(currentVideoObject)
             }
             return (
-                <div style={this.props.style ||{width: '100%', height: '320px'}}>
+                <div style={this.props.style || {width: '100%', height: '320px'}}>
                     {video}
                 </div>
             );
