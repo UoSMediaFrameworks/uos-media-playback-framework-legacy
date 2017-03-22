@@ -9,6 +9,7 @@ var HubClient = require('../../utils/HubClient');
 var AddMediaObjectStore = require('../../stores/add-media-object-store');
 var getVimeoId = require('../../utils/get-vimeo-id');
 var Loader = require('../loader.jsx');
+var toastr = require("toastr");
 var _ = require('lodash');
 var getHostname = require('../../utils/get-hostname');
 var ReactResumableJs = require('react-resumable-js').default;
@@ -74,7 +75,10 @@ var SceneEditor = React.createClass({
 
 
 	},
-
+    resumableOnFileAddedError:function(file,errorCount){
+	    console.log("file added fail",file,errorCount);
+	    toastr.warning("File failed");
+    },
     resumableOnFileSuccess: function(file, message) {
         console.log("add-media-object - resumableOnFileSuccess");
         console.log(file, message);
@@ -113,6 +117,7 @@ var SceneEditor = React.createClass({
                     disableDragAndDrop={true}
                     onFileSuccess={this.resumableOnFileSuccess}
                     onFileAdded={this.resumableOnFileAdded}
+                    onFileAddedError={this.resumableOnFileAddedError}
                     maxFiles={1}
                     maxFileSize={1000000000}
                     showFileList={false}

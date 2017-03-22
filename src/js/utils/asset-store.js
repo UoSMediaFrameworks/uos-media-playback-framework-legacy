@@ -72,10 +72,15 @@ module.exports = {
     resumableCreate: function(file, resumableFile, callback) {
 
         var mediaObject = getMediaObjectType(file);
+        if(mediaObject.mediaType.toUpperCase() == mediaObject.mediaType) {
+            console.log("The file type " + mediaObject.extension + " has an unexpected uppercase extension");
+            return callback("uppercase", null);
+        }
         if(mediaObject.mediaType === "unsupported") {
             console.log("The file type " + mediaObject.extension + " you have attempted to upload");
             return callback("unsupported", null);
         }
+
 
         var data = new FormData();
         data.append('filename', file.name);

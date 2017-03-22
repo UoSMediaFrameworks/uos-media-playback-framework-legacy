@@ -164,7 +164,9 @@ var SceneActions = {
             msg =  'Upload unsuccessful!';
         }else if(status === 'unsupported'){
             msg =  'File Type is unsupported';
-        }else{
+        }else if(status === 'uppercase'){
+            msg =   'Please make sure that your file has a lowercase extension';
+        }   else{
             msg =   'Upload successful!';
         }
 
@@ -208,8 +210,8 @@ var SceneActions = {
             }
 
         }
-        
-        // APEP 
+
+        // APEP
         if(cb) {
             cb();
         }
