@@ -17,7 +17,7 @@ npm install
 
 Start the local development server:
 ```
-env.sh gulp
+./env.sh gulp
 ```
 
 The shell script merely provides the appropriate environment variables for whatever is specified after it.
