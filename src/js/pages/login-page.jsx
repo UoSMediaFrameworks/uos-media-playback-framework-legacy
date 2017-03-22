@@ -78,6 +78,10 @@ var LoginPage = React.createClass({
                     {alert}
                     <form onSubmit={this.handleSubmit} role="form">
                         <div className='form-group'>
+                            <label>Username</label>
+                            <input ref="username" type="text" className="form-control" id="exampleInputUsername1" placeholder="Username" />
+                        </div>
+                        <div className='form-group'>
                             <label>Password</label>
                             <input ref="password" type="password" className="form-control" id="exampleInputPassword1" placeholder="Password" />
                         </div>
