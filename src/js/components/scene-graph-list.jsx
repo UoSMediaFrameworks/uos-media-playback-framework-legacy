@@ -52,20 +52,20 @@ var SceneGraphList = React.createClass({
         }
         var links = filteredSceneGraph.map(function (sceneGraph) {
             return (
-                <li key={sceneGraph._id} className="col-xs-12">
+                <dd key={sceneGraph._id} className="col-xs-12">
                     <div className="col-md-9">
                         <Link className="link" to={'/scenegraph/' + sceneGraph._id}>{sceneGraph.name}</Link>
                     </div>
-                </li>
+                </dd>
             );
         });
 
         return (
             <Loader className='scene-graph-list-loader' message='Retrieving Scene Graph list...'
                     loaded={!this.state.loading}>
-                <ul className="nav nav-pills .nav-stacked col-xs-12">
+                <dl className="nav nav-pills .nav-stacked col-xs-12">
                     {links}
-                </ul>
+                </dl>
             </Loader>
         );
     }

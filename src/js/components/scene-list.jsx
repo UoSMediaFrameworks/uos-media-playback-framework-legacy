@@ -51,22 +51,21 @@ var SceneList = React.createClass({
         console.log(filteredScene);
         var links = filteredScene.map(function (scene) {
             var sceneLinkText = ConnectionCache.getShortGroupName(scene._groupID) + ' - ' + scene.name;
-
             return (
-                <li key={scene._id} className="col-xs-12">
+                <dd key={scene._id} className="col-xs-12">
                     <div className="col-md-9">
                         <Link to={'scene/' + scene._id}>{ sceneLinkText }</Link>
                     </div>
 
-                </li>
+                </dd>
             );
         });
 
         return (
             <Loader className='scene-list-loader' message='Retrieving Scene list...' loaded={!this.state.loading}>
-                <ul className="nav nav-pills .nav-stacked col-xs-12">
+                <dl className="nav nav-pills .nav-stacked col-xs-12">
                     {links}
-                </ul>
+                </dl>
             </Loader>
         );
     }
