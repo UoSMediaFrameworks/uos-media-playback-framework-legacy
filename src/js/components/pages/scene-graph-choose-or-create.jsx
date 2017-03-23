@@ -52,13 +52,16 @@ var SceneGraphChooser = React.createClass({
     {
         this.setState({sortBy: event.target.value});
     },
-    render: function () {
-        localStorage.setItem('scene-graph-filters', JSON.stringify(this.state));
+    getGroupOptions: function () {
         var options = ConnectionCache.getGroupNameArray();
         var optionsArr = [{value: "None", label: "None"}];
         options.forEach(function (value, key) {
             optionsArr.push({value: key, label: value});
         });
+        return optionsArr;
+    },
+    render: function () {
+        localStorage.setItem('scene-graph-filters', JSON.stringify(this.state));
         return (
             <div className='container'>
                 <div className='row'>

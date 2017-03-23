@@ -13,10 +13,10 @@ var SceneChooser = React.createClass({
     mixins: [FormHelper],
     getInitialState: function () {
         var initFilters = '{"filterText":"","filterGroupId":null,"sortBy":null}';
-        try{
-            return  JSON.parse(localStorage.getItem('scene-filters')|| initFilters);
-        }catch(E){
-            console.log("err",E)
+        try {
+            return JSON.parse(localStorage.getItem('scene-filters') || initFilters);
+        } catch (E) {
+            console.log("err", E)
         }
 
 
@@ -31,35 +31,54 @@ var SceneChooser = React.createClass({
             this.setState({filterText: input.value});
         }
     },
-    componentDidMount:function(){
-        this.refs["filter"].value=this.state.filterText;
+    componentDidMount: function () {
+        this.refs["filter"].value = this.state.filterText;
     },
-    componentDidUpdate:function(){
-        this.refs["filter"].value=this.state.filterText;
+    componentDidUpdate: function () {
+        this.refs["filter"].value = this.state.filterText;
     },
     _onSelect: function (e) {
         var element = this.refs['group-filter'];
 
         this.setState({filterGroupId: e.value});
     },
-    _onSort:function(val){
+    _onSort: function (val) {
 
         this.setState({sortBy: null});
     },
+    getGroupOptions: function () {
+        var options = ConnectionCache.getGroupNameArray();
+        var optionsArr = [{value: "None", label: "None"}];
+        options.forEach(function (value, key) {
+            optionsArr.push({value: key, label: value});
+        });
+        return optionsArr;
+    },
     render: function () {
         localStorage.setItem('scene-filters', JSON.stringify(this.state));
-        var options = ConnectionCache.getGroupNameArray();
-        var optionsArr = [{value:"None",label:"None"}];
-        options.forEach(function(value,key){
-            optionsArr.push({value:key,label:value});
-        });
+        var optionsArr = this.getGroupOptions();
+        var isAdmin = ConnectionCache.getGroupID() == 0 ? 1:0;
+        var groupFilter = isAdmin ? <div className="col-xs-12">
+            <div className="sort-section">
+                <h2>Show Only</h2>
+                <Select
+                    ref="group-filter"
+                    name="group-filter"
+                    value={this.state.filterGroupId}
+                    options={optionsArr}
+                    onChange={this._onSelect}
+                />
+            </div>
+        </div> : null ;
+
 
         return (
             <div className='container'>
                 <div className='row'>
                     <div className='col-xs-6'>
                         <h2>Edit an Existing Scene</h2>
-                        <SceneList filterText={this.state.filterText} sortBy={this.state.sortBy} filterGroupId={this.state.filterGroupId}/>
+                        <SceneList filterText={this.state.filterText} sortBy={this.state.sortBy}
+                                   filterGroupId={this.state.filterGroupId}/>
                     </div>
                     <div className='col-xs-6'>
                         <div className="col-xs-12">
@@ -78,23 +97,12 @@ var SceneChooser = React.createClass({
                                        className='form-control' placeholder='scene name'/>
                             </div>
                         </div>
-                        <div className="col-xs-12">
-                            <div className="sort-section">
-                                <h2>Show Only</h2>
-                                <Select
-                                    ref="group-filter"
-                                    name="group-filter"
-                                    value={this.state.filterGroupId}
-                                    options={optionsArr}
-                                    onChange={this._onSelect}
-                                />
-                            </div>
-                        </div>
+                        {groupFilter}
                     </div>
                     <div className='col-md-6'>
                         <h4> Example Scenes </h4>
                         <ul className="nav nav-pills .nav-stacked col-xs-12">
-                            <li  className="col-xs-12" >
+                            <li className="col-xs-12">
                                 <a href="/#/scene/589c9dc3f0b2aca4bdfe444a">MF Style Example</a>
                             </li>
                         </ul>
