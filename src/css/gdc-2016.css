@@ -50,16 +50,11 @@
     counter-increment: my-badass-counter;
 }
 
-/*.nav-pills.ur {*/
-    /*color: blue;*/
-    /*list-style-type: upper-roman;*/
-/*}*/
-
-.nav-pills li:hover {
+.nav-pills dd:hover {
     background-color: #2f2f2f;
 }
 
-.nav-pills li:active {
+.nav-pills dd:active {
     background-color: #000;
 }
 
