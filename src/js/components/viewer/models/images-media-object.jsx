@@ -59,6 +59,21 @@ var ImageMediaObject = React.createClass({
         this.play();
     },
 
+    getImageUrlForLocalCDN: function() {
+
+        // APEP for local deployment, we have all azure blob urls to local cdn urls
+
+        // if(this.props.data.mediaObject._obj.url.indexOf('https://devuosassetstore.blob.core.windows.net/assetstoredev') !== -1) {
+        if(this.props.data.mediaObject._obj.url.indexOf('https://uosassetstore.blob.core.windows.net/assetstoredev') !== -1) {
+            // var removedAzureUriFromUrl = this.props.data.mediaObject._obj.url.replace('https://devuosassetstore.blob.core.windows.net/assetstoredev', '');
+            var removedAzureUriFromUrl = this.props.data.mediaObject._obj.url.replace('https://uosassetstore.blob.core.windows.net/assetstoredev', '');
+
+            return 'http://mediaframework.cdn' + removedAzureUriFromUrl;
+        }
+
+        return this.props.data.mediaObject._obj.url;
+    },
+
     render: function () {
 
         var style = {
@@ -74,7 +89,7 @@ var ImageMediaObject = React.createClass({
         return <img ref={this.props.data.mediaObject._obj._id}
                     style={style}
                     className={objectClasses}
-                    src={this.props.data.mediaObject._obj.url}
+                    src={this.getImageUrlForLocalCDN()}
                     onClick={this.props.clickHandler}
                     onLoad={this.handleImageLoaded}/>;
     }

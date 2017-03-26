@@ -26,9 +26,25 @@ var VideoMediaObject = React.createClass({
         }
         return volume / 100;
     },
+
+    // APEP for local deployment, we have all azure blob urls to local cdn urls
+    getImageUrlForLocalCDN: function(url) {
+        
+        // if(url.indexOf('https://devuosassetstore.blob.core.windows.net/assetstoredev') !== -1) {
+        if(url.indexOf('https://uosassetstore.blob.core.windows.net/assetstoredev') !== -1) {
+            // var removedAzureUriFromUrl = url.replace('https://devuosassetstore.blob.core.windows.net/assetstoredev', '');
+            var removedAzureUriFromUrl = url.replace('https://uosassetstore.blob.core.windows.net/assetstoredev', '');
+            return 'http://mediaframework.cdn' + removedAzureUriFromUrl;
+        }
+
+        return url;
+    },
+
     componentDidMount: function () {
         var self = this;
         var mediaObject = this.props.data.mediaObject;
+        // APEP NARM local cdn hack
+        mediaObject._obj.url = this.getImageUrlForLocalCDN(mediaObject._obj.url);
         var isVimeo = mediaObject._obj.url.indexOf("vimeo.com") !== -1;
         var videoInfo = mediaObject._obj.vmob;
 
@@ -59,9 +75,9 @@ var VideoMediaObject = React.createClass({
                             self.state.play_duration = null;
                         } else {
                             self.state.play_duration = manifest.Period.duration;
-                            
+
                             console.log("Video-Media-Object - dash manifest loaded and play_duration state set - play_duration: ", self.state.play_duration);
-                            
+
                             self.setDashVideoStuckBufferingListener();
                         }
                     });
