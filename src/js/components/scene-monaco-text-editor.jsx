@@ -306,7 +306,7 @@ var SceneMonacoTextEditor = React.createClass({
         };
 
         var requireConfig = {
-            url: 'external-client-side-deps/require.js',
+            url: 'external/require.js',
             paths: {
                 'vs': 'monaco-editor/min/vs'
             }
