@@ -3,19 +3,19 @@
     <head>
         <meta charset='UTF-8'>
         <title>Scene Viewer</title>
-        <link rel="stylesheet" media="screen" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+        <link rel="stylesheet" media="screen" href="external/bootstrap.min.css">
         <link rel="stylesheet" media="screen" href="css/viewer.css">
         <link rel="stylesheet" media="screen" href="css/random-visual-player.css">
-        <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
-        <link href="http://fonts.googleapis.com/earlyaccess/jejumyeongjo.css" rel="stylesheet">
-        <link href="http://fonts.googleapis.com/earlyaccess/kopubbatang.css" rel="stylesheet">
-        <link rel="stylesheet" media="screen" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.css">
+        <link href="external/css?family=Press+Start+2P" rel="stylesheet">
+        <link href="external/jejumyeongjo.css" rel="stylesheet">
+        <link href="external/kopubbatang.css" rel="stylesheet">
+        <link rel="stylesheet" media="screen" href="external/toastr.css">
     </head>
 
     <body>
         <div id="main"></div>
-        <script src="//cdn.polyfill.io/v1/polyfill.js?features=<%= polyfillFeatures %>"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/dashjs/2.3.0/dash.all.min.js"></script>
+        <script src="external/polyfill.js?features=Element.prototype.classList,Object.create"></script>
+        <script src="external/dash.all.min.js"></script>
         <script src='js/viewer.js'></script>
     </body>
 </html>

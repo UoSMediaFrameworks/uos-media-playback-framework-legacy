@@ -1,0 +1,8 @@
+/* Polyfill service v3.17.0
+ * For detailed credits and licence information see https://github.com/financial-times/polyfill-service.
+ * 
+ * UA detected: wget/1.19.0 (unknown/unsupported; using policy `unknown=ignore`)
+ * Features requested: Element.prototype.classList,Object.create
+ *  */
+
+/* No polyfills found for current settings */

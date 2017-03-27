@@ -3,10 +3,10 @@
     <head>
         <meta charset='UTF-8'>
         <title>GDC 2016</title>
-        <link rel="stylesheet" media="screen" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+        <link rel="stylesheet" media="screen" href="external/bootstrap.min.css">
         <link rel="stylesheet" media="screen" href="css/manifest2015.css">
-        <link href="http://fonts.googleapis.com/earlyaccess/jejumyeongjo.css" rel="stylesheet">
-        <link href="http://fonts.googleapis.com/earlyaccess/kopubbatang.css" rel="stylesheet">
+        <link href="external/jejumyeongjo.css" rel="stylesheet">
+        <link href="external/kopubbatang.css" rel="stylesheet">
         <link rel="stylesheet" media="screen" href="css/random-visual-player.css">
     </head>
 
@@ -29,8 +29,8 @@
         <div id='theme-name' class='info-box'>
             No Theme Selected
         </div>
-        <script src="//cdn.polyfill.io/v1/polyfill.js?features=<%= polyfillFeatures %>"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/dashjs/2.3.0/dash.all.min.js"></script>
+        <script src="external/polyfill.js?features=Element.prototype.classList,Object.create"></script>
+        <script src="external/dash.all.min.js"></script>
         <script src='js/manifest2015.js'></script>
     </body>
 </html>

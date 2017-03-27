@@ -134,7 +134,11 @@ gulp.task('include-schemas', function() {
     return gulp.src(['src/schemas/**']).pipe(gulp.dest('dist/schemas'));
 });
 
-gulp.task('build-dist', ['bundlejs', 'html', 'css', 'include-monaco-editor', 'include-schemas', 'build-version-document']);
+gulp.task('include-external-deps-locally-for-narm', function() {
+    return gulp.src(['external-client-side-deps/**']).pipe(gulp.dest('dist/external')); 
+});
+
+gulp.task('build-dist', ['bundlejs', 'html', 'css', 'include-monaco-editor', 'include-schemas', 'build-version-document', 'include-external-deps-locally-for-narm']);
 
 
 ///// BEGIN CLI TASKS ////////////////////////////////
