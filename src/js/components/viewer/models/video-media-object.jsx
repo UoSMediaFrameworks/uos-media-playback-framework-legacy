@@ -83,15 +83,22 @@ var VideoMediaObject = React.createClass({
     componentWillUnmount: function () {
         console.log("video Unmounting");
         var self = this;
-        if (self.state.player.isVimeo) {
-            self.state.player.vimeo_player.off('timeupdate', self.triggerEventHandler);
-        } else {
-            if (self.state.player.transcoded) {
-                self.state.player.raw_player.off("playbackTimeUpdated", self.triggerEventHandler)
+
+        // APEP TODO the below does not work as part of the react lifecycle - componentWillUnmount as state has been detached
+        try {
+            if (self.state.player.isVimeo) {
+                self.state.player.vimeo_player.off('timeupdate', self.triggerEventHandler);
             } else {
-                self.state.player._element.ontimeupdate ="";
+                if (self.state.player.transcoded) {
+                    self.state.player.raw_player.off("playbackTimeUpdated", self.triggerEventHandler)
+                } else {
+                    self.state.player._element.ontimeupdate ="";
+                }
             }
+        } catch (e) {
+            console.log("Error unmounting video media object - e: ", e);
         }
+
         // APEP TODO investigation to resolving video media object errors during graph viewer
         // APEP TODO I really think each object should be responsible for cleaning up after it self...
         // var self = this;
