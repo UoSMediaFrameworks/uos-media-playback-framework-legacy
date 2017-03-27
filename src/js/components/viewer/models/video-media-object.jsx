@@ -59,9 +59,9 @@ var VideoMediaObject = React.createClass({
                             self.state.play_duration = null;
                         } else {
                             self.state.play_duration = manifest.Period.duration;
-                            
+
                             console.log("Video-Media-Object - dash manifest loaded and play_duration state set - play_duration: ", self.state.play_duration);
-                            
+
                             self.setDashVideoStuckBufferingListener();
                         }
                     });
@@ -266,6 +266,10 @@ var VideoMediaObject = React.createClass({
     playerConfigurations: function () {
         var self = this;
         try {
+            //APEP call the position element code now we have loaded the video player
+            var element = self.refs[self.props.data.mediaObject._obj._id];
+            self.props.positionElementHandler(element);
+
             //APEP Play the video and set the volume for playback
             self.playVideoAndSetVolume();
             self.attachTriggers();
