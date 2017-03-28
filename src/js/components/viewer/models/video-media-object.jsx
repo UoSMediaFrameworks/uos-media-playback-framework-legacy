@@ -27,6 +27,26 @@ var VideoMediaObject = React.createClass({
         }
         return volume / 100;
     },
+
+    getVideoRepresentationSetFromAdaptationSets: function(adaptationSets) {
+        //APEP TODO: AWS and ffmpeg manifests are very different
+        // Below is only implemented for AWS manifests and we will need to handle errors
+
+        if(adaptationSets.length === 1) {
+            return adaptationSets[0];
+        }
+
+        for (var adaptation in adaptationSets) {
+            var adaptationSet = adaptationSets[adaptation];
+            if(adaptationSet.Representation.length > 1) {
+                return adaptationSet;
+            }
+        }
+
+        return null;
+
+    },
+
     componentDidMount: function () {
         var self = this;
 
@@ -91,50 +111,44 @@ var VideoMediaObject = React.createClass({
 
                             var adaptationSets = manifest.Period.AdaptationSet;
 
-                            var videoAdaptionSet = null;
+                            var videoAdaptionSet = self.getVideoRepresentationSetFromAdaptationSets(adaptationSets);
 
-                            for (var adaptation in adaptationSets) {
-                                var adaptationSet = adaptationSets[adaptation];
-                                if(adaptationSet.mimeType.indexOf('audio') === -1) {
-                                    videoAdaptionSet = adaptationSet;
-                                }
-                            }
+                            if(!videoAdaptionSet) {
+                                var sortedVideoAdaptationSet = _.sortBy(videoAdaptionSet.Representation, [function(videoSet) { return videoSet.height * videoSet.width; }]);
+                                var largestVideoAdaptationSet = sortedVideoAdaptationSet[sortedVideoAdaptationSet.length - 1];
 
-                            var sortedVideoAdaptationSet = _.sortBy(videoAdaptionSet.Representation, [function(videoSet) { return videoSet.height * videoSet.width; }]);
-                            var largestVideoAdaptationSet = sortedVideoAdaptationSet[sortedVideoAdaptationSet.length - 1];
+                                console.log("largestVideoAdaptationSet: ", largestVideoAdaptationSet);
 
-                            console.log("largestVideoAdaptationSet: ", largestVideoAdaptationSet);
+                                var element = self.refs[self.props.data.mediaObject._obj._id];
+                                element.clientWidth = largestVideoAdaptationSet.width;
+                                element.clientHeight = largestVideoAdaptationSet.height;
+                                var style = {};
 
-                            var element = self.refs[self.props.data.mediaObject._obj._id];
-                            element.clientWidth = largestVideoAdaptationSet.width;
-                            element.clientHeight = largestVideoAdaptationSet.height;
-                            var style = {};
-                            
-                            if(largestVideoAdaptationSet.height > largestVideoAdaptationSet.width) {
-                                console.log("setting height specifically for video - PORTRAIT");
-                                if(self.props.canMediaObjectProvideDefaultSize("height")) {
-                            
-                                    if(self.props.willHeightRuleNotInvalidateMaxWidth(largestVideoAdaptationSet.width * 0.6)) {
-                                        console.log("Applying a minimum height");
-                            
-                                        style["height"] = "60%";
-                                    } else {
-                                        style["height"] = "40%";
+                                if(largestVideoAdaptationSet.height > largestVideoAdaptationSet.width) {
+                                    console.log("setting height specifically for video - PORTRAIT");
+                                    if(self.props.canMediaObjectProvideDefaultSize("height")) {
+
+                                        if(self.props.willHeightRuleNotInvalidateMaxWidth(largestVideoAdaptationSet.width * 0.6)) {
+                                            console.log("Applying a minimum height");
+
+                                            style["height"] = "60%";
+                                        } else {
+                                            style["height"] = "40%";
+                                        }
+                                    }
+
+                                } else {
+                                    console.log("setting width specifically for video - LANDSCAPE");
+                                    if(self.props.canMediaObjectProvideDefaultSize("width")) {
+                                        console.log("Applying a minimum width");
+
+                                        // APEP find the maximum width available for this rule
+                                        style["width"] = "40%";
                                     }
                                 }
-                            
-                            } else {
-                                console.log("setting width specifically for video - LANDSCAPE");
-                                if(self.props.canMediaObjectProvideDefaultSize("width")) {
-                                    console.log("Applying a minimum width");
-                            
-                                    // APEP find the maximum width available for this rule
-                                    style["width"] = "40%";
-                                }
-                            }
-                            
-                            self.props.addStyleHandler(element, style);
 
+                                self.props.addStyleHandler(element, style);
+                            }
                         } finally {
                             self.playerConfigurations();
                         }
@@ -164,7 +178,7 @@ var VideoMediaObject = React.createClass({
         } catch (e) {
             console.log("Error unmounting video media object - e: ", e);
         }
-        
+
     },
 
     dashPlayerSeeked: function (e) {
