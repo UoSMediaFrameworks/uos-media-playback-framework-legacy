@@ -149,6 +149,10 @@ var VideoMediaObject = React.createClass({
 
                                 self.props.addStyleHandler(element, style);
                             }
+                        } catch(e) {
+                            var error = e;
+                            
+                            console.log("Error when using manifest to correct player size for random position");
                         } finally {
                             self.playerConfigurations();
                         }
