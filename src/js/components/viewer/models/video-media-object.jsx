@@ -120,8 +120,10 @@ var VideoMediaObject = React.createClass({
                                 console.log("largestVideoAdaptationSet: ", largestVideoAdaptationSet);
 
                                 var element = self.refs[self.props.data.mediaObject._obj._id];
-                                element.clientWidth = largestVideoAdaptationSet.width;
-                                element.clientHeight = largestVideoAdaptationSet.height;
+                                
+                                //element.clientWidth = largestVideoAdaptationSet.width;
+                                //element.clientHeight = largestVideoAdaptationSet.height;
+                                
                                 var style = {};
 
                                 if(largestVideoAdaptationSet.height > largestVideoAdaptationSet.width) {
