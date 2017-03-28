@@ -113,7 +113,7 @@ var VideoMediaObject = React.createClass({
 
                             var videoAdaptionSet = self.getVideoRepresentationSetFromAdaptationSets(adaptationSets);
 
-                            if(!videoAdaptionSet) {
+                            if(videoAdaptionSet) {
                                 var sortedVideoAdaptationSet = _.sortBy(videoAdaptionSet.Representation, [function(videoSet) { return videoSet.height * videoSet.width; }]);
                                 var largestVideoAdaptationSet = sortedVideoAdaptationSet[sortedVideoAdaptationSet.length - 1];
 
