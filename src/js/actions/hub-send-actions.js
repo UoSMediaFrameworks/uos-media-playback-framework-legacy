@@ -9,6 +9,7 @@ var hashHistory = require('react-router').hashHistory;
 
 const GDC_SCENE_GRAPH_TYPE = "GDC_SCENE_GRAPH";
 const MEMOIR_SCENE_GRAPH_TYPE = "MEMOIR_SCENE_GRAPH";
+const NARM_SCENE_GRAPH_TYPE = "NARM_SCENE_GRAPH";
 
 const ROOT_NODE_TYPE = "root";
 const CITY_NODE_TYPE = "city";
@@ -427,6 +428,28 @@ module.exports = {
         };
     },
 
+    getNewNarmSceneGraph: function(name) {
+        return {
+            'name': name,
+            'sceneIds': {},
+            'type': NARM_SCENE_GRAPH_TYPE,
+            'version': GRAPH_ALPHA_VERSION,
+            'graphThemes': {
+                type: "document",
+                children: {
+                    "root": {
+                        type: ROOT_NODE_TYPE,
+                        children: {
+
+                        }
+                    }
+                }
+            },
+            'excludedThemes': {},
+            'nodeList': []
+        }
+    },
+
     getNewMemoirSceneGraph: function(name) {
         return  {
             'name': name,
@@ -502,8 +525,10 @@ module.exports = {
 
         if(type === GDC_SCENE_GRAPH_TYPE) {
             sceneGraph = this.getNewGDCSceneGraph(name);
-        } else {
+        } else if (type === MEMOIR_SCENE_GRAPH_TYPE) {
             sceneGraph = this.getNewMemoirSceneGraph(name);
+        } else {
+            sceneGraph = this.getNewNarmSceneGraph(name);
         }
 
         HubClient.saveSceneGraph(sceneGraph, function(newSceneGraph) {

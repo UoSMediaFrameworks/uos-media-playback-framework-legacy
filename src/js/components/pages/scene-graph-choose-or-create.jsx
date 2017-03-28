@@ -80,6 +80,7 @@ var SceneGraphChooser = React.createClass({
                                             onChange={this.handleChange}>
                                         <option value="GDC_SCENE_GRAPH">GDC</option>
                                         <option value="MEMOIR_SCENE_GRAPH">Memoir</option>
+                                        <option value="NARM_SCENE_GRAPH">NARM</option>
                                     </select>
                                 </span>
                                     <button type='submit' className='btn btn-default'>Create</button>

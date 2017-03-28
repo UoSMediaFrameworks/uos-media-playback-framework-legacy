@@ -4,62 +4,6 @@
 var _ = require('lodash');
 var SceneStore = require('../../stores/scene-store');
 
-var cities = [
-    "beijing",
-    "chicago",
-    "dalian",
-    "kualalumpur",
-    "manchester",
-    "seoul",
-    "chengdu",
-    "hongkong",
-    "shenyang",
-    "panjin"
-];
-
-var graphThemes = [
-    "TransportationSystem",
-    "EthnicDance",
-    "NightMarket",
-    "GreenInitiative",
-    "Changes",
-    "Technology",
-    "Entertainment",
-    "Tradition",
-    "Intimacy",
-    "History",
-    "FoodDiversity",
-    "Diversity",
-    "Nature",
-    "Politics",
-    "Place",
-    "Signage",
-    "Archaeology",
-    "Climate",
-    "Commute",
-    "FusionOfCultures",
-    "Conflict",
-    "Waterways",
-    "Sports",
-    "Culture",
-    "PaceOfTime",
-    "Art",
-    "FoodFusion",
-    "Student",
-    "Language",
-    "WorkingClass",
-    "Generation",
-    "Migration",
-    "Personality",
-    "Progress",
-    "Nightlife",
-    "Lively",
-    "Performance",
-    "Transit",
-    "Tour",
-];
-
-
 /**
  * Parses the node instance to return type for graph naming type
  *  TODO: Update D3 graph to use same node types and this process is not required
