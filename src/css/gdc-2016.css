@@ -29,6 +29,7 @@
 
 .nav-pills {
     padding-left: 0;
+    counter-reset: my-badass-counter;
 }
 
 .nav-pills a {
@@ -37,45 +38,57 @@
     background-color: transparent;
 }
 
-.nav-pills li {
+.nav-pills dd {
     padding-left: 0;
-    color:#bbb;
-    background-color:#222;
+    color: #bbb;
+    background-color: #222;
+    list-style-type: upper-roman;
+}
+.nav-pills dd:before{
+    float:left;
+    content:counter(my-badass-counter, decimal);
+    counter-increment: my-badass-counter;
 }
 
-.nav-pills li:hover {
+.nav-pills dd:hover {
     background-color: #2f2f2f;
 }
 
-.nav-pills li:active {
+.nav-pills dd:active {
     background-color: #000;
 }
-.nav-pills >button{
+
+.nav-pills > button {
     background: #222;
 }
-.scene-options{
-    float:right;
+
+.scene-options {
+    float: right;
     text-align: right;
 }
+
 .remove-scene {
     background: transparent;
-    border:none;
+    border: none;
     color: red;
 }
 
 .edit-scene {
     background: transparent;
-    border:none
+    border: none
 
 }
-.nav-pills>li+li {
+
+.nav-pills > li + li {
     margin-left: 0px;
 }
-#media-upload-drop-target p{
-    color:#bbb;
+
+#media-upload-drop-target p {
+    color: #bbb;
 }
-.graph-type-buttons{
+
+.graph-type-buttons {
     list-style: none;
-    padding-left:0px;
+    padding-left: 0px;
 }
 

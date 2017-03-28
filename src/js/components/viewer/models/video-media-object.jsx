@@ -6,6 +6,7 @@ var SceneActions = require('../../../actions/scene-actions');
 var VideoStore = require('../../../stores/video-media-object-store');
 var classNames = require('classnames');
 var hat = require('hat');
+var _ = require('lodash');
 
 var VideoMediaObject = React.createClass({
     getInitialState: function () {
@@ -27,9 +28,28 @@ var VideoMediaObject = React.createClass({
         return volume / 100;
     },
 
+    getVideoRepresentationSetFromAdaptationSets: function(adaptationSets) {
+        //APEP TODO: AWS and ffmpeg manifests are very different
+        // Below is only implemented for AWS manifests and we will need to handle errors
+
+        if(adaptationSets.length === 1) {
+            return adaptationSets[0];
+        }
+
+        for (var adaptation in adaptationSets) {
+            var adaptationSet = adaptationSets[adaptation];
+            if(adaptationSet.Representation.length > 1) {
+                return adaptationSet;
+            }
+        }
+
+        return null;
+
+    },
+
     // APEP for local deployment, we have all azure blob urls to local cdn urls
     getImageUrlForLocalCDN: function(url) {
-        
+
         // if(url.indexOf('https://devuosassetstore.blob.core.windows.net/assetstoredev') !== -1) {
         if(url.indexOf('https://uosassetstore.blob.core.windows.net/assetstoredev') !== -1) {
             // var removedAzureUriFromUrl = url.replace('https://devuosassetstore.blob.core.windows.net/assetstoredev', '');
@@ -49,13 +69,14 @@ var VideoMediaObject = React.createClass({
         var videoInfo = mediaObject._obj.vmob;
 
         var videoUrl = isVimeo ? getVimeoId(mediaObject._obj.url) : mediaObject._obj.url;
+
         self.state.looping = !(mediaObject._obj.autoreplay == undefined || mediaObject._obj.autoreplay < 1);
         self.state.volume = self.getVolume(mediaObject);
 
 
         //Angel P:
-        // TODO if !isVimeo and videoInfo === undefined , just trigger doen events for it to reload in the queue with the video info.
-        //TODO: !isVimeo and videoInfo type unsupported  - remove from queue
+        // TODO if !isVimeo and videoInfo === undefined , just trigger doen events for it to reload in the queue with the video info. (APEP probably best suited in queue logic rather than here, we've already started on the constructor)
+        // TODO: !isVimeo and videoInfo type unsupported  - remove from queue (APEP probably best suited in queue logic rather than here, we've already started on the constructor)
 
 
         if (!isVimeo && videoInfo == undefined) {
@@ -64,33 +85,96 @@ var VideoMediaObject = React.createClass({
             self.props.data.moDoneHandler(self);
         } else {
             self.state.player = new EmbeddedVimeoPlayer(isVimeo, videoUrl, videoInfo);
-            // APEP TODO surprised a setState call is not needed.
-            if (!self.state.player.isVimeo) { //APEP: ##Hack## for buffering media removal at the end
-                if (self.state.player.transcoded) {
-                    //APEP: ##Hack## for buffering media removal at the end
-                    self.state.player.raw_player.retrieveManifest(self.state.player.player_url, function (manifest, err) {
-                        // APEP TODO Not sure how this async function works inside this sync environment - will likely cause state.play_duration nulls where we may want it
-                        if (err) {
-                            console.log("Video-Media-Object - componentDidMount - retrieveManifest err: ", err);
-                            self.state.play_duration = null;
-                        } else {
-                            self.state.play_duration = manifest.Period.duration;
 
-                            console.log("Video-Media-Object - dash manifest loaded and play_duration state set - play_duration: ", self.state.play_duration);
-
-                            self.setDashVideoStuckBufferingListener();
-                        }
-                    });
-                }
-            }
             var element = this.refs[this.props.data.mediaObject._obj._id];
             element.appendChild(this.state.player._element);
+
             // APEP for non transcoded videos that have fallen back to single html5 player fallback, load the html 5 video
             if (!self.state.player.transcoded && !self.state.player.isVimeo) {
                 self.state.player.raw_player.load();
             }
 
-            this.playerConfigurations();
+            // APEP for vimeo or non transcoded video, we can immediately start the video
+            if(self.state.player.isVimeo || !self.state.player.transcoded) {
+                self.playerConfigurations();
+            }
+
+            // APEP for transcoded media we must wait until we've loaded the manifest until we can start.
+            if (!self.state.player.isVimeo && self.state.player.transcoded) {
+
+                self.state.player.raw_player.retrieveManifest(self.state.player.player_url, function (manifest, err) {
+                    if (err) {
+                        console.log("Video-Media-Object - componentDidMount - retrieveManifest err: ", err);
+                        self.state.play_duration = null;
+
+                    } else {
+
+                        //APEP: ##Hack## for buffering media removal at the end
+                        // APEP first attach listeners for buffering media failure, manifest is required for length of video
+                        try {
+                            self.state.play_duration = manifest.Period.duration;
+                            self.setDashVideoStuckBufferingListener();
+                        } catch (e) {
+                            console.log("Error setting dash video buffering listener");
+                        }
+
+                        // APEP apply a minimum height or width for vmo that do not have a default specified
+                        try {
+                            console.log("Video-Media-Object - dash manifest: ", manifest);
+                            console.log("Video-Media-Object - dash manifest loaded and play_duration state set - play_duration: ", self.state.play_duration);
+
+                            var adaptationSets = manifest.Period.AdaptationSet;
+
+                            var videoAdaptionSet = self.getVideoRepresentationSetFromAdaptationSets(adaptationSets);
+
+                            if(videoAdaptionSet) {
+                                var sortedVideoAdaptationSet = _.sortBy(videoAdaptionSet.Representation, [function(videoSet) { return videoSet.height * videoSet.width; }]);
+                                var largestVideoAdaptationSet = sortedVideoAdaptationSet[sortedVideoAdaptationSet.length - 1];
+
+                                console.log("largestVideoAdaptationSet: ", largestVideoAdaptationSet);
+
+                                var element = self.refs[self.props.data.mediaObject._obj._id];
+                                
+                                //element.clientWidth = largestVideoAdaptationSet.width;
+                                //element.clientHeight = largestVideoAdaptationSet.height;
+                                
+                                var style = {};
+
+                                if(largestVideoAdaptationSet.height > largestVideoAdaptationSet.width) {
+                                    console.log("setting height specifically for video - PORTRAIT");
+                                    if(self.props.canMediaObjectProvideDefaultSize("height")) {
+
+                                        if(self.props.willHeightRuleNotInvalidateMaxWidth(largestVideoAdaptationSet.width * 0.6)) {
+                                            console.log("Applying a minimum height");
+
+                                            style["height"] = "60%";
+                                        } else {
+                                            style["height"] = "40%";
+                                        }
+                                    }
+
+                                } else {
+                                    console.log("setting width specifically for video - LANDSCAPE");
+                                    if(self.props.canMediaObjectProvideDefaultSize("width")) {
+                                        console.log("Applying a minimum width");
+
+                                        // APEP find the maximum width available for this rule
+                                        style["width"] = "40%";
+                                    }
+                                }
+
+                                self.props.addStyleHandler(element, style);
+                            }
+                        } catch(e) {
+                            var error = e;
+                            
+                            console.log("Error when using manifest to correct player size for random position");
+                        } finally {
+                            self.playerConfigurations();
+                        }
+                    }
+                });
+            }
         }
 
     },
@@ -99,42 +183,22 @@ var VideoMediaObject = React.createClass({
     componentWillUnmount: function () {
         console.log("video Unmounting");
         var self = this;
-        if (self.state.player.isVimeo) {
-            self.state.player.vimeo_player.off('timeupdate', self.triggerEventHandler);
-        } else {
-            if (self.state.player.transcoded) {
-                self.state.player.raw_player.off("playbackTimeUpdated", self.triggerEventHandler)
+
+        // APEP TODO the below does not work as part of the react lifecycle - componentWillUnmount as state has been detached
+        try {
+            if (self.state.player.isVimeo) {
+                self.state.player.vimeo_player.off('timeupdate', self.triggerEventHandler);
             } else {
-                self.state.player._element.ontimeupdate ="";
+                if (self.state.player.transcoded) {
+                    self.state.player.raw_player.off("playbackTimeUpdated", self.triggerEventHandler)
+                } else {
+                    self.state.player._element.ontimeupdate ="";
+                }
             }
+        } catch (e) {
+            console.log("Error unmounting video media object - e: ", e);
         }
-        // APEP TODO investigation to resolving video media object errors during graph viewer
-        // APEP TODO I really think each object should be responsible for cleaning up after it self...
-        // var self = this;
-        //
-        // if(self.state.timeoutOnIntervalTimeout) {
-        //     try {
-        //         clearTimeout(self.state.timeoutOnIntervalTimeout);
-        //     } catch (e) {
-        //         console.log("VideoMediaObject - transition - clearTimeout error e: ", e);
-        //     }
-        // }
-        //
-        // if (self.state._playbackTimeInterval) clearTimeout(self.state._playbackTimeInterval);
-        //
-        // if (self.props.data.mediaObject){
-        //     if (!self.state.player.isVimeo) {
-        //
-        //         if(self.state.player.raw_player) {
-        //             // APEP reset the player to remove GPU memory and memory growth over time
-        //             self.state.player.raw_player.reset();
-        //         }
-        //     }
-        // }
-        //
-        // if(self.state.player) {
-        //     self.state.player.remove();
-        // }
+
     },
 
     dashPlayerSeeked: function (e) {
@@ -282,6 +346,10 @@ var VideoMediaObject = React.createClass({
     playerConfigurations: function () {
         var self = this;
         try {
+            //APEP call the position element code now we have loaded the video player
+            var element = self.refs[self.props.data.mediaObject._obj._id];
+            self.props.positionElementHandler(element);
+
             //APEP Play the video and set the volume for playback
             self.playVideoAndSetVolume();
             self.attachTriggers();

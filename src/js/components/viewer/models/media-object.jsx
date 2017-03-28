@@ -29,6 +29,7 @@ var MediaObject = React.createClass({
 
         //APEP When mounting component, apply the declared style rules and position if not declared by media objects CSS
         this.addStyle(element, this.props.data.mediaObject.style);
+
         this.positionElement();
     },
 
@@ -48,6 +49,38 @@ var MediaObject = React.createClass({
 
         return positionStyleTag !== undefined;
     },
+
+    canMediaObjectProvideDefaultSize: function(heightOrWidth) {
+
+        var styleAsObject = this.props.data.mediaObject.style;
+
+        if(heightOrWidth === "height") {
+            var hasNoWidth = !styleAsObject.hasOwnProperty("width");
+            var hasNoMinWidth = !styleAsObject.hasOwnProperty("min-width");
+            var hasNoMaxWidth = !styleAsObject.hasOwnProperty("max-width");
+
+            return hasNoWidth && hasNoMinWidth && hasNoMaxWidth;
+        }
+
+        if(heightOrWidth === "width") {
+            var hasNoHeight = !styleAsObject.hasOwnProperty("height");
+            var hasNoMinHeight = !styleAsObject.hasOwnProperty("min-height");
+            var hasNoMaxHeight = !styleAsObject.hasOwnProperty("max-height");
+
+            return hasNoHeight && hasNoMinHeight && hasNoMaxHeight;
+        }
+
+        return true;
+    },
+
+    willHeightRuleNotInvalidateMaxWidth: function(estimatedWidth) {
+        var player = this.props.data.player;
+
+        var maxWidthForElement = player.clientWidth;
+
+        return estimatedWidth < maxWidthForElement;
+    },
+
     addStyle: function (element, style) {
             var cssText = element.style.cssText;
             _.forEach(Object.keys(style), function (styleKey) {
@@ -109,8 +142,12 @@ var MediaObject = React.createClass({
 
         return (
             <div className="mO">
-                <Object ref="object" data={this.props.data} clickHandler={this.mediaObjectClicked}
-                        positionElementHandler={this.positionElement}/>
+                <Object ref="object" data={this.props.data}
+                        clickHandler={this.mediaObjectClicked}
+                        positionElementHandler={this.positionElement}
+                        addStyleHandler={this.addStyle}
+                        canMediaObjectProvideDefaultSize={this.canMediaObjectProvideDefaultSize}
+                        willHeightRuleNotInvalidateMaxWidth={this.willHeightRuleNotInvalidateMaxWidth} />
             </div>
         );
     }
