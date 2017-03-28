@@ -195,7 +195,7 @@ var GraphViewer = React.createClass({
         return (
             <div className="graph-viewer-container">
                 {sceneListener}
-                <div style={{position:"fixed",width:"15px",height:"15px",bottom:"0",right:"0",backgroundColor:randomHex || "#cc0008"}}></div>
+                <div style={{position:"fixed",width:"15px",height:"15px",top:"0",right:"0",backgroundColor:randomHex || "#cc0008"}}></div>
             </div>
 
         );
