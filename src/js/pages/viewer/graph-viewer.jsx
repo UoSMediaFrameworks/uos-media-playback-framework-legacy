@@ -43,7 +43,9 @@ var GraphViewer = React.createClass({
         // console.log("graph-viewer - _onChange");
 
         // APEP we have a new scene list
-        this.setState({scenes: this.getSceneIdsFromGraphViewerStore(), themes: GraphViewerStore.getThemesForPlayback()});
+        var hex=
+            '#'+Math.floor(Math.random()*16777215).toString(16);
+        this.setState({scenes: this.getSceneIdsFromGraphViewerStore(), themes: GraphViewerStore.getThemesForPlayback(),hex:hex});
 
         this.showScenes();
 
@@ -189,11 +191,13 @@ var GraphViewer = React.createClass({
             sceneListener = <SceneListener sceneId={this.state.activeSceneId} activeScene={this.state.activeScene} themeQuery={this.state.themeQuery} />;
         else
             sceneListener = <h2>Graph Viewer</h2>;
-
+        var randomHex = this.state.hex;
         return (
             <div className="graph-viewer-container">
                 {sceneListener}
+                <div style={{position:"fixed",width:"15px",height:"15px",bottom:"0",right:"0",backgroundColor:randomHex || "#cc0008"}}></div>
             </div>
+
         );
     }
 });
