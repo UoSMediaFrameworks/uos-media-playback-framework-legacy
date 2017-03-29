@@ -144,12 +144,15 @@ var GraphViewer = React.createClass({
                 delay = (Number(newScene.sceneTransition) || 15) * 1000;
             }
 
-            if (self.state.scenes.length < 2) {
-                console.log("GraphViewer - nextScene - no more scenes to iterate through");
-                // APEP when we are playing just a single scene given by the graph, pass through an empty themeQuery to allow the full scene to play back
-                self.setState({activeScene: newScene, activeSceneId: currentSceneId, themeQuery: ""});
-                return;
-            }
+            // TODO : APEP NARM allow single scenes to still use the theme, we may need to ensure that we do not restart 
+            // if we have not changed scenes
+            
+            // if (self.state.scenes.length < 2) {
+            //     console.log("GraphViewer - nextScene - no more scenes to iterate through");
+            //     // APEP when we are playing just a single scene given by the graph, pass through an empty themeQuery to allow the full scene to play back
+            //     self.setState({activeScene: newScene, activeSceneId: currentSceneId, themeQuery: ""});
+            //     return;
+            // }
 
             // APEP find the themeQuery, if we've been given themes, use the first one
             // if choose from the theme bucket for the scene
