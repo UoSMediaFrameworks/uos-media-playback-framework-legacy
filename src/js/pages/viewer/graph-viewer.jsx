@@ -127,7 +127,7 @@ var GraphViewer = React.createClass({
         }
 
         // TODO : APEP maybe the theme may be changed and this could be a problem
-        if((activeScene && activeScene._id) === currentSceneId && this.state.scenes.length === 1) {
+        if((activeScene && (activeScene._id === currentSceneId)) && this.state.scenes.length === 1) {
             console.log("GraphViewer - nextScene - do not change - activeScene && activeScene._id !== currentSceneId");
             
             // APEP attempted to check if theme same but wrong
@@ -161,11 +161,13 @@ var GraphViewer = React.createClass({
 
             // APEP find the themeQuery, if we've been given themes, use the first one
             // if choose from the theme bucket for the scene
-            var themeQuery = null;
+            var themeQuery = "";
             if  (self.state.themes && self.state.themes.length > 0) {
                 themeQuery = self.state.themes[0];
             } else {
-                themeQuery = self.getRandomThemeName(newScene);
+                // APEP NARM if we are missing themes and in a bucket of one, don't randomly select theme
+                if(self.state.scenes.length > 1)
+                    themeQuery = self.getRandomThemeName(newScene);
             }
 
             currentSceneIndex++;
