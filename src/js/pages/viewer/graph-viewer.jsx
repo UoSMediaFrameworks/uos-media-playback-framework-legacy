@@ -91,7 +91,7 @@ var GraphViewer = React.createClass({
             return;
         }
 
-        this.nextScene();
+        this.nextScene(true);
     },
 
     setTimeoutWithDelayForNextScene: function(delay) {
@@ -101,7 +101,7 @@ var GraphViewer = React.createClass({
         var self = this;
         sceneDisplayTimeout = setTimeout(function() {
             // console.log("GraphViewer - nextSceneFromDelay");
-            self.nextScene();
+            self.nextScene(false);
         }, delay);
     },
 
@@ -113,7 +113,7 @@ var GraphViewer = React.createClass({
         }
     },
 
-    nextScene: function() {
+    nextScene: function(fromStore) {
 
         var activeScene = this.state.activeScene;
         var currentSceneId = this.state.scenes[currentSceneIndex];
@@ -126,10 +126,15 @@ var GraphViewer = React.createClass({
             return;
         }
 
-        // if(!(activeScene && activeScene._id !== currentSceneId)) {
-        //     console.log("GraphViewer - nextScene - do not change - activeScene && activeScene._id !== currentSceneId");
-        //     return;
-        // }
+        // TODO : APEP maybe the theme may be changed and this could be a problem
+        if((activeScene && activeScene._id) === currentSceneId && this.state.scenes.length === 1) {
+            console.log("GraphViewer - nextScene - do not change - activeScene && activeScene._id !== currentSceneId");
+            
+            // APEP attempted to check if theme same but wrong
+            // this.state.themeQuery === this.state.themes.length > 0 ? this.state.themes[0] : ""
+            if(!fromStore)
+                return;
+        }
 
         var self = this;
 
