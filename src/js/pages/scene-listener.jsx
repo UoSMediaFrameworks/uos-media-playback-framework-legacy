@@ -328,7 +328,7 @@ var SceneListener = React.createClass({
 
         // APEP Display Active Theme if available, if not provide a theme selector
         var ThemeDisplay = this.state.fromGraphViewer ?
-            <ActiveTheme ref="theme" themeQuery={this.props.themeQuery} shouldHide={this.state.shouldHide}/> :
+            <ActiveTheme ref="theme" themeQuery={this.props.themeQuery}/> :
             <ThemeSelector ref="theme" shouldHide={this.state.shouldHide} themeChange={this.handleThemeChange}
                            scene={this._getSceneForUpdatingPlayerComponent()}/>
 

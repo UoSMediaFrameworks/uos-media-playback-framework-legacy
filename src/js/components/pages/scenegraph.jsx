@@ -236,9 +236,7 @@ var SceneGraph = React.createClass({
 
     render: function() {
 
-        var sceneGraphId = this.state.sceneGraph ? this.state.sceneGraph._id : "";
-
-        var viewerUrl = mediaHubGraphURL + "/?id=" + sceneGraphId;
+        var viewerUrl = mediaHubGraphURL + "/?id=" + this.props.params.id;
 
         return (
             <div className="container scene-graph">
