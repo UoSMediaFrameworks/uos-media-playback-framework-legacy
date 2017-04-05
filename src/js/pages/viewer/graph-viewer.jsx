@@ -100,6 +100,8 @@ var GraphViewer = React.createClass({
                 permutations = sceneThemeTourPermutations.generatePermutationsGivenOnlyScenes(fullScenes);
             }
 
+            permutations = _.shuffle(permutations);
+
             var newState = {
                 scenes: scenes,
                 themes: themes,
@@ -162,7 +164,7 @@ var GraphViewer = React.createClass({
             console.log("GraphViewer - nextScene - do not change - this.state.sceneThemeTourList.length === 0");
             return;
         }
-        
+
         // APEP TODO Review if required to check to see if we are still on same tour scene + theme
         // As this function moves us a long for the next time this is called, if currentTour.scene and activeScene are the same, we have not traversed the list
 
