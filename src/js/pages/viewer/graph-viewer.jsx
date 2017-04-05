@@ -2,21 +2,23 @@
 
 var React = require('react');
 var GraphViewerStore = require('../../stores/graph-viewer-store');
-var SceneStore = require('../../stores/scene-store');
+var FullSceneStore = require('../../stores/full-scene-store');
 var _ = require('lodash');
 var SceneActions = require('../../actions/scene-actions');
 var SceneListener = require('../scene-listener.jsx');
+var SceneThemeTourPermutations = require('../../utils/playback/scene-theme-tour-bucket-permutations');
+var sceneThemeTourPermutations = new SceneThemeTourPermutations();
+
+var async = require('async');
 
 var sceneDisplayTimeout;
-var currentSceneIndex;
+var currentTourIndex;
 var delay;
 
 var GraphViewer = React.createClass({
 
-
-    getSceneIdsFromGraphViewerStore: function() {
-        // APEP the shuffle has been moved inside the store, this allows us to differentiate between score and graph randomness
-        return GraphViewerStore.getScenesForPlayback();
+    getInitialState: function() {
+        return this.getStateFromStores();
     },
 
     getStateFromStores: function() {
@@ -24,72 +26,109 @@ var GraphViewer = React.createClass({
         // console.log("graph-viewer - getStateFromStores");
 
         return {
-            scenes: this.getSceneIdsFromGraphViewerStore(),
+            scenes: GraphViewerStore.getScenesForPlayback(),
             themes: GraphViewerStore.getThemesForPlayback(),
             activeSceneId: null,
-            activeScene: null
+            activeScene: null,
+            sceneThemeTourList: [],
         }
     },
 
-    getInitialState: function() {
+    // APEP given a list of scene ids, we can return the full scene objects
+    getFullScenesForPlayback: function(scenes, callback) {
 
-        // console.log("graph-viewer - getInitialState");
+        // APEP function to collect a full scene either from scene store, if available or load in from asset store
+        function getFullScene(sceneId, cb) {
+            // APEP we first try load it from the store, as this front end cache hugely improves performance
+            var sceneFromStore = FullSceneStore.getScene(sceneId);
 
-        return this.getStateFromStores();
+            // APEP if we don't have it preloaded, we must load from the API.  This subsequently adds to front end cache
+            // Allowing the player next time to load from local cache
+            if(!sceneFromStore) {
+                SceneActions.getFullScene(sceneId, function(newScene) {
+                    cb(null, newScene);
+                });
+            } else {
+                cb(null, sceneFromStore);
+            }
+        }
+
+        var taskObject = {};
+
+        // APEP create a task list for the async library to load all the scenes in parallel
+        _.each(scenes, function(sceneId, index) {
+            taskObject[index] = getFullScene.bind(null, sceneId);
+        });
+
+        async.parallel(taskObject, function (err, results) {
+            if(err) {
+                callback([]);
+            }
+
+            var fullScenes = [];
+
+            // APEP collect each tasks result and combine back into a single list
+            _.each(Object.keys(results), function(key){
+                var scene = results[key];
+                fullScenes.push(scene);
+            });
+
+            callback(fullScenes);
+        });
     },
 
+    // APEP we have a new scene / theme list from the graph
     _onChange: function() {
 
-        // console.log("graph-viewer - _onChange");
+        // Missing comment
+        var hex= '#' + Math.floor(Math.random()*16777215).toString(16);
 
-        // APEP we have a new scene list
-        var hex=
-            '#'+Math.floor(Math.random()*16777215).toString(16);
-        this.setState({scenes: this.getSceneIdsFromGraphViewerStore(), themes: GraphViewerStore.getThemesForPlayback(),hex:hex});
+        var scenes = GraphViewerStore.getScenesForPlayback();
+        var themes = GraphViewerStore.getThemesForPlayback();
 
-        this.showScenes();
+        var self = this;
 
-        // APEP TODO clean up the current player
+        // APEP we must collect all the full scenes to allow our tour logic to correctly create all the matches
+        this.getFullScenesForPlayback(scenes, function(fullScenes){
 
-        // APEP TODO select new activeSceneId and activeScene
-    },
+            var permutations = [];
 
-    _onSceneStoreChange: function() {
+            // APEP with the full scenes loaded, we can appropriately create a tour of these values
+            if(themes.length > 0) {
+                permutations = sceneThemeTourPermutations.generatePermutationsGivenScenesAndThemes(fullScenes, themes);
+            } else {
+                permutations = sceneThemeTourPermutations.generatePermutationsGivenOnlyScenes(fullScenes);
+            }
 
-        // console.log("graph-viewer - _onSceneStoreChange");
+            var newState = {
+                scenes: scenes,
+                themes: themes,
+                hex: hex,
+                sceneThemeTourList: permutations
+            };
 
-        // if (this.state.activeSceneId && !this.state.activeScene) {
-        //     // APEP Check if the have an active scene id but are missing the full scene object
-        //     var activeScene = SceneStore.getScene(this.state.activeSceneId);
-        //
-        //     // APEP if the scene store has now loaded the intended active scene
-        //     if(activeScene) {
-        //         // APEP set the state so the component can update
-        //         this.setState({activeScene: activeScene});
-        //     }
-        // }
+            self.setState(newState);
+
+            self.showScenes();
+        });
     },
 
     componentDidMount: function() {
-        // console.log("graph-viewer - componentDidMount");
-
         GraphViewerStore.addChangeListener(this._onChange);
-        //SceneStore.addChangeListener(this._onSceneStoreChange);
     },
 
     componentWillUnmount: function() {
         GraphViewerStore.removeChangeListener(this._onChange);
-        //SceneStore.removeChangeListener(this._onSceneStoreChange);
     },
 
     showScenes: function() {
 
-        var sceneList = this.state.scenes;
+        var tourList = this.state.sceneThemeTourList;
 
-        currentSceneIndex = 0;
+        currentTourIndex = 0;
 
-        if(sceneList.length === 0) {
-            // console.log("GraphViewer - showScenes - Empty scene list");
+        if(tourList.length === 0) {
+            console.log("GraphViewer - showScenes - Empty sceneThemeTourList list");
             return;
         }
 
@@ -97,12 +136,8 @@ var GraphViewer = React.createClass({
     },
 
     setTimeoutWithDelayForNextScene: function(delay) {
-
-        // console.log("GraphViewer - setTimeoutWithDelayForNextScene with delay: ", delay);
-
         var self = this;
         sceneDisplayTimeout = setTimeout(function() {
-            // console.log("GraphViewer - nextSceneFromDelay");
             self.nextScene();
         }, delay);
     },
@@ -117,69 +152,54 @@ var GraphViewer = React.createClass({
 
     nextScene: function() {
 
+        var self = this;
+
         var activeScene = this.state.activeScene;
-        var currentSceneId = this.state.scenes[currentSceneIndex];
 
-        // console.log("GraphViewer - nextScene - currentSceneIndex, currentSceneId: ", currentSceneIndex, currentSceneId);
+        var currentTour = this.state.sceneThemeTourList[currentTourIndex];
 
+        if (this.state.sceneThemeTourList.length === 0) {
+            console.log("GraphViewer - nextScene - do not change - this.state.sceneThemeTourList.length === 0");
+            return;
+        }
+        
+        // APEP TODO Review if required to check to see if we are still on same tour scene + theme
+        // As this function moves us a long for the next time this is called, if currentTour.scene and activeScene are the same, we have not traversed the list
 
-        if (this.state.scenes.length === 0) {
-            // console.log("GraphViewer - nextScene - do not change - this.state.scenes.length === 0");
+        var newScene = currentTour.scene;
+
+        if(!newScene) {
+            delay = 1000;
+        } else {
+            delay = (Number(newScene.sceneTransition) || 15) * 1000;
+        }
+
+        if (self.state.sceneThemeTourList.length < 2) {
+            console.log("GraphViewer - nextScene - only a single bucket is provided - when we are playing just a single scene-theme, pass through an empty themeQuery to allow the full scene to play back");
+            // APEP when we are playing just a single scene-theme, pass through an empty themeQuery to allow the full scene to play back
+            self.setState({activeScene: newScene, activeSceneId: newScene._id, themeQuery: ""});
             return;
         }
 
-        // if(!(activeScene && activeScene._id !== currentSceneId)) {
-        //     console.log("GraphViewer - nextScene - do not change - activeScene && activeScene._id !== currentSceneId");
-        //     return;
-        // }
+        var themeQuery = currentTour.theme;
 
-        var self = this;
+        // APEP increment counter to next bucket
+        currentTourIndex++;
 
-        // APEP we should really do something more suitable with the react pattern here
-        // var newScene = SceneStore.getScene(currentSceneId);
-        SceneActions.getFullScene(currentSceneId, function(newScene){
+        // APEP Loop back to first permutation if we've ran out
+        if(currentTourIndex === self.state.sceneThemeTourList.length) {
+            currentTourIndex = 0;
+        }
 
-            if(!newScene) {
-                // console.log("No scene in the store");
-                delay = 1000;
-            } else {
-                delay = (Number(newScene.sceneTransition) || 15) * 1000;
-            }
+        if(sceneDisplayTimeout){
+            clearTimeout(sceneDisplayTimeout);
+        }
 
-            if (self.state.scenes.length < 2) {
-                console.log("GraphViewer - nextScene - no more scenes to iterate through");
-                // APEP when we are playing just a single scene given by the graph, pass through an empty themeQuery to allow the full scene to play back
-                self.setState({activeScene: newScene, activeSceneId: currentSceneId, themeQuery: ""});
-                return;
-            }
+        self.setTimeoutWithDelayForNextScene(delay);
 
-            // APEP find the themeQuery, if we've been given themes, use the first one
-            // if choose from the theme bucket for the scene
-            var themeQuery = null;
-            if  (self.state.themes && self.state.themes.length > 0) {
-                themeQuery = self.state.themes[0];
-            } else {
-                themeQuery = self.getRandomThemeName(newScene);
-            }
+        console.log("GraphViewer - nextScene - activeScene, activeSceneId: ", newScene, newScene._id);
 
-            currentSceneIndex++;
-
-            // APEP Loop back to first scene if we've ran out of scenes
-            if(currentSceneIndex === self.state.scenes.length) {
-                currentSceneIndex = 0;
-            }
-
-            if(sceneDisplayTimeout){
-                // console.log("GraphViewer - clear next scene timeout request");
-                clearTimeout(sceneDisplayTimeout);
-            }
-
-            self.setTimeoutWithDelayForNextScene(delay);
-
-            // console.log("GraphViewer - nextScene - activeScene, activeSceneId: ", newScene, currentSceneId);
-
-            self.setState({activeScene: newScene, activeSceneId: currentSceneId, themeQuery: themeQuery});
-        });
+        self.setState({activeScene: newScene, activeSceneId: newScene._id, themeQuery: themeQuery});
     },
 
     render: function() {

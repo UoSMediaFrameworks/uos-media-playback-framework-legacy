@@ -17,6 +17,7 @@
   "peerDependencies": {},
   "dependencies": {
     "@vimeo/player": "^1.0.6",
+    "async": "^2.3.0",
     "audio5": "^0.1.10",
     "browserify": "^7.0.0",
     "classnames": "^2.2.5",

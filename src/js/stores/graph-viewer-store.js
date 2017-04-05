@@ -57,7 +57,6 @@ var GraphViewerStore = assign({}, EventEmitter.prototype, {
             break;
 
             case ActionTypes.RECIEVE_SCENES_AND_THEMES_FROM_SCORE:
-                console.log("GVS - _scenes: , _themes: ", _scenes, _themes);
                 // APEP handle errors - ie do hasOwnProperty or null checks
                 _isScore = true; // APEP ensure we know are from score so we do not wish to shuffle
                 _scenes = action.sceneIds;
