@@ -176,12 +176,12 @@ var GraphViewer = React.createClass({
             delay = (Number(newScene.sceneTransition) || 15) * 1000;
         }
 
-        if (self.state.sceneThemeTourList.length < 2) {
-            console.log("GraphViewer - nextScene - only a single bucket is provided - when we are playing just a single scene-theme, pass through an empty themeQuery to allow the full scene to play back");
-            // APEP when we are playing just a single scene-theme, pass through an empty themeQuery to allow the full scene to play back
-            self.setState({activeScene: newScene, activeSceneId: newScene._id, themeQuery: ""});
-            return;
-        }
+        // if (self.state.sceneThemeTourList.length < 2) {
+        //     console.log("GraphViewer - nextScene - only a single bucket is provided - when we are playing just a single scene-theme, pass through an empty themeQuery to allow the full scene to play back");
+        //     // APEP when we are playing just a single scene-theme, pass through an empty themeQuery to allow the full scene to play back
+        //     self.setState({activeScene: newScene, activeSceneId: newScene._id, themeQuery: ""});
+        //     return;
+        // }
 
         var themeQuery = currentTour.theme;
 
