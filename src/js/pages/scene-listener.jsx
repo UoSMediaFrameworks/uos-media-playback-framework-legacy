@@ -170,6 +170,9 @@ var SceneListener = React.createClass({
         } else if (!_.isEqual(prevState.triggeredActiveThemes, this.state.triggeredActiveThemes)) {
             console.log("TriggeredActiveTheme changed - update player");
             this._maybeUpdatePlayer();
+        } else if (!_.isEqual(prevProps.themeQuery, this.props.themeQuery)) {
+            console.log("themeQuery changed - update player");
+            this._maybeUpdatePlayer();
         }
 
     },
