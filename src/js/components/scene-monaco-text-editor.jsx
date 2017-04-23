@@ -240,6 +240,33 @@ var SceneMonacoTextEditor = React.createClass({
     onDidMount: function(editor, monaco) {
         // console.log('MONACO - onDidMount', editor);
 
+
+        editor.addAction({
+            // An unique identifier of the contributed action.
+            id: 'copy-command',
+
+            // A label of the action that will be presented to the user.
+            label: 'Copy Selection',
+
+            // An optional array of keybindings for the action.
+            keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_C],
+
+            keybindingContext: null,
+
+            contextMenuGroupId: 'navigation',
+
+            contextMenuOrder: 1.5,
+
+            // Method that will be executed when the action is triggered.
+            run: function(ed) {
+                var successful = document.execCommand('copy');
+                
+                // APEP TODO we can give the user an error toastr if the execCommand fails
+
+                return null;
+            }
+        });
+
         editor.focus();
 
         this.refs.monaco.editor.setValue(this.getInitialState().code);
