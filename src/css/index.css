@@ -608,3 +608,11 @@ html, body, #main, .app {
 }
 
 /* END OF SCORE RELATED WORK */
+
+
+/* APEP Hack required for PIP to work with iframe positioned relative to its container
+    as the container is the thing we position with out PIP work
+ */
+.picture-in-picture-graph-holder iframe {
+    position: relative !important;
+}

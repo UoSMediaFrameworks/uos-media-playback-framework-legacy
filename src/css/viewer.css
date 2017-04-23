@@ -63,3 +63,12 @@ html, body {
     outline: none;
 
 }
+
+/* APEP Hack required for PIP to work with iframe positioned relative to its container
+    as the container is the thing we position with out PIP work
+ */
+.picture-in-picture-graph-holder iframe {
+    position: relative !important;
+    width: 100%;
+    height: 90% !important;
+}

@@ -31,7 +31,7 @@ appVersion.getVersion();
 
 function requireAuth(nextState, replaceState) {
     if (!ClientStore.loggedIn())
-        replaceState({ nextPathname: nextState.location.pathname }, '/login')
+        replaceState({ nextPathname: nextState.location.pathname }, '/login' + nextState.location.search)
 }
 
 ReactDOM.render((<Router history={hashHistory}>
