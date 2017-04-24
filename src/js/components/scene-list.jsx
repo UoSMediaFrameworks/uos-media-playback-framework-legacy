@@ -51,10 +51,23 @@ var SceneList = React.createClass({
         console.log(filteredScene);
         var links = filteredScene.map(function (scene) {
             var sceneLinkText = ConnectionCache.getShortGroupName(scene._groupID) + ' - ' + scene.name;
+
+            var sceneSummary = SceneListStore.getSceneMeta(scene._id);
+
+            var sceneSummaryComponent = <span></span>;
+
+            if(sceneSummary) {
+                console.log("HAS SUMMARY")
+                sceneSummaryComponent = <span>Text: {sceneSummary.text} Video: {sceneSummary.video}</span>
+            } else {
+                console.log("NO SUMMARY");
+            }
+
             return (
                 <dd key={scene._id} className="col-xs-12">
                     <div className="col-md-9">
                         <Link to={'scene/' + scene._id}>{ sceneLinkText }</Link>
+                        {sceneSummaryComponent}
                     </div>
 
                 </dd>
