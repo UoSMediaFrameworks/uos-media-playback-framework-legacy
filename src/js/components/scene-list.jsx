@@ -37,6 +37,8 @@ var SceneList = React.createClass({
     render: function () {
         var self = this;
         var filteredScene = this.state.scenes;
+
+        // APEP the filter should be done outside of the render function and managed in component state with the suitable event pattern used for ensuring it's correctly updated.
         if(this.props.filterGroupId != null && this.props.filterGroupId !== "None"){
             filteredScene = _.filter(filteredScene,function(scene){
                 return scene._groupID.toString() == self.props.filterGroupId
@@ -48,7 +50,6 @@ var SceneList = React.createClass({
             });
         }
 
-        console.log(filteredScene);
         var links = filteredScene.map(function (scene) {
             var sceneLinkText = ConnectionCache.getShortGroupName(scene._groupID) + ' - ' + scene.name;
             return (
