@@ -16,9 +16,11 @@ var PictureInPicture = React.createClass({
                 top: "5%",
                 left: "5%",
                 right: "65%",
-                bottom: "65%"
+                bottom: "65%",
+                "background-color": "white"
             },
-            activeButton: "top-left"
+            activeButton: "top-left",
+            isPlayerMainComponent: true
         }
     },
 
@@ -66,6 +68,10 @@ var PictureInPicture = React.createClass({
         this.setState({pictureInPictureStyle: pictureInPictureStyle, activeButton: "bottom-right"});
     },
 
+    toggleMainComponent: function() {
+        this.setState({isPlayerMainComponent: !this.state.isPlayerMainComponent});
+    },
+
     render: function() {
 
         var pictureInPictureHolder = {
@@ -78,11 +84,18 @@ var PictureInPicture = React.createClass({
         var bottomLeftButtonClassNames  = "btn " + (this.state.activeButton === "bottom-left" ? " btn-primary" : " btn-default");
         var bottomRightButtonClassNames = "btn " + (this.state.activeButton === "bottom-right" ? " btn-primary" : " btn-default");
 
+        var playerComponent = <GraphViewer></GraphViewer>;
+        var graphComponent = <IFrame url="http://dev-uos-mediahubgraph.azurewebsites.net/?id=586f958fb8678acc10b1597f&roomId=presentation"></IFrame>;
+
+        // APEP calculate which is the main or secondary component using isPlayerMainComponent state
+        var mainComponent = this.state.isPlayerMainComponent ? playerComponent : graphComponent;
+        var secondaryComponent = this.state.isPlayerMainComponent ? graphComponent : playerComponent;
+
         // APEP TODO handle roomId used in IFRAME component to be non hardcoded, IE use the react lib to find the url query and populate through to the IFRAME link
         return (
             <div style={pictureInPictureHolder}>
 
-                <GraphViewer></GraphViewer>
+                {mainComponent}
 
                 <div className="picture-in-picture-graph-holder" style={this.state.pictureInPictureStyle}>
 
@@ -91,9 +104,12 @@ var PictureInPicture = React.createClass({
                         <button className={topRightButtonClassNames} onClick={this.topRightButton}>0,1</button>
                         <button className={bottomLeftButtonClassNames} onClick={this.bottomLeftButton}>1,0</button>
                         <button className={bottomRightButtonClassNames} onClick={this.bottomRightButton}>1,1</button>
+                        <button className="btn btn-default" onClick={this.toggleMainComponent}>
+                            <span className="glyphicon glyphicon-sort"></span>
+                        </button>
                     </div>
 
-                    <IFrame url="http://dev-uos-mediahubgraph.azurewebsites.net/?id=586f958fb8678acc10b1597f&roomId=presentation"></IFrame>
+                    {secondaryComponent}
 
                 </div>
             </div>
