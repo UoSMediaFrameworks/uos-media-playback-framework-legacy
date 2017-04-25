@@ -563,6 +563,9 @@ module.exports = {
             hashHistory.push('scene/' + newScene._id);
         });
     },
+    saveContactPageFeedback: function(formData){
+       HubClient.saveFeedback(formData);
+    },
     loadScene: HubClient.loadScene,
     loadSceneGraph: HubClient.loadSceneGraph,
     subscribeScene: HubClient.subscribeScene,

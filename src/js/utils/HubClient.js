@@ -128,7 +128,9 @@ var HubClient = {
             }
         });
     },
-
+    saveFeedback:function(formData){
+         //TODO: Angel P. We need to decide how we are going to send the form to our support email.
+    },
     saveSceneGraph: function(sceneGraph, cb) {
 
         if(sceneGraph._id !== "579a2186792e8b3c827d2b15") {

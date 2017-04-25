@@ -16,6 +16,7 @@ var IndexApp = require('./components/index-app.jsx');
 var SceneChooser = require('./components/pages/scene-choose-or-create.jsx');
 var SceneGraphChooser = require('./components/pages/scene-graph-choose-or-create.jsx');
 var LoginPage = require('./pages/login-page.jsx');
+var ContactPage = require('./pages/contact-page.jsx');
 var Scene = require('./components/pages/scene.jsx');
 var SceneGraph = require('./components/pages/scenegraph.jsx');
 var Score = require('./components/pages/score.jsx');
@@ -38,6 +39,7 @@ ReactDOM.render((<Router history={hashHistory}>
     <Route path='/' component={IndexApp} >
         <IndexRoute component={SceneChooser} onEnter={requireAuth}/>
         <Route name='login'        path='login' component={LoginPage} />
+        <Route name='contact'      path='contact' component={ContactPage} />
         <Route name='scenes'       path='scenes' component={SceneChooser} onEnter={requireAuth}/>
         <Route name='scene'        path="scene/:id" component={Scene} onEnter={requireAuth}/>
         <Route name='scenegraphs'  path='scenegraphs' component={SceneGraphChooser} onEnter={requireAuth}/>
