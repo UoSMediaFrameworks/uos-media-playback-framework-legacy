@@ -4,6 +4,7 @@
 var HUB_TOKEN = 'HUB_TOKEN',
     HUB_URL = 'HUB_URL',
 	GROUP_ID = '-1',
+    Socket_ID = 'SOCKET_ID',
     groupNames = []; //AJF: initialise groupID
 
 function getCookie(name) {
@@ -16,6 +17,12 @@ module.exports = {
 	getToken: function() {
 	    return localStorage.getItem(HUB_TOKEN) || getCookie(HUB_TOKEN);
 	},
+	setSocketID: function(socketId){
+        localStorage.setItem(Socket_ID,socketId);
+    },
+	getSocketID:function(){
+	    return localStorage.getItem(Socket_ID);
+    },
 	setHubUrl: function(url) {
 		localStorage.setItem(HUB_URL, url);
 	},

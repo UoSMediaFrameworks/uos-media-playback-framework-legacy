@@ -29,6 +29,13 @@ var SceneGraphListStore = assign({}, EventEmitter.prototype, {
         return _.values(_sceneGraphs);
     },
 
+    getSceneGraphByID:function(id){
+        console.log(_sceneGraphs)
+        if (_sceneGraphs.hasOwnProperty(id)) {
+            return _.cloneDeep(_sceneGraphs[id]);
+        }
+    },
+
     loadingScenes: function() {
         return _loadingScenes;
     },

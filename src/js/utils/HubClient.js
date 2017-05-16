@@ -43,6 +43,7 @@ var HubClient = {
                     HubRecieveActions.recieveLoginResult(false, err.toString());
                 } else {
                     connectionCache.setHubToken(token);
+                    connectionCache.setSocketID(socketID);
 
 
                     HubRecieveActions.recieveLoginResult(true);
@@ -180,11 +181,23 @@ var HubClient = {
         socket.emit('unsubScene', id);
     },
 
+    publishSceneCommand: function(sceneList, roomId) {
+        // APEP allow the score playback functionality to publish commands
+        socket.emit("sendCommand", roomId, 'showScenes', sceneList);
+    },
     publishScoreCommand: function(score, roomId) {
         // APEP allow the score playback functionality to publish commands
         socket.emit("sendCommand", roomId, 'showScenesAndThemes', score);
     },
-
+    getSceneGraph:function(sceneId){
+        socket.emit('loadSceneGraph', sceneId, function (err, sceneGraph) {
+            if (err) {
+                HubRecieveActions.errorMessage("Couldn't subscribe to scene, please reload the page");
+            } else {
+                HubRecieveActions.recieveSceneGraph(sceneGraph);
+            }
+        });
+    },
     registerToGraphPlayerRoom: function(roomId) {
 
         console.log("HubClient - registerToGraphPlayerRoom - roomId: " + roomId);

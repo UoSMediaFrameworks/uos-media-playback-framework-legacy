@@ -23,7 +23,7 @@ module.exports = {
         STATUS_MESSAGE: null,
         STATUS_MESSAGE_UPDATE: null,
         STATUS_MESSAGE_REMOVE: null,
-        
+
         /* APEP Full Scene (v1.5 Scene with V2 Objects appended */
         RECIEVE_FULL_SCENE: null,
 
@@ -43,6 +43,7 @@ module.exports = {
         GET_TRANSCODED_STATUS_SUCCESS:null,
 
         DELETE_SCENE_GRAPH: null,
+        RECEIVE_SCENE_GRAPH:null,
         /* APEP Scene Graph Viewer */
         RECEIVE_SCENES_FROM_GRAPH: null,
         RECIEVE_SCENES_AND_THEMES_FROM_SCORE: null

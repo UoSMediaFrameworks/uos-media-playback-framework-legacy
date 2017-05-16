@@ -565,6 +565,7 @@ module.exports = {
     },
     loadScene: HubClient.loadScene,
     loadSceneGraph: HubClient.loadSceneGraph,
+    getSceneGraphByID:function(id){HubClient.getSceneGraph(id)} ,
     subscribeScene: HubClient.subscribeScene,
     deleteScene: function(sceneId) {
         AppDispatcher.handleViewAction({
