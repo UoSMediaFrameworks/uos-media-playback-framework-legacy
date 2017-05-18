@@ -6,9 +6,15 @@ var HUB_TOKEN = 'HUB_TOKEN',
 	GROUP_ID = '-1',
     groupNames = []; //AJF: initialise groupID
 
+function getCookie(name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length == 2) return parts.pop().split(";").shift();
+}
+
 module.exports = {
 	getToken: function() {
-	    return localStorage.getItem(HUB_TOKEN);
+	    return localStorage.getItem(HUB_TOKEN) || getCookie(HUB_TOKEN);
 	},
 	setHubUrl: function(url) {
 		localStorage.setItem(HUB_URL, url);
