@@ -5,9 +5,8 @@ var Circle = require("./narm-components/circle.jsx");
 var Path = require("./narm-components/path.jsx");
 var Text = require("./narm-components/text.jsx");
 var _ = require("lodash");
-var connectionCache= require("../../utils/connection-cache");
+var connectionCache = require("../../utils/connection-cache");
 var HubClient = require("../../utils/HubClient");
-
 
 
 var NarmGraph = React.createClass({
@@ -61,37 +60,37 @@ var NarmGraph = React.createClass({
     tapHandler(t){
         console.log("clicked");
         this.highlight(t)
-         var list = [];
-         if (t.type === "root") {
-         //FOR ROOT NODES ONLY SEARCH GTHEMES FOR STHEME + SCENES
-         var children = _.filter(t.children, function (child) {
-             return child.type === "subgraphtheme";
-         });
+        var list = [];
+        if (t.type === "root") {
+            //FOR ROOT NODES ONLY SEARCH GTHEMES FOR STHEME + SCENES
+            var children = _.filter(t.children, function (child) {
+                return child.type === "subgraphtheme";
+            });
 
-          list = this._nodes(children, list);
-         } else if (t.type !== "scene") {
-             list = this._nodes(t.children, list);
-         } else {
-             list.push(t._id);
-         }
+            list = this._nodes(children, list);
+        } else if (t.type !== "scene") {
+            list = this._nodes(t.children, list);
+        } else {
+            list.push(t._id);
+        }
 
-         list = this.dedupeNodeList(list);
-         //To finalize this method it sends the list of scenes to the graph viewer
-         if (t.type != "theme") {
-             HubClient.publishSceneCommand(list,connectionCache.getSocketID())
-         } else {
-             var scoreList = {
-                 "play": {
-                 "themes": [],
-                 "scenes": []
-             }
-         };
-         scoreList.play.themes.push(d.name.toString());
-         _.each(list, function (scene) {
-         scoreList.play.scenes.push(scene.toString());
-         });
-             HubClient.publishScoreCommand(scoreList,connectionCache.getSocketID())
-         }
+        list = this.dedupeNodeList(list);
+        //To finalize this method it sends the list of scenes to the graph viewer
+        if (t.type != "theme") {
+            HubClient.publishSceneCommand(list, connectionCache.getSocketID())
+        } else {
+            var scoreList = {
+                "play": {
+                    "themes": [],
+                    "scenes": []
+                }
+            };
+            scoreList.play.themes.push(t.name.toString());
+            _.each(list, function (scene) {
+                scoreList.play.scenes.push(scene.toString());
+            });
+            HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID())
+        }
     },
     setupRootNodes: function () {
         var self = this;
@@ -130,33 +129,33 @@ var NarmGraph = React.createClass({
             })
         })
     },
-     _nodes:function(list, sceneList) {
+    _nodes: function (list, sceneList) {
 
-    for (var listIndex in list) {
-        var thisItem = list[listIndex];
+        for (var listIndex in list) {
+            var thisItem = list[listIndex];
 
-        if (thisItem.type !== 'scene') {
-            nodes(thisItem.children, sceneList);
-        } else {
-            sceneList.push(thisItem._id);
+            if (thisItem.type !== 'scene') {
+                nodes(thisItem.children, sceneList);
+            } else {
+                sceneList.push(thisItem._id);
+            }
         }
-    }
 
-    return sceneList;
-},
+        return sceneList;
+    },
 //Removes duplicates from the list of nodes.
-     dedupeNodeList:function(list){
-    var dedupeList = [];
+    dedupeNodeList: function (list) {
+        var dedupeList = [];
 
-    for (var listIndex in list) {
-        var item = list[listIndex];
+        for (var listIndex in list) {
+            var item = list[listIndex];
 
-        if (dedupeList.indexOf(item) === -1) {
-            dedupeList.push(item);
+            if (dedupeList.indexOf(item) === -1) {
+                dedupeList.push(item);
+            }
         }
-    }
-    return dedupeList;
-},
+        return dedupeList;
+    },
     setupOtherNodes: function () {
         var self = this;
         var otherNodes = _.filter(self.state.data.nodes, function (node) {
@@ -180,13 +179,14 @@ var NarmGraph = React.createClass({
             return (<g key={node._id} transform={translate}>
                 <Circle data={node} eventHandler={self.tapHandler}></Circle>
 
-                 <Text data={node}></Text>
+                <Text data={node}></Text>
             </g>)
         });
+        console.log("setup nodes triggered",nodes)
         return nodes;
     },
     render(){
-        console.log("rendering")
+        console.log("rendering",this.state.data)
         var nodeObjects = null;
         var linkObjects = null;
         if (this.state.data != null) {
@@ -195,6 +195,7 @@ var NarmGraph = React.createClass({
                 linkObjects = this.state.data.links.map((link, i) => {
                     return (<Path data={link} key={i}></Path>);
                 });
+                console.log("links done as well",linkObjects)
             } catch (e) {
                 console.log("error", e)
             }

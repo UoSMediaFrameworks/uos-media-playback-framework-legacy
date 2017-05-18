@@ -3,22 +3,32 @@ var d3 = require("d3");
 var TransitionGroup = require('react-transition-group/TransitionGroup');
 var SceneGraphListStore = require('../../stores/scene-graph-list-store.jsx');
 var HubSendActions = require('../../actions/hub-send-actions');
+var connectionCache = require("../../utils/connection-cache");
 var NarmGraph = require('./narm-graph.jsx');
-
+var QRCODE = require('qrcode.react');
+var OptionsMenu = require('./options-menu.jsx');
+var classes = require('classnames');
 var _ = require("lodash");
+
 var GraphContainer = React.createClass({
-    getInitialState: function() {
+    getInitialState: function () {
         return {
             graphId: null,
             sceneList: null,
             root: {
                 nodes: [],
                 links: []
-            }
+            },
+            viewerURL: window.location.hostname + '/graph-viewer.html#/?room=' + connectionCache.getSocketID(),
+            QRToggle: false,
+            autocompleteToggle: false,
+            breadcrumbsToggle: false,
+            autoWalkToggle: false,
+            optionsMenuToggle: false
         }
     },
     _onChange: function () {
-        this.setState({sceneList:SceneGraphListStore.getSceneGraphByID(this.state.graphId)});
+        this.setState({sceneList: SceneGraphListStore.getSceneGraphByID(this.state.graphId)});
         this._initialize();
     },
 
@@ -28,6 +38,7 @@ var GraphContainer = React.createClass({
             links: []
         };
         var circularRef = [];
+
         function processNodes(data) {
             data.forEach(function (obj) {
                 obj.x = obj.y = 0;
@@ -43,6 +54,7 @@ var GraphContainer = React.createClass({
                 localRoot.nodes.push(obj)
             })
         }
+
         function processsEdges() {
             //This function creates the relationships between the different nodes based on the data received.
             //For each node's parent relationship id's find th e parent object, and then push and object containing the source and target for that relationship.
@@ -55,7 +67,7 @@ var GraphContainer = React.createClass({
                     //if there is a parent push the edge/relationship
                     if (node != parentObj) {
                         if (parentObj != undefined) {
-                            localRoot.links.push({source: parentObj, target: node, visible:true, highlighted:false});
+                            localRoot.links.push({source: parentObj, target: node, visible: true, highlighted: false});
                         }
                         // add the references to those object for later usage to the objects themselves.
                         parentObj.children.push(node);
@@ -64,6 +76,7 @@ var GraphContainer = React.createClass({
                 })
             })
         }
+
         function removeBadRelationships() {
             _.each(localRoot.nodes, function (node) {
                 _.each(node.children, function (child) {
@@ -97,48 +110,101 @@ var GraphContainer = React.createClass({
 
             });
         }
+
         processNodes(this.state.sceneList.nodeList);
         processsEdges();
         removeBadRelationships();
         console.log("initialized")
-        this.setState({root:localRoot});
+        this.setState({root: localRoot});
     },
     _getGraphTypeComponent(){
 
     },
+
     getQueryVariable(){
         return this.props.location.query.id
     },
     componentDidMount: function () {
+        document.addEventListener('keyup', this.optionsMenuHandler, false);
         SceneGraphListStore.addChangeListener(this._onChange);
     },
 
     componentWillUnmount: function () {
         SceneGraphListStore.removeChangeListener(this._onChange);
     },
+    autocompleteHandler:function(){
+        this.setState({autocompleteToggle: !this.state.autocompleteToggle})
+    },
+    qrHandler: function () {
+        console.log("qr")
+        this.setState({QRToggle: !this.state.QRToggle})
+    },
+    breadcrumbsHandler: function () {
+        this.setState({breadcrumbsToggle: !this.state.breadcrumbsToggle})
+    },
+    autowalkHandler: function () {
+        this.setState({autoWalkToggle: !this.state.autoWalkToggle})
+    },
+    sceneViewerHandler: function () {
+        window.open(this.state.viewerURL, "_blank");
+    },
+    optionsMenuHandler: function (e) {
+        if (e.altKey && e.keyCode == 79) {
+            this.setState(
+                {
+                    optionsMenuToggle: !this.state.optionsMenuToggle,
+                    autoWalkToggle: false,
+                    breadcrumbsToggle: false,
+                    QRToggle: false
+                })
+        }
+
+    },
     componentWillMount(){
         var queryId = this.props.location.query.id || "589b24e6c9d9c9b81328d7e8";
         var graphId;
-        if(queryId == undefined){
+        if (queryId == undefined) {
             graphId = "589b24e6c9d9c9b81328d7e8";
-        }else{
-            graphId= queryId;
+        } else {
+            graphId = queryId;
         }
         HubSendActions.getSceneGraphByID(graphId);
-        this.setState({graphId:graphId})
+        this.setState({graphId: graphId})
     },
     render(){
 
-        var graphType="narm";
+        var graphType = "narm";
+        var qrCodeClasses = classes({
+            'qrcode': true,
+            'visible': this.state.QRToggle,
+            'hidden': !this.state.QRToggle
+        });
+        var autowalkClasses = classes({
+            'visible': this.state.autoWalkToggle,
+            'hidden': !this.state.autoWalkToggle
+        });
+        var breadcrumbsClasses = classes({
+            'visible': this.state.breadcrumbsToggle,
+            'hidden': !this.state.breadcrumbsToggle
+        });
+        var autocompleteClasses = classes({
+            'visible': this.state.autocompleteToggle,
+            'hidden': !this.state.autocompleteToggle
+        });
+
         return (
             <div ref="parent">
 
-                <div className="button-wrapper btn-group-vertical" >
+                <div className="button-wrapper btn-group-vertical">
                     <button className="btn graph-btn" id="reset-origin">Go Home</button>
+                    <div id="qrcode" className={qrCodeClasses}>
+                        <QRCODE value={this.state.viewerURL}></QRCODE>
+                    </div>
                 </div>
 
                 <div ref="graph">
-                    <svg viewBox={"0 0 " + window.innerWidth + " " + window.innerHeight } preserveAspectRatio="xMinYMin" className={graphType}>
+                    <svg viewBox={"0 0 " + window.innerWidth + " " + window.innerHeight } preserveAspectRatio="xMinYMin"
+                         className={graphType}>
                         <NarmGraph
                             data={this.state.root}
                             innerWidth={window.innerWidth * 0.8}
@@ -148,12 +214,23 @@ var GraphContainer = React.createClass({
                 </div>
 
                 {/*OPTIONS Menu Item here*/}
+                <OptionsMenu
+                    optionsMenuToggle={this.state.optionsMenuToggle}
+                    autocompleteHandler={this.autocompleteHandler}
+                    autowalkHandler={this.autowalkHandler}
+                    sceneViewerHandler={this.sceneViewerHandler}
+                    breadcrumbsHandler={this.breadcrumbsHandler}
+                    qrHandler={this.qrHandler}
+                >
+                </OptionsMenu>
+
                 {/*Autowalk Item here*/}
                 {/*Crumbs Container here*/}
-                <div className={graphType+"-logo"}>
-                    <img src="http://www.salford.ac.uk/__data/assets/image/0005/906287/university-of-salford-web-logo-clear-back-113x70.png"/>
+                <div className={graphType + "-logo"}>
+                    <img
+                        src="http://www.salford.ac.uk/__data/assets/image/0005/906287/university-of-salford-web-logo-clear-back-113x70.png"/>
                 </div>
-                <div className={graphType+"-logo2"}>
+                <div className={graphType + "-logo2"}>
                     <img src="http://salfordmediafestival.co.uk/wp-content/uploads/2014/06/media_conference.png"/>
                 </div>
                 {/*Optional Logos Here*/}
