@@ -11,7 +11,9 @@ var AudioMediaObject = React.createClass({
         return {
             playing: true,
             autoreplay: 0,
-            currentLoop: 0
+            currentLoop: 0,
+            player: null,
+            playingAudioTween: null
         };
     },
 
@@ -107,7 +109,8 @@ var AudioMediaObject = React.createClass({
                     var _ops = self.props.data.mediaObject._ops;
 
                     //APEP tween volume
-                    self.tweenAudio(0, volume, _ops.transitionDuration, this).start();
+                    self.state.playingAudioTween = self.tweenAudio(0, volume, _ops.transitionDuration, this);
+                    self.state.playingAudioTween.start();
 
                     var transitionSeconds = (_ops.transitionDuration || 10) / 1000;
 
@@ -172,21 +175,23 @@ var AudioMediaObject = React.createClass({
         var self = this;
 
         if(this.state.playing) {
-
             this.setState({"playing": false});
+        }
 
-            if(self.state.player) {
-                var _ops = self.props.data.mediaObject._ops;
-                self.tweenAudio(self.state.player.volume(), 0, _ops.transitionDuration)
-                    .onComplete(function() {
-                        self.state.player.pause();
-                        // APEP Ensure the Audio5 component cleans up
-                        self.state.player.destroy();
-                        self.props.data.moDoneHandler(self);
-                    })
-                    .start();
-            }
+        if(this.state.playingAudioTween) {
+            this.state.playingAudioTween.stop();
+        }
 
+        if(self.state.player) {
+            var _ops = self.props.data.mediaObject._ops;
+            self.tweenAudio(self.state.player.volume(), 0, _ops.transitionDuration)
+                .onComplete(function() {
+                    self.state.player.pause();
+                    // APEP Ensure the Audio5 component cleans up
+                    self.state.player.destroy();
+                    self.props.data.moDoneHandler(self);
+                })
+                .start();
         }
     },
 
