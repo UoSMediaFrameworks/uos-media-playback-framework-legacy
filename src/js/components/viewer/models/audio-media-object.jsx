@@ -26,14 +26,14 @@ var AudioMediaObject = React.createClass({
     },
 
     // tween the audio for this audio player between a start and end volume value and for a duration
-    tweenAudio: function(start, end, duration) {
+    tweenAudio: function(start, end, duration, audioPlayer) {
         var position = {vol: start};
         var target = {vol: end};
-        var self = this;
+        var player = audioPlayer || this.state.player;
         return new TWEEN.Tween(position)
             .to(target, duration)
             .onUpdate(function() {
-                self.state.player.volume(position.vol);
+                player.volume(position.vol);
             });
     },
 
@@ -107,7 +107,7 @@ var AudioMediaObject = React.createClass({
                     var _ops = self.props.data.mediaObject._ops;
 
                     //APEP tween volume
-                    self.tweenAudio(0, volume, _ops.transitionDuration).start();
+                    self.tweenAudio(0, volume, _ops.transitionDuration, this).start();
 
                     var transitionSeconds = (_ops.transitionDuration || 10) / 1000;
 
