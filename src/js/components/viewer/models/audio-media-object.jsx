@@ -184,31 +184,29 @@ var AudioMediaObject = React.createClass({
 
         var self = this;
 
-        if(this.state.playing) {
-            this.setState({"playing": false});
-        }
-
+        // APEP Make sure to stop the initial audio tween
         if(this.state.playingAudioTween) {
             this.state.playingAudioTween.stop();
         }
 
-        if(self.state.player) {
-            var _ops = self.props.data.mediaObject._ops;
+        // APEP Make sure we are still playing, if not we are trying to transition this element out and do not need to handle this anymore
+        if(this.state.playing) {
+            this.setState({"playing": false});
 
-            self.state.player.pause();
-            // APEP Ensure the Audio5 component cleans up
-            self.state.player.destroy();
-            self.props.data.moDoneHandler(self);
+            if(self.state.player) {
+                var _ops = self.props.data.mediaObject._ops;
 
-            // self.tweenAudio(self.state.player.volume(), 0, _ops.transitionDuration)
-            //     .onComplete(function() {
-            //         self.state.player.pause();
-            //         // APEP Ensure the Audio5 component cleans up
-            //         self.state.player.destroy();
-            //         self.props.data.moDoneHandler(self);
-            //     })
-            //     .start();
+                self.tweenAudio(self.state.player.volume(), 0, _ops.transitionDuration)
+                    .onComplete(function() {
+                        self.state.player.pause();
+                        // APEP Ensure the Audio5 component cleans up
+                        self.state.player.destroy();
+                        self.props.data.moDoneHandler(self);
+                    })
+                    .start();
+            }
         }
+
     },
 
     render: function() {
