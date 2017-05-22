@@ -35,8 +35,8 @@ var AudioMediaObject = React.createClass({
         return new TWEEN.Tween(position)
             .to(target, duration)
             .onUpdate(function() {
-                player.volume(position.vol);
-            });
+                this.volume(position.vol);
+            }.bind(player));
     },
 
     unlockCuePointsForMediaObject: function(mediaObject){
