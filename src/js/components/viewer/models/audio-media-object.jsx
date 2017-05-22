@@ -69,6 +69,60 @@ var AudioMediaObject = React.createClass({
 
     },
 
+    audioPlayerTimeUpdate: function (position, duration) {
+
+        var mediaObject = this.props.data.mediaObject._obj;
+
+        var cues = mediaObject.cuePointEvents || [];
+
+        var _ops = this.props.data.mediaObject._ops;
+
+        var transitionSeconds = (_ops.transitionDuration || 10) / 1000;
+
+        var self = this;
+
+        if (cues.length > 0) {
+            for (var i = 0; i < cues.length; i++) {
+                try {
+                    //We need to turn the time to seconds not miliseconds
+                    var cue = cues[i];
+                    if (position >= cue.timeElapsed && position < cue.timeElapsed + 1) {
+                        if (cue.locked === undefined) {
+                            cue.locked = false;
+                        }
+                        if (!cue.locked) {
+                            cue.locked = true;
+                            console.log("audio-media-object cue - cue.timeElapsed: , cue.locked: ", cue.timeElapsed, cue.locked);
+                            self.props.data.triggerMediaActiveTheme(cue.themes);
+                        }
+                        cues[i] = cue;
+                    }
+                } catch (e) {
+                    console.log("err", e)
+                }
+            }
+        }
+
+        // APEP we need to allow an audio media object of 0 to only play for duration
+        // if autoreplay 0, we want to use data.displayDuration to be able to end an audio track early
+        console.log("audio - timeupdate - position:, duration: , self.props.data.displayDuration: ", position, duration, self.props.data.displayDuration / 1000);
+        // APEP if autoreplay is 0, follow the displayDuration, else allow the audio object to fully play & handle looping
+        if (self.state.autoreplay === 0) {
+            console.log("audio - timeupdate - (position + transitionSeconds), (self.props.data.displayDuration / 1000)", (position + transitionSeconds), (self.props.data.displayDuration / 1000));
+            if((position + transitionSeconds) > (self.props.data.displayDuration / 1000)) {
+                console.log("position + transitionSeconds > self.props.data.displayDuration");
+                self.loopingHandler();
+            }
+        } else {
+            // APEP if we are within transitionSeconds of the end of the clip, or the duration of the full audio track is shorter than transitionSeconds
+            // Loop or finish the audio media object
+            if ((duration - position) < transitionSeconds || duration < transitionSeconds) {
+                self.loopingHandler();
+            }
+        }
+
+    },
+
     play: function() {
 
         var mediaObject = this.props.data.mediaObject._obj;
@@ -100,6 +154,7 @@ var AudioMediaObject = React.createClass({
                     }
 
                     this.load(streamUrl);
+
                     this.volume(0);
 
                     self.unlockCuePointsForMediaObject(mediaObject);
@@ -112,52 +167,7 @@ var AudioMediaObject = React.createClass({
                     self.state.playingAudioTween = self.tweenAudio(0, volume, _ops.transitionDuration, this);
                     self.state.playingAudioTween.start();
 
-                    var transitionSeconds = (_ops.transitionDuration || 10) / 1000;
-
-                    var cues = mediaObject.cuePointEvents || [];
-
-                    this.on('timeupdate', function (position, duration) {
-                        if (cues.length > 0) {
-                            for (var i = 0; i < cues.length; i++) {
-                                try {
-                                    //We need to turn the time to seconds not miliseconds
-                                    var cue = cues[i];
-                                    if (position >= cue.timeElapsed && position < cue.timeElapsed + 1) {
-                                        if (cue.locked == undefined) {
-                                            cue.locked = false;
-                                        }
-                                        if (!cue.locked) {
-                                            cue.locked = true;
-                                            console.log("audio-media-object cue - cue.timeElapsed: , cue.locked: ", cue.timeElapsed, cue.locked);
-                                            self.props.data.triggerMediaActiveTheme(cue.themes);
-                                        }
-                                        cues[i] = cue;
-                                    }
-                                } catch (e) {
-                                    console.log("err", e)
-                                }
-                            }
-                        }
-
-                        // APEP we need to allow an audio media object of 0 to only play for duration
-                        // if autoreplay 0, we want to use data.displayDuration to be able to end an audio track early
-                        console.log("audio - timeupdate - position:, duration: , self.props.data.displayDuration: ", position, duration, self.props.data.displayDuration / 1000);
-                        // APEP if autoreplay is 0, follow the displayDuration, else allow the audio object to fully play & handle looping
-                        if (self.state.autoreplay === 0) {
-                            console.log("audio - timeupdate - (position + transitionSeconds), (self.props.data.displayDuration / 1000)", (position + transitionSeconds), (self.props.data.displayDuration / 1000));
-                            if((position + transitionSeconds) > (self.props.data.displayDuration / 1000)) {
-                                console.log("position + transitionSeconds > self.props.data.displayDuration");
-                                self.loopingHandler();
-                            }
-                        } else {
-                            // APEP if we are within transitionSeconds of the end of the clip, or the duration of the full audio track is shorter than transitionSeconds
-                            // Loop or finish the audio media object
-                            if ((duration - position) < transitionSeconds || duration < transitionSeconds) {
-                                self.loopingHandler();
-                            }
-                        }
-
-                    });
+                    this.on('timeupdate', self.audioPlayerTimeUpdate);
 
                     this.on('error', function(err) {
                         self.loopingHandler();
@@ -184,14 +194,20 @@ var AudioMediaObject = React.createClass({
 
         if(self.state.player) {
             var _ops = self.props.data.mediaObject._ops;
-            self.tweenAudio(self.state.player.volume(), 0, _ops.transitionDuration)
-                .onComplete(function() {
-                    self.state.player.pause();
-                    // APEP Ensure the Audio5 component cleans up
-                    self.state.player.destroy();
-                    self.props.data.moDoneHandler(self);
-                })
-                .start();
+
+            self.state.player.pause();
+            // APEP Ensure the Audio5 component cleans up
+            self.state.player.destroy();
+            self.props.data.moDoneHandler(self);
+
+            // self.tweenAudio(self.state.player.volume(), 0, _ops.transitionDuration)
+            //     .onComplete(function() {
+            //         self.state.player.pause();
+            //         // APEP Ensure the Audio5 component cleans up
+            //         self.state.player.destroy();
+            //         self.props.data.moDoneHandler(self);
+            //     })
+            //     .start();
         }
     },
 
