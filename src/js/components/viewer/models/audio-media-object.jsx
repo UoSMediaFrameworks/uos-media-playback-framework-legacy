@@ -170,12 +170,20 @@ var AudioMediaObject = React.createClass({
                     this.on('timeupdate', self.audioPlayerTimeUpdate);
 
                     this.on('error', function(err) {
-                        self.loopingHandler();
+                        self.destoryAudioPlayer();
                     });
                 }
             })
         });
 
+    },
+
+    destoryAudioPlayer: function() {
+        var self = this;
+        self.state.player.pause();
+        // APEP Ensure the Audio5 component cleans up
+        self.state.player.destroy();
+        self.props.data.moDoneHandler(self);
     },
 
     transition: function() {
@@ -206,10 +214,7 @@ var AudioMediaObject = React.createClass({
 
                         console.log("Audio Tween Completed");
 
-                        self.state.player.pause();
-                        // APEP Ensure the Audio5 component cleans up
-                        self.state.player.destroy();
-                        self.props.data.moDoneHandler(self);
+                        self.destoryAudioPlayer();
 
                     })
                     .start();
