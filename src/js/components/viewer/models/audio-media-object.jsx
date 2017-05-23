@@ -204,7 +204,7 @@ var AudioMediaObject = React.createClass({
 
             if(self.state.player) {
 
-                self.state.player.off("timeupdate", function(){});
+                self.state.player.off("timeupdate", self.audioPlayerTimeUpdate);
 
                 var _ops = self.props.data.mediaObject._ops;
 
