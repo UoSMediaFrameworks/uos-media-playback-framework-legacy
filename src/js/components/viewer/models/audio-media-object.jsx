@@ -191,19 +191,26 @@ var AudioMediaObject = React.createClass({
 
         // APEP Make sure we are still playing, if not we are trying to transition this element out and do not need to handle this anymore
         if(this.state.playing) {
+
             this.setState({"playing": false});
 
             if(self.state.player) {
+
+                self.state.player.off("timeupdate", function(){});
 
                 var _ops = self.props.data.mediaObject._ops;
 
                 // APEP the below is causing errors, with the tween that is starting ends up with null pointers
                 self.tweenAudio(self.state.player.volume(), 0, _ops.transitionDuration, self.state.player)
                     .onComplete(function() {
+
+                        console.log("Audio Tween Completed");
+
                         self.state.player.pause();
                         // APEP Ensure the Audio5 component cleans up
                         self.state.player.destroy();
                         self.props.data.moDoneHandler(self);
+
                     })
                     .start();
             }
