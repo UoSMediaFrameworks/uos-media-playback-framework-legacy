@@ -11,7 +11,9 @@ var AudioMediaObject = React.createClass({
         return {
             playing: true,
             autoreplay: 0,
-            currentLoop: 0
+            currentLoop: 0,
+            player: null,
+            playingAudioTween: null
         };
     },
 
@@ -26,15 +28,15 @@ var AudioMediaObject = React.createClass({
     },
 
     // tween the audio for this audio player between a start and end volume value and for a duration
-    tweenAudio: function(start, end, duration) {
+    tweenAudio: function(start, end, duration, audioPlayer) {
         var position = {vol: start};
         var target = {vol: end};
-        var self = this;
+        var player = audioPlayer || this.state.player;
         return new TWEEN.Tween(position)
             .to(target, duration)
             .onUpdate(function() {
-                self.state.player.volume(position.vol);
-            });
+                this.volume(position.vol);
+            }.bind(player));
     },
 
     unlockCuePointsForMediaObject: function(mediaObject){
@@ -63,6 +65,60 @@ var AudioMediaObject = React.createClass({
             self.state.player.play();
             var mediaObject = self.props.data.mediaObject._obj;
             self.unlockCuePointsForMediaObject(mediaObject);
+        }
+
+    },
+
+    audioPlayerTimeUpdate: function (position, duration) {
+
+        var mediaObject = this.props.data.mediaObject._obj;
+
+        var cues = mediaObject.cuePointEvents || [];
+
+        var _ops = this.props.data.mediaObject._ops;
+
+        var transitionSeconds = (_ops.transitionDuration || 10) / 1000;
+
+        var self = this;
+
+        if (cues.length > 0) {
+            for (var i = 0; i < cues.length; i++) {
+                try {
+                    //We need to turn the time to seconds not miliseconds
+                    var cue = cues[i];
+                    if (position >= cue.timeElapsed && position < cue.timeElapsed + 1) {
+                        if (cue.locked === undefined) {
+                            cue.locked = false;
+                        }
+                        if (!cue.locked) {
+                            cue.locked = true;
+                            console.log("audio-media-object cue - cue.timeElapsed: , cue.locked: ", cue.timeElapsed, cue.locked);
+                            self.props.data.triggerMediaActiveTheme(cue.themes);
+                        }
+                        cues[i] = cue;
+                    }
+                } catch (e) {
+                    console.log("err", e)
+                }
+            }
+        }
+
+        // APEP we need to allow an audio media object of 0 to only play for duration
+        // if autoreplay 0, we want to use data.displayDuration to be able to end an audio track early
+        console.log("audio - timeupdate - position:, duration: , self.props.data.displayDuration: ", position, duration, self.props.data.displayDuration / 1000);
+        // APEP if autoreplay is 0, follow the displayDuration, else allow the audio object to fully play & handle looping
+        if (self.state.autoreplay === 0) {
+            console.log("audio - timeupdate - (position + transitionSeconds), (self.props.data.displayDuration / 1000)", (position + transitionSeconds), (self.props.data.displayDuration / 1000));
+            if((position + transitionSeconds) > (self.props.data.displayDuration / 1000)) {
+                console.log("position + transitionSeconds > self.props.data.displayDuration");
+                self.loopingHandler();
+            }
+        } else {
+            // APEP if we are within transitionSeconds of the end of the clip, or the duration of the full audio track is shorter than transitionSeconds
+            // Loop or finish the audio media object
+            if ((duration - position) < transitionSeconds || duration < transitionSeconds) {
+                self.loopingHandler();
+            }
         }
 
     },
@@ -98,6 +154,7 @@ var AudioMediaObject = React.createClass({
                     }
 
                     this.load(streamUrl);
+
                     this.volume(0);
 
                     self.unlockCuePointsForMediaObject(mediaObject);
@@ -107,62 +164,26 @@ var AudioMediaObject = React.createClass({
                     var _ops = self.props.data.mediaObject._ops;
 
                     //APEP tween volume
-                    self.tweenAudio(0, volume, _ops.transitionDuration).start();
+                    self.state.playingAudioTween = self.tweenAudio(0, volume, _ops.transitionDuration, this);
+                    self.state.playingAudioTween.start();
 
-                    var transitionSeconds = (_ops.transitionDuration || 10) / 1000;
-
-                    var cues = mediaObject.cuePointEvents || [];
-
-                    this.on('timeupdate', function (position, duration) {
-                        if (cues.length > 0) {
-                            for (var i = 0; i < cues.length; i++) {
-                                try {
-                                    //We need to turn the time to seconds not miliseconds
-                                    var cue = cues[i];
-                                    if (position >= cue.timeElapsed && position < cue.timeElapsed + 1) {
-                                        if (cue.locked == undefined) {
-                                            cue.locked = false;
-                                        }
-                                        if (!cue.locked) {
-                                            cue.locked = true;
-                                            console.log("audio-media-object cue - cue.timeElapsed: , cue.locked: ", cue.timeElapsed, cue.locked);
-                                            self.props.data.triggerMediaActiveTheme(cue.themes);
-                                        }
-                                        cues[i] = cue;
-                                    }
-                                } catch (e) {
-                                    console.log("err", e)
-                                }
-                            }
-                        }
-
-                        // APEP we need to allow an audio media object of 0 to only play for duration
-                        // if autoreplay 0, we want to use data.displayDuration to be able to end an audio track early
-                        console.log("audio - timeupdate - position:, duration: , self.props.data.displayDuration: ", position, duration, self.props.data.displayDuration / 1000);
-                        // APEP if autoreplay is 0, follow the displayDuration, else allow the audio object to fully play & handle looping
-                        if (self.state.autoreplay === 0) {
-                            console.log("audio - timeupdate - (position + transitionSeconds), (self.props.data.displayDuration / 1000)", (position + transitionSeconds), (self.props.data.displayDuration / 1000));
-                            if((position + transitionSeconds) > (self.props.data.displayDuration / 1000)) {
-                                console.log("position + transitionSeconds > self.props.data.displayDuration");
-                                self.loopingHandler();
-                            }
-                        } else {
-                            // APEP if we are within transitionSeconds of the end of the clip, or the duration of the full audio track is shorter than transitionSeconds
-                            // Loop or finish the audio media object
-                            if ((duration - position) < transitionSeconds || duration < transitionSeconds) {
-                                self.loopingHandler();
-                            }
-                        }
-
-                    });
+                    this.on('timeupdate', self.audioPlayerTimeUpdate);
 
                     this.on('error', function(err) {
-                        self.loopingHandler();
+                        self.destoryAudioPlayer();
                     });
                 }
             })
         });
 
+    },
+
+    destoryAudioPlayer: function() {
+        var self = this;
+        self.state.player.pause();
+        // APEP Ensure the Audio5 component cleans up
+        self.state.player.destroy();
+        self.props.data.moDoneHandler(self);
     },
 
     transition: function() {
@@ -171,23 +192,35 @@ var AudioMediaObject = React.createClass({
 
         var self = this;
 
+        // APEP Make sure to stop the initial audio tween
+        if(this.state.playingAudioTween) {
+            this.state.playingAudioTween.stop();
+        }
+
+        // APEP Make sure we are still playing, if not we are trying to transition this element out and do not need to handle this anymore
         if(this.state.playing) {
 
             this.setState({"playing": false});
 
             if(self.state.player) {
+
+                self.state.player.off("timeupdate", self.audioPlayerTimeUpdate);
+
                 var _ops = self.props.data.mediaObject._ops;
-                self.tweenAudio(self.state.player.volume(), 0, _ops.transitionDuration)
+
+                // APEP the below is causing errors, with the tween that is starting ends up with null pointers
+                self.tweenAudio(self.state.player.volume(), 0, _ops.transitionDuration, self.state.player)
                     .onComplete(function() {
-                        self.state.player.pause();
-                        // APEP Ensure the Audio5 component cleans up
-                        self.state.player.destroy();
-                        self.props.data.moDoneHandler(self);
+
+                        console.log("Audio Tween Completed");
+
+                        self.destoryAudioPlayer();
+
                     })
                     .start();
             }
-
         }
+
     },
 
     render: function() {

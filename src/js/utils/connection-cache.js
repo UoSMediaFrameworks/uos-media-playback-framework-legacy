@@ -46,6 +46,7 @@ module.exports = {
         groupNames.set(110, "Panjin");
         groupNames.set(111, "Memoir");
         groupNames.set(112, "NARM");
+        groupNames.set(113, "Yibing");
 
     },
     getGroupNameArray:function(){

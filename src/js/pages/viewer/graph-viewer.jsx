@@ -213,13 +213,11 @@ var GraphViewer = React.createClass({
             sceneListener = <SceneListener sceneId={this.state.activeSceneId} activeScene={this.state.activeScene} themeQuery={this.state.themeQuery} />;
         else
             sceneListener = <h2>Graph Viewer</h2>;
-        var randomHex = this.state.hex;
+
         return (
             <div className="graph-viewer-container">
                 {sceneListener}
-                <div style={{position:"fixed",width:"15px",height:"15px",top:"0",right:"0",backgroundColor:randomHex || "#cc0008"}}></div>
             </div>
-
         );
     }
 });
