@@ -60,7 +60,6 @@ module.exports = {
             method: 'POST',
             formData: data,
             onLoad: function(err,data) {
-                console.log(data)
                 callback(err, data);
             },
             onError: function(err) {
