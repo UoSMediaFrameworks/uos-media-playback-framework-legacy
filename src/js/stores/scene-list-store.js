@@ -1,11 +1,9 @@
 'use strict';
 
-var AppDispatcher = require('../dispatchers/app-dispatcher');
-var EventEmitter = require('events').EventEmitter;
+var Dispatcher = require('../dispatchers/dispatcher');
+var Store = require('flux/utils').Store;
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
-var assign = require('object-assign');
 var _ = require('lodash');
-var CHANGE_EVENT = 'CHANGE_EVENT';
 
 var _loadingScenes = false;
 var _scenes = {};
@@ -32,69 +30,66 @@ function _updateSceneName (_id, name, _groupID) {
 	}
 }
 
-var SceneListStore = assign({}, EventEmitter.prototype, {
-	getAll: function() {
-		return _.values(_scenes);
-	},
-
-	loadingScenes: function() {
-		return _loadingScenes;
-	},
-
-	emitChange: function() {
-		this.emit(CHANGE_EVENT);
-	},
-
-	/**
-	* @param {function} callback
-	*/
-	addChangeListener: function(callback) {
-		this.on(CHANGE_EVENT, callback);
-	},
-
-	/**
-	* @param {function} callback
-	*/
-	removeChangeListener: function(callback) {
-		this.removeListener(CHANGE_EVENT, callback);
-	},
-
-	dispatcherIndex: AppDispatcher.register(function(payload){
+class SceneListStore extends Store {
+    constructor() {
+        super(Dispatcher);
+    }
+    __onDispatch(payload) {
         var action = payload.action; // this is our action from handleViewAction
         var scene;
         switch(action.type){
             case ActionTypes.RECIEVE_SCENE_LIST:
-            	_addScenes(action.scenes);
-            	_loadingScenes = false;
-                SceneListStore.emitChange();
+                _addScenes(action.scenes);
+                _loadingScenes = false;
+                this.emitChange();
                 break;
 
             case ActionTypes.LIST_SCENES_ATTEMPT:
-            	_loadingScenes = true;
-            	SceneListStore.emitChange();
-            	break;
+                _loadingScenes = true;
+                this.emitChange();
+                break;
 
             case ActionTypes.SCENE_CHANGE:
             case ActionTypes.RECIEVE_SCENE:
-            	scene = action.scene;
-            	if (_updateSceneName(scene._id, scene.name, scene._groupID)) {
-            		SceneListStore.emitChange();
-            	}
-            	break;
+                scene = action.scene;
+                if (_updateSceneName(scene._id, scene.name, scene._groupID)) {
+                    this.emitChange();
+                }
+                break;
 
             case ActionTypes.DELETE_SCENE:
                 delete _scenes[action.sceneId];
-                SceneListStore.emitChange();
+                this.emitChange();
                 break;
             case ActionTypes.HUB_LOGOUT:
                 _scenes = {};
-                SceneListStore.emitChange();
+                this.emitChange();
                 break;
         }
 
-
         return true;
-    })
-});
+    }
 
-module.exports = SceneListStore;
+    getAll() {
+        return _.values(_scenes);
+    }
+
+    loadingScenes() {
+        return _loadingScenes;
+    }
+
+    emitChange() {
+        super.__emitChange();
+    };
+
+    addChangeListener(callback) {
+        super.addListener(callback);
+    };
+
+    removeChangeListener(callback) {
+        // APEP TODO
+    }
+}
+
+
+module.exports = new SceneListStore();

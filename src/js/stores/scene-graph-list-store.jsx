@@ -1,79 +1,74 @@
 'use strict';
 
-var AppDispatcher = require('../dispatchers/app-dispatcher');
-var EventEmitter = require('events').EventEmitter;
+var Dispatcher = require('../dispatchers/dispatcher');
+var Store = require('flux/utils').Store;
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
-var assign = require('object-assign');
 var _ = require('lodash');
-var CHANGE_EVENT = 'CHANGE_EVENT';
 
 var _loadingScenes = false;
 var _sceneGraphs = {};
 
 function _addSceneGraphs (sceneGraphs) {
-
     sceneGraphs.forEach(function(sceneGraph) {
         if (!_sceneGraphs[sceneGraph._id]) {
             _sceneGraphs[sceneGraph._id] = sceneGraph;
         }
     });
-
 }
 
 function _updateSceneGraph (sceneGraph) {
     _sceneGraphs[sceneGraph._id] = sceneGraph;
 }
 
-var SceneGraphListStore = assign({}, EventEmitter.prototype, {
-    getAll: function() {
-        return _.values(_sceneGraphs);
-    },
+class SceneGraphListStore extends Store {
 
-    loadingScenes: function() {
-        return _loadingScenes;
-    },
+    constructor() {
+        super(Dispatcher);
+    }
 
-    emitChange: function() {
-        this.emit(CHANGE_EVENT);
-    },
-
-    /**
-     * @param {function} callback
-     */
-    addChangeListener: function(callback) {
-        this.on(CHANGE_EVENT, callback);
-    },
-
-    /**
-     * @param {function} callback
-     */
-    removeChangeListener: function(callback) {
-        this.removeListener(CHANGE_EVENT, callback);
-    },
-
-    dispatcherIndex: AppDispatcher.register(function(payload){
+    __onDispatch(payload) {
         var action = payload.action; // this is our action from handleViewAction
         switch(action.type){
             case ActionTypes.RECEIVE_SCENE_GRAPH_LIST:
                 _addSceneGraphs(action.sceneGraphs);
                 _loadingScenes = false;
-                SceneGraphListStore.emitChange();
+                this.emitChange();
                 break;
             case ActionTypes.RECEIVE_SCENE_GRAPH:
                 _updateSceneGraph(action.sceneGraph);
-                SceneGraphListStore.emitChange();
+                this.emitChange();
                 break;
             case ActionTypes.DELETE_SCENE_GRAPH:
                 delete _sceneGraphs[action.sceneGraphId];
-                SceneGraphListStore.emitChange();
+                this.emitChange();
                 break;
             case ActionTypes.HUB_LOGOUT:
                 _sceneGraphs = {};
-                SceneGraphListStore.emitChange();
+                this.emitChange();
                 break;
         }
         return true;
-    })
-});
+    }
 
-module.exports = SceneGraphListStore;
+    getAll() {
+        return _.values(_sceneGraphs);
+    }
+
+    loadingScenes() {
+        return _loadingScenes;
+    }
+
+    emitChange() {
+        super.__emitChange();
+    };
+
+    addChangeListener(callback) {
+        super.addListener(callback);
+    };
+
+    removeChangeListener(callback) {
+        // APEP TODO
+    }
+}
+
+module.exports = new SceneGraphListStore();

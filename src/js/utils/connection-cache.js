@@ -4,7 +4,7 @@
 var HUB_TOKEN = 'HUB_TOKEN',
     HUB_URL = 'HUB_URL',
 	GROUP_ID = '-1',
-    groupNames = []; //AJF: initialise groupID
+    groupNames = new Map(); //AJF: initialise groupID
 
 function getCookie(name) {
     var value = "; " + document.cookie;
@@ -12,8 +12,28 @@ function getCookie(name) {
     if (parts.length == 2) return parts.pop().split(";").shift();
 }
 
+// AJF: @todo: load map from config file
+// APEP Moved the groupNames so this a static property for this helper object
+groupNames.set(0, "Admin");
+groupNames.set(1, "Test1");
+groupNames.set(2, "Test2");
+groupNames.set(101, "Chicago");
+groupNames.set(102, "Beijing");
+groupNames.set(103, "Dalian");
+groupNames.set(104, "Kuala Lumpur");
+groupNames.set(105, "Seoul");
+groupNames.set(106, "Manchester");
+groupNames.set(107, "Chengdu");
+groupNames.set(108, "Hong Kong");
+groupNames.set(109, "Shenyang");
+groupNames.set(110, "Panjin");
+groupNames.set(111, "Memoir");
+groupNames.set(112, "NARM");
+groupNames.set(113, "Yibing");
+
 module.exports = {
 	getToken: function() {
+	    // APEP this optional getCookie is in place for Android Web View usages
 	    return localStorage.getItem(HUB_TOKEN) || getCookie(HUB_TOKEN);
 	},
 	setHubUrl: function(url) {
@@ -29,26 +49,6 @@ module.exports = {
 	getGroupID: function() {
 		return localStorage.getItem(GROUP_ID);
 	},
-    setGroupNameArray:function(){
-        groupNames = new Map(); //AJF: @todo: load map from config file
-        groupNames.set(0, "Admin");
-        groupNames.set(1, "Test1");
-        groupNames.set(2, "Test2");
-        groupNames.set(101, "Chicago");
-        groupNames.set(102, "Beijing");
-        groupNames.set(103, "Dalian");
-        groupNames.set(104, "Kuala Lumpur");
-        groupNames.set(105, "Seoul");
-        groupNames.set(106, "Manchester");
-        groupNames.set(107, "Chengdu");
-        groupNames.set(108, "Hong Kong");
-        groupNames.set(109, "Shenyang");
-        groupNames.set(110, "Panjin");
-        groupNames.set(111, "Memoir");
-        groupNames.set(112, "NARM");
-        groupNames.set(113, "Yibing");
-
-    },
     getGroupNameArray:function(){
         return groupNames;
     },
@@ -57,8 +57,6 @@ module.exports = {
 
 		return groupNames.get(parseInt(groupID));
 	},
-
-
 	clear: function() {
 		localStorage.removeItem(HUB_TOKEN);
 		localStorage.removeItem(HUB_URL);

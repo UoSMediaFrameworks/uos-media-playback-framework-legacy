@@ -50,7 +50,6 @@ var HubClient = {
 
 					console.log("Setting groupID in HubClient to: " + groupID);
 					connectionCache.setGroupID(groupID);//AJF: set the groupID
-                    connectionCache.setGroupNameArray();//AngelP: just sets the groups in the name array;
                     socket.emit('listScenes', function(err, scenes) {
                         if (err) throw err;
                         HubRecieveActions.recieveSceneList(scenes);

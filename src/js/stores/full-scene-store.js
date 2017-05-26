@@ -3,51 +3,54 @@
  */
 'use strict';
 
-var AppDispatcher = require('../dispatchers/app-dispatcher');
-var assign = require('object-assign');
+var Dispatcher = require('../dispatchers/dispatcher');
+var Store = require('flux/utils').Store;
 var _ = require('lodash');
-var EventEmitter = require('events').EventEmitter;
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
-var CHANGE_EVENT = "change";
+
 var _scenes = {};
 
 function _updateScene (scene) {
     _scenes[scene._id] = scene;
 }
 
-var FullSceneStore = assign({}, EventEmitter.prototype, {
-    getScene: function(id) {
-        if (_scenes.hasOwnProperty(id)) {
-            return _.cloneDeep(_scenes[id]);
-        }
-    },
-    emitChange: function(){
-        this.emit(CHANGE_EVENT);
-    },
+class FullSceneStore extends Store {
+    constructor() {
+        super(Dispatcher);
+    }
 
-    addChangeListener: function(callback){
-        this.on(CHANGE_EVENT, callback);
-    },
-
-    removeChangeListener: function(callback){
-        this.removeListener(CHANGE_EVENT, callback);
-    },
-
-    dispatcherIndex: AppDispatcher.register(function(payload){
+    __onDispatch(payload) {
         var action = payload.action; // this is our action from handleViewAction
 
         switch(action.type){
             // should only be triggered when server sends data back, so no need to save
             case ActionTypes.RECIEVE_FULL_SCENE:
                 _updateScene(action.scene);
-                FullSceneStore.emitChange();
+                this.emitChange();
                 break;
         }
 
-        FullSceneStore.emitChange();
-
         return true;
-    })
-});
+    }
 
-module.exports = FullSceneStore;
+    getScene(id) {
+        if (_scenes.hasOwnProperty(id)) {
+            return _.cloneDeep(_scenes[id]);
+        }
+    }
+
+    emitChange() {
+        super.__emitChange();
+    };
+
+    addChangeListener(callback) {
+        super.addListener(callback);
+    };
+
+    removeChangeListener(callback) {
+        // APEP TODO
+    }
+}
+
+
+module.exports = new FullSceneStore();

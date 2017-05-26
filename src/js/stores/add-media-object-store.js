@@ -1,43 +1,25 @@
 'use strict';
 
-var AppDispatcher = require('../dispatchers/app-dispatcher');
-var EventEmitter = require('events').EventEmitter;
+var Dispatcher = require('../dispatchers/dispatcher');
+var Store = require('flux/utils').Store;
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
-var assign = require('object-assign');
 var _ = require('lodash');
-var CHANGE_EVENT = 'CHANGE_EVENT';
 var toastr = require('toastr');
 
 var _loading = false;
 var _inputValue = '';
 
-var AddMediaObjectStore = assign({}, EventEmitter.prototype, {
-	loading: function() {
-		return _loading;
-	},
+class AddMediaObjectStore extends Store {
+    constructor() {
+        super(Dispatcher);
+    }
 
-    inputValue: function() {
-        return _inputValue;
-    },
-
-	emitChange: function() {
-		this.emit(CHANGE_EVENT);
-	},
-
-	addChangeListener: function(callback) {
-		this.on(CHANGE_EVENT, callback);
-	},
-
-	removeChangeListener: function(callback) {
-		this.removeListener(CHANGE_EVENT, callback);
-	},
-
-	dispatcherIndex: AppDispatcher.register(function(payload){
+    __onDispatch(payload) {
         var action = payload.action; // this is our action from handleViewAction
 
         switch(action.type){
             case ActionTypes.ADD_MEDIA_ATTEMPT:
-            	_inputValue = action.value;
+                _inputValue = action.value;
                 _loading = true;
                 break;
 
@@ -48,7 +30,6 @@ var AddMediaObjectStore = assign({}, EventEmitter.prototype, {
                 break;
 
             case ActionTypes.ADD_MEDIA_FAILED:
-                console.log(action)
                 switch (action.value.status){
                     case 404:
                         toastr.warning('The media you are trying to add was not found');
@@ -70,9 +51,29 @@ var AddMediaObjectStore = assign({}, EventEmitter.prototype, {
                 break;
         }
 
-        AddMediaObjectStore.emitChange();
+        this.emitChange();
         return true;
-    })
-});
+    }
 
-module.exports = AddMediaObjectStore;
+    loading() {
+        return _loading;
+    }
+
+    inputValue() {
+        return _inputValue;
+    }
+
+    emitChange() {
+        super.__emitChange();
+    };
+
+    addChangeListener(callback) {
+        super.addListener(callback);
+    };
+
+    removeChangeListener(callback) {
+        // APEP TODO
+    }
+}
+
+module.exports = new AddMediaObjectStore();

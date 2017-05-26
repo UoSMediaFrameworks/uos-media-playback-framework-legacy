@@ -1,59 +1,59 @@
-/**
- * Created by Angel on 11/01/2017.
- */
-var AppDispatcher = require('../dispatchers/app-dispatcher');
-var EventEmitter = require('events').EventEmitter;
+'use strict'
+
+var Dispatcher = require('../dispatchers/dispatcher');
+var Store = require('flux/utils').Store;
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
 var _ = require('lodash');
-var CHANGE_EVENT = 'CHANGE_EVENT';
 var toastr = require('toastr');
-var assign = require('object-assign');
 var _videos = {};
+
 function updateVideoInfo(videoInfo) {
-    console.log("updateVideoInfo", videoInfo);
+    console.log("VideoMediaObjectStore - updateVideoInfo: ", videoInfo);
     _videos[videoInfo.parentId] = videoInfo;
 }
 
-var VideoMediaObjectStore = assign({}, EventEmitter.prototype, {
+class VideoMediaObjectStore extends Store {
+    constructor() {
+        super(Dispatcher);
+    }
 
-    getVideoInfo: function (parentId) {
-        if (_videos.hasOwnProperty(parentId)) {
-            return _.cloneDeep(_videos[parentId]);
-        }
-    },
-    emitChange: function () {
-        console.log("change event emited")
-        this.emit(CHANGE_EVENT);
-    },
-
-    addChangeListener: function (callback) {
-        console.log("change event listener added")
-        this.on(CHANGE_EVENT, callback);
-    },
-
-
-    removeChangeListener: function (callback) {
-        console.log("change event removed")
-        this.removeListener(CHANGE_EVENT, callback);
-    },
-    dispatcherIndex: AppDispatcher.register(function (payload) {
+    __onDispatch(payload) {
         var action = payload.action;
         switch (action.type) {
+            // APEP TODO if we don't do anything in the store, we can refactor this out
             case ActionTypes.GET_TRANSCODED_STATUS_ATTEMPT:
                 console.log("GET_TRANSCODED_STATUS_ATTEMPT", payload);
                 break;
             case ActionTypes.GET_TRANSCODED_STATUS_SUCCESS:
                 console.log("GET_TRANSCODED_STATUS_SUCCESS", payload);
                 updateVideoInfo(payload.action.value);
-                VideoMediaObjectStore.emitChange();
+                this.emitChange();
                 break;
             case ActionTypes.GET_TRANSCODED_STATUS_FAILURE:
                 console.log("GET_TRANSCODED_STATUS_FAILURE", payload);
-                VideoMediaObjectStore.emitChange();
+                this.emitChange();
                 break;
         }
         return true;
-    })
+    }
 
-});
-module.exports = VideoMediaObjectStore;
+    getVideoInfo(parentId) {
+        if (_videos.hasOwnProperty(parentId)) {
+            return _.cloneDeep(_videos[parentId]);
+        }
+    }
+
+    emitChange() {
+        super.__emitChange();
+    };
+
+    addChangeListener(callback) {
+        super.addListener(callback);
+    };
+
+    removeChangeListener(callback) {
+        // APEP TODO
+    }
+}
+
+module.exports = new VideoMediaObjectStore();

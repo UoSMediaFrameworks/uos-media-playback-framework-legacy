@@ -2,13 +2,9 @@
 /*jshint browser: true */
 
 var React = require('react');
-var MediaButton = require('./media-button.jsx');
 var SceneActions = require('../../actions/scene-actions');
 var FormHelper = require('../../mixins/form-helper');
-var HubClient = require('../../utils/HubClient');
 var AddMediaObjectStore = require('../../stores/add-media-object-store');
-var getVimeoId = require('../../utils/get-vimeo-id');
-var Loader = require('../loader.jsx');
 var toastr = require("toastr");
 var _ = require('lodash');
 var getHostname = require('../../utils/get-hostname');

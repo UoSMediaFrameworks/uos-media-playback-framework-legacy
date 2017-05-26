@@ -23,7 +23,7 @@ module.exports = {
         STATUS_MESSAGE: null,
         STATUS_MESSAGE_UPDATE: null,
         STATUS_MESSAGE_REMOVE: null,
-        
+
         /* APEP Full Scene (v1.5 Scene with V2 Objects appended */
         RECIEVE_FULL_SCENE: null,
 
@@ -49,6 +49,7 @@ module.exports = {
     }),
     PayloadSources: keymirror({
         VIEW_ACTION: null,
-        HUB_ACTION: null
+        HUB_ACTION: null,
+        SERVER_ACTION: null
     })
 };

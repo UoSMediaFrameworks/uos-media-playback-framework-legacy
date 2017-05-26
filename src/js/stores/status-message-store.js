@@ -1,36 +1,23 @@
 'use strict';
 
-var AppDispatcher = require('../dispatchers/app-dispatcher');
-var assign = require('object-assign');
+var Dispatcher = require('../dispatchers/dispatcher');
+var Store = require('flux/utils').Store;
 var hat = require('hat');
 var _ = require('lodash');
-var EventEmitter = require('events').EventEmitter;
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
 
-var CHANGE_EVENT = "change";
 var _messages = [];
 
 function findMessage (id) {
     return _.find(_messages, function(m) { return m.id === id; });
 }
 
-var StatusMessageStore = assign({}, EventEmitter.prototype, {
-    getMessages: function() {
-        return _messages;
-    },
-    emitChange: function(){
-        this.emit(CHANGE_EVENT);
-    },
+class StatusMessageStore extends Store {
+    constructor() {
+        super(Dispatcher);
+    }
 
-    addChangeListener: function(callback){
-        this.on(CHANGE_EVENT, callback);
-    },
-
-    removeChangeListener: function(callback){
-        this.removeListener(CHANGE_EVENT, callback);
-    },
-
-    dispatcherIndex: AppDispatcher.register(function(payload){
+    __onDispatch(payload) {
         var action = payload.action;
         var file, message;
         switch(action.type){
@@ -45,7 +32,7 @@ var StatusMessageStore = assign({}, EventEmitter.prototype, {
                 message.state = action.status;
                 message.message = action.message;
                 break;
-            
+
             case ActionTypes.UPLOAD_ASSET_RESULT_REMOVE:
                 delete _messages[action.file.name];
                 break;
@@ -73,10 +60,26 @@ var StatusMessageStore = assign({}, EventEmitter.prototype, {
                 break;
         }
 
-        StatusMessageStore.emitChange();
+        this.emitChange();
 
         return true;
-    })
-});
+    }
 
-module.exports = StatusMessageStore;
+    getMessages() {
+        return _messages;
+    }
+
+    emitChange() {
+        super.__emitChange();
+    };
+
+    addChangeListener(callback) {
+        super.addListener(callback);
+    };
+
+    removeChangeListener(callback) {
+        // APEP TODO
+    }
+}
+
+module.exports = new StatusMessageStore();

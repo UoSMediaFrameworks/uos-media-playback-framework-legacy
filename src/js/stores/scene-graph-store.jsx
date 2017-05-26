@@ -1,15 +1,13 @@
 'use strict';
 
-var AppDispatcher = require('../dispatchers/app-dispatcher');
-var assign = require('object-assign');
+var Dispatcher = require('../dispatchers/dispatcher');
+var Store = require('flux/utils').Store;
 var _ = require('lodash');
-var EventEmitter = require('events').EventEmitter;
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
 var HubClient = require('../utils/HubClient');
 var SceneStore = require('./scene-store');
 var ConnectionCache = require('../utils/connection-cache');
 
-var CHANGE_EVENT = "change";
 var _sceneGraphs = {};
 
 /**
@@ -293,46 +291,34 @@ function _deleteThemeFromSceneGraphStructure (sceneGraphId, themeId, parentList,
 
 }
 
-var SceneGraphStore = assign({}, EventEmitter.prototype, {
-    getSceneGraph: function(id) {
-        if (_sceneGraphs.hasOwnProperty(id)) {
-            return _.cloneDeep(_sceneGraphs[id]);
-        }
-    },
-    emitChange: function(){
-        this.emit(CHANGE_EVENT);
-    },
+class SceneGraphStore extends Store {
 
-    addChangeListener: function(callback){
-        this.on(CHANGE_EVENT, callback);
-    },
+    constructor() {
+        super(Dispatcher);
+    }
 
-    removeChangeListener: function(callback){
-        this.removeListener(CHANGE_EVENT, callback);
-    },
-
-    dispatcherIndex: AppDispatcher.register(function(payload){
+    __onDispatch(payload) {
         var action = payload.action; // this is our action from handleViewAction
         switch(action.type){
             // should only be triggered when server sends data back, so no need to save
             case ActionTypes.RECEIVE_SCENE_GRAPH:
                 _updateSceneGraph(action.sceneGraph);
-                SceneGraphStore.emitChange();
+                this.emitChange();
                 break;
             case ActionTypes.SCENE_GRAPH_ADD_SCENE:
                 _addSceneToSceneGraph(action.sceneGraphId, action.sceneId);
                 var sceneGraph = _sceneGraphs[action.sceneGraphId];
                 HubClient.saveSceneGraph(sceneGraph);
-                SceneGraphStore.emitChange();
+                this.emitChange();
                 break;
             case ActionTypes.SCENE_GRAPH_REMOVE_SCENE:
                 _removeSceneFromSceneGraph(action.sceneGraphId, action.sceneId);
                 var sceneGraph = _sceneGraphs[action.sceneGraphId];
                 HubClient.saveSceneGraph(sceneGraph);
-                SceneGraphStore.emitChange();
+                this.emitChange();
                 break;
             case ActionTypes.SCENE_GRAPH_SELECTION:
-                SceneGraphStore.emitChange();
+                this.emitChange();
                 break;
             case ActionTypes.SCENE_GRAPH_EXCLUDE_THEME:
                 _addThemeExclusion(action.sceneGraphId, action.themeId);
@@ -343,7 +329,7 @@ var SceneGraphStore = assign({}, EventEmitter.prototype, {
                 _deleteThemeExclusion(action.sceneGraphId, action.themeId);
                 var sceneGraph = _sceneGraphs[action.sceneGraphId];
                 HubClient.saveSceneGraph(sceneGraph);
-                SceneGraphStore.emitChange();
+                this.emitChange();
                 break;
             case ActionTypes.SCENE_GRAPH_ADD_THEME_TO_STRUCTURE:
                 _addThemeToSceneGraphStructure(action.sceneGraphId, action.themeId, action.parentList, action.parentKey, action.parentType);
@@ -361,10 +347,28 @@ var SceneGraphStore = assign({}, EventEmitter.prototype, {
                 break;
         }
 
-        SceneGraphStore.emitChange();
+        this.emitChange();
 
         return true;
-    })
-});
+    }
 
-module.exports = SceneGraphStore;
+    getSceneGraph(id) {
+        if (_sceneGraphs.hasOwnProperty(id)) {
+            return _.cloneDeep(_sceneGraphs[id]);
+        }
+    }
+
+    emitChange() {
+        super.__emitChange();
+    };
+
+    addChangeListener(callback) {
+        super.addListener(callback);
+    };
+
+    removeChangeListener(callback) {
+        // APEP TODO
+    }
+}
+
+module.exports = new SceneGraphStore();

@@ -12,7 +12,9 @@
     "chai": "^2.1.2",
     "chance": "^0.7.3",
     "lodash-deep": "^1.6.0",
-    "mocha": "^2.1.0"
+    "mocha": "^2.1.0",
+    "jest": "^20.0.4",
+    "jest-cli": "^20.0.4"
   },
   "peerDependencies": {},
   "dependencies": {
@@ -25,8 +27,10 @@
     "connect": "^3.2.0",
     "connect-livereload": "^0.4.0",
     "envify": "^3.2.0",
+    "es6-object-assign": "^1.1.0",
     "es6-promise": "^2.0.1",
     "es6-promises": "^1.0.8",
+    "flux": "^3.1.2",
     "git-rev": "^0.2.1",
     "gulp": "^3.8.10",
     "gulp-concat": "^2.4.1",
