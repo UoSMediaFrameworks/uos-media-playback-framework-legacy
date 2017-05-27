@@ -34,6 +34,8 @@ class GraphViewerStore extends Store {
                 _scenes = action.sceneIds;
                 _themes = action.themes;
                 this.emitChange();
+
+                console.log("GraphViewer has emitted");
                 break;
         }
         return true;

@@ -55,6 +55,7 @@ var TextMediaObject = React.createClass({
         });
 
         // APEP nl2br is used to interpret any new line characters and producing valid html for this use case
+        // APEP the above looks redundant as has been changed but comment has not be used
         return <p style={style} ref={this.props.data.mediaObject._obj._id}  dangerouslySetInnerHTML={{__html: this.props.data.mediaObject._obj.text}} className={objectClasses} onClick={this.props.clickHandler}>
               </p>;
     }

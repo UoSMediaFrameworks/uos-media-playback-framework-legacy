@@ -2,9 +2,11 @@
 
 var React = require('react');
 var GraphViewerStore = require('../../stores/graph-viewer-store');
+var PlaybackStore = require('../../stores/playback/playback-store.js');
 var FullSceneStore = require('../../stores/full-scene-store');
 var _ = require('lodash');
 var SceneActions = require('../../actions/scene-actions');
+var SceneThemeTourActions = require('../../actions/scene-theme-tour-actions');
 var SceneListener = require('../scene-listener.jsx');
 var SceneThemeTourPermutations = require('../../utils/playback/scene-theme-tour-bucket-permutations');
 var sceneThemeTourPermutations = new SceneThemeTourPermutations();
@@ -30,7 +32,7 @@ var GraphViewer = React.createClass({
             themes: GraphViewerStore.getThemesForPlayback(),
             activeSceneId: null,
             activeScene: null,
-            sceneThemeTourList: [],
+            sceneThemeTourList: []
         }
     },
 
@@ -144,14 +146,6 @@ var GraphViewer = React.createClass({
         }, delay);
     },
 
-    getRandomThemeName (scene) {
-        if (! scene.themes) {
-            return null;
-        } else {
-            return _(scene.themes).keys().sample();
-        }
-    },
-
     nextScene: function() {
 
         var self = this;
@@ -201,22 +195,15 @@ var GraphViewer = React.createClass({
 
         console.log("GraphViewer - nextScene - activeScene, activeSceneId: ", newScene, newScene._id);
 
-        self.setState({activeScene: newScene, activeSceneId: newScene._id, themeQuery: themeQuery});
+        SceneThemeTourActions.setActiveSceneForPlayback(newScene, themeQuery);
     },
 
     render: function() {
         // console.log("graph-viewer - render - this.state.activeScene: ", this.state.activeScene);
 
-        var sceneListener;
-
-        if(this.state.activeSceneId)
-            sceneListener = <SceneListener sceneId={this.state.activeSceneId} activeScene={this.state.activeScene} themeQuery={this.state.themeQuery} />;
-        else
-            sceneListener = <h2>Graph Viewer</h2>;
-
         return (
             <div className="graph-viewer-container">
-                {sceneListener}
+                <SceneListener fromGraphViewer={true}/>
             </div>
         );
     }

@@ -34,7 +34,11 @@ class FullSceneStore extends Store {
     }
 
     getScene(id) {
+
+        console.log("FullSceneStore getScene");
+
         if (_scenes.hasOwnProperty(id)) {
+            console.log("FullSceneStore has scene");
             return _.cloneDeep(_scenes[id]);
         }
     }

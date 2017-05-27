@@ -16,14 +16,13 @@ var browserify = require('browserify');
 var reactify = require('reactify');
 var envify = require('envify');
 var stripify = require('stripify');
-//var streamify = require('gulp-streamify'); AJF: removed as can't find it being used
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat'),
     livereload = require('gulp-livereload'),
     dest = 'dist',
     lvPort = 35729;
 
-var cssGlobs = ['src/css/**/*.css', 'node_modules/codemirror/lib/*.css'];
+var cssGlobs = ['src/css/**/*.css'];
 
 var static_server = require('./static_server');
 
@@ -54,7 +53,6 @@ if(debugMode) {
 */
 var indexBundler = bundlerBuilder('./src/js/index.jsx', 'index.js', true);
 var viewerBundler = bundlerBuilder('./src/js/viewer.jsx', 'viewer.js', true);
-var manifest2015Bundler = bundlerBuilder('./src/js/manifest2015.js', 'manifest2015.js', false);
 var graphViewerBundler = bundlerBuilder('./src/js/graph-viewer.jsx', 'graph-viewer.js', true);
 
 function bundlerBuilder (startPath, finishName, useReactify) {
@@ -89,15 +87,15 @@ gulp.task('watch', function () {
     livereload.listen(lvPort);
     gulp.watch(dest + '/**').on('change', livereload.changed);
 
+    // APEP Temporary change to aid the infinite loop issue
     // html changes
-    gulp.watch('src/*.html', ['html']);
+    // gulp.watch('src/*.html', ['html']);
 
     // css changes
     gulp.watch(cssGlobs, ['css']);
 
     indexBundler.bundler.on('update', indexBundler.rebundle);
     viewerBundler.bundler.on('update', viewerBundler.rebundle);
-    manifest2015Bundler.bundler.on('update', manifest2015Bundler.rebundle);
     graphViewerBundler.bundler.on('update', graphViewerBundler.rebundle);
 });
 
@@ -116,7 +114,6 @@ gulp.task('bundlejs', function() {
     return mergeStream(
         indexBundler.rebundle(),
         viewerBundler.rebundle(),
-        manifest2015Bundler.rebundle(),
         graphViewerBundler.rebundle()
     );
 });
@@ -136,6 +133,8 @@ gulp.task('include-schemas', function() {
 
 gulp.task('build-dist', ['bundlejs', 'html', 'css', 'include-monaco-editor', 'include-schemas', 'build-version-document']);
 
+// APEP Temp change
+gulp.task('build-dev-dist', ['bundlejs', 'html', 'css']);
 
 ///// BEGIN CLI TASKS ////////////////////////////////
 
@@ -144,7 +143,6 @@ gulp.task('build', ['build-dist'], function() {
     // thus the .on('end', ...)
     indexBundler.bundler.close();
     viewerBundler.bundler.close();
-    manifest2015Bundler.bundler.close();
     graphViewerBundler.bundler.close();
 });
 
@@ -152,4 +150,5 @@ gulp.task('serve', function(next) {
     static_server(dest, {callback: next, livereload: true});
 });
 
-gulp.task('default', ['build-dist', 'serve', 'watch']);
+// APEP Temp change
+gulp.task('default', ['build-dev-dist', 'serve', 'watch']);

@@ -1,12 +1,9 @@
 'use strict';
 
 var React = require('react');
-var ReactDOM = require('react-dom');
 var SceneStore = require('../stores/full-scene-store');
-var ThemeSelector = require('../components/theme-selector.jsx');
+var PlaybackStore = require('../stores/playback/playback-store');
 var HubSendActions = require('../actions/hub-send-actions');
-var FormHelper = require('../mixins/form-helper');
-var Router = require('react-router');
 var Authentication = require('../mixins/Authentication');
 var Loader = require('../components/loader.jsx');
 var _ = require('lodash');
@@ -19,6 +16,8 @@ var VideoMediaObject = require('../utils/media-object/video-media-object');
 var AudioMediaObject = require('../utils/media-object/audio-media-object');
 var RandomVisualPlayer = require('../components/viewer/random-visual-player.jsx');
 var ActiveTheme = require('../components/viewer/viewer-active-theme.jsx');
+var ThemeSelector = require('../components/theme-selector.jsx');
+var TagSelector = require('../components/tag-selector.jsx');
 var hat = require('hat');
 
 var MINIMUM_NUMBER_OF_MEDIA_TO_BE_MATCHED_WITH_THEME_QUERY = 0;
@@ -35,54 +34,50 @@ function getTypeByName(typeName) {
     return t;
 }
 
+/**
+ * APEP In development comments
+ * themeQuery - provided from a scene-theme tour
+ * activeThemes - provided from the theme selector TODO refactor this into the store
+ *
+ * TODO refactor below into store as well
+ * triggeredActiveThemes - comes from cue point media activating a theme for additional content
+ * cuePointMediaObjects - is the mapped list of media from a triggeredActiveTheme
+ */
 var SceneListener = React.createClass({
 
     statics: {
         willTransitionFrom: function (transition, component) {
+            //APEP TODO this should be optional as for when this component is from the graph viewer, we are going through so many scenes
+            // We do not support live scene update when we cycle between scenes, this could be changed
             HubSendActions.unsubscribeScene(component.getParams().id);
         }
     },
 
-    _getSceneId: function () {
-        if (this.props.activeScene) {
-            return this.props.activeScene._id;
-        }
-
-        var sceneId = this.props.sceneId || this.props.params.id;
-
-        return sceneId;
-    },
-
     _getScene: function () {
 
-        if (this.props.activeScene) {
-            return this.props.activeScene;
+        // APEP if we are given a params id try use scene store
+        if(this.props.params && this.props.params.id) {
+            return SceneStore.getScene(this.props.params.id);
         }
 
-        var sceneId = this.props.sceneId || this.props.params.id;
+        // APEP else we look at the playback store for this value
+        return PlaybackStore.getActiveScene();
+    },
 
-        // console.log("SceneListener - _getScene - sceneId: ", sceneId);
-
-        return SceneStore.getScene(sceneId);
+    _getThemeQuery: function() {
+        return PlaybackStore.getActiveThemeQuery();
     },
 
     getInitialState: function () {
         return {
             scene: this._getScene(),
             activeThemes: [],
-            fromGraphViewer: this.props.activeScene ? true : false,
+            fromGraphViewer: this.props.fromGraphViewer ? true : false,
             triggeredActiveThemes: {},
             cuePointMediaObjects: [],
-            shouldHide: false
+            shouldHide: false,
+            themeQuery: this._getThemeQuery()
         };
-    },
-
-    getPlayerElem: function () {
-        return this.refs.player;
-    },
-
-    _getSceneForUpdatingPlayerComponent: function () {
-        return this.props.activeScene || this.state.scene;
     },
 
     _setPlayerClassCssForScene: function (style) {
@@ -95,7 +90,7 @@ var SceneListener = React.createClass({
 
     _maybeUpdatePlayer: function () {
 
-        var scene = this._getSceneForUpdatingPlayerComponent();
+        var scene = this.state.scene;
 
         if (scene) {
             // APEP Remove the old style added ready for new style or fallback to css class
@@ -118,6 +113,14 @@ var SceneListener = React.createClass({
     },
 
     componentWillMount: function () {
+
+        console.log("SceneListener will mount");
+
+        // APEP if we are about to mount and have an params.id set, make sure the store is populated with the scene
+        if(this.props.params && this.props.params.id) {
+            HubSendActions.loadScene(this.props.params.id);
+        }
+
         try {
             this.mediaObjectQueue = new MediaObjectQueueManager(
                 [TextMediaObject, AudioMediaObject, VideoMediaObject, ImageMediaObject],
@@ -130,48 +133,54 @@ var SceneListener = React.createClass({
         }
 
     },
+
     toggleTagMatcherAndThemes: function (event) {
         if (event.altKey && event.keyCode === 72) {
-            var tag_form = this.refs["tag_form"];
-            if (!this.state.shouldHide) {
-                tag_form.style.display = "none";
-            } else {
-                tag_form.style.display = "block";
-            }
+            var tagForm = this.refs["tag_form"];
+            tagForm.style.display = !this.state.shouldHide ? "none" : "block";
             this.setState({shouldHide:!this.state.shouldHide});
         }
     },
+
     componentDidMount: function () {
-        HubSendActions.subscribeScene(this._getSceneId());
+        // APEP we only subscribe if we have a params.id, meaning we will only ever play the one scene
+        if(this.props.params && this.props.params.id) {
+            HubSendActions.subscribeScene(this.props.params.id);
+        }
+
+        console.log("SceneListener - componentDidMount");
+
         try {
             SceneStore.addChangeListener(this._onChange);
+            PlaybackStore.addChangeListener(this._onChange);
             this._maybeUpdatePlayer();
         } catch (e) {
             console.log("componentDidMount - e: ", e);
         }
+
+        // Add keypress listener
         document.addEventListener("keyup", this.toggleTagMatcherAndThemes)
     },
 
     componentWillUnmount: function () {
         SceneStore.removeChangeListener(this._onChange);
+        PlaybackStore.removeChangeListener(this._onChange);
     },
 
     componentDidUpdate: function (prevProps, prevState) {
 
+        console.log("componentDidUpdate - looking to see if we need to update the player");
+
+        // APEP TODO need to add themeQuery as allowed change
+
         if (!_.isEqual(prevState.scene, this.state.scene)) {
             console.log("state.scene changed - update player");
-            this._maybeUpdatePlayer();
-        } else if (!_.isEqual(prevProps.activeScene, this.props.activeScene)) {
-            console.log("activeScene changed - update player");
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevState.activeThemes, this.state.activeThemes)) {
             console.log("ActiveTheme changed - update player");
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevState.triggeredActiveThemes, this.state.triggeredActiveThemes)) {
             console.log("TriggeredActiveTheme changed - update player");
-            this._maybeUpdatePlayer();
-        } else if (!_.isEqual(prevProps.themeQuery, this.props.themeQuery)) {
-            console.log("themeQuery changed - update player");
             this._maybeUpdatePlayer();
         }
 
@@ -202,11 +211,11 @@ var SceneListener = React.createClass({
             event.preventDefault();
         }
 
-        var scene = this._getSceneForUpdatingPlayerComponent();
+        var scene = this.state.scene;
 
-        if (this.props.themeQuery) {
+        if (this.state.themeQuery) {
             // APEP the tag matcher will make sure all active media not related to new scene is removed
-            var themeQry = scene.themes[this.props.themeQuery];
+            var themeQry = scene.themes[this.state.themeQuery];
 
             if (this.state.mediaObjectQueue) {
                 this.state.mediaObjectQueue.setTagMatcher(new TagMatcher("(" + themeQry + ")"));
@@ -230,7 +239,8 @@ var SceneListener = React.createClass({
     },
 
     _onChange: function () {
-        this.setState({scene: this._getScene()});
+        console.log("SceneListener - _onChange");
+        this.setState({scene: this._getScene(), themeQuery: this._getThemeQuery()});
     },
 
     handleThemeChange: function (newThemes) {
@@ -249,8 +259,6 @@ var SceneListener = React.createClass({
             var cuePointsMediaObjects = this.state.cuePointMediaObjects;
 
             cuePointsMediaObjects.splice(moFoundIndex, 1);
-
-            // console.log("SPLICE - old length, new length: ", this.state.cuePointMediaObjects.length, cuePointsMediaObjects.length);
 
             this.setState({cuePointMediaObjects: cuePointsMediaObjects});
         }
@@ -285,7 +293,7 @@ var SceneListener = React.createClass({
         }.bind(this));
         var tagMatcher = new TagMatcher(tagMatcherStatements.join(" OR "));
 
-        var scene = this._getSceneForUpdatingPlayerComponent();
+        var scene = this.state.scene;
 
         // APEP search media objects for matching tags and create a local state copy of wanted media objects to be force to screen
         var cuePointMediaObjects = _(scene.scene)
@@ -329,27 +337,27 @@ var SceneListener = React.createClass({
 
     render: function () {
 
-        // APEP Display Active Theme if available, if not provide a theme selector
+        // APEP If we are from graph viewer, only attempt to display the theme query
+        // APEP else we are playing a single scene and should provide the selector tool
         var ThemeDisplay = this.state.fromGraphViewer ?
-            <ActiveTheme ref="theme" themeQuery={this.props.themeQuery}/> :
+            <ActiveTheme ref="theme" themeQuery={this.state.themeQuery}/> :
             <ThemeSelector ref="theme" shouldHide={this.state.shouldHide} themeChange={this.handleThemeChange}
-                           scene={this._getSceneForUpdatingPlayerComponent()}/>
+                           scene={this.state.scene}/>;
 
         // APEP Only display the tag form when this component is not used within the graph viewer
         var TagForm = !this.state.fromGraphViewer ?
-            <form className='tag-filter' ref="tag_form" onSubmit={this.updateTags}>
-                <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...'
-                       className='form-control scene-listener-tag-input'/>
-            </form> : <span></span>;
+            <TagSelector updateTags={this.updateTags} handleBlur={this.handleBlur}/>: <span></span>;
 
         return (
             <div className='scene-listener' ref="scene_listener">
                 <Loader loaded={this.state.scene ? true : false}></Loader>
-                <RandomVisualPlayer mediaQueue={this.state.mediaObjectQueue}
-                                    triggerMediaActiveTheme={this.triggerMediaActiveTheme}
-                                    removeMediaActiveThemesAfterDone={this.removeMediaActiveThemesAfterDone}
-                                    cuePointMediaObjects={this.state.cuePointMediaObjects}
-                                    cueMediaObjectDoneHandler={this.cueMediaObjectDoneHandler}/>
+
+                <RandomVisualPlayer
+                    mediaQueue={this.state.mediaObjectQueue}
+                    triggerMediaActiveTheme={this.triggerMediaActiveTheme}
+                    removeMediaActiveThemesAfterDone={this.removeMediaActiveThemesAfterDone}
+                    cuePointMediaObjects={this.state.cuePointMediaObjects}
+                    cueMediaObjectDoneHandler={this.cueMediaObjectDoneHandler}/>
                 {ThemeDisplay}
                 {TagForm}
             </div>
