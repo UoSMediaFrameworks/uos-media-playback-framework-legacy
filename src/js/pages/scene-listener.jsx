@@ -243,10 +243,13 @@ var SceneListener = React.createClass({
         this.setState({scene: this._getScene(), themeQuery: this._getThemeQuery()});
     },
 
+    // APEP Handle user selecting a theme from theme selector component
     handleThemeChange: function (newThemes) {
         this.setState({activeThemes: newThemes});
     },
 
+
+    // APEP TODO I think this should be handled by the store but we can leave for now
     cueMediaObjectDoneHandler: function (mediaObjectGuid) {
 
         // console.log("cueMediaObjectDoneHandler - mediaObject.guid: ", mediaObjectGuid);
@@ -265,8 +268,8 @@ var SceneListener = React.createClass({
 
     },
 
-    // APEP function for adding themes triggered by a piece of media
-    // APEP a reference counter is used to ensure that we track overlapping or duplicate triggers
+    // APEP function for adding themes triggered by a piece of media - ie cue point
+    // A reference counter is used to ensure that we track overlapping or duplicate triggers
     // We also create cue point media objects directly from a trigger request, these are stored and
     // managed locally for this object
     triggerMediaActiveTheme: function (themes) {

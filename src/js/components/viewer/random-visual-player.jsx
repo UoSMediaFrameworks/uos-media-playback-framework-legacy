@@ -156,7 +156,6 @@ var RandomVisualPlayer = React.createClass({
     },
 
     componentDidUpdate: function () {
-        //TODO APEP I think we may need to clean up the existing media if we update with a new scene
         var self = this;
         // APEP if we update - transition media or get queues media that has been removed
         try {
@@ -166,47 +165,39 @@ var RandomVisualPlayer = React.createClass({
                 self.setState({interval: true});
             }
         } catch (e) {
-            console.log("RVP - didUpdateError - e: ", e);
+            console.log("RVP - componentDidUpdate - e: ", e);
         }
-
     },
+
+    generateMediaObjectComponentData: function(mediaObject, moDoneHandler, key) {
+        return {
+            mediaObject: mediaObject,
+            player: this.refs.player,
+            //Attach the done handler using react props
+            moDoneHandler: moDoneHandler,
+            // APEP we may want to assign below [displayDuration, transitionDuration] within mediaObject these within the state.arr push.
+            // It's something we need to see if this change of props would cause any of the media objects to update when we might
+            // not want them to update.
+            displayDuration: this.props.mediaQueue.getDisplayDuration(),
+            transitionDuration: this.props.mediaQueue.getTransitionDuration(),
+            triggerMediaActiveTheme: this.props.triggerMediaActiveTheme,
+            key: key
+        };
+    },
+
     render: function () {
 
         var self = this;
 
-        // APEP refactored to avoid async issues
-        var q = self.state.arr.map(function (mediaObject, index) {
-            var data = {
-                mediaObject: mediaObject,
-                player: self.refs.player,
-                //Attach the done handler using react props
-                moDoneHandler: self.moDoneHandler,
-                // APEP we may want to assign below [displayDuration, transitionDuration] within mediaObject these within the state.arr push.
-                // It's something we need to see if this change of props would cause any of the media objects to update when we might
-                // not want them to update.
-                displayDuration: self.props.mediaQueue.getDisplayDuration(),
-                transitionDuration: self.props.mediaQueue.getTransitionDuration(),
-                triggerMediaActiveTheme: self.props.triggerMediaActiveTheme,
-                key: index
-            };
-
+        var queueMediaObjects = self.state.arr.map(function (mediaObject, index) {
+            var data = self.generateMediaObjectComponentData(mediaObject, self.moDoneHandler, index);
             return (
                 <MediaObject ref={mediaObject.guid} key={mediaObject.guid} data={data}></MediaObject>
             );
         });
 
-        var cueMediaObjects = self.props.cuePointMediaObjects.map(function(mediaObject, index){
-            var data = {
-                mediaObject: mediaObject,
-                player: self.refs.player,
-                //Attach the done handler using react props
-                moDoneHandler: self.cueMoDoneHandler,
-                displayDuration: self.props.mediaQueue.getDisplayDuration(),
-                transitionDuration: self.props.mediaQueue.getTransitionDuration(),
-                triggerMediaActiveTheme: self.props.triggerMediaActiveTheme,
-                key: mediaObject.guid
-            };
-
+        var cuePointMediaObjects = self.props.cuePointMediaObjects.map(function(mediaObject, index){
+            var data = self.generateMediaObjectComponentData(mediaObject, self.cueMoDoneHandler, mediaObject.guid);
             return (
                 <MediaObject ref={mediaObject.guid} key={mediaObject.guid} data={data}></MediaObject>
             );
@@ -214,8 +205,8 @@ var RandomVisualPlayer = React.createClass({
 
         return (
             <div className="player" ref="player">
-                {q}
-                {cueMediaObjects}
+                {queueMediaObjects}
+                {cuePointMediaObjects}
             </div>
         );
     }
