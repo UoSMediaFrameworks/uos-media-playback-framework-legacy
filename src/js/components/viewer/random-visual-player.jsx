@@ -18,6 +18,7 @@ var RandomVisualPlayer = React.createClass({
         };
     },
 
+    // APEP TODO view event so store can update queue, and using change emitted update this component
     loadMediaObject: function (queue) {
         var self = this;
         try {
@@ -65,6 +66,7 @@ var RandomVisualPlayer = React.createClass({
             this.props.cueMediaObjectDoneHandler(mediaObject.props.data.mediaObject.guid);
     },
 
+    // APEP TODO we should use a view action so the queue is gets updated and the update results trickles through
     clearMediaObject: function (mediaObject) {
         var arr = this.state.arr;
 
@@ -104,13 +106,17 @@ var RandomVisualPlayer = React.createClass({
         }
         return willUpdate;
     },
+
     componentWillMount: function () {
     },
+
     componentDidMount: function () {
+        // APEP TODO we should not need this
         this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
     },
 
     // APEP function given to the media queue object to provide object transition out functionality
+    // APEP TODO this could be used in the arr to queue.active comparison
     mediaObjectTransition: function (mediaObject) {
 
         // console.log("mediaObjectTransition - mediaObjectTransition - this.state.arr.length: ", this.state.arr.length);
@@ -138,6 +144,7 @@ var RandomVisualPlayer = React.createClass({
 
     },
 
+    // APEP TODO We need to update the interval, so a view action is created so the queue can add something new to the active list in the queue
     startLoadMediaObjectsInterval: function() {
         console.log("startLoadMediaObjectsInterval - startLoadMediaObjectsInterval");
 
@@ -155,6 +162,10 @@ var RandomVisualPlayer = React.createClass({
         this.setState({loadMediaObjectInterval: interval});
     },
 
+
+    // APEP TODO I'm thinking here, we should compare arr to the queue.active from the store
+    // Anything in arr and not in queue.active, we should transition/done the media element
+    // Anything in queue.active that is not in arr, we should add the media object to the screen
     componentDidUpdate: function () {
         var self = this;
         // APEP if we update - transition media or get queues media that has been removed
