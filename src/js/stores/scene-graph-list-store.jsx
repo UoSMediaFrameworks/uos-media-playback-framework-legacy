@@ -30,7 +30,7 @@ var SceneGraphListStore = assign({}, EventEmitter.prototype, {
     },
 
     getSceneGraphByID:function(id){
-        console.log(_sceneGraphs)
+        console.log(_sceneGraphs);
         if (_sceneGraphs.hasOwnProperty(id)) {
             return _.cloneDeep(_sceneGraphs[id]);
         }

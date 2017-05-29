@@ -4,9 +4,7 @@ var d3 = require("d3");
 var ReactDOM = require("react-dom");
 
 var Circle = React.createClass({
-
     componentWillMount:function(){
-        console.log("narm circle", this.props)
         var self = this;
         self.setState({
             x: self.props.data.x,
@@ -41,10 +39,11 @@ var Circle = React.createClass({
     render(){
         var classes = classNames({
             'shown-circle': this.props.data.visible,
-            'highlight2': this.props.data.highlighted
+            'highlight': this.props.data.highlighted
         });
-        /*       */
+        /*       onClick={this.props.clickHandler.bind(this, this.props.data)}*/
         return (
+
             <circle
                 cy={this.state.cy}
                 cx={this.state.cx}
@@ -53,7 +52,8 @@ var Circle = React.createClass({
                 x={this.state.x}
                 y={this.state.y}
                 fill={this.state.color}
-                onClick={this.props.eventHandler.bind(this, this.props.data)}
+                onClick={this.props.clickHandler.bind(this,this.props.data)}
+                onDoubleClick={this.props.dblClickHandler.bind(this, this.props.data)}
             >
             </circle>
         )

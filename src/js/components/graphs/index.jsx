@@ -5,8 +5,13 @@ var SceneGraphListStore = require('../../stores/scene-graph-list-store.jsx');
 var HubSendActions = require('../../actions/hub-send-actions');
 var connectionCache = require("../../utils/connection-cache");
 var NarmGraph = require('./narm-graph.jsx');
+var MemoirGraph = require('./memoir-graph.jsx');
+var GDCGraph = require('./gdc-graph.jsx');
+var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
 var QRCODE = require('qrcode.react');
 var OptionsMenu = require('./options-menu.jsx');
+var BreadcrumbsMenu = require('./breadcrumbs-menu.jsx');
+var AutowalkMenu = require('./autowalk-menu.jsx');
 var classes = require('classnames');
 var _ = require("lodash");
 
@@ -19,6 +24,7 @@ var GraphContainer = React.createClass({
                 nodes: [],
                 links: []
             },
+            breadcrumbsList: [],
             viewerURL: window.location.hostname + '/graph-viewer.html#/?room=' + connectionCache.getSocketID(),
             QRToggle: false,
             autocompleteToggle: false,
@@ -28,11 +34,16 @@ var GraphContainer = React.createClass({
         }
     },
     _onChange: function () {
-        this.setState({sceneList: SceneGraphListStore.getSceneGraphByID(this.state.graphId)});
-        this._initialize();
-    },
+        var test = SceneGraphListStore.getSceneGraphByID(this.state.graphId)
+        console.log("change")
+        this._initialize(test);
 
-    _initialize(){
+    },
+    _onCrumbsChange: function () {
+        this.setState({breadcrumbsList: BreadcrumbsStore.getBreadcrumbs()});
+    },
+    _initialize(sceneList){
+        console.log("init")
         var localRoot = {
             nodes: [],
             links: []
@@ -42,8 +53,8 @@ var GraphContainer = React.createClass({
         function processNodes(data) {
             data.forEach(function (obj) {
                 obj.x = obj.y = 0;
-                obj.cx = window.innerWidth / 2;
-                obj.cy = window.innerHeight / 2;
+                obj.cx = window.innerWidth / 2 - window.innerWidth * 0.1;
+                obj.cy = window.innerHeight / 2 -  window.innerHeight * 0.2;
                 obj.r = 2;
                 obj.children = [];
                 obj.parents = [];
@@ -111,13 +122,57 @@ var GraphContainer = React.createClass({
             });
         }
 
-        processNodes(this.state.sceneList.nodeList);
+        processNodes(sceneList.nodeList);
         processsEdges();
         removeBadRelationships();
         console.log("initialized")
-        this.setState({root: localRoot});
+        this.setState({root: localRoot, sceneList: sceneList});
     },
     _getGraphTypeComponent(){
+
+
+        if (this.state.sceneList) {
+            switch (this.state.sceneList.type) {
+                case "MEMOIR_SCENE_GRAPH":
+                    return null;
+                    break;
+                case "NARM_SCENE_GRAPH":
+                    return (
+                        <NarmGraph
+                            data={this.state.root}
+                            innerWidth={window.innerWidth * 0.8}
+                            innerHeight={window.innerHeight * 0.6}
+                        />
+                    );
+                    break;
+                case "GDC_SCENE_GRAPH":
+                    console.log("GDC Graph", this.state.root)
+                    return (<GDCGraph
+                        data={this.state.root}
+                        fullWidth={window.innerWidth}
+                        fullHeight={window.innerHeight}
+                        innerWidth={window.innerWidth * 0.8}
+                        innerHeight={window.innerHeight * 0.6}
+                    />);
+                    break;
+                case undefined:
+                    console.log("GDC Graph undefined", this.state.root)
+                    return (
+                        <GDCGraph
+                            data={this.state.root}
+                            fullWidth={window.innerWidth}
+                            fullHeight={window.innerHeight}
+                            innerWidth={window.innerWidth * 0.8}
+                            innerHeight={window.innerHeight * 0.6}
+                        />
+                    );
+                    break;
+            }
+
+        }
+        else {
+            return null;
+        }
 
     },
 
@@ -127,17 +182,24 @@ var GraphContainer = React.createClass({
     componentDidMount: function () {
         document.addEventListener('keyup', this.optionsMenuHandler, false);
         SceneGraphListStore.addChangeListener(this._onChange);
+        BreadcrumbsStore.addChangeListener(this._onCrumbsChange);
+        BreadcrumbsStore.setBreadcrumbs(this.state.graphId);
     },
 
     componentWillUnmount: function () {
+        document.removeChangeListener('keyup', this.optionsMenuHandler, false);
         SceneGraphListStore.removeChangeListener(this._onChange);
+        BreadcrumbsStore.removeChangeListener(this._onCrumbsChange);
     },
-    autocompleteHandler:function(){
+    autocompleteHandler: function () {
         this.setState({autocompleteToggle: !this.state.autocompleteToggle})
     },
     qrHandler: function () {
-        console.log("qr")
         this.setState({QRToggle: !this.state.QRToggle})
+    },
+    breadcrumbsUpdateHandler: function (updatedCrumbs) {
+        localStorage.set(this.state.graphId + " breadcrumbsList", updatedCrumbs);
+        this.setState({breadcrumbsList: updatedCrumbs});
     },
     breadcrumbsHandler: function () {
         this.setState({breadcrumbsToggle: !this.state.breadcrumbsToggle})
@@ -168,25 +230,21 @@ var GraphContainer = React.createClass({
         } else {
             graphId = queryId;
         }
+
         HubSendActions.getSceneGraphByID(graphId);
+
         this.setState({graphId: graphId})
     },
     render(){
 
-        var graphType = "narm";
+        var graph = this._getGraphTypeComponent();
+        console.log("trying to render", graph, this.state);
         var qrCodeClasses = classes({
             'qrcode': true,
             'visible': this.state.QRToggle,
             'hidden': !this.state.QRToggle
         });
-        var autowalkClasses = classes({
-            'visible': this.state.autoWalkToggle,
-            'hidden': !this.state.autoWalkToggle
-        });
-        var breadcrumbsClasses = classes({
-            'visible': this.state.breadcrumbsToggle,
-            'hidden': !this.state.breadcrumbsToggle
-        });
+
         var autocompleteClasses = classes({
             'visible': this.state.autocompleteToggle,
             'hidden': !this.state.autocompleteToggle
@@ -204,12 +262,8 @@ var GraphContainer = React.createClass({
 
                 <div ref="graph">
                     <svg viewBox={"0 0 " + window.innerWidth + " " + window.innerHeight } preserveAspectRatio="xMinYMin"
-                         className={graphType}>
-                        <NarmGraph
-                            data={this.state.root}
-                            innerWidth={window.innerWidth * 0.8}
-                            innerHeight={window.innerHeight * 0.6}
-                        />
+                    >
+                        {graph}
                     </svg>
                 </div>
 
@@ -225,16 +279,22 @@ var GraphContainer = React.createClass({
                 </OptionsMenu>
 
                 {/*Autowalk Item here*/}
-                {/*Crumbs Container here*/}
-                <div className={graphType + "-logo"}>
-                    <img
-                        src="http://www.salford.ac.uk/__data/assets/image/0005/906287/university-of-salford-web-logo-clear-back-113x70.png"/>
-                </div>
-                <div className={graphType + "-logo2"}>
-                    <img src="http://salfordmediafestival.co.uk/wp-content/uploads/2014/06/media_conference.png"/>
-                </div>
-                {/*Optional Logos Here*/}
 
+                {/*Crumbs Container here*/}
+
+                {/*   <BreadcrumbsMenu breadcrumbsList={this.state.breadcrumbsList.data}
+                 breadcrumbsToggle={this.state.breadcrumbsToggle}>
+                 </BreadcrumbsMenu>*/}
+
+
+                {/*Optional Logos Here*/}
+                {/*<div className={graphType + "-logo"}>*/}
+                {/*<img*/}
+                {/*src="http://www.salford.ac.uk/__data/assets/image/0005/906287/university-of-salford-web-logo-clear-back-113x70.png"/>*/}
+                {/*</div>*/}
+                {/*<div className={graphType + "-logo2"}>*/}
+                {/*<img src="http://salfordmediafestival.co.uk/wp-content/uploads/2014/06/media_conference.png"/>*/}
+                {/*</div>*/}
             </div>
         );
     }

@@ -218,8 +218,24 @@ svg {
     left: 0;
     z-index: 1;
 }
-
-
+.custom-file-upload input[type=file]{
+    display: none;
+}
+#crumbs-container button{
+    margin:0;
+    opacity: 0.25;
+    transition: opacity 0.25s;
+}
+#crumbs-container button[hidden] {
+    display: none;
+}
+#crumbs-container button[disabled] {
+    cursor: not-allowed;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    opacity: .65;
+}
 .custom-file-upload {
     display: inline-block;
     cursor: pointer;
@@ -556,5 +572,68 @@ text {
 
 
 
+
+
+#crumbs-container {
+    display:block;
+    bottom: 0;
+    position: fixed;
+    text-align: left;
+    z-index: 100000;
+    background-color: rgba(51, 51, 51, 0.4);
+    width: 50%;
+    max-height: 300px;
+    overflow: auto;
+}
+.autowalk-menu{
+    display:block;
+    bottom: 0;
+    position: fixed;
+    text-align: left;
+    z-index: 100000;
+}
+#crumbs-container .col-sm-2{
+    padding-left:10px;
+}
+#crumbs-container .col-sm-6{
+    padding-left:10px;
+}
+.crumbs{
+    background-color: rgba(128, 128, 128, 0.77);
+    margin: 5px;
+    display: flex;
+
+}
+.crumbs ul {
+    list-style: none;
+    display: inline-table;
+}
+.crumbs ul li {
+    display: inline;
+}
+#qrcode{
+    padding: 10px;
+    background-color: white;
+}
+
+.crumbs ul li a {
+    display: block;
+    float: left;
+    background: #3498db;
+    text-align: center;
+    padding:6px 15px;
+    margin:2.5px;
+    position: relative;
+    font-size: 10px;
+    text-decoration: none;
+    color: #fff;
+}
+.crumbs ul li a i{
+    margin-left:5px
+}
+
+.crumbs ul li a i:hover {
+    color: red;
+}
 
 

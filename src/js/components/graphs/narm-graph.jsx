@@ -7,6 +7,7 @@ var Text = require("./narm-components/text.jsx");
 var _ = require("lodash");
 var connectionCache = require("../../utils/connection-cache");
 var HubClient = require("../../utils/HubClient");
+var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
 
 
 var NarmGraph = React.createClass({
@@ -16,11 +17,11 @@ var NarmGraph = React.createClass({
     },
     componentWillMount: function () {
         console.log("will mount", this.props)
-        /*        this.setState({data:this.props.data})*/
+        this.setState({data:this.props.data})
     },
     componentWillReceiveProps: function (nextProps) {
         console.log("the props", nextProps);
-        this.setState({data: this.props.data})
+        this.setupNodes(nextProps.data)
     },
     highlight: function (data) {
         var self = this;
@@ -58,7 +59,10 @@ var NarmGraph = React.createClass({
         this.setState({data: self.state.data});
     },
     tapHandler(t){
-        console.log("clicked");
+        var recording = BreadcrumbsStore.getRecording();
+        if(recording){
+            BreadcrumbsStore.addCrumb("tap",t.name)
+        }
         this.highlight(t)
         var list = [];
         if (t.type === "root") {
@@ -92,9 +96,9 @@ var NarmGraph = React.createClass({
             HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID())
         }
     },
-    setupRootNodes: function () {
+    setupRootNodes: function (data) {
         var self = this;
-        var rootNodes = _.filter(self.state.data.nodes, function (node) {
+        var rootNodes = _.filter(data.nodes, function (node) {
             return node.type == 'root';
         });
         _.each(rootNodes, function (node) {
@@ -104,9 +108,9 @@ var NarmGraph = React.createClass({
             node.r = 90;
         })
     },
-    setupSceneNodes: function () {
+    setupSceneNodes: function (data) {
         var self = this;
-        var sceneNodes = _.filter(self.state.data.nodes, function (node) {
+        var sceneNodes = _.filter(data.nodes, function (node) {
             return node.type == 'scene';
         });
         _.each(sceneNodes, function (node, i) {
@@ -130,12 +134,12 @@ var NarmGraph = React.createClass({
         })
     },
     _nodes: function (list, sceneList) {
-
+        var self = this;
         for (var listIndex in list) {
             var thisItem = list[listIndex];
 
             if (thisItem.type !== 'scene') {
-                nodes(thisItem.children, sceneList);
+                self._nodes(thisItem.children, sceneList);
             } else {
                 sceneList.push(thisItem._id);
             }
@@ -167,58 +171,42 @@ var NarmGraph = React.createClass({
             node.color = "#c60c30";
         })
     },
-    setupNodes: function () {
+    setupNodes: function (data) {
         var self = this;
-        self.setupRootNodes();
-        self.setupSceneNodes();
+        self.setupRootNodes(data);
+        self.setupSceneNodes(data);
         /*        this.setupOtherNodes();*/
+        self.setState({data:data});
+    },
+    render(){
         var windowW = window.innerWidth * 0.1;
         var windowH = window.innerHeight * 0.2;
-        var translate = 'translate(' + windowW + ',' + windowH + ')';
-        var nodes = self.state.data.nodes.map((node, i) => {
-            return (<g key={node._id} transform={translate}>
+        var self = this;
+        var nodes = this.state.data.nodes.map((node, i) => {
+            return (<g key={i} >
                 <Circle data={node} eventHandler={self.tapHandler}></Circle>
 
                 <Text data={node}></Text>
             </g>)
         });
-        console.log("setup nodes triggered",nodes)
-        return nodes;
-    },
-    render(){
-        console.log("rendering",this.state.data)
-        var nodeObjects = null;
-        var linkObjects = null;
-        if (this.state.data != null) {
-            try {
-                nodeObjects = this.setupNodes();
-                linkObjects = this.state.data.links.map((link, i) => {
-                    return (<Path data={link} key={i}></Path>);
-                });
-                console.log("links done as well",linkObjects)
-            } catch (e) {
-                console.log("error", e)
-            }
+        var links = this.state.data.links.map((link, i) => {
+            return (<Path data={link} key={i} innerW={this.props.innerWidth} innerH={this.props.innerHeight}></Path>);
+        });
 
-        }
-
-
-        var windowW = window.innerWidth * 0.1;
-        var windowH = window.innerHeight * 0.2;
         var translate = 'translate(' + windowW + ',' + windowH + ')';
         return (
 
             <TransitionGroup ref="backgroundContainer" id="backgroundContainer" component="g">
                 {/*transform="translate("{this.props.innerWidth * 0.1}","{this.props.innerHeight* 0.2}")"*/}
-                <g id="nodeContainer" className="node-container">
+                <g id="nodeContainer" className="node-container" transform={translate}>
 
-                    <g id="edgeContainer" className="path-container" transform={translate}>
+                    <g id="edgeContainer" className="path-container" >
                         {/* link objects*/}
-                        {linkObjects}
+                        {links}
                     </g>
 
                     {/*node objects*/}
-                    {nodeObjects}
+                    {nodes}
                 </g>
 
             </TransitionGroup>

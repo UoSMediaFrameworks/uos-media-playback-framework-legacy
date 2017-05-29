@@ -12,7 +12,7 @@ var Path = React.createClass({
 
             var diagonal = [
                 "M", this.props.data.source.cx, this.props.data.source.cy,
-                "A", 0, 0, 0, 0, 1, this.props.data.target.cx, this.props.data.target.cy
+                "A", this.props.innerH, this.props.innerH, 0, 0, 1, this.props.data.target.cx, this.props.data.target.cy
             ].join(" ");
 
         this.setState({diagonal:diagonal})
@@ -20,34 +20,34 @@ var Path = React.createClass({
     componentWillReceiveProps:function(nextProps){
         var link = d3.select(ReactDOM.findDOMNode(this));
         var self =this;
-
             var diagonal = [
-                "M", nextProps.data.source.cx,nextProps.data.source.cy,
-                "A", 0, 0, 0, 0, 1, nextProps.data.target.cx, nextProps.data.target.cy
+                "M", nextProps.data.source.cx, nextProps.data.source.cy,
+                "A", nextProps.innerH, nextProps.innerH, 0, 0, 1, nextProps.data.target.cx, nextProps.data.target.cy
             ].join(" ");
+
 
         link.transition().ease(d3.easeLinear).duration(5000)
             .attr("d",diagonal)
             .on('end',function(){
-                self.setState({
+                    self.setState({
                         diagonal:diagonal
                     });
                 }
             )
     },
     render(){
-       /* console.log(this.props.data)*/
+        /* console.log(this.props.data)*/
         var classes = classNames({
             'opaque': false,
-            'visible-path2': this.props.data.visible,
-            'highlightedLink2':this.props.data.highlighted
+            'visible-path': this.props.data.visible,
+            'highlightedLink':this.props.data.highlighted
         });
 
 
 
         return (<path d={this.state.diagonal} className={classes}>
 
-            </path>);
+        </path>);
 
     }
 });
