@@ -32,7 +32,8 @@ var GraphContainer = React.createClass({
             breadcrumbsToggle: false,
             autoWalkToggle: false,
             optionsMenuToggle: false,
-            guid: null
+            guid: null,
+            title:""
         }
     },
     _onChange: function () {
@@ -43,6 +44,9 @@ var GraphContainer = React.createClass({
     },
     _onCrumbsChange: function () {
         this.setState({breadcrumbsList: BreadcrumbsStore.getBreadcrumbs()});
+    },
+    titleHandler:function(title){
+      this.setState({title:title})
     },
     _initialize(sceneList){
         var localRoot = {
@@ -149,6 +153,7 @@ var GraphContainer = React.createClass({
                     return (<GDCGraph
                         shouldUpdateId={this.state.guid}
                         data={this.state.root}
+                        titleHandler={this.titleHandler}
                         fullWidth={window.innerWidth}
                         fullHeight={window.innerHeight}
                         innerWidth={window.innerWidth * 0.8}
@@ -160,6 +165,7 @@ var GraphContainer = React.createClass({
                     return (
                         <GDCGraph
                             shouldUpdateId={this.state.guid}
+                            titleHandler={this.titleHandler}
                             data={this.state.root}
                             fullWidth={window.innerWidth}
                             fullHeight={window.innerHeight}
@@ -222,6 +228,9 @@ var GraphContainer = React.createClass({
                 })
         }
 
+    },
+    cleanTitle: function (title) {
+        return title.replace(/([a-z])([A-Z0-9])(?=[a-z])/g, '$1 $2').replace('GUIscene', 'scene').replace(/(scene|chicago|beijing)?\s(.*)?/i, '<sup>$1</sup><span class="$1">$2</span>');
     },
     componentWillMount(){
         var queryId = this.props.location.query.id || "589b24e6c9d9c9b81328d7e8";
@@ -298,6 +307,7 @@ var GraphContainer = React.createClass({
                 {/*<div className={graphType + "-logo2"}>*/}
                 {/*<img src="http://salfordmediafestival.co.uk/wp-content/uploads/2014/06/media_conference.png"/>*/}
                 {/*</div>*/}
+                <h1 className="title" dangerouslySetInnerHTML={{__html:this.cleanTitle(this.state.title)}}></h1>
             </div>
         );
     }

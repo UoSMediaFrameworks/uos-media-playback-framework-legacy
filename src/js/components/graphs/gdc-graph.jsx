@@ -33,9 +33,7 @@ var GDCGraph = React.createClass({
         return {data: null, title: ""}
     },
 
-    cleanTitle: function (title) {
-        return title.replace(/([a-z])([A-Z0-9])(?=[a-z])/g, '$1 $2').replace('GUIscene', 'scene').replace(/(scene|chicago|beijing)?\s(.*)?/i, '<sup>$1</sup><span class="$1">$2</span>');
-    },
+
     componentWillMount: function () {
         this.setState({data: this.props.data})
     },
@@ -288,6 +286,7 @@ var GDCGraph = React.createClass({
                 });
                 HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID())
             }
+            this.props.titleHandler(t.name)
             this.setState({data: this.state.data, title: this.cleanTitle(t.name)});
         } catch (e) {
             console.log(e)
@@ -508,7 +507,6 @@ var GDCGraph = React.createClass({
         return (
 
             <TransitionGroup ref="backgroundContainer" id="backgroundContainer" component="g">
-
                 <defs>
                     <radialGradient id="radial-gradient" cx="50%" cy="50%" r="50%">
                         <stop offset="0%" stopColor="#8f8f8f"></stop>
@@ -522,7 +520,7 @@ var GDCGraph = React.createClass({
                 </defs>
 
                 <g id="nodeContainer" className="node-container" transform={translate}>
-                    <h1 className="title">{self.state.title}</h1>
+                    {/*{self.state.title}*/}
                     <g id="edgeContainer" className="path-container">
                         {/* link objects*/}
                         {links}
