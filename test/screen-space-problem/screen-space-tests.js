@@ -5,6 +5,7 @@
 
 var _ = require('lodash');
 var fs = require('fs');
+var assert = require('assert');
 
 /**
  * Returns a random integer between min (inclusive) and max (inclusive)
@@ -77,6 +78,10 @@ class ScreenSpaceNode {
      */
     canFitNewElement(dimX, dimY) {
 
+        if(this.used) {
+            return false;
+        }
+
         if(this.dimX === dimX && this.dimY === dimY) {
 
             // APEP element we want to add will fill this container
@@ -87,10 +92,6 @@ class ScreenSpaceNode {
             }
 
             return fullChildren === 0;
-        }
-
-        if(this.used) {
-            return false;
         }
 
         // APEP OK so the dim of new element is too small lets try the children and allow recursion to fix
@@ -138,50 +139,74 @@ class ScreenSpaceNode {
     }
 }
 
+describe('ScreenSpace Testing', function () {
 
-var topA = new ScreenSpaceNode(0, 0, 32, 32);
-    // topB = new ScreenSpaceNode(32, 0, 32, 32),
-    // bottomA = new ScreenSpaceNode(0, 32, 32, 32),
-    // bottomB = new ScreenSpaceNode(32, 32, 32, 32);
+    describe('Single Node tests', function(){
+        it('An empty 32x32 node can place a single 32x32 element and no others', function() {
+            var ssNode = new ScreenSpaceNode(0, 0, 32, 32);
+            assert.equal(ssNode.canFitNewElement(32,32), true, "For an empty 32 by 32 node, we can fit one");
+            var nodeResult = ssNode.placeNewElement(32, 32);
+            assert.equal(ssNode.used, true);
+            assert.equal(ssNode.canFitNewElement(32,32), false, "For a full node, the same dim node cannot be fit");
+            assert.equal(ssNode.canFitNewElement(16,16), false, "For a node used by a full size element, a child size cannot be fit");
+            assert.equal(ssNode.canFitNewElement(8,8), false, "For a node used by a full size element, a child size cannot be fit");
+            assert.equal(ssNode.canFitNewElement(4,4), false, "For a node used by a full size element, a child size cannot be fit");
+        });
 
+        it("An empty 32x32 node can contain 4 16x16 nodes and no others", function() {
+            var ssNode = new ScreenSpaceNode(0, 0, 32, 32);
 
-var result = topA.placeNewElement(16, 16);
-console.log("result 1: offsetX: " + result.offsetX + ", offsetY: " + result.offsetY);
-// console.log("result: ", result);
+            assert.equal(ssNode.canFitNewElement(16,16), true, "");
+            ssNode.placeNewElement(16, 16);
 
-result = topA.placeNewElement(4,4);
-console.log("result 2: offsetX: " + result.offsetX + ", offsetY: " + result.offsetY);
+            assert.equal(ssNode.canFitNewElement(16,16), true, "");
+            ssNode.placeNewElement(16, 16);
 
-result = topA.placeNewElement(4,4);
-console.log("result 3: offsetX: " + result.offsetX + ", offsetY: " + result.offsetY);
+            assert.equal(ssNode.canFitNewElement(16,16), true, "");
+            ssNode.placeNewElement(16, 16);
 
-if(topA.canFitNewElement(16, 16)) {
-    result = topA.placeNewElement(16,16);
-    console.log("result 4: offsetX: " + result.offsetX + ", offsetY: " + result.offsetY);
-} else {
-    console.log("Cannot fit result 4");
-}
+            assert.equal(ssNode.canFitNewElement(16,16), true, "");
+            ssNode.placeNewElement(16, 16);
 
-if(topA.canFitNewElement(16, 16)) {
-    result = topA.placeNewElement(16,16);
-    console.log("result 5: offsetX: " + result.offsetX + ", offsetY: " + result.offsetY);
-} else {
-    console.log("Cannot fit result 5");
-}
+            assert.equal(ssNode.canFitNewElement(16,16), false, "");
+        });
+    });
+});
 
+// APEP manual testing start //
 
-fs.writeFile('myjsonfile.json', JSON.stringify(topA), 'utf8');
+// var topA = new ScreenSpaceNode(0, 0, 32, 32);
+// topB = new ScreenSpaceNode(32, 0, 32, 32),
+// bottomA = new ScreenSpaceNode(0, 32, 32, 32),
+// bottomB = new ScreenSpaceNode(32, 32, 32, 32);
 
-// describe('ScreenSpace Testing', function () {
+// var result = topA.placeNewElement(16, 16);
+// console.log("result 1: offsetX: " + result.offsetX + ", offsetY: " + result.offsetY);
+// // console.log("result: ", result);
 //
-//     describe('Single Node tests', function(){
-//         it('should do something', function() {
+// result = topA.placeNewElement(4,4);
+// console.log("result 2: offsetX: " + result.offsetX + ", offsetY: " + result.offsetY);
 //
-//         });
-//     });
-// });
+// result = topA.placeNewElement(4,4);
+// console.log("result 3: offsetX: " + result.offsetX + ", offsetY: " + result.offsetY);
+//
+// if(topA.canFitNewElement(16, 16)) {
+//     result = topA.placeNewElement(16,16);
+//     console.log("result 4: offsetX: " + result.offsetX + ", offsetY: " + result.offsetY);
+// } else {
+//     console.log("Cannot fit result 4");
+// }
+//
+// if(topA.canFitNewElement(16, 16)) {
+//     result = topA.placeNewElement(16,16);
+//     console.log("result 5: offsetX: " + result.offsetX + ", offsetY: " + result.offsetY);
+// } else {
+//     console.log("Cannot fit result 5");
+// }
+//
+// fs.writeFile('myjsonfile.json', JSON.stringify(topA), 'utf8');
 
-
+// APEP END manual testing start //
 
 // APEP BELOW WORKS BEFORE RANDOMISATION - IE PICKS FIRST AVAILABLE
 //
@@ -219,3 +244,22 @@ fs.writeFile('myjsonfile.json', JSON.stringify(topA), 'utf8');
 //
 //     return answer
 // }
+
+
+
+class ScreenSpace {
+
+    constructor() {
+        var nodes = [];
+    }
+
+    // proportion of X, Y
+    getStaticPosition(globalOffsetX, globalOffsetY) {
+
+    }
+
+    searchRegionNearNode(node) {
+
+    }
+
+}
