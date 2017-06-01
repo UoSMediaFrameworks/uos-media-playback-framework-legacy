@@ -8,7 +8,7 @@ var _ = require("lodash");
 var connectionCache = require("../../utils/connection-cache");
 var HubClient = require("../../utils/HubClient");
 var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
-
+var AutowalkStore = require('../../stores/autowalk-store.js');
 
 var NarmGraph = React.createClass({
 
@@ -16,12 +16,57 @@ var NarmGraph = React.createClass({
         return {data: null}
     },
     componentWillMount: function () {
-        console.log("will mount", this.props)
         this.setState({data:this.props.data})
     },
     componentWillReceiveProps: function (nextProps) {
-        console.log("the props", nextProps);
-        this.setupNodes(nextProps.data)
+        if(nextProps.shouldUpdateId != this.props.shouldUpdateId){
+            this.setupNodes(nextProps.data)
+        }
+
+    },
+    componentDidMount: function () {
+        document.addEventListener('keyup', this.optionsMenuHandler, false);
+        BreadcrumbsStore.addPlayListener(this._playBreadcrumbs);
+        BreadcrumbsStore.addTraceListener(this._traceBreadcrumbs);
+    },
+
+    componentWillUnmount: function () {
+        BreadcrumbsStore.removePlayListener(this._playBreadcrumbs);
+        BreadcrumbsStore.removeTraceListener(this._traceBreadcrumbs);
+    },
+    _playBreadcrumbs: function (crumbs) {
+        var self = this;
+        console.log("play", crumbs);
+        var time = 1000;
+        _.each(crumbs.breadcrumbs, function (crumb, i) {
+            //console.log(time, value.difference);
+            time += crumb.diff;
+            setTimeout(function () {
+                var data = _.find(self.state.data.nodes, function (obj) {
+                    return obj._id == crumb.node;
+                });
+                if (crumb.event == "tap") {
+                    self.tapHandler(data);
+                }
+            }, time);
+        });
+    },
+    _traceBreadcrumbs: function (breadcrumb) {
+        console.log("tracing");
+
+        var self =this;
+        var crumbs = breadcrumb.breadcrumbs;
+        self.removeHighlights();
+        for (var i = 0; i < (crumbs.length-1); i++) {
+            var links = _.filter(self.state.data.links, function (link) {
+                var link1 = link.source._id == crumbs[i].node && link.target._id == crumbs[i + 1].node
+                var link2 = link.source._id == crumbs[i+1].node && link.target._id == crumbs[i].node
+                return link1 || link2 ;
+            });
+            if(links[0] != undefined){
+                links[0].highlighted=true;
+            }
+        }
     },
     highlight: function (data) {
         var self = this;

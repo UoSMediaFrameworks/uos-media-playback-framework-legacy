@@ -9,6 +9,8 @@ var _ = require("lodash");
 var connectionCache = require("../../utils/connection-cache");
 var HubClient = require("../../utils/HubClient");
 var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
+var AutowalkStore = require('../../stores/autowalk-store.js');
+
 var cityColors = [
     [255, 0, 0],
     [253, 95, 0],
@@ -21,29 +23,98 @@ var cityColors = [
     [143, 196, 31],
     [198, 235, 116]
 ];
+var _autowalkHandlerInterval = null;
+var _playRandomNodeInterval = null;
 var overlappingElementsCounter = 0;
 
 var GDCGraph = React.createClass({
 
     getInitialState: function () {
-        return {data: null}
+        return {data: null, title: ""}
     },
-    unnamedFunction: function (data) {
-        try {
-            this.setupNodes(data)
-        } catch (e) {
-            console.log("error", e)
-        }
+
+    cleanTitle: function (title) {
+        return title.replace(/([a-z])([A-Z0-9])(?=[a-z])/g, '$1 $2').replace('GUIscene', 'scene').replace(/(scene|chicago|beijing)?\s(.*)?/i, '<sup>$1</sup><span class="$1">$2</span>');
     },
     componentWillMount: function () {
-        console.log("will mount", this.props)
-/*
-        this.unnamedFunction(this.props.data)*/
-        this.setState({data:this.props.data})
+        this.setState({data: this.props.data})
     },
     componentWillReceiveProps: function (nextProps) {
-        console.log("the props", nextProps);
-        this.unnamedFunction(nextProps.data)
+        if (nextProps.shouldUpdateId != this.props.shouldUpdateId)
+            this.setupNodes(nextProps.data)
+    },
+    componentDidMount: function () {
+        document.addEventListener('keyup', this.optionsMenuHandler, false);
+        BreadcrumbsStore.addPlayListener(this._playBreadcrumbs);
+        BreadcrumbsStore.addTraceListener(this._traceBreadcrumbs);
+        AutowalkStore.addChangeListener(this._autowalkHandler);
+
+    },
+
+    componentWillUnmount: function () {
+        document.removeEventListener('keyup', this.optionsMenuHandler, false)
+        BreadcrumbsStore.removePlayListener(this._playBreadcrumbs);
+        BreadcrumbsStore.removeTraceListener(this._traceBreadcrumbs);
+        AutowalkStore.removeChangeListener(this._autowalkHandler);
+    },
+    _autowalkHandler: function (props) {
+        var self = this;
+        console.log("_autowalkHandler",props)
+            clearTimeout(_autowalkHandlerInterval);
+            clearTimeout(_playRandomNodeInterval);
+        if (props.enabled) {
+
+            _autowalkHandlerInterval = setTimeout(function () {
+                self._playRandomNode(props.node_switch_duration)
+            }, props.inactivity_wait_duration)
+        }
+    },
+    _playRandomNode: function (switchTime) {
+        var self=this;
+
+        if (_playRandomNodeInterval) {
+            clearTimeout(_playRandomNodeInterval);
+        }
+        _playRandomNodeInterval = setInterval(function () {
+            var i = self.getRandomInt(0, self.state.data.nodes.length);
+            self.contextualizeHandler(self.state.data.nodes[i]);
+        }, switchTime)
+    },
+    _playBreadcrumbs: function (crumbs) {
+        var self = this;
+        console.log("play", crumbs);
+        var time = 1000;
+        _.each(crumbs.breadcrumbs, function (crumb, i) {
+            //console.log(time, value.difference);
+            time += crumb.diff;
+            setTimeout(function () {
+                var data = _.find(self.state.data.nodes, function (obj) {
+                    return obj._id == crumb.node;
+                });
+                if (crumb.event == "tap") {
+                    self.tapHandler(data);
+                } else if (crumb.event == "contextualize") {
+                    self.contextualizeHandler(data);
+                }
+            }, time);
+        });
+    },
+    _traceBreadcrumbs: function (breadcrumb) {
+        console.log("tracing");
+
+        var self = this;
+        var crumbs = breadcrumb.breadcrumbs;
+        self.removeHighlights();
+        for (var i = 0; i < (crumbs.length - 1); i++) {
+            var links = _.filter(self.state.data.links, function (link) {
+                var link1 = link.source._id == crumbs[i].node && link.target._id == crumbs[i + 1].node
+                var link2 = link.source._id == crumbs[i + 1].node && link.target._id == crumbs[i].node
+                return link1 || link2;
+            });
+            if (links[0] != undefined) {
+                links[0].highlighted = true;
+            }
+        }
     },
     _distance: function (a, b) {
         var self = this;
@@ -67,26 +138,30 @@ var GDCGraph = React.createClass({
 
                 var x = Math.floor((Math.cos(angleRadianA) * (b.r + separation)) + a.cx);
                 var y = Math.floor((Math.sin(angleRadianA) * (b.r + separation)) + a.cy);
-                self.moveNode(a, x, y, "optimize");
+                self.moveNode(a, x, y, "optimize", a.r);
             } else {
                 //console.log("A:type", a.name)
                 var x = Math.floor((Math.cos(angleRadianB) * (a.r + separation)) + b.cx);
                 var y = Math.floor((Math.sin(angleRadianB) * (a.r + separation)) + b.cy);
                 //An alternative function to move node will be added this is a placeholder
-                self.moveNode(b, x, y, "optimize");
+                self.moveNode(b, x, y, "optimize", b.r);
             }
         }
     },
-    resetToOrigin:function(){
-        var self =this;
-        _.each(self.state.data.nodes,function(node){
-              node.cx = node._x;
-              node.cy = node._y;
-              node.r = node._r;
+    resetToOrigin: function () {
+        var self = this;
+        _.each(self.state.data.nodes, function (node) {
+            node.cx = node._x;
+            node.cy = node._y;
+            node.r = node._r;
         })
     },
+    resetHandler: function () {
+        this.resetToOrigin();
+        this.setState({title: "", data: this.state.data})
+    },
     compareElements: function (array) {
-        console.log(overlappingElementsCounter,"overlappingElementsCounter");
+        console.log(overlappingElementsCounter, "overlappingElementsCounter");
         overlappingElementsCounter = 0;
         var self = this;
         for (var i = 0; i < array.length; i++) {
@@ -106,15 +181,19 @@ var GDCGraph = React.createClass({
             this.compareElements(data.nodes);
         }
     },
-    highlight: function (data) {
+    removeHighlights: function () {
         var self = this;
-        var filteredEdges;
         _.each(self.state.data.nodes, function (node) {
             node.highlighted = false
         });
         _.each(self.state.data.links, function (link) {
             link.highlighted = false;
         });
+    },
+    highlight: function (data) {
+        var self = this;
+        var filteredEdges;
+        self.removeHighlights();
         if (data.type == 'root') {
             filteredEdges = _.filter(self.state.data.links, function (item) {
                 return item.source.type == 'city' || item.target.type == 'city';
@@ -143,12 +222,7 @@ var GDCGraph = React.createClass({
     },
     clusterHighlight: function (data) {
         var self = this;
-        _.each(self.state.data.nodes, function (node) {
-            node.highlighted = false
-        });
-        _.each(self.state.data.links, function (link) {
-            link.highlighted = false;
-        });
+        self.removeHighlights();
         var filteredEdges;
         if (data.type == 'root') {
             filteredEdges = _.filter(self.state.data.links, function (item) {
@@ -174,19 +248,51 @@ var GDCGraph = React.createClass({
         })
     },
     contextualizeHandler(t){
-        console.log("contextualizeHandler")
+
         var recording = BreadcrumbsStore.getRecording();
         if (recording) {
-            BreadcrumbsStore.addCrumb("contextualize", t.name)
+            BreadcrumbsStore.addCrumb("contextualize", t._id)
         }
-        try{
+        try {
             this.resetToOrigin();
             this.clusterNodes(t);
             this.clusterHighlight(t);
-            this.setState({data:this.state.data});
-        }catch(e){
+            var list = [];
+            if (t.type === "root") {
+                //FOR ROOT NODES ONLY SEARCH GTHEMES FOR STHEME + SCENES
+                var children = _.filter(t.children, function (child) {
+                    return child.type === "subgraphtheme";
+                });
+
+                list = this._nodes(children, list);
+            } else if (t.type !== "scene") {
+                list = this._nodes(t.children, list);
+            } else {
+                list.push(t._id);
+            }
+
+            list = this.dedupeNodeList(list);
+            //To finalize this method it sends the list of scenes to the graph viewer
+            if (t.type != "theme") {
+                HubClient.publishSceneCommand(list, connectionCache.getSocketID())
+            } else {
+                var scoreList = {
+                    "play": {
+                        "themes": [],
+                        "scenes": []
+                    }
+                };
+                scoreList.play.themes.push(t.name.toString());
+                _.each(list, function (scene) {
+                    scoreList.play.scenes.push(scene.toString());
+                });
+                HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID())
+            }
+            this.setState({data: this.state.data, title: this.cleanTitle(t.name)});
+        } catch (e) {
             console.log(e)
         }
+
 
     },
     pluckArray(array){
@@ -223,20 +329,19 @@ var GDCGraph = React.createClass({
                 clusterArray.push(localNode)
             }
         }
-        console.log(clusterArray,node)
+        console.log(clusterArray, node)
         var total = clusterArray.length;
         _.each(clusterArray, function (child, index) {
             var radian = (2 * Math.PI) * (index / total);
             var x = (Math.cos(radian) * radius) + node.cx;
             var y = (Math.sin(radian) * radius) + node.cy;
-            var refference = _.find(self.state.data.nodes,function(d){
+            var refference = _.find(self.state.data.nodes, function (d) {
                 return d == child;
             });
-            console.log("about to move",x,y,refference)
-            self.moveNode(refference, x, y, "null");
+            self.moveNode(refference, x, y, "null", 15);
         });
     },
-    moveNode(node, x, y, interactionType){
+    moveNode(node, x, y, interactionType, radius){
         var ratio = 1 - Math.pow(1 / 5000, 5);
         if (ratio => 1) {
             node.cx = x;
@@ -249,44 +354,14 @@ var GDCGraph = React.createClass({
             node._x = node.cx;
             node._y = node.cy;
         }
+        node.r = radius;
     },
     tapHandler(t){
         var recording = BreadcrumbsStore.getRecording();
         if (recording) {
-            BreadcrumbsStore.addCrumb("tap", t.name)
+            BreadcrumbsStore.addCrumb("tap", t._id)
         }
         this.highlight(t);
-        var list = [];
-        if (t.type === "root") {
-            //FOR ROOT NODES ONLY SEARCH GTHEMES FOR STHEME + SCENES
-            var children = _.filter(t.children, function (child) {
-                return child.type === "subgraphtheme";
-            });
-
-            list = this._nodes(children, list);
-        } else if (t.type !== "scene") {
-            list = this._nodes(t.children, list);
-        } else {
-            list.push(t._id);
-        }
-
-        list = this.dedupeNodeList(list);
-        //To finalize this method it sends the list of scenes to the graph viewer
-        if (t.type != "theme") {
-            HubClient.publishSceneCommand(list, connectionCache.getSocketID())
-        } else {
-            var scoreList = {
-                "play": {
-                    "themes": [],
-                    "scenes": []
-                }
-            };
-            scoreList.play.themes.push(t.name.toString());
-            _.each(list, function (scene) {
-                scoreList.play.scenes.push(scene.toString());
-            });
-            HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID())
-        }
     },
     setupRootNodes: function (data) {
         var self = this;
@@ -299,8 +374,8 @@ var GDCGraph = React.createClass({
             node._x = node.cx;
             node.cy = self.props.innerHeight / 2;
             node._y = node.cy;
-            node.color = "#c60c30";
-            node._r=node.r = 18;
+            node.color = "url(#radial-gradient)";
+            node._r = node.r = 18;
         })
     },
     setupCityNodes: function (data) {
@@ -315,7 +390,7 @@ var GDCGraph = React.createClass({
             node.cy = (Math.sin(angle * i) * self.props.innerHeight / 2) + self.props.innerHeight / 2;
             node._y = node.cy;
             node.color = d3.rgb(cityColors[i][0], cityColors[i][1], cityColors[i][2]);
-            node._r=node.r = 16;
+            node._r = node.r = 16;
 
         });
     },
@@ -328,7 +403,7 @@ var GDCGraph = React.createClass({
             return node.type == 'subgraphtheme';
         });
         _.each(gThemeNodes, function (node) {
-            node._r= node.r = self.getRandomInt(4, 6);
+            node._r = node.r = self.getRandomInt(4, 6);
             node.color = d3.rgb(111, 115, 125);
         })
     },
@@ -346,7 +421,7 @@ var GDCGraph = React.createClass({
             } else {
                 node.color = "white";
             }
-            node._r=  node.r = self.getRandomInt(3, 5);
+            node._r = node.r = self.getRandomInt(3, 5);
         });
     },
     setupSceneNodes: function (data) {
@@ -357,7 +432,7 @@ var GDCGraph = React.createClass({
 
         _.each(sceneNodes, function (node, i) {
             node.color = "yellow";
-            node._r=node.r = self.getRandomInt(2, 4);
+            node._r = node.r = self.getRandomInt(2, 4);
         })
     },
     setupOtherNodes: function (data, w, h) {
@@ -409,8 +484,7 @@ var GDCGraph = React.createClass({
         self.setupSThemeNodes(data);
         self.setupSceneNodes(data);
         self.setupOtherNodes(data, windowW, windowH);
-   /*     self.clearOverlap(data);*/
-
+        /*     self.clearOverlap(data);*/
         self.setState({data: data});
     },
     render(){
@@ -420,7 +494,7 @@ var GDCGraph = React.createClass({
         var translate = 'translate(' + windowW + ',' + windowH + ')';
         var nodes = self.state.data.nodes.map((node, i) => {
 
-            return (<g key={i} >
+            return (<g key={i}>
                 <Circle data={node} clickHandler={self.tapHandler} dblClickHandler={self.contextualizeHandler}></Circle>
 
                 {/*           <Text data={node}></Text>*/}
@@ -434,16 +508,28 @@ var GDCGraph = React.createClass({
         return (
 
             <TransitionGroup ref="backgroundContainer" id="backgroundContainer" component="g">
-                {/*transform="translate("{this.props.innerWidth * 0.1}","{this.props.innerHeight* 0.2}")"*/}
-                <g id="nodeContainer" className="node-container" transform={translate}>
 
-                    <g id="edgeContainer" className="path-container" >
+                <defs>
+                    <radialGradient id="radial-gradient" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stopColor="#8f8f8f"></stop>
+                        <stop offset="50%" stopColor="#bdbdbd"></stop>
+                        <stop offset="90%" stopColor="#ebebeb"></stop>
+                        <stop offset="100%" stopColor="#FFFFFF"></stop>
+                    </radialGradient>
+                    <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
+                        <path d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2" stroke="#000000" strokeWidth="1"></path>
+                    </pattern>
+                </defs>
+
+                <g id="nodeContainer" className="node-container" transform={translate}>
+                    <h1 className="title">{self.state.title}</h1>
+                    <g id="edgeContainer" className="path-container">
                         {/* link objects*/}
                         {links}
                     </g>
 
                     {/*node objects*/}
-                        {nodes}
+                    {nodes}
 
                 </g>
 

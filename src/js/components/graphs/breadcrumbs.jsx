@@ -9,7 +9,6 @@ var Breadcrumbs = React.createClass({
         var reactCrumbs = _.map(this.props.crumbs, function (crumb, i) {
            return( <Breadcrumb key={i} index={i} crumb={crumb}/>);
         });
-        console.log(reactCrumbs);
         return reactCrumbs;
     },
     render(){

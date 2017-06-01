@@ -23,7 +23,7 @@ var BreadcrumbsMenu = React.createClass({
         this.setState({pauseEnabled:true,finishEnabled:true,finishHidden:false,recordHidden:true});
     },
     finish(){
-        BreadcrumbsStore.finishRecording(true);
+
         this.setState({recordEnabled:true,pauseEnabled:false,finishHidden:true,recordHidden:false,inputHidden:false});
     },
     pause(){
@@ -47,20 +47,13 @@ var BreadcrumbsMenu = React.createClass({
         element.click();
         document.body.removeChild(element);
     },
-    playBreadcrumbs(crumb){
-        console.log("playBreadcrumbs", crumb)
-    },
-    removeBreadcrumbs(index){
-        console.log("removeBreadcrumbs", index)
-    },
-    traceBreadcrumbs(crumb){
-        console.log("traceBreadcrumbs", crumb)
-    },
+
 
     breadcrumbsNameHandler:function(e){
         var self = this;
-
         if (e.keyCode == 13) {
+            BreadcrumbsStore.editName(e.target.value);
+            BreadcrumbsStore.finishRecording(true);
             self.setState({inputHidden:true,recordEnabled:true,pauseEnabled:true});
         }
     },

@@ -221,6 +221,20 @@ svg {
 .custom-file-upload input[type=file]{
     display: none;
 }
+.autowalk-menu-button{
+    text-align: center;
+    padding: 10px;
+}
+.title{
+    position: relative;
+    z-index: 0;
+    color: #aaa;
+    width:100%;
+    font-weight: 200;
+    z-index: 100000;
+    font-size: 4em;
+    text-align: center;
+}
 #crumbs-container button{
     margin:0;
     opacity: 0.25;
@@ -549,6 +563,7 @@ text {
     position: fixed;
     background-color: rgba(255, 255, 255, 0.7);
     border-radius: 5px;
+    color:black;
 }
 
 .autowalk-menu label {

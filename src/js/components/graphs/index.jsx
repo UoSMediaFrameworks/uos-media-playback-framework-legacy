@@ -14,6 +14,7 @@ var BreadcrumbsMenu = require('./breadcrumbs-menu.jsx');
 var AutowalkMenu = require('./autowalk-menu.jsx');
 var classes = require('classnames');
 var _ = require("lodash");
+var hat = require("hat");
 
 var GraphContainer = React.createClass({
     getInitialState: function () {
@@ -30,20 +31,20 @@ var GraphContainer = React.createClass({
             autocompleteToggle: false,
             breadcrumbsToggle: false,
             autoWalkToggle: false,
-            optionsMenuToggle: false
+            optionsMenuToggle: false,
+            guid: null
         }
     },
     _onChange: function () {
-        var test = SceneGraphListStore.getSceneGraphByID(this.state.graphId)
-        console.log("change")
-        this._initialize(test);
+        var sceneList = SceneGraphListStore.getSceneGraphByID(this.state.graphId)
+
+        this._initialize(sceneList);
 
     },
     _onCrumbsChange: function () {
         this.setState({breadcrumbsList: BreadcrumbsStore.getBreadcrumbs()});
     },
     _initialize(sceneList){
-        console.log("init")
         var localRoot = {
             nodes: [],
             links: []
@@ -125,12 +126,9 @@ var GraphContainer = React.createClass({
         processNodes(sceneList.nodeList);
         processsEdges();
         removeBadRelationships();
-        console.log("initialized")
-        this.setState({root: localRoot, sceneList: sceneList});
+        this.setState({root: localRoot, sceneList: sceneList,guid:hat()});
     },
     _getGraphTypeComponent(){
-
-
         if (this.state.sceneList) {
             switch (this.state.sceneList.type) {
                 case "MEMOIR_SCENE_GRAPH":
@@ -139,6 +137,7 @@ var GraphContainer = React.createClass({
                 case "NARM_SCENE_GRAPH":
                     return (
                         <NarmGraph
+                            shouldUpdateId={this.state.guid}
                             data={this.state.root}
                             innerWidth={window.innerWidth * 0.8}
                             innerHeight={window.innerHeight * 0.6}
@@ -148,6 +147,7 @@ var GraphContainer = React.createClass({
                 case "GDC_SCENE_GRAPH":
                     console.log("GDC Graph", this.state.root)
                     return (<GDCGraph
+                        shouldUpdateId={this.state.guid}
                         data={this.state.root}
                         fullWidth={window.innerWidth}
                         fullHeight={window.innerHeight}
@@ -159,6 +159,7 @@ var GraphContainer = React.createClass({
                     console.log("GDC Graph undefined", this.state.root)
                     return (
                         <GDCGraph
+                            shouldUpdateId={this.state.guid}
                             data={this.state.root}
                             fullWidth={window.innerWidth}
                             fullHeight={window.innerHeight}
@@ -279,12 +280,14 @@ var GraphContainer = React.createClass({
                 </OptionsMenu>
 
                 {/*Autowalk Item here*/}
+                <AutowalkMenu autoWalkToggle={this.state.autoWalkToggle}>
 
+                </AutowalkMenu>
                 {/*Crumbs Container here*/}
 
-                {/*   <BreadcrumbsMenu breadcrumbsList={this.state.breadcrumbsList.data}
+                   <BreadcrumbsMenu breadcrumbsList={this.state.breadcrumbsList.data}
                  breadcrumbsToggle={this.state.breadcrumbsToggle}>
-                 </BreadcrumbsMenu>*/}
+                 </BreadcrumbsMenu>
 
 
                 {/*Optional Logos Here*/}

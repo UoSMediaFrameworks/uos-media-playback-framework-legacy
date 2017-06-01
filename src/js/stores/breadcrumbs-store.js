@@ -1,16 +1,18 @@
-var AppDispatcher = require('../dispatchers/app-dispatcher');
+
 var EventEmitter = require('events').EventEmitter;
-var ActionTypes = require('../constants/scene-constants').ActionTypes;
 var assign = require('object-assign');
 var _ = require('lodash')
 
 var CHANGE_EVENT = 'CHANGE_EVENT';
+var PLAY_EVENT = 'PLAY_EVENT';
+var TRACE_EVENT = 'TRACE_EVENT';
+
 var moment = require("moment");
 
 var _graphId = "";
 var _recording = false;
 var _breadcrumbs = {};
-var _currentRecording = {breadcrumbs:[]};
+var _currentRecording = {name: "", breadcrumbs: []};
 
 var before, pause_start, pause_finished = null;
 
@@ -45,18 +47,36 @@ var BreadcrumbsStore = assign({}, EventEmitter.prototype, {
         console.log("Crumbs Change")
         this.emit(CHANGE_EVENT);
     },
+    emitPlay: function (crumbs) {
+        console.log("Play crumb",crumbs);
+        this.emit(PLAY_EVENT, crumbs);
+    },
+    emitTrace: function (crumbs) {
+        this.emit(TRACE_EVENT, crumbs);
+    },
     getBreadcrumbs: function () {
         console.log("gettingBreacrumbs");
         return _breadcrumbs
     },
-    setBreadcrumbs:function (graphId){
+    setBreadcrumbs: function (graphId) {
         _graphId = graphId;
-        var crumbs= localStorage.getItem(_graphId + " breadcrumbsList");
-        _breadcrumbs = JSON.parse(crumbs);
+        var crumbs = localStorage.getItem(_graphId + " breadcrumbsList");
+        if (crumbs == undefined) {
+            crumbs = {"data": []};
+            _breadcrumbs = crumbs;
+        } else {
+            _breadcrumbs = JSON.parse(crumbs);
+        }
         BreadcrumbsStore.emitChange();
     },
     addChangeListener: function (callback) {
         this.on(CHANGE_EVENT, callback);
+    },
+    addPlayListener: function (callback) {
+        this.on(PLAY_EVENT, callback);
+    },
+    addTraceListener: function (callback) {
+        this.on(TRACE_EVENT, callback);
     },
     getRecording: function () {
         return _recording;
@@ -64,6 +84,13 @@ var BreadcrumbsStore = assign({}, EventEmitter.prototype, {
     removeChangeListener: function (callback) {
         this.removeListener(CHANGE_EVENT, callback);
     },
+    removePlayListener: function (callback) {
+        this.removeListener(PLAY_EVENT, callback);
+    },
+    removeTraceListener: function (callback) {
+        this.removeListener(TRACE_EVENT, callback);
+    },
+
     addCrumb: function (event, crumbName) {
         _currentRecording.breadcrumbs.push({
             event: event,
@@ -72,29 +99,38 @@ var BreadcrumbsStore = assign({}, EventEmitter.prototype, {
         });
     },
     clearBreadcrumbs: function () {
-      _breadcrumbs = [];
-      localStorage.setItem(_graphId+ " breadcrumbsList",_breadcrumbs);
-      BreadcrumbsStore.emitChange();
+        _breadcrumbs = [];
+        localStorage.setItem(_graphId + " breadcrumbsList", _breadcrumbs);
+        BreadcrumbsStore.emitChange();
     },
-    removeCrumb: function (props, event) {
-        var parentCrumb  = _breadcrumbs.data[props.parentIndex];
-        parentCrumb.breadcrumbs.splice(props.index,1);
+    removeCrumb: function (props) {
+        var parentCrumb = _breadcrumbs.data[props.parentIndex];
+        parentCrumb.breadcrumbs.splice(props.index, 1);
         _breadcrumbs.data[props.parentIndex] = parentCrumb;
         BreadcrumbsStore.emitChange();
     },
-    removeBreadcrumb: function (index,event) {
-        _breadcrumbs.data.splice(index,1);
+    removeBreadcrumb: function (index) {
+        _breadcrumbs.data.splice(index, 1);
         BreadcrumbsStore.emitChange();
     },
     startRecording: function () {
         _recording = true;
     },
+    editName: function (name) {
+        _currentRecording.name = name;
+    },
     finishRecording: function () {
         _recording = false;
         addBreadcrums(_currentRecording);
-        _currentRecording = [];
-        localStorage.setItem(_graphId+ " breadcrumbsList",JSON.stringify(_breadcrumbs));
+        _currentRecording = {name: "", "breadcrumbs": []};
+        localStorage.setItem(_graphId + " breadcrumbsList", JSON.stringify(_breadcrumbs));
         BreadcrumbsStore.emitChange();
+    },
+    playBreadcrumbs: function (index) {
+        BreadcrumbsStore.emitPlay(_breadcrumbs.data[index])
+    },
+    traceBreadcrumbs: function (index) {
+        BreadcrumbsStore.emitTrace(_breadcrumbs.data[index]);
     },
     pauseRecording: function () {
         pause_start = moment(new Date());
