@@ -267,7 +267,6 @@ describe("Vector2", function() {
 
 class ScreenSpaceManager {
 
-
     constructor(vecScreenDim) {
         this._screenSpaceNodeDim = new Vector2(32, 32);
         this.vecScreenDim = vecScreenDim;
@@ -291,11 +290,44 @@ class ScreenSpaceManager {
         }
     }
 
-    // proportion of X, Y
+    // proportion of X, Y ?
+    // actual position ?
+    // something that adheres to the grid values / sub division
+    // size of element?
     getStaticPosition(globalOffsetX, globalOffsetY) {
+
+        // APEP One solution would be to reduce the size of the grid elements to 16, allowing a centroid of 4, 16 nodes that are whole
+        // Tbh the above we can do in code
 
         // APEP allow static positions to be used or searched
 
+        // APEP my current thought process is, return an array of nodes that fit the position
+
+    }
+
+    // get the centroid with fixed size node returned
+    getCentroid() {
+
+        // APEP first look at the total space, then work out the 4 nodes around the centroid, and return the 4x16 grid squares
+
+        // x 5 + 6 out of 10
+        // y 5 + 6 out of 10
+        var totalXCols = 5; // APEP should be variable based
+        var totalYCols = 5; // APEP should be variable based
+
+        var topLeftCentroidPoint = this.getNode(totalXCols * this._screenSpaceNodeDim.x, totalYCols * this._screenSpaceNodeDim.y);
+        var topRightCentroidPoint = this.getNode( (totalXCols + 1) * this._screenSpaceNodeDim.x, totalYCols * this._screenSpaceNodeDim.y);
+        var bottomLeftCentroidPoint = this.getNode(totalXCols * this._screenSpaceNodeDim.x, (totalYCols + 1) * this._screenSpaceNodeDim.y);
+        var bottomRightCentroidPoint = this.getNode( (totalXCols + 1) * this._screenSpaceNodeDim.x, (totalYCols + 1) * this._screenSpaceNodeDim.y);
+
+        var centroidNodes = [
+            topLeftCentroidPoint,
+            topRightCentroidPoint,
+            bottomLeftCentroidPoint,
+            bottomRightCentroidPoint
+        ];
+
+        return centroidNodes;
     }
 
     searchRegionNearNode(node, regionScope) {
@@ -337,6 +369,33 @@ describe("ScreenSpaceManager", function() {
             assert.equal(ssManager.nodes.length, 1980);
         });
     });
+
+    describe.only("getCentroid", function() {
+         it("Given a manager with a 10x10 grid setup - the centre node is 4 x 16 nodes taken from the 4 x 32 nodes that are the centroid of the grid", function() {
+                var ssManager = new ScreenSpaceManager(new Vector2(320, 320));
+                var centroidNodes = ssManager.getCentroid();
+
+                assert.equal(centroidNodes.length, 4);
+
+                // APEP TODO
+                // _.forEach(centroidNodes, function(node) {
+                //     assert.equal(node.dimX, 16);
+                //     assert.equal(node.dimY, 16);
+                // });
+         });
+
+         // it("TODO given a manager with a 10x10 grid setup and nodes around the centre taken, we get a fail case", function() {
+         //
+         // });
+    });
+
+    // describe("getStaticPosition", function() {
+    //     it("Given a manager with a 10x10 grid setup - the centre node can be taken (5x5 node)", function() {
+    //         var ssManager = new ScreenSpaceManager(new Vector2(320, 320));
+    //         var centreNode = ssManager.getStaticPosition(160, 160);
+    //         assert.equal(centreNode !== null, true);
+    //     });
+    // });
 
     describe("searchRegionNearNode tests", function() {
         it("Given a manager with a 10x10 grid setup, we can search for the 9 top left nodes, given the node for test is correctly picked", function() {
