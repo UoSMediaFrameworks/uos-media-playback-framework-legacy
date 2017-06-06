@@ -7,4 +7,6 @@ test/bower_components
 .DS_Store
 dist
 /env.sh
+/dev-env.sh
+/prod-env.sh
 /env-azure.sh
