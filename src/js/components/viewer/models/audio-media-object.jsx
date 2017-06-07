@@ -202,23 +202,27 @@ var AudioMediaObject = React.createClass({
 
             this.setState({"playing": false});
 
-            if(self.state.player) {
+            setTimeout(function() {
+                if(self.state.player) {
 
-                self.state.player.off("timeupdate", self.audioPlayerTimeUpdate);
+                    self.state.player.off("timeupdate", self.audioPlayerTimeUpdate);
 
-                var _ops = self.props.data.mediaObject._ops;
+                    var _ops = self.props.data.mediaObject._ops;
 
-                // APEP the below is causing errors, with the tween that is starting ends up with null pointers
-                self.tweenAudio(self.state.player.volume(), 0, _ops.transitionDuration, self.state.player)
-                    .onComplete(function() {
+                    // APEP the below is causing errors, with the tween that is starting ends up with null pointers
+                    self.tweenAudio(self.state.player.volume(), 0, _ops.transitionDuration, self.state.player)
+                        .onComplete(function() {
 
-                        console.log("Audio Tween Completed");
+                            console.log("Audio Tween Completed");
 
-                        self.destoryAudioPlayer();
+                            self.destoryAudioPlayer();
 
-                    })
-                    .start();
-            }
+                        })
+                        .start();
+                }
+            }, 1);
+
+
         }
 
     },
