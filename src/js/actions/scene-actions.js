@@ -15,6 +15,28 @@ var hashHistory = require('react-router').hashHistory;
 var toastr = require('toastr');
 
 var SceneActions = {
+
+
+    // APEP TODO this should really be in a different Actions object, not something related to Scenes
+    // APEP say a GridLayoutActions object or ApplicationViewActions are two suggested terms, the name will be more clear when the full scope is defined
+    minComp: function(index, item) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.COMP_MIN,
+            index: index,
+            item: item
+        });
+    },
+
+    // APEP TODO this should really be in a different Actions object, not something related to Scenes
+    // APEP say a GridLayoutActions object or ApplicationViewActions are two suggested terms, the name will be more clear when the full scope is defined
+    maxComp: function(index, item) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.COMP_MAX,
+            index: index,
+            item: item
+        });
+    },
+
     updateScene: function (scene) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.SCENE_CHANGE,

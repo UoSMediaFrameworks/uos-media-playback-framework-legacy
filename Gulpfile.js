@@ -152,4 +152,5 @@ gulp.task('serve', function(next) {
     static_server(dest, {callback: next, livereload: true});
 });
 
-gulp.task('default', ['build-dist', 'serve', 'watch']);
+//, 'watch'
+gulp.task('default', ['build-dist', 'serve']);

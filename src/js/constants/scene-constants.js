@@ -2,6 +2,11 @@ var keymirror = require('keymirror');
 
 module.exports = {
     ActionTypes: keymirror({
+
+        /* Grid or Application Layout  */
+        COMP_MIN: null,
+        COMP_MAX: null,
+
         SCENE_CHANGE: null,
         DELETE_SCENE: null,
         ADD_MEDIA_OBJECT: null,

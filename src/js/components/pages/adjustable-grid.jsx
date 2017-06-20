@@ -12,6 +12,7 @@ var GraphViewer = require("../../pages/viewer/graph-viewer.jsx");
 var GridStore = require("../../stores/grid-store.js");
 var _ = require("lodash");
 var hat = require("hat");
+var SceneActions = require("../../actions/scene-actions");
 
 ReactGridLayout = WidthProvider(ReactGridLayout);
 var RespGrid = React.createClass({
@@ -24,8 +25,6 @@ var RespGrid = React.createClass({
     },
 
     _onChange: function () {
-
-
         this.setState({data: GridStore.getGridState()})
     },
     modeChangeHandler: function (e) {
@@ -42,6 +41,8 @@ var RespGrid = React.createClass({
         GridStore.removeChangeListener(this._onChange);
     },
     onLayoutChange: function (layout) {
+        // APEP TODO should we not be updating the store in this case?
+        // APEP I guess each item keeps the values updated, but it does seem odd that we would not update store
         console.log("onLayoutChange", layout, this);
     },
     getComponent: function (item) {
@@ -76,6 +77,16 @@ var RespGrid = React.createClass({
                 break
         }
     },
+
+    // APEP this could be refactored, no real easy why i've written these to proxy the SceneAction methods.
+    min: function(index, item) {
+        SceneActions.minComp(index, item);
+    },
+
+    max: function(index, item) {
+        SceneActions.maxComp(index, item);
+    },
+
     render: function () {
         var self = this;
         var components = this.state.data.layout.map(function (item, index) {
@@ -85,11 +96,11 @@ var RespGrid = React.createClass({
                         <div key={item.i}
                              className="layout-border">
                             <div className="test-buttons">
-                                <button className="btn-dark"><i onClick={GridStore.minimize.bind(this, index, item)}
+                                <button className="btn-dark"><i onClick={self.min.bind(this, index, item)}
                                                                 className="fa fa-window-minimize">
 
                                 </i></button>
-                                <button className="btn-dark"><i onClick={GridStore.maximize.bind(this, index, item)}
+                                <button className="btn-dark"><i onClick={self.max.bind(this, index, item)}
                                                                 className="fa fa-window-maximize">
 
                                 </i></button>
@@ -112,11 +123,9 @@ var RespGrid = React.createClass({
             return c != null;
         });
 
-
         return (<ReactGridLayout className="layout" autoSize={true} onLayoutChange={this.onLayoutChange}
                                  layout={this.state.data.layout} verticalCompact={false}
-                                 cols={12} rowHeight={30}
-            >
+                                 cols={12} rowHeight={30}>
                 {components}
 
             </ReactGridLayout>
