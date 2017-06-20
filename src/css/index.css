@@ -2,6 +2,40 @@ html, body, #main, .app {
     height: 100%;
 }
 
+.layout-button{
+    float:right;
+}
+.layout-button i{
+ color:white;
+}
+.layout-border::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 10px;
+    background-color: #F5F5F5;
+}
+
+.layout-border::-webkit-scrollbar
+{
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+.layout-border::-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: #555;
+}
+
+.layout-border{
+    border:white solid 1px;
+    overflow:auto;
+}
+
+.scene-chooser-opl{
+    overflow:hidden;
+}
 .media-object-item-preview-player-hidden {
     flex: 1;
     border: 1px solid #5a5a5a; /*Monaco grey - should probably change to use monaco css class*/

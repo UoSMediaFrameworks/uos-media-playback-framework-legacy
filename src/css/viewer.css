@@ -6,7 +6,9 @@ html, body {
        the vimeo iframe is directly in the body */
     overflow: hidden;
 }
-
+.layout-border{
+    border:white solid 1px;
+}
 #main, .player, .scene-listener, .login-loader, .media-object-wrapper {
     height: 100%;
 }

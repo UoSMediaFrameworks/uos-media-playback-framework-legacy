@@ -44,18 +44,15 @@ function getTimeDifference() {
 }
 var BreadcrumbsStore = assign({}, EventEmitter.prototype, {
     emitChange: function () {
-        console.log("Crumbs Change")
         this.emit(CHANGE_EVENT);
     },
     emitPlay: function (crumbs) {
-        console.log("Play crumb",crumbs);
         this.emit(PLAY_EVENT, crumbs);
     },
     emitTrace: function (crumbs) {
         this.emit(TRACE_EVENT, crumbs);
     },
     getBreadcrumbs: function () {
-        console.log("gettingBreacrumbs");
         return _breadcrumbs
     },
     setBreadcrumbs: function (graphId) {
@@ -90,7 +87,6 @@ var BreadcrumbsStore = assign({}, EventEmitter.prototype, {
     removeTraceListener: function (callback) {
         this.removeListener(TRACE_EVENT, callback);
     },
-
     addCrumb: function (event, crumbName) {
         _currentRecording.breadcrumbs.push({
             event: event,

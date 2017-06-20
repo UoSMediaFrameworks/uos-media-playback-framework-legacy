@@ -6,8 +6,9 @@ var Router = require('react-router'),
     RouteHandler = Router.RouteHandler,
     Link = Router.Link;
 var HubClient = require('../utils/HubClient');
+var connectionCache = require("../utils/connection-cache")
 
-function _getState () {
+function _getState() {
     return {
         loggedIn: ClientStore.loggedIn(),
         attemptingLogin: ClientStore.attemptingLogin()
@@ -17,30 +18,31 @@ function _getState () {
 
 var ViewerApp = React.createClass({
 
-    getInitialState: function() {
+    getInitialState: function () {
         return _getState();
     },
 
-    componentDidMount: function() {
+    componentDidMount: function () {
         ClientStore.addChangeListener(this._onChange);
 
         var roomId = this.props.location.query.room;
 
+
         HubClient.registerToGraphPlayerRoom(roomId);
     },
 
-    componentWillUnmount: function() {
+    componentWillUnmount: function () {
         ClientStore.removeChangeListener(this._onChange);
     },
 
-    _onChange: function() {
+    _onChange: function () {
         this.setState(_getState());
     },
 
 
-    render: function() {
+    render: function () {
         return (
-            <Loader className='login-loader' message='Logging in...' loaded={! this.state.attemptingLogin}>
+            <Loader className='login-loader' message='Logging in...' loaded={!this.state.attemptingLogin}>
                 {this.props.children}
             </Loader>
         );

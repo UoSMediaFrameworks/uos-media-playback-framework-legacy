@@ -8,7 +8,6 @@ var OptionsMenu = React.createClass({
         }
     },
     render(){
-        console.log(this.props)
 
         var menuClasses = classes({
             'options-menu': true,

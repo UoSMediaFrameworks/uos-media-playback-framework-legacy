@@ -26,17 +26,18 @@ var Scene = React.createClass({
 
     getStateFromStores: function() {
         return {
-            scene: SceneStore.getScene(this.props.params.id),
+            scene: SceneStore.getScene(this.props._id),
             saveStatus: true,
             uploading: false
         };
     },
-
     componentDidMount:function(){
-        HubSendActions.loadScene(this.props.params.id);
+        HubSendActions.loadScene(this.props._id);
         SceneStore.addChangeListener(this._onChange);
     },
-
+    componentWillReceiveProps:function(nextProps){
+        HubSendActions.loadScene(nextProps._id);
+    },
     componentWillUnmount: function() {
         SceneStore.removeChangeListener(this._onChange);
     },
@@ -56,7 +57,6 @@ var Scene = React.createClass({
             SceneActions.uploadAsset(this.state.scene._id, fileList[i]);
         }
     },
-
     deleteSceneHandler: function(event) {
         if (confirm('Deleting a scene will remove all associated images and tags.\n\nAre you sure?')) {
             HubSendActions.deleteScene(this.state.scene._id);
@@ -70,31 +70,38 @@ var Scene = React.createClass({
     sceneSavingHandler: function(saveStatus) {
         this.setState({saveStatus: saveStatus});
     },
-    
+
     uploadStarted: function() {
         this.setState({uploading: true});
     },
-    
+
     uploadEnded: function() {
         this.setState({uploading: false});
     },
 
     render: function() {
 
-
-        var viewerUrl = '/viewer.html#/scene/' + this.props.params.id;
+        var viewerUrl = "";
+        /*'/viewer.html#/scene/' + this.props.params.id;*/
 
         var saveFlagKlass = this.state.saveStatus ? "green-save-flag" : "red-save-flag";
 
         var showOverlay = this.state.uploading ? "show-overlay-when-uploading" : "hide-overlay-when-uploading";
-
+        if(this.props._id == null){
+            return (
+                <div>
+                    Scene has not been selected
+                </div>
+            );
+        }
         return (
             <div className='flex-container monaco-editor vs-dark'>
                 <div className={ showOverlay} ></div>
                 <div className='top-bar'>
                     <div className='page-nav'>
-                        <Link className='btn btn-dark' to='scenes'>&lt; Back to Scene List</Link>
-                        <a className='btn btn-dark' href={viewerUrl}>Open in Scene Viewer</a>
+                        {/*AngelP: these commented out links can be optionaly visible if the component is standalone*/}
+                  {/*      <Link className='btn btn-dark' to='scenes'>&lt; Back to Scene List</Link>*/}
+        {/*                <a className='btn btn-dark' href={viewerUrl}>Open in Scene Viewer</a>*/}
                     </div>
 
                     <div className='scene-controls'>

@@ -6,6 +6,8 @@ var FormHelper = require('../../mixins/form-helper');
 var hat = require('hat');
 var ConnectionCache = require('../../utils/connection-cache');
 var Select = require('react-select');
+var GridStore = require("../../stores/grid-store.js");
+
 
 
 var SceneChooser = React.createClass({
@@ -73,14 +75,9 @@ var SceneChooser = React.createClass({
 
 
         return (
-            <div className='container'>
+            <div>
                 <div className='row'>
-                    <div className='col-xs-6'>
-                        <h2>Edit an Existing Scene</h2>
-                        <SceneList filterText={this.state.filterText} sortBy={this.state.sortBy}
-                                   filterGroupId={this.state.filterGroupId}/>
-                    </div>
-                    <div className='col-xs-6'>
+                    <div className='col-xs-12'>
                         <div className="col-xs-12">
                             <h2>Create a new Scene</h2>
                             <form className='form-inline' onSubmit={this.handleSubmit} role='form'>
@@ -99,14 +96,21 @@ var SceneChooser = React.createClass({
                         </div>
                         {groupFilter}
                     </div>
-                    <div className='col-md-6'>
+                    <div className='col-md-12'>
                         <h4> Example Scenes </h4>
                         <ul className="nav nav-pills .nav-stacked col-xs-12">
                             <li className="col-xs-12">
-                                <a href="/#/scene/589c9dc3f0b2aca4bdfe444a">MF Style Example</a>
+                                <a onClick={GridStore.focusScene.bind(this,"589c9dc3f0b2aca4bdfe444a")}>MF Style Example</a>
                             </li>
                         </ul>
                     </div>
+                    <div className='col-xs-12'>
+                        <h2>Edit an Existing Scene</h2>
+                        <SceneList filterText={this.state.filterText} _sceneFocusHandler={this.props.sceneFocusHandler} sortBy={this.state.sortBy}
+                                   filterGroupId={this.state.filterGroupId}/>
+                    </div>
+
+
                 </div>
             </div>
 

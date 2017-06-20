@@ -48,22 +48,46 @@ var SceneListener = React.createClass({
             return this.props.activeScene._id;
         }
 
-        var sceneId = this.props.sceneId || this.props.params.id;
+        /* Better logic is required to handle the difference between a layout or standalone component*/
+        var sceneId = null;
+        if (this.props.sceneId) {
+            sceneId = this.props.sceneId;
+        }
+        else if (this.props.params) {
+            sceneId = this.props.params.id
+        }
 
-        return sceneId;
+        if(!sceneId){
+            return null;
+        }
+        return sceneId
     },
 
     _getScene: function () {
 
-        if (this.props.activeScene) {
-            return this.props.activeScene;
+        try {
+            if (this.props.activeScene) {
+                return this.props.activeScene;
+            }
+            var sceneId = null;
+            if (this.props.sceneId) {
+                sceneId = this.props.sceneId;
+            }
+            else if (this.props.params) {
+                sceneId = this.props.params.id
+            }
+
+            if(!sceneId){
+                return null;
+            }
+            var scene = SceneStore.getScene(sceneId);
+            console.log("SceneListener - _getScene - sceneId: ", sceneId,scene);
+            return scene;
+        } catch (e) {
+            console.log(e)
+            return null;
         }
 
-        var sceneId = this.props.sceneId || this.props.params.id;
-
-        // console.log("SceneListener - _getScene - sceneId: ", sceneId);
-
-        return SceneStore.getScene(sceneId);
     },
 
     getInitialState: function () {
@@ -88,7 +112,6 @@ var SceneListener = React.createClass({
     _setPlayerClassCssForScene: function (style) {
         _.forEach(Object.keys(style), function (styleKey) {
             var styleValue = style[styleKey];
-
             $('.player').css(styleKey, styleValue);
         });
     },
@@ -138,8 +161,12 @@ var SceneListener = React.createClass({
             } else {
                 tag_form.style.display = "block";
             }
-            this.setState({shouldHide:!this.state.shouldHide});
+            this.setState({shouldHide: !this.state.shouldHide});
         }
+    },
+    componentWillReceiveProps:function(nextProps){
+        var scene = this._getScene();
+        this.setState({scene:scene})
     },
     componentDidMount: function () {
         HubSendActions.subscribeScene(this._getSceneId());
@@ -328,7 +355,6 @@ var SceneListener = React.createClass({
     },
 
     render: function () {
-
         // APEP Display Active Theme if available, if not provide a theme selector
         var ThemeDisplay = this.state.fromGraphViewer ?
             <ActiveTheme ref="theme" themeQuery={this.props.themeQuery}/> :
@@ -341,19 +367,23 @@ var SceneListener = React.createClass({
                 <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...'
                        className='form-control scene-listener-tag-input'/>
             </form> : <span></span>;
+        if (this.state.scene) {
+            return (
+                <div className='scene-listener' ref="scene_listener">
+                    <Loader loaded={this.state.scene ? true : false}></Loader>
+                    <RandomVisualPlayer mediaQueue={this.state.mediaObjectQueue}
+                                        triggerMediaActiveTheme={this.triggerMediaActiveTheme}
+                                        removeMediaActiveThemesAfterDone={this.removeMediaActiveThemesAfterDone}
+                                        cuePointMediaObjects={this.state.cuePointMediaObjects}
+                                        cueMediaObjectDoneHandler={this.cueMediaObjectDoneHandler}/>
+                    {ThemeDisplay}
+                    {TagForm}
+                </div>
+            );
+        } else {
+            return (<div> No scene loaded for vieweing</div>)
+        }
 
-        return (
-            <div className='scene-listener' ref="scene_listener">
-                <Loader loaded={this.state.scene ? true : false}></Loader>
-                <RandomVisualPlayer mediaQueue={this.state.mediaObjectQueue}
-                                    triggerMediaActiveTheme={this.triggerMediaActiveTheme}
-                                    removeMediaActiveThemesAfterDone={this.removeMediaActiveThemesAfterDone}
-                                    cuePointMediaObjects={this.state.cuePointMediaObjects}
-                                    cueMediaObjectDoneHandler={this.cueMediaObjectDoneHandler}/>
-                {ThemeDisplay}
-                {TagForm}
-            </div>
-        );
     }
 
 });

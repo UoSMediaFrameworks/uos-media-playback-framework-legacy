@@ -5,7 +5,7 @@
 var React = require('react');
 var IFrame = require('react-iframe');
 var GraphViewer = require('../../pages/viewer/graph-viewer.jsx');
-
+var GraphIndex = require('../graphs/index.jsx');
 var PictureInPicture = React.createClass({
 
     getInitialState: function() {

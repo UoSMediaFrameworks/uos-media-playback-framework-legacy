@@ -18,8 +18,8 @@
     /*width:100%;*/
     /*color:#444;*/
 /*}*/
-svg {
-    position: absolute;
+.svg-parent {
+    position: relative;
     top:0;
     left:0;
     z-index:1;
@@ -32,7 +32,7 @@ svg {
 
 /*}*/
 
-.narm{
+.NARM_SCENE_GRAPH{
     background-image:url(https://uosassetstore.blob.core.windows.net/assetstoredev/58da9eba5be9f9e41126252c/stripes.png);
 }
 .narm-logo{
@@ -208,16 +208,6 @@ path.GraphThemePeople, path.GraphThemeCity, path.GraphThemeMovement {
     opacity:1;
     stroke:#fff;
 }
-
-
-
-
-svg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
-}
 .custom-file-upload input[type=file]{
     display: none;
 }
@@ -226,7 +216,7 @@ svg {
     padding: 10px;
 }
 .title{
-    position: relative;
+    position: absolute;
     z-index: 0;
     color: #aaa;
     width:100%;
@@ -549,7 +539,6 @@ text {
 
 .options-menu li:hover {
     background-color: rgba(63, 63, 63, 0.77);
-
 }
 
 .options-menu li:active {

@@ -15,7 +15,7 @@ var AutowalkMenu = require('./autowalk-menu.jsx');
 var classes = require('classnames');
 var _ = require("lodash");
 var hat = require("hat");
-
+var GridStore = require("../../stores/grid-store");
 var GraphContainer = React.createClass({
     getInitialState: function () {
         return {
@@ -33,20 +33,20 @@ var GraphContainer = React.createClass({
             autoWalkToggle: false,
             optionsMenuToggle: false,
             guid: null,
-            title:""
+            graphType: "",
+            title: ""
         }
     },
     _onChange: function () {
-        var sceneList = SceneGraphListStore.getSceneGraphByID(this.state.graphId)
-
+        var sceneList = SceneGraphListStore.getSceneGraphByID(this.state.graphId);
         this._initialize(sceneList);
 
     },
     _onCrumbsChange: function () {
         this.setState({breadcrumbsList: BreadcrumbsStore.getBreadcrumbs()});
     },
-    titleHandler:function(title){
-      this.setState({title:title})
+    titleHandler: function (title) {
+        this.setState({title: title})
     },
     _initialize(sceneList){
         var localRoot = {
@@ -59,7 +59,7 @@ var GraphContainer = React.createClass({
             data.forEach(function (obj) {
                 obj.x = obj.y = 0;
                 obj.cx = window.innerWidth / 2 - window.innerWidth * 0.1;
-                obj.cy = window.innerHeight / 2 -  window.innerHeight * 0.2;
+                obj.cy = window.innerHeight / 2 - window.innerHeight * 0.2;
                 obj.r = 2;
                 obj.children = [];
                 obj.parents = [];
@@ -130,11 +130,12 @@ var GraphContainer = React.createClass({
         processNodes(sceneList.nodeList);
         processsEdges();
         removeBadRelationships();
-        this.setState({root: localRoot, sceneList: sceneList,guid:hat()});
+        this.setState({root: localRoot, sceneList: sceneList, guid: hat(), type: sceneList.type});
     },
     _getGraphTypeComponent(){
         if (this.state.sceneList) {
-            switch (this.state.sceneList.type) {
+
+            switch (this.state.type) {
                 case "MEMOIR_SCENE_GRAPH":
                     return null;
                     break;
@@ -149,7 +150,6 @@ var GraphContainer = React.createClass({
                     );
                     break;
                 case "GDC_SCENE_GRAPH":
-                    console.log("GDC Graph", this.state.root)
                     return (<GDCGraph
                         shouldUpdateId={this.state.guid}
                         data={this.state.root}
@@ -161,7 +161,6 @@ var GraphContainer = React.createClass({
                     />);
                     break;
                 case undefined:
-                    console.log("GDC Graph undefined", this.state.root)
                     return (
                         <GDCGraph
                             shouldUpdateId={this.state.guid}
@@ -184,19 +183,21 @@ var GraphContainer = React.createClass({
     },
 
     getQueryVariable(){
-        return this.props.location.query.id
+        return this.props.location
     },
+
     componentDidMount: function () {
         document.addEventListener('keyup', this.optionsMenuHandler, false);
         SceneGraphListStore.addChangeListener(this._onChange);
         BreadcrumbsStore.addChangeListener(this._onCrumbsChange);
         BreadcrumbsStore.setBreadcrumbs(this.state.graphId);
+        GridStore.setRoomId(connectionCache.getSocketID());
     },
-
     componentWillUnmount: function () {
-        document.removeChangeListener('keyup', this.optionsMenuHandler, false);
+        document.removeEventListener('keyup', this.optionsMenuHandler, false);
         SceneGraphListStore.removeChangeListener(this._onChange);
         BreadcrumbsStore.removeChangeListener(this._onCrumbsChange);
+        GridStore.setRoomId("presentation1");
     },
     autocompleteHandler: function () {
         this.setState({autocompleteToggle: !this.state.autocompleteToggle})
@@ -232,23 +233,34 @@ var GraphContainer = React.createClass({
     cleanTitle: function (title) {
         return title.replace(/([a-z])([A-Z0-9])(?=[a-z])/g, '$1 $2').replace('GUIscene', 'scene').replace(/(scene|chicago|beijing)?\s(.*)?/i, '<sup>$1</sup><span class="$1">$2</span>');
     },
+    componentWillReceiveProps: function (nextProps) {
+        var queryId;
+
+        queryId = nextProps._id;
+
+        HubSendActions.getSceneGraphByID(queryId);
+
+        this.setState({graphId: queryId, guid: hat()})
+    },
     componentWillMount(){
-        var queryId = this.props.location.query.id || "589b24e6c9d9c9b81328d7e8";
-        var graphId;
-        if (queryId == undefined) {
-            graphId = "589b24e6c9d9c9b81328d7e8";
+        console.log("graph will mount")
+        var queryId;
+        if (this.props.isLayout) {
+            queryId = this.props._id
         } else {
-            graphId = queryId;
+            queryId = this.props.location || "589b24e6c9d9c9b81328d7e8";
         }
 
-        HubSendActions.getSceneGraphByID(graphId);
+        console.log("ANGEL", queryId, this.props);
 
-        this.setState({graphId: graphId})
+        HubSendActions.getSceneGraphByID(queryId);
+
+        this.setState({graphId: queryId, guid: hat()})
     },
     render(){
-
+        var self =this;
         var graph = this._getGraphTypeComponent();
-        console.log("trying to render", graph, this.state);
+
         var qrCodeClasses = classes({
             'qrcode': true,
             'visible': this.state.QRToggle,
@@ -259,19 +271,25 @@ var GraphContainer = React.createClass({
             'visible': this.state.autocompleteToggle,
             'hidden': !this.state.autocompleteToggle
         });
+        var extraSVGClass = "";
+        if (this.state.type != undefined) {
+            extraSVGClass = this.state.type || "GDC_SCENE_GRAPH";
+        }
 
         return (
             <div ref="parent">
 
                 <div className="button-wrapper btn-group-vertical">
-                    <button className="btn graph-btn" id="reset-origin">Go Home</button>
+                  {/*  <button className="btn graph-btn" id="reset-origin">Go Home</button>*/}
                     <div id="qrcode" className={qrCodeClasses}>
                         <QRCODE value={this.state.viewerURL}></QRCODE>
                     </div>
                 </div>
 
                 <div ref="graph">
-                    <svg viewBox={"0 0 " + window.innerWidth + " " + window.innerHeight } preserveAspectRatio="xMinYMin"
+                    <h1 className="title" dangerouslySetInnerHTML={{__html: self.cleanTitle(this.state.title)}}></h1>
+                    <svg className={"svg-parent " + extraSVGClass}
+                         viewBox={"0 0 " + window.innerWidth + " " + window.innerHeight } preserveAspectRatio="xMinYMin"
                     >
                         {graph}
                     </svg>
@@ -294,9 +312,9 @@ var GraphContainer = React.createClass({
                 </AutowalkMenu>
                 {/*Crumbs Container here*/}
 
-                   <BreadcrumbsMenu breadcrumbsList={this.state.breadcrumbsList.data}
-                 breadcrumbsToggle={this.state.breadcrumbsToggle}>
-                 </BreadcrumbsMenu>
+                <BreadcrumbsMenu breadcrumbsList={this.state.breadcrumbsList.data}
+                                 breadcrumbsToggle={this.state.breadcrumbsToggle}>
+                </BreadcrumbsMenu>
 
 
                 {/*Optional Logos Here*/}
@@ -307,7 +325,7 @@ var GraphContainer = React.createClass({
                 {/*<div className={graphType + "-logo2"}>*/}
                 {/*<img src="http://salfordmediafestival.co.uk/wp-content/uploads/2014/06/media_conference.png"/>*/}
                 {/*</div>*/}
-                <h1 className="title" dangerouslySetInnerHTML={{__html:this.cleanTitle(this.state.title)}}></h1>
+
             </div>
         );
     }

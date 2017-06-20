@@ -16,7 +16,8 @@ var NarmGraph = React.createClass({
         return {data: null}
     },
     componentWillMount: function () {
-        this.setState({data:this.props.data})
+        this.setupNodes(this.props.data)
+      /*  this.setState({data:this.props.data})*/
     },
     componentWillReceiveProps: function (nextProps) {
         if(nextProps.shouldUpdateId != this.props.shouldUpdateId){
@@ -36,7 +37,7 @@ var NarmGraph = React.createClass({
     },
     _playBreadcrumbs: function (crumbs) {
         var self = this;
-        console.log("play", crumbs);
+
         var time = 1000;
         _.each(crumbs.breadcrumbs, function (crumb, i) {
             //console.log(time, value.difference);
@@ -52,7 +53,6 @@ var NarmGraph = React.createClass({
         });
     },
     _traceBreadcrumbs: function (breadcrumb) {
-        console.log("tracing");
 
         var self =this;
         var crumbs = breadcrumb.breadcrumbs;

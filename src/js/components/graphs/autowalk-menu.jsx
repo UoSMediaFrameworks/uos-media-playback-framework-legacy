@@ -26,7 +26,6 @@ var AutowalkMenu = React.createClass({
         this.setState({inactivity_wait_duration: e.target.value})
     },
     render(){
-        console.log("autowalk props", this.props)
 
         var autowalkClasses = classes({
             'visible': this.props.autoWalkToggle,

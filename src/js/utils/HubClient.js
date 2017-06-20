@@ -45,6 +45,9 @@ var HubClient = {
                     connectionCache.setHubToken(token);
                     connectionCache.setSocketID(socketID);
 
+                    //Angel P: I am calling this function to register the listener to a specific room ID
+                    //In order for the layout components graph to communicate with the Scene graph editor.
+                    HubClient.registerToGraphPlayerRoom(socketID)
 
                     HubRecieveActions.recieveLoginResult(true);
                     HubRecieveActions.tryListScenes();
@@ -83,10 +86,12 @@ var HubClient = {
     },
 
     loadScene: function(id) {
+        console.log("loadScene",id)
         socket.emit('loadScene', id, function(err, scene) {
             if (err || ! scene) {
-                HubRecieveActions.errorMessage('Couldn\'t load requested scene, reload the page and try again');
+                /*HubRecieveActions.errorMessage('Couldn\'t load requested scene, reload the page and try again');*/
             } else {
+                console.log("loading requested scene")
                 HubRecieveActions.recieveScene(scene);
             }
         });
@@ -105,7 +110,7 @@ var HubClient = {
     loadSceneGraph: function(id) {
         socket.emit('loadSceneGraph', id, function(err, sceneGraph) {
             if (err || ! sceneGraph) {
-                HubRecieveActions.errorMessage('Couldn\'t load requested scene graph, reload the page and try again');
+               /* HubRecieveActions.errorMessage('Couldn\'t load requested scene graph, reload the page and try again');*/
             } else {
                 HubRecieveActions.recieveSceneGraph(sceneGraph);
             }

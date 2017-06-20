@@ -35,7 +35,8 @@ var GDCGraph = React.createClass({
 
 
     componentWillMount: function () {
-        this.setState({data: this.props.data})
+        this.setupNodes(this.props.data)
+       /* this.setState({data: this.props.data})*/
     },
     componentWillReceiveProps: function (nextProps) {
         if (nextProps.shouldUpdateId != this.props.shouldUpdateId)
@@ -57,7 +58,6 @@ var GDCGraph = React.createClass({
     },
     _autowalkHandler: function (props) {
         var self = this;
-        console.log("_autowalkHandler",props)
             clearTimeout(_autowalkHandlerInterval);
             clearTimeout(_playRandomNodeInterval);
         if (props.enabled) {
@@ -80,7 +80,6 @@ var GDCGraph = React.createClass({
     },
     _playBreadcrumbs: function (crumbs) {
         var self = this;
-        console.log("play", crumbs);
         var time = 1000;
         _.each(crumbs.breadcrumbs, function (crumb, i) {
             //console.log(time, value.difference);
@@ -98,7 +97,6 @@ var GDCGraph = React.createClass({
         });
     },
     _traceBreadcrumbs: function (breadcrumb) {
-        console.log("tracing");
 
         var self = this;
         var crumbs = breadcrumb.breadcrumbs;
@@ -159,7 +157,6 @@ var GDCGraph = React.createClass({
         this.setState({title: "", data: this.state.data})
     },
     compareElements: function (array) {
-        console.log(overlappingElementsCounter, "overlappingElementsCounter");
         overlappingElementsCounter = 0;
         var self = this;
         for (var i = 0; i < array.length; i++) {
@@ -287,7 +284,7 @@ var GDCGraph = React.createClass({
                 HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID())
             }
             this.props.titleHandler(t.name)
-            this.setState({data: this.state.data, title: this.cleanTitle(t.name)});
+            this.setState({data: this.state.data});
         } catch (e) {
             console.log(e)
         }
@@ -328,7 +325,6 @@ var GDCGraph = React.createClass({
                 clusterArray.push(localNode)
             }
         }
-        console.log(clusterArray, node)
         var total = clusterArray.length;
         _.each(clusterArray, function (child, index) {
             var radian = (2 * Math.PI) * (index / total);

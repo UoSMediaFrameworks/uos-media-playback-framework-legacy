@@ -48,6 +48,7 @@ var GraphViewerStore = assign({}, EventEmitter.prototype, {
                 _isScore = false; // APEP ensure we know we are from graph so we want shuffle
                 _scenes = action.sceneIds;
                 _themes = []; // APEP currently from graph we only get scenes so ensure we override any if used by scene and themes
+/*                console.log("graphStore",_scenes,_themes,_isScore);*/
                 GraphViewerStore.emitChange();
                 // APEP we have received a new request from the graph
 

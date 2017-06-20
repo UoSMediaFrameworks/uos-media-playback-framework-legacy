@@ -17,7 +17,6 @@ var timeoutProps = {
 
 var AutowalkStore = assign({}, EventEmitter.prototype, {
     emitChange: function () {
-        console.log("Autolwak Change")
         this.emit(CHANGE_EVENT,timeoutProps);
     },
     getTimeoutProps: function () {

@@ -49,18 +49,28 @@ var SceneList = React.createClass({
                 return scene.name.toLowerCase().indexOf(self.props.filterText.toLowerCase()) !== -1;
             });
         }
+        try{
+            var links = filteredScene.map(function (scene) {
+                var sceneLinkText = ConnectionCache.getShortGroupName(scene._groupID) + ' - ' + scene.name;
+                return (
+                    <dd key={scene._id} className="col-xs-12">
+                        <div className="col-md-9">
+                            {/*
+                             Change from a link to a label, since we are not switching url's
+                             but passing data through handlers. This can be a conditional statement
+                             for the component be it standalone or part of the layout.
+                             */}
+                            <label  onClick={self.props._sceneFocusHandler.bind(self,scene)}>{ sceneLinkText }</label>
+                            {/* <Link to={'scene/' + scene._id}>{ sceneLinkText }</Link>*/}
+                        </div>
 
-        var links = filteredScene.map(function (scene) {
-            var sceneLinkText = ConnectionCache.getShortGroupName(scene._groupID) + ' - ' + scene.name;
-            return (
-                <dd key={scene._id} className="col-xs-12">
-                    <div className="col-md-9">
-                        <Link to={'scene/' + scene._id}>{ sceneLinkText }</Link>
-                    </div>
+                    </dd>
+                );
+            });
+        }catch(e){
+            console.log(e)
+        }
 
-                </dd>
-            );
-        });
 
         return (
             <Loader className='scene-list-loader' message='Retrieving Scene list...' loaded={!this.state.loading}>

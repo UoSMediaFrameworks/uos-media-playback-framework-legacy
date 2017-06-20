@@ -65,11 +65,7 @@ var SceneGraphChooser = React.createClass({
         return (
             <div className='container'>
                 <div className='row'>
-                    <div className='col-xs-6'>
-                        <h2>Edit an Existing Scene Graph</h2>
-                        <SceneGraphList filterText={this.state.filterText} sortBy={this.state.sortBy}/>
-                    </div>
-                    <div className='col-xs-6'>
+                    <div className='col-xs-12'>
                         <div className="col-xs-12">
                             <h2>Create a new Scene Graph</h2>
                             <form className='form-inline' onSubmit={this.handleSubmit} role='form'>
@@ -105,6 +101,11 @@ var SceneGraphChooser = React.createClass({
                                 </button>
                             </div>
                         </div>
+                    <div className='col-xs-12'>
+                        <h2>Edit an Existing Scene Graph</h2>
+                        <SceneGraphList  filterText={this.state.filterText} _sceneGraphFocusHandler={this.props.sceneGraphFocusHandler} sortBy={this.state.sortBy}/>
+                    </div>
+
                     </div>
                     <div className="col-xs-12">
                         <h2>Open Presentation Graphs</h2>

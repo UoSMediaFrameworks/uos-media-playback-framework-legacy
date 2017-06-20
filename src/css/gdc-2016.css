@@ -1,5 +1,27 @@
 /* Hides the city nodes for GDC-2016*/
+.layout-border::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 10px;
+    background-color: #F5F5F5;
+}
 
+.layout-border::-webkit-scrollbar
+{
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+.layout-border::-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: #555;
+}
+.layout-border{
+    border:white solid 1px;
+    overflow:auto;
+}
 .Chicago, .Manchester, .Beijing, .Dalian, .KualaLumpur, .Seoul, .Chengdu, .HongKong, .Shenyang, .Panjin {
     display: none;
 }
