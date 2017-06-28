@@ -52,30 +52,23 @@ var App = React.createClass({
         var versionText = this.state.versionData && this.state.versionData.sha ? this.state.versionData.sha.substring(0, 7) : "loading..";
 
         var banner = !production ? <span className="navbar-text"> - DEV BUILD </span> : <span></span>;
-
+        //TODO: Change the navigation aspect to be a component rather than be part of the index app so that you can freely add the extra components on top of it
         //AJF: gets the groupID then passes as a parameter to get the group name. I tried a version of getShortGroupName that would accept no groupID and get it from the current session but it wasn't working @todo: fix this in connectioncache
         if (this.state.loggedIn) {
-            sessionNav = <ul className="nav navbar-nav navbar-right">
-                <li><a href="/#/scenegraphs" className="navbar-link"
-                       target="_blank">Open SceneGraph Creator</a></li>
-                <li><a target='_blank' className='navbar-link'
-                       href='https://docs.google.com/document/d/1B25gvDRob576KPsgusEhhUY3GI_XF6guHIBpLPrn9U0/edit?usp=sharing'>
-                    Do's &amp; Don'ts of Media Frameworks
-                </a></li>
-
+            sessionNav =
+                <ul className="nav navbar-nav navbar-right">
                 <li>
                     <span className="navbar-text">Version: {versionText}</span>
                     {banner}
                 </li>
                 <li>
-
                     <p className="navbar-text">{connectionCache.getGroupID()}
                         - {connectionCache.getShortGroupName(connectionCache.getGroupID())}</p>
 
                 </li>
                 <li>
-                <button type="button" className='btn btn-dark navbar-btn' onClick={this.handleLogout}>Log out
-                </button>
+                    <button type="button" className='btn btn-dark navbar-btn' onClick={this.handleLogout}>Log out
+                    </button>
                 </li>
             </ul>;
 
@@ -110,7 +103,6 @@ var App = React.createClass({
                 <nav className='navbar navbar-inverse'>
                     <div className="container-fluid">
                         <div className="navbar-header">
-                            <a className="navbar-brand" href="#">Media Scene Editor</a>
                             <button type="button" className="navbar-toggle collapsed" data-toggle="collapse"
                                     data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
                                 <span className="sr-only">Toggle navigation</span>

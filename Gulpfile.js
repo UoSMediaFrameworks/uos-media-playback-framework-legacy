@@ -56,7 +56,7 @@ var indexBundler = bundlerBuilder('./src/js/index.jsx', 'index.js', true);
 var viewerBundler = bundlerBuilder('./src/js/viewer.jsx', 'viewer.js', true);
 var manifest2015Bundler = bundlerBuilder('./src/js/manifest2015.js', 'manifest2015.js', false);
 var graphViewerBundler = bundlerBuilder('./src/js/graph-viewer.jsx', 'graph-viewer.js', true);
-
+var adjustablGridBundler= bundlerBuilder('./src/js/single-page-grid-layout.jsx','single-page-grid-layout.js',true);
 function bundlerBuilder (startPath, finishName, useReactify) {
     var bundler = watchify(browserify(startPath, objectAssign({debug: true, cache: {}, packageCache: {}}, watchify.args)));
     if (useReactify) {
@@ -99,6 +99,7 @@ gulp.task('watch', function () {
     viewerBundler.bundler.on('update', viewerBundler.rebundle);
     manifest2015Bundler.bundler.on('update', manifest2015Bundler.rebundle);
     graphViewerBundler.bundler.on('update', graphViewerBundler.rebundle);
+    adjustablGridBundler.bundler.on('update', adjustablGridBundler.rebundle);
 });
 
 gulp.task('html', function() {
@@ -117,7 +118,8 @@ gulp.task('bundlejs', function() {
         indexBundler.rebundle(),
         viewerBundler.rebundle(),
         manifest2015Bundler.rebundle(),
-        graphViewerBundler.rebundle()
+        graphViewerBundler.rebundle(),
+        adjustablGridBundler.rebundle()
     );
 });
 
@@ -146,6 +148,7 @@ gulp.task('build', ['build-dist'], function() {
     viewerBundler.bundler.close();
     manifest2015Bundler.bundler.close();
     graphViewerBundler.bundler.close();
+    adjustablGridBundler.bundler.close();
 });
 
 gulp.task('serve', function(next) {
@@ -153,4 +156,4 @@ gulp.task('serve', function(next) {
 });
 
 //, 'watch'
-gulp.task('default', ['build-dist', 'serve']);
+gulp.task('default', ['build-dist', 'serve','watch']);

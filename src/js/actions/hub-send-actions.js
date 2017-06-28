@@ -18,7 +18,7 @@ const CHAPER_NODE_TYPE = "chapter";
 
 const GDC_GRAPH_VERSION = "1.0.0";
 const GRAPH_ALPHA_VERSION = "alpha-1";
-
+console.log(HubClient);
 module.exports = {
     tryLogin: function(creds) {
     	AppDispatcher.handleViewAction({

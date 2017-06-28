@@ -6,6 +6,24 @@ module.exports = {
         /* Grid or Application Layout  */
         COMP_MIN: null,
         COMP_MAX: null,
+        COMP_RESTORE:null,
+        COMP_SWITCH_MODE:null,
+        COMP_FOCUS_SWITCH:null,
+        /*Breadrumbs*/
+        BREADCRUMBS_CLEAR_ALL:null,
+        BREADCRUMBS_PLAY:null,
+        BREADCRUMBS_TRACE:null,
+        BREADCRUMBS_REMOVE_CRUMBS:null,
+        BREADCRUMBS_REMOVE_CRUMB:null,
+        BREADCRUMBS_ADD_CRUMB:null,
+        BREADCRUMBS_RECORD_START:null,
+        BREADCRUMBS_RECORD_PAUSE:null,
+        BREADCRUMBS_RECORD_CONTINUE:null,
+        BREADCRUMBS_RECORD_FINISH:null,
+
+
+
+
 
         SCENE_CHANGE: null,
         DELETE_SCENE: null,
