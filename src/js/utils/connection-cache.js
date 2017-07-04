@@ -47,6 +47,9 @@ module.exports = {
         groupNames.set(111, "Memoir");
         groupNames.set(112, "NARM");
         groupNames.set(113, "Yibing");
+        groupNames.set(114, "Mirroring Life");
+        groupNames.set(115, "DPL");
+        groupNames.set(116, "Book Project")
 
     },
     getGroupNameArray:function(){
