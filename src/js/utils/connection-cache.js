@@ -49,7 +49,7 @@ module.exports = {
         groupNames.set(113, "Yibing");
         groupNames.set(114, "Mirroring Life");
         groupNames.set(115, "DPL");
-        groupNames.set(116, "Book Project")
+        groupNames.set(116, "Salford Press");
 
     },
     getGroupNameArray:function(){
