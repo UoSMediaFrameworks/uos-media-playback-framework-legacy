@@ -205,7 +205,9 @@ var SceneGraph = React.createClass({
         HubSendActions.loadSceneGraph(sceneGraphId);
     },
     componentWillReceiveProps:function(nextProps){
-        HubSendActions.loadSceneGraph(nextProps._id);
+        if( !_.isEqual(this.props._id,nextProps._id)){
+            HubSendActions.loadSceneGraph(nextProps._id);
+        }
     },
     componentWillUnmount: function () {
         SceneGraphListStore.removeChangeListener(this._onChange);

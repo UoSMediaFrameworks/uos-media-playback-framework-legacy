@@ -37,14 +37,18 @@ var HubClient = {
         socket = io(url, {forceNew: true});
 
         socket.on('connect',function() {
+            console.log("connect")
             socket.emit('auth', creds, function(err, token, socketID/*AJF: doesn't get used here*/, groupID) {/*AJF: callback extended to accept the groupID of the user*/
+                console.log("auth")
                 if (err) {
                     socket.disconnect();
                     HubRecieveActions.recieveLoginResult(false, err.toString());
                 } else {
                     connectionCache.setHubToken(token);
                     connectionCache.setSocketID(socketID);
-
+                    console.log("Setting groupID in HubClient to: " + groupID);
+                    connectionCache.setGroupID(groupID);//AJF: set the groupID
+                    connectionCache.setGroupNameArray();//AngelP: just sets the groups in the name array;
                     //Angel P: I am calling this function to register the listener to a specific room ID
                     //In order for the layout components graph to communicate with the Scene graph editor.
                     HubClient.registerToGraphPlayerRoom(socketID)
@@ -52,9 +56,6 @@ var HubClient = {
                     HubRecieveActions.recieveLoginResult(true);
                     HubRecieveActions.tryListScenes();
 
-					console.log("Setting groupID in HubClient to: " + groupID);
-					connectionCache.setGroupID(groupID);//AJF: set the groupID
-                    connectionCache.setGroupNameArray();//AngelP: just sets the groups in the name array;
                     socket.emit('listScenes', function(err, scenes) {
                         if (err) throw err;
                         HubRecieveActions.recieveSceneList(scenes);

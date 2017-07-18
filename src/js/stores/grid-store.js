@@ -77,7 +77,9 @@ var maximize = function(index, component,maxHeight) {
         _h: item._h,
         type:item.type,
         visible: true,
-        state:"max"
+        state:"max",
+        isDraggable:item.isDraggable,
+        isResizeable:item.isResizeable
     };
 
     var lay = gridState.layout;
@@ -106,7 +108,9 @@ restore=function(index,component){
         _h: item._h,
         type:item.type,
         visible: true,
-        state:"default"
+        state:"default",
+        isDraggable:item.isDraggable,
+        isResizeable:item.isResizeable
     };
     var lay = gridState.layout;
     lay[index] = newItem;

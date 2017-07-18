@@ -111,7 +111,7 @@ var RespGrid = React.createClass({
                 var comp = self.getComponent(item);
 
                 var shouldHide = (item.state === "default") ? true : false;
-                console.log(item)
+                console.log(item,comp)
                 var isDraggable = !item.isDraggable;
                 if (comp && item.visible) {
                     return (
@@ -149,17 +149,18 @@ var RespGrid = React.createClass({
         components = _.filter(components, function (c) {
             return c != null;
         });
+        console.log(components);
         var test = (this.state.parentHeight != null) ? this.state.parentHeight / 30 : 30;
-
         return (
-            <ReactGridLayout onDragStart={this.onDragStopHandler } className="layout" autoSize={true}
-                             onLayoutChange={this.onLayoutChange}
-                             layout={this.state.data.layout} verticalCompact={true}
-                             cols={12}
-                             rowHeight={(this.state.parentHeight != null) ? this.state.parentHeight / 30 : 30 }>
-                {components}
+              <ReactGridLayout onDragStart={this.onDragStopHandler } className="layout" autoSize={true}
+             onLayoutChange={this.onLayoutChange}
+                               layout={this.state.data.layout}
+                               verticalCompact={true}
+             cols={12}
+             rowHeight={(this.state.parentHeight != null) ? this.state.parentHeight / 30 : 30 }>
+                  {components}
 
-            </ReactGridLayout>
+             </ReactGridLayout>
         )
     }
 

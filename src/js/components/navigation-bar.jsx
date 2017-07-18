@@ -2,24 +2,35 @@ var React = require('react');
 var GridStore = require('../stores/grid-store');
 var connectionCache = require('../utils/connection-cache');
 var SceneActions = require('../actions/scene-actions');
+var ClientStore = require('../stores/client-store');
 
+function _getState() {
+    console.log("getting state",ClientStore.loggedIn())
+    return {
+        loggedIn: ClientStore.loggedIn(),
+        focusedLayoutItem: GridStore.getFocusedComponent()
+    }
+};
 var NavigationBar = React.createClass({
     getInitialState: function () {
-        return {
-            focusedLayoutItem: null
-        }
+        return _getState();
     },
     _onChange:function(){
-        var test =GridStore.getFocusedComponent();
-        this.setState({focusedLayoutItem:test})
+        this.setState(_getState());
     },
     handleLogout: function (event) {
         SceneActions.logout();
     },
+    componentDidMount:function(){
+
+    },
     componentWillMount:function(){
+        console.log("Nvbar will mount")
+        ClientStore.addChangeListener(this._onChange)
         GridStore.addChangeListener(this._onChange)
     },
     componentWillUnmount:function(){
+        ClientStore.removeChangeListener(this._onChange)
         GridStore.removeChangeListener(this._onChange)
     },
     getNavComponent: function () {
@@ -27,7 +38,7 @@ var NavigationBar = React.createClass({
             case "scene":
                 return <li><span  className="navbar-text">Scene</span></li>;
                 break;
-            case "sceneGraph":
+            case "x":
                 return <li> <span  className="navbar-text">Scene Graph</span></li>;
                 break;
             case "sceneList":
@@ -55,8 +66,25 @@ var NavigationBar = React.createClass({
 
     },
     render: function () {
+
         var nc = this.getNavComponent();
 
+        var sessionNav = null;
+        if (this.state.loggedIn) {
+            try{
+                console.log("Rendering navbar",nc,this.state,connectionCache.getGroupID(),connectionCache.getShortGroupName(connectionCache.getGroupID()))
+            }catch (e){
+                console.log("err",e)
+            }
+
+            sessionNav = (   <li>
+
+                    <p className="navbar-text">{connectionCache.getGroupID()}
+                        - {connectionCache.getShortGroupName(connectionCache.getGroupID())}</p>
+                </li>
+
+            )
+        }
         return (
             <nav className='navbar navbar-inverse'>
                 <div className="container-fluid">
@@ -71,21 +99,16 @@ var NavigationBar = React.createClass({
                     </div>
                     <div className="collapse navbar-collapse">
                         <ul className="nav navbar-nav navbar-left">
-                                {nc}
+                            {nc}
                         </ul>
                         <ul className="nav navbar-nav navbar-right">
 
                             <li>
                                 <span className="navbar-text">Version: 0</span>
                             </li>
+                            {sessionNav}
                             <li>
-
-                                <p className="navbar-text">{connectionCache.getGroupID()}
-                                    - {connectionCache.getShortGroupName(connectionCache.getGroupID())}</p>
-
-                            </li>
-                            <li>
-                                <button type="button" className='btn btn-dark navbar-btn' onClick={this.handleLogout}>Log out
+                                <button type="button"    onClick={this.handleLogout}  className='btn btn-dark navbar-btn' >Log out
                                 </button>
                             </li>
                         </ul>

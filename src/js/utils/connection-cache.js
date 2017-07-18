@@ -63,8 +63,7 @@ module.exports = {
         return groupNames;
     },
 	getShortGroupName: function(groupID) {
-		//console.log("The groupID was set to: " + groupID);
-
+		console.log("The groupID was set to: " + groupID,groupNames);
 		return groupNames.get(parseInt(groupID));
 	},
 
