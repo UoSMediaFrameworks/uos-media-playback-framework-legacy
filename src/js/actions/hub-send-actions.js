@@ -2,22 +2,25 @@
 
 var AppDispatcher = require('../dispatchers/app-dispatcher');
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
+var GraphTypes = require('../constants/graph-constants').GraphTypes;
+var NodeTypes = require('../constants/graph-constants').NodeTypes;
+var GraphVersions = require('../constants/graph-constants').GraphVersions;
 var HubClient = require('../utils/HubClient');
 var HubRecieveActions = require('./hub-recieve-actions');
-var SceneActions = require('./scene-actions');
 var hashHistory = require('react-router').hashHistory;
 
-const GDC_SCENE_GRAPH_TYPE = "GDC_SCENE_GRAPH";
-const MEMOIR_SCENE_GRAPH_TYPE = "MEMOIR_SCENE_GRAPH";
-const NARM_SCENE_GRAPH_TYPE = "NARM_SCENE_GRAPH";
+const GDC_SCENE_GRAPH_TYPE = GraphTypes.GDC_GRAPH_VERSION;
+const MEMOIR_SCENE_GRAPH_TYPE = GraphTypes.MEMOIR_SCENE_GRAPH;
+const NARM_SCENE_GRAPH_TYPE = GraphTypes.NARM_SCENE_GRAPH;
+const SALFORD_PRESS_GRAPH_TYPE = GraphTypes.SALFORD_PRESS_GRAPH;
 
-const ROOT_NODE_TYPE = "root";
-const CITY_NODE_TYPE = "city";
-const GTHEME_NODE_TYPE = "gtheme";
-const CHAPER_NODE_TYPE = "chapter";
+const ROOT_NODE_TYPE = NodeTypes.ROOT_NODE_TYPE;
+const CITY_NODE_TYPE = NodeTypes.CITY_NODE_TYPE;
+const GTHEME_NODE_TYPE = NodeTypes.GTHEME_NODE_TYPE;
+const CHAPER_NODE_TYPE = NodeTypes.CHAPER_NODE_TYPE;
 
-const GDC_GRAPH_VERSION = "1.0.0";
-const GRAPH_ALPHA_VERSION = "alpha-1";
+const GDC_GRAPH_VERSION = GraphVersions.GDC_GRAPH_VERSION;
+const GRAPH_ALPHA_VERSION = GraphVersions.GRAPH_ALPHA_VERSION;
 
 module.exports = {
     tryLogin: function(creds) {
@@ -519,6 +522,28 @@ module.exports = {
         };
     },
 
+    getNewSalfordPressGraph: function(name) {
+        return {
+            'name': name,
+            'sceneIds': {},
+            'type': SALFORD_PRESS_GRAPH_TYPE,
+            'version': GRAPH_ALPHA_VERSION,
+            'graphThemes': {
+                type: "document",
+                children: {
+                    "Salford": {
+                        type: ROOT_NODE_TYPE,
+                        children: {
+
+                        }
+                    }
+                }
+            },
+            'excludedThemes': {},
+            'nodeList': []
+        }
+    },
+
     tryCreateSceneGraph: function(name, type, cb) {
 
         var sceneGraph = {};
@@ -527,6 +552,8 @@ module.exports = {
             sceneGraph = this.getNewGDCSceneGraph(name);
         } else if (type === MEMOIR_SCENE_GRAPH_TYPE) {
             sceneGraph = this.getNewMemoirSceneGraph(name);
+        } else if (type === SALFORD_PRESS_GRAPH_TYPE) {
+            sceneGraph = this.getNewSalfordPressGraph(name);
         } else {
             sceneGraph = this.getNewNarmSceneGraph(name);
         }

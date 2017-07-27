@@ -5,6 +5,7 @@ var SceneGraphList = require('../scene-graph-list.jsx');
 var FormHelper = require('../../mixins/form-helper');
 var ConnectionCache = require('../../utils/connection-cache');
 var Select = require('react-select');
+var GraphTypes = require('../../constants/graph-constants').GraphTypes;
 
 var mediaHubGraphURL = process.env.MEDIA_HUB_GRAPH_URL || "";
 var presentationNamespaceQueryParams = "?roomId=presentation";
@@ -26,8 +27,6 @@ var SceneGraphChooser = React.createClass({
             console.log("err", E)
         }
     },
-
-
     handleSubmit: function (event) {
         event.preventDefault();
         HubSendActions.tryCreateSceneGraph(this.getRefVal('name'), this.state.value);
@@ -44,12 +43,10 @@ var SceneGraphChooser = React.createClass({
     componentDidUpdate: function () {
         this.refs["filter"].value = this.state.filterText;
     },
-    handleChange(event)
-    {
+    handleChange(event) {
         this.setState({value: event.target.value});
     },
-    _onSort(event)
-    {
+    _onSort(event) {
         this.setState({sortBy: event.target.value});
     },
     getGroupOptions: function () {
@@ -78,9 +75,10 @@ var SceneGraphChooser = React.createClass({
                                     <span id="basic-addon2">
                                     <select className="form-control" value={this.state.value}
                                             onChange={this.handleChange}>
-                                        <option value="GDC_SCENE_GRAPH">GDC</option>
-                                        <option value="MEMOIR_SCENE_GRAPH">Memoir</option>
-                                        <option value="NARM_SCENE_GRAPH">NARM</option>
+                                        <option value={GraphTypes.GDC_GRAPH_VERSION}>GDC</option>
+                                        <option value={GraphTypes.MEMOIR_SCENE_GRAPH}>Memoir</option>
+                                        <option value={GraphTypes.NARM_SCENE_GRAPH}>NARM</option>
+                                        <option value={GraphTypes.SALFORD_PRESS_GRAPH}>Salford Press</option>
                                     </select>
                                 </span>
                                     <button type='submit' className='btn btn-default'>Create</button>
