@@ -52,14 +52,16 @@ var SceneGraphList = React.createClass({
         }
         var links = filteredSceneGraph.map(function (sceneGraph) {
             return (
-                <dd key={sceneGraph._id} className="col-xs-12">
-                    <div className="col-md-9">
+                <dd key={sceneGraph._id} className="col-xs-12 mf-link">
+                    <div>
                         {/*
                         Change from a link to a label, since we are not switching url's
                         but passing data through handlers. This can be a conditional statement
                         for the component be it standalone or part of the layout.
                         */}
-                        <label  onClick={self.props._sceneGraphFocusHandler.bind(self,sceneGraph)}>{ sceneGraph.name}</label>
+                        <label  onClick={self.props._sceneGraphFocusHandler.bind(self,sceneGraph)}
+                                onTouchEndCapture={self.props._sceneGraphFocusHandler.bind(self,sceneGraph)}
+                        >{ sceneGraph.name}</label>
                       {/*  <Link className="link" to={'/scenegraph/' + sceneGraph._id}>{sceneGraph.name}</Link>*/}
                     </div>
                 </dd>

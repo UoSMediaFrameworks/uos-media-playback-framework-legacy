@@ -8,6 +8,8 @@ var StatusAlert = require('./status-alert.jsx');
 var connectionCache = require('../utils/connection-cache');
 var appVersion = require('../utils/app-version');
 
+var NavBar = require('../components/navigation-bar.jsx');
+
 function _getState() {
     return {
         loggedIn: ClientStore.loggedIn(),
@@ -37,7 +39,7 @@ var LayoutApp = React.createClass({
         this.setState(_getState());
     },
     render:function(){
-        console.log("rendering grid layout")
+        console.log("rendering grid layout");
         var messages = this.state.messages;
 
         var statusAlerts = Object.keys(messages).map(function (name) {
@@ -45,12 +47,15 @@ var LayoutApp = React.createClass({
         });
 
        return(<div className='app'>
+           <NavBar/>
             <div className="status-messages">
                 {statusAlerts}
             </div>
+
             <Loader message='Logging in...' loaded={!this.state.attemptingLogin}>
                 {this.props.children}
             </Loader>
+
 
         </div>);
 

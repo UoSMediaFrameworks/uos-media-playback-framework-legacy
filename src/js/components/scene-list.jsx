@@ -53,14 +53,14 @@ var SceneList = React.createClass({
             var links = filteredScene.map(function (scene) {
                 var sceneLinkText = ConnectionCache.getShortGroupName(scene._groupID) + ' - ' + scene.name;
                 return (
-                    <dd key={scene._id} className="col-xs-12">
-                        <div className="col-md-9">
+                    <dd key={scene._id} className="col-xs-12 mf-link">
+                        <div>
                             {/*
                              Change from a link to a label, since we are not switching url's
                              but passing data through handlers. This can be a conditional statement
                              for the component be it standalone or part of the layout.
                              */}
-                            <label  onClick={self.props._sceneFocusHandler.bind(self,scene)}>{ sceneLinkText }</label>
+                            <label  onClick={self.props._sceneFocusHandler.bind(self,scene)} onTouchEndCapture={self.props._sceneFocusHandler.bind(self,scene)}>{ sceneLinkText }</label>
                             {/* <Link to={'scene/' + scene._id}>{ sceneLinkText }</Link>*/}
                         </div>
 

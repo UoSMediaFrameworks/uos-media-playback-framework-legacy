@@ -27,6 +27,7 @@ var RespGrid = React.createClass({
     },
 
     _onChange: function () {
+        console.log("change to grid happened",this.state.data,GridStore.getGridState())
         this.setState({data: GridStore.getGridState()})
     },
     modeChangeHandler: function (e) {
@@ -57,36 +58,33 @@ var RespGrid = React.createClass({
     getComponent: function (item) {
         var self = this;
         switch (item.type) {
-            case "scene":
+            case "Scene":
                 return <Scene isLayout={true} _id={self.state.data.scene._id}/>;
                 break;
-            case "sceneGraph":
+            case "Scene-Graph":
                 return <SceneGraph isLayout={true} _id={self.state.data.sceneGraph._id}/>;
                 break;
-            case "sceneList":
+            case "Scene-List":
                 return <SceneChooser isLayout={true} sceneFocusHandler={GridStore.focusScene}/>;
                 break;
-            case "sceneGraphList":
+            case "Scene-Graph-List":
                 return <SceneGraphChooser isLayout={true} sceneGraphFocusHandler={GridStore.focusSceneGraph}/>;
                 break;
-            case "graphViewer":
+            case "Graph-Viewer":
                 return <GraphViewer isLayout={true} roomId={self.state.data.roomId}></GraphViewer>;
                 break;
-            case "sceneViewer":
+            case "Scene-Viewer":
                 return <SceneListener isLayout={true} sceneId={self.state.data.scene._id}/>;
                 break;
-            case "graph":
+            case "Graph":
                 return <GraphTest isLayout={true} _id={self.state.data.sceneGraph._id}/>;
-                break;
-            case "nav":
-                return <NavBar></NavBar>;
                 break;
             default:
                 return null;
                 break
         }
     },
-    onDragStopHandler: function (e, u,a,b,c,d,e) {
+    onDragStopHandler: function (e, u) {
         var item = _.find(this.state.data.layout, function (layoutItem) {
             return layoutItem.i === u.i;
         });
@@ -104,38 +102,41 @@ var RespGrid = React.createClass({
         var maxHeightValue = this.state.parentHeight ? this.state.parentHeight / 30 : 30;
         SceneActions.maxComp(index, item, maxHeightValue);
     },
+    removeComponent:function(item){
+        SceneActions.removeLayoutComponent(item.i);
+
+    },
     render: function () {
         var self = this;
 
         var components = this.state.data.layout.map(function (item, index) {
                 var comp = self.getComponent(item);
-
-                var shouldHide = (item.state === "default") ? true : false;
-                console.log(item,comp)
-                var isDraggable = !item.isDraggable;
+            var shouldHide = (item.state === "default") ? true : false;
                 if (comp && item.visible) {
                     return (
-                        <div key={item.i}
-                             className="layout-border">
-                            <div className="test-buttons" hidden={isDraggable}>
-                                {/*TODO keep commented out for now / or add a conditional statement for usability testing*/}
-                                {/*    <button className="btn-dark"><i onClick={self.min.bind(this, index, item)}
-                                 className="fa fa-window-minimize">
-
-                                 </i></button>*/}
-                                <button className="btn-dark" hidden={!shouldHide}><i
-                                    onClick={self.max.bind(this, index, item)}
-                                    className="fa fa-window-maximize">
-
-                                </i></button>
-                                <button className={"btn-dark"} hidden={shouldHide}><i
-                                    onClick={self.restore.bind(this, index, item)}
-                                    className="fa fa-window-restore">
-                                </i></button>
-                                {/* <h2>{item.type}</h2>*/}
-                            </div>
-                            {comp}
-
+                        <div key={item.i} className="widget-container">
+                            <section className="widget">
+                                <header>
+                                     <span className="widget-title">
+                                        <span>{item.type}</span>
+                                    </span>
+                                    <div className="grid-layout-controls">
+                                        <i className={shouldHide?"fa fa-times mf-times":"hidden"}
+                                           onClick={self.removeComponent.bind(this, item) }>
+                                        </i>
+                                        <i className={ shouldHide?"hidden":"fa fa-window-restore mf-restore"}
+                                           onClick={self.restore.bind(this, index, item)}>
+                                        </i>
+                                        <i
+                                            onClick={self.max.bind(this, index, item)}
+                                            className={ shouldHide ? "fa fa-window-maximize mf-maximize":"hidden "}>
+                                        </i>
+                                    </div>
+                                </header>
+                                <div className="grid-layout-body">
+                                    {comp}
+                                </div>
+                            </section>
                         </div>
                     )
 
@@ -149,18 +150,17 @@ var RespGrid = React.createClass({
         components = _.filter(components, function (c) {
             return c != null;
         });
-        console.log(components);
-        var test = (this.state.parentHeight != null) ? this.state.parentHeight / 30 : 30;
-        return (
-              <ReactGridLayout onDragStart={this.onDragStopHandler } className="layout" autoSize={true}
-             onLayoutChange={this.onLayoutChange}
-                               layout={this.state.data.layout}
-                               verticalCompact={true}
-             cols={12}
-             rowHeight={(this.state.parentHeight != null) ? this.state.parentHeight / 30 : 30 }>
-                  {components}
 
-             </ReactGridLayout>
+        return (
+            <ReactGridLayout onDragStart={this.onDragStopHandler} className="layout" autoSize={true}
+                             onLayoutChange={this.onLayoutChange}
+                             layout={this.state.data.layout}
+                             verticalCompact={true}
+                             cols={6}
+                             rowHeight={(this.state.parentHeight != null) ? this.state.parentHeight / 30 : 30}>
+                {components}
+
+            </ReactGridLayout>
         )
     }
 

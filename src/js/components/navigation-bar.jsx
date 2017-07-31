@@ -3,57 +3,65 @@ var GridStore = require('../stores/grid-store');
 var connectionCache = require('../utils/connection-cache');
 var SceneActions = require('../actions/scene-actions');
 var ClientStore = require('../stores/client-store');
+var DropdownButton = require('react-bootstrap').DropdownButton;
+var MenuItem = require('react-bootstrap').MenuItem;
 
 function _getState() {
-    console.log("getting state",ClientStore.loggedIn())
     return {
         loggedIn: ClientStore.loggedIn(),
-        focusedLayoutItem: GridStore.getFocusedComponent()
+        focusedLayoutItem:GridStore.getFocusedComponent()
     }
 };
+
 var NavigationBar = React.createClass({
     getInitialState: function () {
         return _getState();
     },
-    _onChange:function(){
-        this.setState(_getState());
+    _onLoginChange:function(){
+        this.setState({loggedIn: ClientStore.loggedIn()});
+    },
+    _onLayoutChange:function(){
+        this.setState({focusedLayoutItem: GridStore.getFocusedComponent()});
     },
     handleLogout: function (event) {
         SceneActions.logout();
+    },
+    addComponent:function(type){
+        console.log("addComponent",type)
+        SceneActions.addLayoutComponent(type);
     },
     componentDidMount:function(){
 
     },
     componentWillMount:function(){
-        console.log("Nvbar will mount")
-        ClientStore.addChangeListener(this._onChange)
-        GridStore.addChangeListener(this._onChange)
+        ClientStore.addChangeListener(this._onLoginChange)
+        GridStore.addChangeListener(this._onLayoutChange)
     },
     componentWillUnmount:function(){
-        ClientStore.removeChangeListener(this._onChange)
-        GridStore.removeChangeListener(this._onChange)
+        ClientStore.removeChangeListener(this._onLoginChange)
+        GridStore.removeChangeListener(this._onLayoutChange)
     },
     getNavComponent: function () {
         switch (this.state.focusedLayoutItem) {
-            case "scene":
+            case "Scene":
                 return <li><span  className="navbar-text">Scene</span></li>;
                 break;
-            case "x":
+            case "Scene-Graph":
                 return <li> <span  className="navbar-text">Scene Graph</span></li>;
                 break;
-            case "sceneList":
+            case "Scene-List":
                 return  <li><span  className="navbar-text">Scene List</span></li>;
                 break;
-            case "sceneGraphList":
+            case "Scene-Graph-List":
                 return <li><span  className="navbar-text">Scene Graph List</span></li>;
                 break;
-            case "graphViewer":
+            case "Graph-Viewer":
                 return <li><span  className="navbar-text">Graph Viewer</span></li>;
                 break;
-            case "sceneViewer":
+            case "Scene-Viewer":
                 return <li><span  className="navbar-text">Scene Viewer</span></li>;
                 break;
-            case "graph":
+            case "Graph":
                 return <li><span  className="navbar-text">Graph</span></li>;
                 break;
             case "":
@@ -66,17 +74,11 @@ var NavigationBar = React.createClass({
 
     },
     render: function () {
-
+        var self=this;
         var nc = this.getNavComponent();
 
         var sessionNav = null;
         if (this.state.loggedIn) {
-            try{
-                console.log("Rendering navbar",nc,this.state,connectionCache.getGroupID(),connectionCache.getShortGroupName(connectionCache.getGroupID()))
-            }catch (e){
-                console.log("err",e)
-            }
-
             sessionNav = (   <li>
 
                     <p className="navbar-text">{connectionCache.getGroupID()}
@@ -85,6 +87,7 @@ var NavigationBar = React.createClass({
 
             )
         }
+        var title="components";
         return (
             <nav className='navbar navbar-inverse'>
                 <div className="container-fluid">
@@ -107,6 +110,17 @@ var NavigationBar = React.createClass({
                                 <span className="navbar-text">Version: 0</span>
                             </li>
                             {sessionNav}
+                            <li className="mf-dropdown">
+                                <DropdownButton title={title} className="btn btn-dark navbar-btn">
+                                    <MenuItem eventKey="1" onClick={self.addComponent.bind(this,"Scene-List")}>Scene List</MenuItem>
+                                    <MenuItem eventKey="2" onClick={self.addComponent.bind(this,"Scene")}>Scene Editor</MenuItem>
+                                    <MenuItem eventKey="3" onClick={self.addComponent.bind(this,"Scene-Graph-List")}>Scene Graph List</MenuItem>
+                                    <MenuItem eventKey="4" onClick={self.addComponent.bind(this,"Scene-Graph")}>Scene Graph Editor</MenuItem>
+                                    <MenuItem eventKey="5" onClick={self.addComponent.bind(this,"Graph")}>Graph</MenuItem>
+                                    <MenuItem eventKey="6" onClick={self.addComponent.bind(this,"Scene-Viewer")}>Scene Viewer</MenuItem>
+                                    <MenuItem eventKey="7" onClick={self.addComponent.bind(this,"Graph-Viewer")}>Graph Viewer</MenuItem>
+                                </DropdownButton>
+                            </li>
                             <li>
                                 <button type="button"    onClick={this.handleLogout}  className='btn btn-dark navbar-btn' >Log out
                                 </button>

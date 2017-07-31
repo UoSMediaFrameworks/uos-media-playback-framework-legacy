@@ -34,10 +34,12 @@ var GraphContainer = React.createClass({
             optionsMenuToggle: false,
             guid: null,
             graphType: "",
-            title: ""
+            title: "",
+            previousGraphId:null
         }
     },
     _onChange: function () {
+
         var sceneList = SceneGraphListStore.getSceneGraphByID(this.state.graphId);
         this._initialize(sceneList);
 
@@ -130,7 +132,7 @@ var GraphContainer = React.createClass({
         processNodes(sceneList.nodeList);
         processsEdges();
         removeBadRelationships();
-        this.setState({root: localRoot, sceneList: sceneList, guid: hat(), type: sceneList.type});
+        this.setState({root: localRoot, sceneList: sceneList, guid: hat(), type: sceneList.type,previousGraphId:this.state.graphId});
     },
     _getGraphTypeComponent(){
         if (this.state.sceneList) {
@@ -238,20 +240,20 @@ var GraphContainer = React.createClass({
 
         queryId = nextProps._id;
 
-        HubSendActions.getSceneGraphByID(queryId);
 
-        this.setState({graphId: queryId, guid: hat()})
+        console.log(this.state.previousGraphId,queryId)
+        if(queryId != this.state.previousGraphId){
+            HubSendActions.getSceneGraphByID(queryId);
+            this.setState({graphId: queryId, guid: hat()})
+        }
     },
     componentWillMount(){
-        console.log("graph will mount")
         var queryId;
         if (this.props.isLayout) {
-            queryId = this.props._id
+            queryId = this.props._id;
         } else {
             queryId = this.props.location || "589b24e6c9d9c9b81328d7e8";
         }
-
-        console.log("ANGEL", queryId, this.props);
 
         HubSendActions.getSceneGraphByID(queryId);
 
@@ -271,6 +273,7 @@ var GraphContainer = React.createClass({
             'visible': this.state.autocompleteToggle,
             'hidden': !this.state.autocompleteToggle
         });
+
         var extraSVGClass = "";
         if (this.state.type != undefined) {
             extraSVGClass = this.state.type || "GDC_SCENE_GRAPH";

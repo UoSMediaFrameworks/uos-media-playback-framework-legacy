@@ -23,6 +23,18 @@ var SceneActions = {
             itemType: itemType
         });
     },
+    addLayoutComponent:function(componentType){
+      AppDispatcher.handleViewAction({
+          type:ActionTypes.ADD_COMPONENT,
+          componentType:componentType
+      })
+    },
+   removeLayoutComponent:function(componentId){
+        AppDispatcher.handleViewAction({
+            type:ActionTypes.REMOVE_COMPONENT,
+            componentId:componentId
+        })
+    },
     // APEP TODO this should really be in a different Actions object, not something related to Scenes
     // APEP say a GridLayoutActions object or ApplicationViewActions are two suggested terms, the name will be more clear when the full scope is defined
     minComp: function (index, item) {

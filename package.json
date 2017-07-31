@@ -13,6 +13,7 @@
     "chance": "^0.7.3",
     "lodash-deep": "^1.6.0",
     "mocha": "^2.1.0",
+    "react-bootstrap": "^0.31.1",
     "react-try-catch-render": "^1.0.0"
   },
   "peerDependencies": {},

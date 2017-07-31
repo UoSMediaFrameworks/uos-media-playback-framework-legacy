@@ -30,7 +30,6 @@ module.exports = {
 		localStorage.setItem(HUB_TOKEN, token);
 	},
 	setGroupID: function(id) {
-		console.log("Setting groupID in connectionCache to: " + id);
 		localStorage.setItem(GROUP_ID, id);
 	},
 	getGroupID: function() {
@@ -63,7 +62,6 @@ module.exports = {
         return groupNames;
     },
 	getShortGroupName: function(groupID) {
-		console.log("The groupID was set to: " + groupID,groupNames);
 		return groupNames.get(parseInt(groupID));
 	},
 

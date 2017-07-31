@@ -62,7 +62,7 @@ var SceneChooser = React.createClass({
         var isAdmin = ConnectionCache.getGroupID() == 0 ? 1:0;
         var groupFilter = isAdmin ? <div className="col-xs-12">
             <div className="sort-section">
-                <h2>Show Only</h2>
+                <h4>Show Only</h4>
                 <Select
                     ref="group-filter"
                     name="group-filter"
@@ -75,21 +75,21 @@ var SceneChooser = React.createClass({
 
 
         return (
-            <div>
-                <div className='row'>
-                    <div className='col-xs-12'>
+
+                <div id="scene-list">
+                    <div >
                         <div className="col-xs-12">
-                            <h2>Create a new Scene</h2>
+                            <h4>Create a new Scene</h4>
                             <form className='form-inline' onSubmit={this.handleSubmit} role='form'>
-                                <div className='form-group'>
+                                <div className='form-group col-xs-9 mf-input'>
                                     <input type='text' ref='name' className='form-control' placeholder='name'/>
                                 </div>
-                                <button type='submit' className='btn btn-default'>Create</button>
+                                <button type='submit' className='btn btn-default col-xs-3'>Create</button>
                             </form>
                         </div>
                         <div className="col-xs-12">
                             <div className="sort-section">
-                                <h2>Filter</h2>
+                                <h4>Filter</h4>
                                 <input type='text' ref="filter" onKeyPress={this.handleFilterUpdate}
                                        className='form-control' placeholder='scene name'/>
                             </div>
@@ -100,19 +100,21 @@ var SceneChooser = React.createClass({
                         <h4> Example Scenes </h4>
                         <ul className="nav nav-pills .nav-stacked col-xs-12">
                             <li className="col-xs-12">
-                                <a onClick={GridStore.focusScene.bind(this,"589c9dc3f0b2aca4bdfe444a")}>MF Style Example</a>
+                                <label onClick={GridStore.focusScene.bind(this,"589c9dc3f0b2aca4bdfe444a")}
+                                 onTouchEndCapture={GridStore.focusScene.bind(this,"589c9dc3f0b2aca4bdfe444a")}>MF Style Example</label>
                             </li>
                         </ul>
                     </div>
                     <div className='col-xs-12'>
-                        <h2>Edit an Existing Scene</h2>
+                        <h4>Edit an Existing Scene</h4>
                         <SceneList filterText={this.state.filterText} _sceneFocusHandler={this.props.sceneFocusHandler} sortBy={this.state.sortBy}
                                    filterGroupId={this.state.filterGroupId}/>
+
                     </div>
 
 
                 </div>
-            </div>
+
 
         );
     }

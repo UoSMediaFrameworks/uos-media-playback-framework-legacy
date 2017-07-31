@@ -9,6 +9,8 @@ module.exports = {
         COMP_RESTORE:null,
         COMP_SWITCH_MODE:null,
         COMP_FOCUS_SWITCH:null,
+        ADD_COMPONENT:null,
+        REMOVE_COMPONENT:null,
         /*Breadrumbs*/
         BREADCRUMBS_CLEAR_ALL:null,
         BREADCRUMBS_PLAY:null,

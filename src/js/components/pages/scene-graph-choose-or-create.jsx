@@ -63,11 +63,10 @@ var SceneGraphChooser = React.createClass({
     render: function () {
         localStorage.setItem('scene-graph-filters', JSON.stringify(this.state));
         return (
-            <div className='container'>
-                <div className='row'>
-                    <div className='col-xs-12'>
+
+                <div>
                         <div className="col-xs-12">
-                            <h2>Create a new Scene Graph</h2>
+                            <h4>Create a new Scene Graph</h4>
                             <form className='form-inline' onSubmit={this.handleSubmit} role='form'>
                                 <div >
                                     <input type='text' ref='name' className='form-control' placeholder='name'/>
@@ -85,14 +84,14 @@ var SceneGraphChooser = React.createClass({
                         </div>
                         <div className="col-xs-12">
                             <div className="sort-section">
-                                <h2>Filter</h2>
+                                <h4>Filter</h4>
                                 <input type='text' ref="filter" onKeyPress={this.handleFilterUpdate}
                                        className='form-control' placeholder='scene name'/>
                             </div>
                         </div>
                         <div className="col-xs-12">
                             <div className="sort-section">
-                                <h2>Sort by</h2>
+                                <h4>Sort by</h4>
                                 <button type="button" className="btn btn-dark" value="asc" onClick={this._onSort}>
                                     Name Asc
                                 </button>
@@ -102,13 +101,13 @@ var SceneGraphChooser = React.createClass({
                             </div>
                         </div>
                     <div className='col-xs-12'>
-                        <h2>Edit an Existing Scene Graph</h2>
+                        <h4>Edit an Existing Scene Graph</h4>
                         <SceneGraphList  filterText={this.state.filterText} _sceneGraphFocusHandler={this.props.sceneGraphFocusHandler} sortBy={this.state.sortBy}/>
                     </div>
 
-                    </div>
+
                     <div className="col-xs-12">
-                        <h2>Open Presentation Graphs</h2>
+                        <h4>Open Presentation Graphs</h4>
                         <ul className="graph-type-buttons">
                             <a className='btn btn-dark' href={presentationMediaHubGraphURL}>
                                 <li key="primary">Default Graph</li>
@@ -119,7 +118,6 @@ var SceneGraphChooser = React.createClass({
                         </ul>
                     </div>
                 </div>
-            </div>
         );
     }
 

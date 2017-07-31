@@ -20,19 +20,70 @@ var gridState = {
     },
     roomId: "presentation1",
     modeToggle: true,
-    focusedType:null,
+    focusedType: null,
     layout: [
-        {i: 'z', x: 0, y: 0, w: 12, h: 2, _w: 12, _h: 1,isDraggable:false,isResizeable:false, visible: true,type:"nav", state:"default"},
-        {i: 'a', x:0, y: 1, w: 3, h: 15, _w: 2, _h: 15,isDraggable:true,isResizeable:true, visible: true,type:"sceneList", state:"default"},
-        {i: 'b', x: 3, y: 1, w: 6, h: 8, _w: 6, _h: 8,isDraggable:true,isResizeable:true, visible: true,type:"scene",state:"default"},
-        {i: 'c', x: 3, y: 8, w: 6, h: 4, _w: 6, _h: 4,isDraggable:true,isResizeable:true, visible: true ,type:"",state:"default"},
-        {i: 'd', x: 3, y: 12, w: 6, h: 8, _w:6, _h: 8,isDraggable:true,isResizeable:true, visible: true,type:"sceneViewer",state:"default"}]
+        {
+            i: 'a',
+            x: 0,
+            y: 1,
+            w: 2,
+            h: 15,
+            _w: 2,
+            _h: 15,
+            isDraggable: true,
+            isResizeable: true,
+            visible: true,
+            type: "Scene-List",
+            state: "default"
+        },
+        {
+            i: 'b',
+            x: 3,
+            y: 1,
+            w: 4,
+            h: 8,
+            _w: 4,
+            _h: 8,
+            isDraggable: true,
+            isResizeable: true,
+            visible: true,
+            type: "Scene",
+            state: "default"
+        },
+        {
+            i: 'c',
+            x: 3,
+            y: 8,
+            w: 4,
+            h: 4,
+            _w: 4,
+            _h: 4,
+            isDraggable: true,
+            isResizeable: true,
+            visible: true,
+            type: "",
+            state: "default"
+        },
+        {
+            i: 'd',
+            x: 3,
+            y: 12,
+            w: 4,
+            h: 8,
+            _w:4,
+            _h: 8,
+            isDraggable: true,
+            isResizeable: true,
+            visible: true,
+            type: "Scene-Viewer",
+            state: "default"
+        }]
 };
 
 // APEP you are using global variables, the minimize and maximize function should not scoped differently in my opinion.
 // Hence I've moved them here.
-var minimize = function(index, component) {
-    var item = _.find( gridState.layout, function (layoutItem) {
+var minimize = function (index, component) {
+    var item = _.find(gridState.layout, function (layoutItem) {
         return layoutItem.i == component.i;
     });
     item.w = 1;
@@ -41,7 +92,7 @@ var minimize = function(index, component) {
 
     var newItemId = hat().toString();
 
-    var newItem= {
+    var newItem = {
         i: newItemId,
         x: item.x,
         y: item.y,
@@ -49,7 +100,7 @@ var minimize = function(index, component) {
         h: item.h,
         _w: item._w,
         _h: item._h,
-        type:item.type,
+        type: item.type,
         visible: false
     };
     var lay = gridState.layout;
@@ -58,7 +109,7 @@ var minimize = function(index, component) {
     console.log(_.isEqual(newItem, gridState.layout[index]));
 };
 
-var maximize = function(index, component,maxHeight) {
+var maximize = function (index, component, maxHeight) {
     _.each(gridState.layout, function (layoutItem) {
         layoutItem.visible = false;
     });
@@ -71,15 +122,15 @@ var maximize = function(index, component,maxHeight) {
         i: newItemId,
         x: item.x,
         y: item.y,
-        w: 12,
+        w: 6,
         h: maxHeight,
         _w: item._w,
         _h: item._h,
-        type:item.type,
+        type: item.type,
         visible: true,
-        state:"max",
-        isDraggable:item.isDraggable,
-        isResizeable:item.isResizeable
+        state: "max",
+        isDraggable: item.isDraggable,
+        isResizeable: item.isResizeable
     };
 
     var lay = gridState.layout;
@@ -88,7 +139,7 @@ var maximize = function(index, component,maxHeight) {
     console.log(_.isEqual(newItem, gridState.layout[index]));
 };
 // APEP TODO should be triggered from a VIEW action rather than direct store call
-restore=function(index,component){
+restore = function (index, component) {
     _.each(gridState.layout, function (layoutItem) {
         layoutItem.visible = true;
     });
@@ -106,11 +157,11 @@ restore=function(index,component){
         h: item.h,
         _w: item._w,
         _h: item._h,
-        type:item.type,
+        type: item.type,
         visible: true,
-        state:"default",
-        isDraggable:item.isDraggable,
-        isResizeable:item.isResizeable
+        state: "default",
+        isDraggable: item.isDraggable,
+        isResizeable: item.isResizeable
     };
     var lay = gridState.layout;
     lay[index] = newItem;
@@ -121,13 +172,39 @@ restore=function(index,component){
 //Angel P: this is currently hardcoded and based on the layout, this might be a design decision for our next meeting
 changeMode = function () {
     gridState.modeToggle = !gridState.modeToggle;
-    gridState.layout[1].type = gridState.modeToggle ? "sceneGraphList" : "sceneList";
-    gridState.layout[2].type = gridState.modeToggle ? "sceneGraph" : "scene";
-    gridState.layout[3].type = gridState.modeToggle ? "graph" : "";
-    gridState.layout[4].type = gridState.modeToggle ? "graphViewer" : "sceneViewer";
+    gridState.layout[1].type = gridState.modeToggle ? "Scene-Graph-List" : "Scene-List";
+    gridState.layout[2].type = gridState.modeToggle ? "Scene-Graph" : "Scene";
+    gridState.layout[3].type = gridState.modeToggle ? "Graph" : "";
+    gridState.layout[4].type = gridState.modeToggle ? "Graph-Viewer" : "Scene-Viewer";
     GridStore.emitChange();
 };
-changeFocus = function(type){
+
+
+addComponent = function (type) {
+    gridState.layout.push(
+        {
+            i: hat().toString(),
+            x: gridState.layout.length * 2 % 6,
+            y: Infinity,
+            w: 2,
+            h: 2,
+            _w: 2,
+            _h: 2,
+            type:type,
+            visible: true,
+            isDraggable: true,
+            isResizeable: true,
+            state: "default"
+        }
+    )
+};
+removeComponent=function(id){
+    console.log(gridState.layout)
+    gridState.layout.splice(_.indexOf(gridState.layout, _.findWhere(gridState.layout, { i : id})), 1);
+    console.log(gridState.layout)
+};
+
+changeFocus = function (type) {
     gridState.focusedType = type;
 };
 var GridStore = assign({}, EventEmitter.prototype, {
@@ -146,9 +223,9 @@ var GridStore = assign({}, EventEmitter.prototype, {
 
     // APEP TODO should be triggered from a VIEW action rather than direct store call
 
-    getFocusedComponent:function(){
-      return gridState.focusedType;
-      GridStore.emitChange();
+    getFocusedComponent: function () {
+        return gridState.focusedType;
+        GridStore.emitChange();
     },
     setRoomId: function (room) {
         gridState.roomId = room;
@@ -165,16 +242,16 @@ var GridStore = assign({}, EventEmitter.prototype, {
     },
 
     // APEP every store should use the react view events + dispatcher, direct store manipulation is an anti pattern which adds complexity as it's not documented.
-    dispatcherIndex: AppDispatcher.register(function(payload){
+    dispatcherIndex: AppDispatcher.register(function (payload) {
         var action = payload.action; // this is our action from handleViewAction
-        switch(action.type){
+        switch (action.type) {
             // should only be triggered when server sends data back, so no need to save
             case ActionTypes.COMP_MIN:
                 minimize(action.index, action.item);
                 GridStore.emitChange();
                 break;
             case ActionTypes.COMP_MAX:
-                maximize(action.index, action.item,action.maxHeight);
+                maximize(action.index, action.item, action.maxHeight);
                 GridStore.emitChange();
                 break;
             case ActionTypes.COMP_RESTORE:
@@ -187,6 +264,14 @@ var GridStore = assign({}, EventEmitter.prototype, {
                 break;
             case ActionTypes.COMP_FOCUS_SWITCH:
                 changeFocus(action.itemType);
+                GridStore.emitChange();
+                break;
+            case ActionTypes.ADD_COMPONENT:
+                addComponent(action.componentType);
+                GridStore.emitChange();
+                break;
+            case ActionTypes.REMOVE_COMPONENT:
+                removeComponent(action.componentId);
                 GridStore.emitChange();
                 break;
         }
