@@ -78,7 +78,7 @@ function bundlerBuilder (startPath, finishName, useReactify) {
             // .pipe(gulpif(production, sourcemaps.init({loadMaps: true})))
             // .pipe(gulpif(production, uglify()))
             // .pipe(gulpif(production, sourcemaps.write('./')))
-            .pipe(gulp.dest('dist/js'));
+            .pipe(gulp.dest(dest + '/js'));
     };
 
     return {bundler: bundler, rebundle: rebundle};
@@ -87,7 +87,7 @@ function bundlerBuilder (startPath, finishName, useReactify) {
 gulp.task('watch', function () {
     // trigger livereload on any change to dest
     livereload.listen(lvPort);
-    gulp.watch(dest + '/**').on('change', livereload.changed);
+    gulp.watch('src/**').on('change', livereload.changed);
 
     // html changes
     gulp.watch('src/*.html', ['html']);
@@ -105,7 +105,7 @@ gulp.task('watch', function () {
 gulp.task('html', function() {
     return gulp.src('src/*.html')
         .pipe(template({polyfillFeatures: 'Element.prototype.classList,Object.create'}))
-        .pipe(gulp.dest('dist'));
+        .pipe(gulp.dest(dest));
 });
 
 gulp.task('css', function() {
