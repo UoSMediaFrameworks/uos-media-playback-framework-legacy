@@ -23,10 +23,6 @@ var SceneChooser = React.createClass({
 
 
     },
-    handleSubmit: function (event) {
-        event.preventDefault();
-        HubSendActions.tryCreateScene(this.getRefVal('name'));
-    },
     handleFilterUpdate: function (e) {
         if (e.key === 'Enter') {
             var input = this.refs["filter"];
@@ -78,15 +74,6 @@ var SceneChooser = React.createClass({
 
                 <div id="scene-list">
                     <div >
-                        <div className="col-xs-12">
-                            <h4>Create a new Scene</h4>
-                            <form className='form-inline' onSubmit={this.handleSubmit} role='form'>
-                                <div className='form-group col-xs-9 mf-input'>
-                                    <input type='text' ref='name' className='form-control' placeholder='name'/>
-                                </div>
-                                <button type='submit' className='btn btn-default col-xs-3'>Create</button>
-                            </form>
-                        </div>
                         <div className="col-xs-12">
                             <div className="sort-section">
                                 <h4>Filter</h4>

@@ -26,12 +26,6 @@ var SceneGraphChooser = React.createClass({
             console.log("err", E)
         }
     },
-
-
-    handleSubmit: function (event) {
-        event.preventDefault();
-        HubSendActions.tryCreateSceneGraph(this.getRefVal('name'), this.state.value);
-    },
     handleFilterUpdate: function (e) {
         if (e.key === 'Enter') {
             var input = this.refs["filter"];
@@ -43,10 +37,6 @@ var SceneGraphChooser = React.createClass({
     },
     componentDidUpdate: function () {
         this.refs["filter"].value = this.state.filterText;
-    },
-    handleChange(event)
-    {
-        this.setState({value: event.target.value});
     },
     _onSort(event)
     {
@@ -65,23 +55,6 @@ var SceneGraphChooser = React.createClass({
         return (
 
                 <div>
-                        <div className="col-xs-12">
-                            <h4>Create a new Scene Graph</h4>
-                            <form className='form-inline' onSubmit={this.handleSubmit} role='form'>
-                                <div >
-                                    <input type='text' ref='name' className='form-control' placeholder='name'/>
-                                    <span id="basic-addon2">
-                                    <select className="form-control" value={this.state.value}
-                                            onChange={this.handleChange}>
-                                        <option value="GDC_SCENE_GRAPH">GDC</option>
-                                        <option value="MEMOIR_SCENE_GRAPH">Memoir</option>
-                                        <option value="NARM_SCENE_GRAPH">NARM</option>
-                                    </select>
-                                </span>
-                                    <button type='submit' className='btn btn-default'>Create</button>
-                                </div>
-                            </form>
-                        </div>
                         <div className="col-xs-12">
                             <div className="sort-section">
                                 <h4>Filter</h4>

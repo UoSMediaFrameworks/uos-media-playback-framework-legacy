@@ -13,11 +13,11 @@ var Breadcrumb = React.createClass({
                     <p className="btn-group btn-group-sm">{name}</p>
                     <div className="btn-group btn-group-sm" role="group">
                         <button type="button" className="btn btn-default" >
-                            <i className="fa fa-play" onClick={  BreadcrumbsStore.playBreadcrumbs.bind(this,this.props.index)}></i></button>
+                            <i className="fa fa-play" onClick={  BreadcrumbsStore.playBreadcrumb.bind(this,this.props.index)}></i></button>
 
                         <button type="button" className="btn btn-default">
                             <i className="fa fa-times" onClick={BreadcrumbsStore.removeBreadcrumb.bind(this,this.props.index)} ></i></button>
-                        <button type="button" className="btn btn-default" onClick={ BreadcrumbsStore.traceBreadcrumbs.bind(this,this.props.index)} ><i className="fa fa-ban"></i></button>
+                        <button type="button" className="btn btn-default" onClick={ BreadcrumbsStore.traceBreadcrumb.bind(this,this.props.index)} ><i className="fa fa-ban"></i></button>
                     </div>
                 </div>
                 <Crumbs crumbs={this.props.crumb.breadcrumbs} parentCrumbIndex={this.props.index}></Crumbs>

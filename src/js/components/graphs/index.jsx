@@ -41,6 +41,7 @@ var GraphContainer = React.createClass({
     _onChange: function () {
 
         var sceneList = SceneGraphListStore.getSceneGraphByID(this.state.graphId);
+        console.log("CL_OnChange",sceneList,this.state.graphId)
         this._initialize(sceneList);
 
     },
@@ -239,9 +240,7 @@ var GraphContainer = React.createClass({
         var queryId;
 
         queryId = nextProps._id;
-
-
-        console.log(this.state.previousGraphId,queryId)
+        console.log("componentWillReceiveProps",this.state.previousGraphId,queryId)
         if(queryId != this.state.previousGraphId){
             HubSendActions.getSceneGraphByID(queryId);
             this.setState({graphId: queryId, guid: hat()})
@@ -280,7 +279,7 @@ var GraphContainer = React.createClass({
         }
 
         return (
-            <div ref="parent">
+            <div ref="parent" className="flex-container">
 
                 <div className="button-wrapper btn-group-vertical">
                   {/*  <button className="btn graph-btn" id="reset-origin">Go Home</button>*/}

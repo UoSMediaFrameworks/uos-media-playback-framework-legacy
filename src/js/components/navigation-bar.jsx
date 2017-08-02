@@ -5,15 +5,19 @@ var SceneActions = require('../actions/scene-actions');
 var ClientStore = require('../stores/client-store');
 var DropdownButton = require('react-bootstrap').DropdownButton;
 var MenuItem = require('react-bootstrap').MenuItem;
+var FormHelper = require('../mixins/form-helper');
+var HubSendActions = require('../actions/hub-send-actions');
 
 function _getState() {
     return {
         loggedIn: ClientStore.loggedIn(),
-        focusedLayoutItem:GridStore.getFocusedComponent()
+        focusedLayoutItem:GridStore.getFocusedComponent(),
+        value:"GDC_SCENE_GRAPH"
     }
 };
 
 var NavigationBar = React.createClass({
+    mixins: [FormHelper],
     getInitialState: function () {
         return _getState();
     },
@@ -23,11 +27,14 @@ var NavigationBar = React.createClass({
     _onLayoutChange:function(){
         this.setState({focusedLayoutItem: GridStore.getFocusedComponent()});
     },
+    _onOptionValueChange:function(){
+        this.setState({value:"GDC_SCENE_GRAPH"})
+    },
     handleLogout: function (event) {
         SceneActions.logout();
     },
     addComponent:function(type){
-        console.log("addComponent",type)
+        console.log("addComponent",type);
         SceneActions.addLayoutComponent(type);
     },
     componentDidMount:function(){
@@ -36,6 +43,20 @@ var NavigationBar = React.createClass({
     componentWillMount:function(){
         ClientStore.addChangeListener(this._onLoginChange)
         GridStore.addChangeListener(this._onLayoutChange)
+    },
+    handleCreateScene:function(event){
+        event.preventDefault();
+        HubSendActions.tryCreateScene(this.getRefVal('name'));
+    },
+    handleRoomChange:function(event){
+        event.preventDefault();
+    },
+    handleGraphRoomChange:function(event){
+        event.preventDefault();
+    },
+    handleCreateSceneGraph:function(event){
+        event.preventDefault();
+        HubSendActions.tryCreateSceneGraph(this.getRefVal('name'), this.state.value);
     },
     componentWillUnmount:function(){
         ClientStore.removeChangeListener(this._onLoginChange)
@@ -47,22 +68,59 @@ var NavigationBar = React.createClass({
                 return <li><span  className="navbar-text">Scene</span></li>;
                 break;
             case "Scene-Graph":
-                return <li> <span  className="navbar-text">Scene Graph</span></li>;
+                return <li>
+                    <span  className="navbar-text">Scene Graph</span>
+
+                </li>;
                 break;
             case "Scene-List":
-                return  <li><span  className="navbar-text">Scene List</span></li>;
+                return  <li>
+                    <form className='form-inline mf-form' onSubmit={this.handleCreateScene} role='form'>
+                        <div className='form-group mf-input'>
+                            <label for="scene-input"  className="mf-text">Scene List</label>
+                            <input type='text' ref='name' id="scene-input" className='form-control' placeholder='name'/>
+                        </div>
+                        <button type='submit' className='btn btn-dark'>Create</button>
+                    </form>
+                </li>;
                 break;
             case "Scene-Graph-List":
-                return <li><span  className="navbar-text">Scene Graph List</span></li>;
+                return <li>
+                    <form className='form-inline mf-form' onSubmit={this.handleCreateSceneGraph} role='form'>
+                            <label for="scene-graph-input"  className="mf-text">Scene Graph List</label>
+                            <input type='text' ref='name' id="scene-graph-input" className='form-control' placeholder='name'/>
+                            <span id="basic-addon2">
+                                    <select className="form-control" value={this.state.value}
+                                            onChange={this._onOptionValueChange}>
+                                        <option value="GDC_SCENE_GRAPH">GDC</option>
+                                        <option value="MEMOIR_SCENE_GRAPH">Memoir</option>
+                                        <option value="NARM_SCENE_GRAPH">NARM</option>
+                                    </select>
+                                </span>
+                            <button type='submit' className='btn btn-dark'>Create</button>
+                    </form>
+                </li>;
                 break;
             case "Graph-Viewer":
-                return <li><span  className="navbar-text">Graph Viewer</span></li>;
+                return <li>
+                    <form className='form-inline mf-form' onSubmit={this.handleRoomChange} role='form'>
+                        <label for="scene-graph-input"  className="mf-text">Graph Viewer</label>
+                        <input type='text' ref='name' id="scene-graph-input" className='form-control' placeholder='Room ID'/>
+                        <button type='submit' className='btn btn-dark'>set Room</button>
+                    </form>
+                </li>
                 break;
             case "Scene-Viewer":
                 return <li><span  className="navbar-text">Scene Viewer</span></li>;
                 break;
             case "Graph":
-                return <li><span  className="navbar-text">Graph</span></li>;
+                return <li>
+                    <form className='form-inline mf-form' onSubmit={this.handleGraphRoomChange} role='form'>
+                        <label for="scene-graph-input"  className="mf-text">Graph</label>
+                        <input type='text' ref='name' id="scene-graph-input" className='form-control' placeholder='Room ID'/>
+                        <button type='submit' className='btn btn-dark'>set Room</button>
+                    </form>
+                </li>;
                 break;
             case "":
                 return null;
@@ -89,7 +147,7 @@ var NavigationBar = React.createClass({
         }
         var title="components";
         return (
-            <nav className='navbar navbar-inverse'>
+            this.state.loggedIn?<nav className='navbar navbar-inverse'>
                 <div className="container-fluid">
                     <div className="navbar-header">
                         <button type="button" className="navbar-toggle collapsed" data-toggle="collapse"
@@ -129,7 +187,7 @@ var NavigationBar = React.createClass({
 
                     </div>
                 </div>
-            </nav>
+            </nav>:null
         )
     }
 
