@@ -4,7 +4,6 @@
     "description": "Media Playback Framework - Front end application for the Media Framework",
     "repository": "https://github.com/UoSMediaFrameworks/uos-media-playback-framework-legacy",
     "scripts": {
-        "start": "./node_modules/.bin/gulp build-dist && node app.js",
         "test": "mocha"
     },
     "engines": {
