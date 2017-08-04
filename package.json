@@ -4,7 +4,11 @@
     "description": "Media Playback Framework - Front end application for the Media Framework",
     "repository": "https://github.com/UoSMediaFrameworks/uos-media-playback-framework-legacy",
     "scripts": {
+        "start": "./node_modules/.bin/gulp build-dist && node app.js",
         "test": "mocha"
+    },
+    "engines": {
+        "node": "4.8.0"
     },
     "author": "",
     "license": "ISC",
@@ -13,7 +17,6 @@
         "chance": "^0.7.3",
         "lodash-deep": "^1.6.0",
         "mocha": "^2.1.0",
-        "react-bootstrap": "^0.31.1",
         "react-try-catch-render": "^1.0.0"
     },
     "peerDependencies": {},
@@ -63,7 +66,7 @@
         "object-assign": "^2.0.0",
         "process-nextick-args": "^1.0.7",
         "prop-types": "^15.5.8",
-        "qrcode.react": "0.6.1",
+        "qrcode.react": "^0.6.1",
         "react": "^15.3.2",
         "react-bootstrap": "^0.31.1",
         "react-dnd": "^2.1.4",
