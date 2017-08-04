@@ -9,4 +9,7 @@ artifacts:
   files:
     - app.js
     - static_server.js
-    - dist/**
+    - dist/*
+    - dist/**/*
+    - node_modules/*
+    - node_modules//**/*
