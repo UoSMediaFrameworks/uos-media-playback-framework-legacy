@@ -116,7 +116,7 @@ var RespGrid = React.createClass({
                     return (
                         <div key={item.i} className="widget-container">
                             <section className="widget">
-                                <header>
+                                <header className="react-drag-handle">
                                      <span className="widget-title">
                                         <span>{item.type}</span>
                                     </span>
@@ -152,7 +152,7 @@ var RespGrid = React.createClass({
         });
 
         return (
-            <ReactGridLayout onDragStart={this.onDragStopHandler} className="layout" autoSize={true}
+            <ReactGridLayout onDragStart={this.onDragStopHandler} className="layout" autoSize={true} draggableHandle=".react-drag-handle"
                              onLayoutChange={this.onLayoutChange}
                              layout={this.state.data.layout}
                              verticalCompact={true}

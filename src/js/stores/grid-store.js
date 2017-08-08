@@ -30,7 +30,6 @@ var gridState = {
             h: 15,
             _w: 2,
             _h: 15,
-            isDraggable: true,
             isResizeable: true,
             visible: true,
             type: "Scene-List",
@@ -58,7 +57,6 @@ var gridState = {
             h: 4,
             _w: 4,
             _h: 4,
-            isDraggable: true,
             isResizeable: true,
             visible: true,
             type: "",
@@ -72,7 +70,6 @@ var gridState = {
             h: 8,
             _w:4,
             _h: 8,
-            isDraggable: true,
             isResizeable: true,
             visible: true,
             type: "Scene-Viewer",
@@ -129,7 +126,6 @@ var maximize = function (index, component, maxHeight) {
         type: item.type,
         visible: true,
         state: "max",
-        isDraggable: item.isDraggable,
         isResizeable: item.isResizeable
     };
 
@@ -160,7 +156,6 @@ restore = function (index, component) {
         type: item.type,
         visible: true,
         state: "default",
-        isDraggable: item.isDraggable,
         isResizeable: item.isResizeable
     };
     var lay = gridState.layout;
@@ -192,7 +187,6 @@ addComponent = function (type) {
             _h: 2,
             type:type,
             visible: true,
-            isDraggable: true,
             isResizeable: true,
             state: "default"
         }
