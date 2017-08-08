@@ -22,9 +22,11 @@ var concat = require('gulp-concat'),
     livereload = require('gulp-livereload'),
     dest = 'dist',
     lvPort = 35729;
+var realFs = require('fs');
+var gracefulFs = require('graceful-fs');
 
 var cssGlobs = ['src/css/**/*.css', 'node_modules/codemirror/lib/*.css'];
-
+gracefulFs.gracefulify(realFs);
 var static_server = require('./static_server');
 
 /*

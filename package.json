@@ -33,6 +33,7 @@
         "es6-promise": "^2.0.1",
         "es6-promises": "^1.0.8",
         "git-rev": "^0.2.1",
+        "graceful-fs": "^4.1.11",
         "gulp": "^3.8.10",
         "gulp-concat": "^2.4.1",
         "gulp-filter": "^1.0.2",
