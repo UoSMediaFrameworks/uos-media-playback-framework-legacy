@@ -219,7 +219,12 @@ var GridStore = assign({}, EventEmitter.prototype, {
 
     getFocusedComponent: function () {
         return gridState.focusedType;
-        GridStore.emitChange();
+    },
+    getFocusedSceneID: function () {
+        return gridState.scene._id;
+    },
+    getFocusedSceneGraphID: function () {
+        return gridState.sceneGraph._id;
     },
     setRoomId: function (room) {
         gridState.roomId = room;

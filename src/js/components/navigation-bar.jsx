@@ -12,7 +12,9 @@ function _getState() {
     return {
         loggedIn: ClientStore.loggedIn(),
         focusedLayoutItem:GridStore.getFocusedComponent(),
-        value:"GDC_SCENE_GRAPH"
+        value:"GDC_SCENE_GRAPH",
+        focusedSceneID: "",
+        focusedSceneGraphID:""
     }
 };
 
@@ -25,7 +27,13 @@ var NavigationBar = React.createClass({
         this.setState({loggedIn: ClientStore.loggedIn()});
     },
     _onLayoutChange:function(){
-        this.setState({focusedLayoutItem: GridStore.getFocusedComponent()});
+        this.setState(
+            {
+                focusedLayoutItem: GridStore.getFocusedComponent(),
+                focusedSceneID:GridStore.getFocusedSceneID(),
+                focusedSceneGraphID:GridStore.getFocusedSceneGraphID()
+            }
+            );
     },
     _onOptionValueChange:function(){
         this.setState({value:"GDC_SCENE_GRAPH"})
@@ -111,7 +119,7 @@ var NavigationBar = React.createClass({
                 </li>
                 break;
             case "Scene-Viewer":
-                return <li><span  className="navbar-text">Scene Viewer</span></li>;
+                return <li><span  className="navbar-text">Scene Viewer</span> <span classname="navbar-text"> </span></li>;
                 break;
             case "Graph":
                 return <li>
@@ -131,11 +139,16 @@ var NavigationBar = React.createClass({
         }
 
     },
+    stopPropHandler:function(e){
+        console.log("whattt",e)
+      e.stopPropagation();
+    },
     render: function () {
         var self=this;
         var nc = this.getNavComponent();
-
+        var isAdmin = connectionCache.getGroupID() == 0 ? 1:0;
         var sessionNav = null;
+        var adminDropDown = null;
         if (this.state.loggedIn) {
             sessionNav = (   <li>
 
@@ -145,7 +158,17 @@ var NavigationBar = React.createClass({
 
             )
         }
-        var title="components";
+        if(isAdmin){
+            adminDropDown = (
+            <li className="mf-dropdown">
+                <DropdownButton title={"Admin"} className="btn btn-dark navbar-btn" >
+                    <label>Focused Scene ID: </label><input onSelect={self.stopPropHandler}  type="text" value={this.state.focusedSceneID} ></input>
+                    <label>Focused Scene Graph ID: </label><input  onSelect={self.stopPropHandler} type="text" value={this.state.focusedSceneGraphID} ></input>
+                </DropdownButton>
+            </li>
+            )
+        }
+        var title="Components";
         return (
             this.state.loggedIn?<nav className='navbar navbar-inverse'>
                 <div className="container-fluid">
@@ -168,6 +191,7 @@ var NavigationBar = React.createClass({
                                 <span className="navbar-text">Version: 0</span>
                             </li>
                             {sessionNav}
+                            {adminDropDown}
                             <li className="mf-dropdown">
                                 <DropdownButton title={title} className="btn btn-dark navbar-btn">
                                     <MenuItem eventKey="1" onClick={self.addComponent.bind(this,"Scene-List")}>Scene List</MenuItem>
