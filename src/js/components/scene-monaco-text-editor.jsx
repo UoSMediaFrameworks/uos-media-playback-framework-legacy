@@ -199,6 +199,7 @@ var SceneMonacoTextEditor = React.createClass({
     editorWillMount: function(m) {
         try {
             m.languages.json.jsonDefaults.setDiagnosticsOptions({
+                validate:true,
                 schemas: [{
                     uri: SCHEMA_URL,
                     schema: {
@@ -260,7 +261,7 @@ var SceneMonacoTextEditor = React.createClass({
             // Method that will be executed when the action is triggered.
             run: function(ed) {
                 var successful = document.execCommand('copy');
-                
+
                 // APEP TODO we can give the user an error toastr if the execCommand fails
 
                 return null;
@@ -329,7 +330,8 @@ var SceneMonacoTextEditor = React.createClass({
     render: function() {
 
         var options = {
-            selectOnLineNumbers: true
+            selectOnLineNumbers: true,
+            automaticLayout:true
         };
 
         var requireConfig = {
