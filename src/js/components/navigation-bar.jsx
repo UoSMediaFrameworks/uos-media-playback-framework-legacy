@@ -183,7 +183,9 @@ var NavigationBar = React.createClass({
                     </div>
                     <div className="collapse navbar-collapse">
                         <ul className="nav navbar-nav navbar-left">
-                            {nc}
+                            <li>
+                                <span className="navbar-text"> Media Framework</span>
+                            </li>
                         </ul>
                         <ul className="nav navbar-nav navbar-right">
 
@@ -208,7 +210,9 @@ var NavigationBar = React.createClass({
                                 </button>
                             </li>
                         </ul>
-
+                        <ul className="nav navbar-nav navbar-right">
+                            {nc}
+                        </ul>
                     </div>
                 </div>
             </nav>:null
