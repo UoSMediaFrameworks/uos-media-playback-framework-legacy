@@ -23,6 +23,12 @@ var SceneActions = {
             itemType: itemType
         });
     },
+    layoutChange:function(layout){
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.LAYOUT_CHANGE,
+            layout:layout
+        })
+    },
     addLayoutComponent:function(componentType){
       AppDispatcher.handleViewAction({
           type:ActionTypes.ADD_COMPONENT,

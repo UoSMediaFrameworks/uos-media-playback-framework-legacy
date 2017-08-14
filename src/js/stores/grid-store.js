@@ -9,6 +9,56 @@ var hat = require('hat');
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
 var CHANGE_EVENT = 'CHANGE_EVENT';
 
+var defaultComponents = [
+    {
+        i: 'a',
+        x: 0,
+        y: 1,
+        w: 2,
+        h: 15,
+        _w: 2,
+        _h: 15,
+        isResizable: true,
+        visible: true,
+        type: "Scene-List",
+        state: "default"
+    },
+    {
+        i: 'b',
+        x: 3,
+        y: 1,
+        w: 4,
+        h: 8,
+        _w: 4,
+        _h: 8,
+        isDraggable: true,
+        isResizable: true,
+        visible: true,
+        type: "Scene",
+        state: "default"
+    },
+    {
+        i: 'd',
+        x: 3,
+        y: 12,
+        w: 4,
+        h: 8,
+        _w:4,
+        _h: 8,
+        isResizable: true,
+        visible: true,
+        type: "Scene-Viewer",
+        state: "default"
+    }];
+
+var getLayoutFromLS= function (){
+    var parsedLayout = JSON.parse(localStorage.getItem('layout')) || [];
+    if(parsedLayout.length <1){
+        return defaultComponents;
+    }else{
+        return parsedLayout;
+    }
+};
 var gridState = {
     scene: {
         name: "",
@@ -21,62 +71,15 @@ var gridState = {
     roomId: "presentation1",
     modeToggle: true,
     focusedType: null,
-    layout: [
-        {
-            i: 'a',
-            x: 0,
-            y: 1,
-            w: 2,
-            h: 15,
-            _w: 2,
-            _h: 15,
-            isResizeable: true,
-            visible: true,
-            type: "Scene-List",
-            state: "default"
-        },
-        {
-            i: 'b',
-            x: 3,
-            y: 1,
-            w: 4,
-            h: 8,
-            _w: 4,
-            _h: 8,
-            isDraggable: true,
-            isResizeable: true,
-            visible: true,
-            type: "Scene",
-            state: "default"
-        },
-        {
-            i: 'c',
-            x: 3,
-            y: 8,
-            w: 4,
-            h: 4,
-            _w: 4,
-            _h: 4,
-            isResizeable: true,
-            visible: true,
-            type: "",
-            state: "default"
-        },
-        {
-            i: 'd',
-            x: 3,
-            y: 12,
-            w: 4,
-            h: 8,
-            _w:4,
-            _h: 8,
-            isResizeable: true,
-            visible: true,
-            type: "Scene-Viewer",
-            state: "default"
-        }]
+    layout: getLayoutFromLS()
 };
 
+
+var saveToLS = function(newLayout){
+
+    gridState.layout = newLayout;
+      localStorage.setItem("layout",JSON.stringify(newLayout))
+};
 // APEP you are using global variables, the minimize and maximize function should not scoped differently in my opinion.
 // Hence I've moved them here.
 var minimize = function (index, component) {
@@ -103,7 +106,7 @@ var minimize = function (index, component) {
     var lay = gridState.layout;
     lay[index] = newItem;
     gridState.layout = lay;
-    console.log(_.isEqual(newItem, gridState.layout[index]));
+
 };
 
 var maximize = function (index, component, maxHeight) {
@@ -126,13 +129,12 @@ var maximize = function (index, component, maxHeight) {
         type: item.type,
         visible: true,
         state: "max",
-        isResizeable: item.isResizeable
+        isResizable: item.isResizable
     };
 
     var lay = gridState.layout;
     lay[index] = newItem;
     gridState.layout = lay;
-    console.log(_.isEqual(newItem, gridState.layout[index]));
 };
 // APEP TODO should be triggered from a VIEW action rather than direct store call
 restore = function (index, component) {
@@ -156,22 +158,11 @@ restore = function (index, component) {
         type: item.type,
         visible: true,
         state: "default",
-        isResizeable: item.isResizeable
+        isResizable: item.isResizable
     };
     var lay = gridState.layout;
     lay[index] = newItem;
     gridState.layout = lay;
-    console.log(_.isEqual(newItem, gridState.layout[index]));
-};
-
-//Angel P: this is currently hardcoded and based on the layout, this might be a design decision for our next meeting
-changeMode = function () {
-    gridState.modeToggle = !gridState.modeToggle;
-    gridState.layout[1].type = gridState.modeToggle ? "Scene-Graph-List" : "Scene-List";
-    gridState.layout[2].type = gridState.modeToggle ? "Scene-Graph" : "Scene";
-    gridState.layout[3].type = gridState.modeToggle ? "Graph" : "";
-    gridState.layout[4].type = gridState.modeToggle ? "Graph-Viewer" : "Scene-Viewer";
-    GridStore.emitChange();
 };
 
 
@@ -187,15 +178,13 @@ addComponent = function (type) {
             _h: 2,
             type:type,
             visible: true,
-            isResizeable: true,
+            isResizable: true,
             state: "default"
         }
     )
 };
 removeComponent=function(id){
-    console.log(gridState.layout)
     gridState.layout.splice(_.indexOf(gridState.layout, _.findWhere(gridState.layout, { i : id})), 1);
-    console.log(gridState.layout)
 };
 
 changeFocus = function (type) {
@@ -273,6 +262,11 @@ var GridStore = assign({}, EventEmitter.prototype, {
                 removeComponent(action.componentId);
                 GridStore.emitChange();
                 break;
+            case ActionTypes.LAYOUT_CHANGE:
+                saveToLS(action.layout);
+                GridStore.emitChange();
+                break;
+
         }
 
         return true;

@@ -27,33 +27,33 @@ var RespGrid = React.createClass({
     },
 
     _onChange: function () {
-        console.log("change to grid happened",this.state.data,GridStore.getGridState())
         this.setState({data: GridStore.getGridState()})
     },
-    modeChangeHandler: function (e) {
-        if (e.altKey && e.keyCode == 77) {
-            SceneActions.switchCompMode();
-        }
-    },
     componentWillMount: function () {
-        document.addEventListener('keyup', this.modeChangeHandler, false);
         GridStore.addChangeListener(this._onChange);
     },
     componentWillUnmount: function () {
-        document.removeEventListener('keyup', this.modeChangeHandler, false);
+
         GridStore.removeChangeListener(this._onChange);
     },
     componentDidMount: function () {
         var dom = ReactDOM.findDOMNode(this);
-        console.log("did Mount", dom.parentElement.clientHeight);
         this.setState({parentHeight: dom.parentElement.clientHeight});
     },
     onLayoutChange: function (layout) {
+
+        var self=this;
         // APEP TODO should we not be updating the store in this case?
         // APEP I guess each item keeps the values updated, but it does seem odd that we would not update store
         // AngelP : This function can be used to keep component layout changes in the store, but the use case for it, to record changes
         // for local storage.
-        console.log("onLayoutChange", layout, this);
+
+            var mergedList = _.map(self.state.data.layout, function(item){
+                return _.extend(item, _.findWhere(layout, { i: item.i }));
+            });
+
+            SceneActions.layoutChange(mergedList);
+
     },
     getComponent: function (item) {
         var self = this;
