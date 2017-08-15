@@ -32,6 +32,7 @@ var NarmGraph = React.createClass({
     },
 
     componentWillUnmount: function () {
+        document.removeEventListener('keyup', this.optionsMenuHandler, false);
         BreadcrumbsStore.removePlayListener(this._playBreadcrumbs);
         BreadcrumbsStore.removeTraceListener(this._traceBreadcrumbs);
     },

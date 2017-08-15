@@ -140,7 +140,14 @@ var GraphContainer = React.createClass({
 
             switch (this.state.type) {
                 case "MEMOIR_SCENE_GRAPH":
-                    return null;
+                    return (
+                        <MemoirGraph
+                        shouldUpdateId={this.state.guid}
+            data={this.state.root}
+            innerWidth={window.innerWidth * 0.8}
+            innerHeight={window.innerHeight * 0.6}
+
+                    />)
                     break;
                 case "NARM_SCENE_GRAPH":
                     return (
