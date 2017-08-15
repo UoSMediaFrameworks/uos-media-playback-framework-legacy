@@ -7,6 +7,7 @@ var DropdownButton = require('react-bootstrap').DropdownButton;
 var MenuItem = require('react-bootstrap').MenuItem;
 var FormHelper = require('../mixins/form-helper');
 var HubSendActions = require('../actions/hub-send-actions');
+var HubClient = require('../utils/HubClient');
 
 function _getState() {
     return {
@@ -58,9 +59,13 @@ var NavigationBar = React.createClass({
     },
     handleRoomChange:function(event){
         event.preventDefault();
+        connectionCache.setSocketID(this.getRefVal('name'));
+
     },
     handleGraphRoomChange:function(event){
         event.preventDefault();
+        HubClient.registerToGraphPlayerRoom(this.getRefVal('name'))
+
     },
     handleCreateSceneGraph:function(event){
         event.preventDefault();
