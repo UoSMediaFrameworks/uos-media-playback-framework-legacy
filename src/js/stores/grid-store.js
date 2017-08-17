@@ -8,13 +8,47 @@ var _ = require('lodash');
 var hat = require('hat');
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
 var CHANGE_EVENT = 'CHANGE_EVENT';
+var getLayoutFromLS = function () {
+    var parsedLayout = JSON.parse(localStorage.getItem('layout')) || [];
+    if (parsedLayout.length < 1) {
+        return defaultComponents;
+    } else {
+        return parsedLayout;
+    }
+};
+var saveToLS = function (newLayout) {
+    _.each(newLayout, function (item) {
+        if (item.state == "default") {
+            item._w = item.w;
+            item._h = item.h;
+        }
+    });
+    gridState.layout = newLayout;
+    localStorage.setItem("layout", JSON.stringify(newLayout))
+};
+
+var gridState = {
+    scene: {
+        name: "",
+        _id: null
+    },
+    sceneGraph: {
+        name: "",
+        _id: null
+    },
+    cols: 30,
+    roomId: "presentation1",
+    modeToggle: true,
+    focusedType: null,
+    layout: getLayoutFromLS()
+};
 
 var defaultComponents = [
     {
         i: 'a',
         x: 0,
         y: 1,
-        w: 2,
+        w: gridState.cols / 3,
         h: 15,
         _w: 2,
         _h: 15,
@@ -43,7 +77,7 @@ var defaultComponents = [
         y: 12,
         w: 4,
         h: 8,
-        _w:4,
+        _w: 4,
         _h: 8,
         isResizable: true,
         visible: true,
@@ -51,35 +85,7 @@ var defaultComponents = [
         state: "default"
     }];
 
-var getLayoutFromLS= function (){
-    var parsedLayout = JSON.parse(localStorage.getItem('layout')) || [];
-    if(parsedLayout.length <1){
-        return defaultComponents;
-    }else{
-        return parsedLayout;
-    }
-};
-var gridState = {
-    scene: {
-        name: "",
-        _id: null
-    },
-    sceneGraph: {
-        name: "",
-        _id: null
-    },
-    roomId: "presentation1",
-    modeToggle: true,
-    focusedType: null,
-    layout: getLayoutFromLS()
-};
 
-
-var saveToLS = function(newLayout){
-
-    gridState.layout = newLayout;
-      localStorage.setItem("layout",JSON.stringify(newLayout))
-};
 // APEP you are using global variables, the minimize and maximize function should not scoped differently in my opinion.
 // Hence I've moved them here.
 var minimize = function (index, component) {
@@ -116,25 +122,10 @@ var maximize = function (index, component, maxHeight) {
     var item = _.find(gridState.layout, function (layoutItem) {
         return layoutItem.i == component.i;
     });
-
-    var newItemId = hat().toString();
-    var newItem = {
-        i: newItemId,
-        x: item.x,
-        y: item.y,
-        w: 6,
-        h: maxHeight,
-        _w: item._w,
-        _h: item._h,
-        type: item.type,
-        visible: true,
-        state: "max",
-        isResizable: item.isResizable
-    };
-
-    var lay = gridState.layout;
-    lay[index] = newItem;
-    gridState.layout = lay;
+    item.w = gridState.cols;
+    item.h = maxHeight;
+    item.state = "max";
+    item.visible = true;
 };
 // APEP TODO should be triggered from a VIEW action rather than direct store call
 restore = function (index, component) {
@@ -146,45 +137,66 @@ restore = function (index, component) {
     });
     item.w = item._w;
     item.h = item._h;
-    var newItemId = hat().toString();
-    var newItem = {
-        i: newItemId,
-        x: item.x,
-        y: item.y,
-        w: item.w,
-        h: item.h,
-        _w: item._w,
-        _h: item._h,
-        type: item.type,
-        visible: true,
-        state: "default",
-        isResizable: item.isResizable
+    item.state = "default";
+};
+collapseLeft = function (component) {
+    var item = _.find(gridState.layout, function (layoutItem) {
+        return layoutItem.i == component.i;
+    });
+    item.state = "collapsed-left";
+    item._w = item.w;
+    item.w = 1;
+    item.isResizable = false;
+
+},
+    collapseRight = function (component) {
+        var item = _.find(gridState.layout, function (layoutItem) {
+            return layoutItem.i == component.i;
+        });
+        item.state = "collapsed-right";
+        item._w = item.w;
+        item.w = 1;
+        item.x = (gridState.cols - item.w);
+        item.isResizable = false;
+    },
+    expandLeft = function (component) {
+        var item = _.find(gridState.layout, function (layoutItem) {
+            return layoutItem.i == component.i;
+        });
+        item.state = "default";
+        item.w = item._w;
+        item.isResizable = true;
+
+    },
+    expandRight = function (component) {
+        var item = _.find(gridState.layout, function (layoutItem) {
+            return layoutItem.i == component.i;
+        });
+        item.state = "default";
+        item.w = item._w;
+        item.x = (gridState.cols - item._w);
+        item.isResizable = true;
+    },
+
+    addComponent = function (type) {
+        gridState.layout.push(
+            {
+                i: hat().toString(),
+                x: gridState.layout.length * 2 % 6,
+                y: Infinity,
+                w: 2,
+                h: 2,
+                _w: 2,
+                _h: 2,
+                type: type,
+                visible: true,
+                isResizable: true,
+                state: "default"
+            }
+        )
     };
-    var lay = gridState.layout;
-    lay[index] = newItem;
-    gridState.layout = lay;
-};
-
-
-addComponent = function (type) {
-    gridState.layout.push(
-        {
-            i: hat().toString(),
-            x: gridState.layout.length * 2 % 6,
-            y: Infinity,
-            w: 2,
-            h: 2,
-            _w: 2,
-            _h: 2,
-            type:type,
-            visible: true,
-            isResizable: true,
-            state: "default"
-        }
-    )
-};
-removeComponent=function(id){
-    gridState.layout.splice(_.indexOf(gridState.layout, _.findWhere(gridState.layout, { i : id})), 1);
+removeComponent = function (id) {
+    gridState.layout.splice(_.indexOf(gridState.layout, _.findWhere(gridState.layout, {i: id})), 1);
 };
 
 changeFocus = function (type) {
@@ -246,8 +258,20 @@ var GridStore = assign({}, EventEmitter.prototype, {
                 restore(action.index, action.item);
                 GridStore.emitChange();
                 break;
-            case ActionTypes.COMP_SWITCH_MODE:
-                changeMode();
+            case ActionTypes.COMP_COLLAPSE_LEFT:
+                collapseLeft(action.item);
+                GridStore.emitChange();
+                break;
+            case ActionTypes.COMP_COLLAPSE_RIGHT:
+                collapseRight(action.item);
+                GridStore.emitChange();
+                break;
+            case ActionTypes.COMP_EXPAND_LEFT:
+                expandLeft(action.item);
+                GridStore.emitChange();
+                break;
+            case ActionTypes.COMP_EXPAND_RIGHT:
+                expandRight(action.item);
                 GridStore.emitChange();
                 break;
             case ActionTypes.COMP_FOCUS_SWITCH:

@@ -6,6 +6,10 @@ module.exports = {
         /* Grid or Application Layout  */
         COMP_MIN: null,
         COMP_MAX: null,
+        COMP_COLLAPSE_LEFT:null,
+        COMP_COLLAPSE_RIGHT:null,
+        COMP_EXPAND_LEFT:null,
+        COMP_EXPAND_RIGHT:null,
         COMP_RESTORE:null,
         COMP_SWITCH_MODE:null,
         COMP_FOCUS_SWITCH:null,

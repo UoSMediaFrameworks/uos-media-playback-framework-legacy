@@ -21,8 +21,8 @@ var RespGrid = React.createClass({
     getInitialState: function () {
         return {
             data: GridStore.getGridState(),
-            parentHeight: null
-
+            parentHeight: null,
+            cols:30
         }
     },
 
@@ -57,32 +57,34 @@ var RespGrid = React.createClass({
     },
     getComponent: function (item) {
         var self = this;
-        switch (item.type) {
-            case "Scene":
-                return <Scene isLayout={true} _id={self.state.data.scene._id}/>;
-                break;
-            case "Scene-Graph":
-                return <SceneGraph isLayout={true} _id={self.state.data.sceneGraph._id}/>;
-                break;
-            case "Scene-List":
-                return <SceneChooser isLayout={true} sceneFocusHandler={GridStore.focusScene}/>;
-                break;
-            case "Scene-Graph-List":
-                return <SceneGraphChooser isLayout={true} sceneGraphFocusHandler={GridStore.focusSceneGraph}/>;
-                break;
-            case "Graph-Viewer":
-                return <GraphViewer isLayout={true} roomId={self.state.data.roomId}></GraphViewer>;
-                break;
-            case "Scene-Viewer":
-                return <SceneListener isLayout={true} sceneId={self.state.data.scene._id}/>;
-                break;
-            case "Graph":
-                return <GraphTest isLayout={true} _id={self.state.data.sceneGraph._id}/>;
-                break;
-            default:
-                return null;
-                break
-        }
+
+            switch (item.type) {
+                case "Scene":
+                    return <Scene isLayout={true} _id={self.state.data.scene._id}/>;
+                    break;
+                case "Scene-Graph":
+                    return <SceneGraph isLayout={true} _id={self.state.data.sceneGraph._id}/>;
+                    break;
+                case "Scene-List":
+                    return <SceneChooser isLayout={true} sceneFocusHandler={GridStore.focusScene}/>;
+                    break;
+                case "Scene-Graph-List":
+                    return <SceneGraphChooser isLayout={true} sceneGraphFocusHandler={GridStore.focusSceneGraph}/>;
+                    break;
+                case "Graph-Viewer":
+                    return <GraphViewer isLayout={true} roomId={self.state.data.roomId}></GraphViewer>;
+                    break;
+                case "Scene-Viewer":
+                    return <SceneListener isLayout={true} sceneId={self.state.data.scene._id}/>;
+                    break;
+                case "Graph":
+                    return <GraphTest isLayout={true} _id={self.state.data.sceneGraph._id}/>;
+                    break;
+                default:
+                    return null;
+                    break
+            }
+
     },
     onDragStopHandler: function (e, u) {
         var item = _.find(this.state.data.layout, function (layoutItem) {
@@ -102,17 +104,96 @@ var RespGrid = React.createClass({
         var maxHeightValue = this.state.parentHeight ? this.state.parentHeight / 30 : 30;
         SceneActions.maxComp(index, item, maxHeightValue);
     },
+    getLeftSideComponent:function(item){
+        if(item.state == "default"){
+            if(item.x == 0){
+                return (
+                    <button className="mf-vertical-collapse-btn btn-dark left" onClick={this.collapseComponent.bind(this,item,"left")}>
+                        <span className="glyphicon glyphicon-chevron-left"></span>
+                    </button>
+                )
+            }else{
+                return null
+            }
+        }else if(item.state == "collapsed-left"){
+            return (
+                <button className="mf-vertical-expand-btn btn-dark left" onClick={this.expandComponent.bind(this,item,"left")}>
+                     <span className="glyphicon glyphicon-chevron-right"></span>
+                </button>
+            )
+        }
+    },
+    getRightSideComponent:function(item){
+        if(item.state == "default"){
+            if(item.x == this.state.cols - item.w){
+                return (
+                    <button className="mf-vertical-collapse-btn btn-dark right" onClick={this.collapseComponent.bind(this,item,"right")}>
+                        <span className="glyphicon glyphicon-chevron-right"> </span>
+                    </button>
+                )
+            }else{
+                return null
+            }
+        }else if(item.state == "collapsed-right"){
+            return (
+                <button className="mf-vertical-expand-btn btn-dark right" onClick={this.expandComponent.bind(this,item,"right")}>
+                    <span className="glyphicon glyphicon-chevron-left"></span>
+                </button>
+            )
+        }
+    },
+    collapseComponent:function(item,type){
+        console.log("collapse",type,item)
+     switch(type){
+         case "left":
+             SceneActions.collapseLeft(item);
+             break;
+         case "right":
+             SceneActions.collapseRight(item);
+                 break;
+     }
+    },
+    expandComponent:function(item,type){
+        switch(type){
+            case "left":
+                SceneActions.expandLeft(item);
+                break;
+            case "right":
+                SceneActions.expandRight(item);
+                break;
+        }
+    },
     removeComponent:function(item){
         SceneActions.removeLayoutComponent(item.i);
-
     },
     render: function () {
         var self = this;
 
         var components = this.state.data.layout.map(function (item, index) {
-                var comp = self.getComponent(item);
+            var comp = self.getComponent(item);
+            var leftComp = self.getLeftSideComponent(item);
+            var rightComp = self.getRightSideComponent(item);
             var shouldHide = (item.state === "default") ? true : false;
-                if (comp && item.visible) {
+            var test = null;
+            if (shouldHide) {
+                test = (
+                    <div className="grid-layout-body">
+                        {leftComp}
+                        {comp}
+                        {rightComp}
+                    </div>
+
+                )
+            }else{
+                test = (
+                    <div className="grid-layout-body">
+                        {leftComp}
+                        {rightComp}
+                    </div>
+                )
+            }
+
+            if (comp && item.visible) {
                     return (
                         <div key={item.i} className="widget-container">
                             <section className="widget">
@@ -133,9 +214,7 @@ var RespGrid = React.createClass({
                                         </i>
                                     </div>
                                 </header>
-                                <div className="grid-layout-body">
-                                    {comp}
-                                </div>
+                                {test}
                             </section>
                         </div>
                     )
@@ -156,7 +235,7 @@ var RespGrid = React.createClass({
                              onLayoutChange={this.onLayoutChange}
                              layout={this.state.data.layout}
                              verticalCompact={true}
-                             cols={6}
+                             cols={this.state.cols}
                              rowHeight={(this.state.parentHeight != null) ? this.state.parentHeight / 30 : 30}>
                 {components}
 

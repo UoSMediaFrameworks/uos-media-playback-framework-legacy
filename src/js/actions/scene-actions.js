@@ -41,6 +41,38 @@ var SceneActions = {
             componentId:componentId
         })
     },
+    collapseLeft:function(item){
+        AppDispatcher.handleViewAction(
+            {
+                type:ActionTypes.COMP_COLLAPSE_LEFT,
+                item:item
+            }
+        )
+    },
+    collapseRight:function(item){
+        AppDispatcher.handleViewAction(
+            {
+                type:ActionTypes.COMP_COLLAPSE_RIGHT,
+                item:item
+            }
+        )
+    },
+    expandLeft:function(item){
+        AppDispatcher.handleViewAction(
+            {
+                type:ActionTypes.COMP_EXPAND_LEFT,
+                item:item
+            }
+        )
+    },
+    expandRight:function(item){
+        AppDispatcher.handleViewAction(
+            {
+                type:ActionTypes.COMP_EXPAND_RIGHT,
+                item:item
+            }
+        )
+    },
     // APEP TODO this should really be in a different Actions object, not something related to Scenes
     // APEP say a GridLayoutActions object or ApplicationViewActions are two suggested terms, the name will be more clear when the full scope is defined
     minComp: function (index, item) {
