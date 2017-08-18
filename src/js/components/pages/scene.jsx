@@ -89,7 +89,7 @@ var Scene = React.createClass({
         var showOverlay = this.state.uploading ? "show-overlay-when-uploading" : "hide-overlay-when-uploading";
         if(this.props._id == null){
             return (
-                <div>
+                <div className="mf-empty-grid-component">
                     Scene has not been selected
                 </div>
             );

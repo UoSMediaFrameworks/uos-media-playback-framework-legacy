@@ -8,7 +8,53 @@ var _ = require('lodash');
 var hat = require('hat');
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
 var CHANGE_EVENT = 'CHANGE_EVENT';
+
+var defaultComponents = [
+    {
+        i: 'a',
+        x: 0,
+        y: 1,
+        w: 10,
+        h: 16,
+        _w: 10,
+        _h: 16,
+        isResizable: true,
+        visible: true,
+        type: "Scene-List",
+        state: "default"
+    },
+    {
+        i: 'b',
+        x:10,
+        y: 1,
+        w: 20,
+        h: 8,
+        _w: 20,
+        _h: 8,
+        isDraggable: true,
+        isResizable: true,
+        visible: true,
+        type: "Scene",
+        state: "default"
+    },
+    {
+        i: 'd',
+        x: 10,
+        y: 12,
+        w: 20,
+        h: 8,
+        _w: 20,
+        _h: 8,
+        isResizable: true,
+        visible: true,
+        type: "Scene-Viewer",
+        state: "default"
+    }];
+
+
+
 var getLayoutFromLS = function () {
+
     var parsedLayout = JSON.parse(localStorage.getItem('layout')) || [];
     if (parsedLayout.length < 1) {
         return defaultComponents;
@@ -42,49 +88,6 @@ var gridState = {
     focusedType: null,
     layout: getLayoutFromLS()
 };
-
-var defaultComponents = [
-    {
-        i: 'a',
-        x: 0,
-        y: 1,
-        w: gridState.cols / 3,
-        h: 15,
-        _w: 2,
-        _h: 15,
-        isResizable: true,
-        visible: true,
-        type: "Scene-List",
-        state: "default"
-    },
-    {
-        i: 'b',
-        x: 3,
-        y: 1,
-        w: 4,
-        h: 8,
-        _w: 4,
-        _h: 8,
-        isDraggable: true,
-        isResizable: true,
-        visible: true,
-        type: "Scene",
-        state: "default"
-    },
-    {
-        i: 'd',
-        x: 3,
-        y: 12,
-        w: 4,
-        h: 8,
-        _w: 4,
-        _h: 8,
-        isResizable: true,
-        visible: true,
-        type: "Scene-Viewer",
-        state: "default"
-    }];
-
 
 // APEP you are using global variables, the minimize and maximize function should not scoped differently in my opinion.
 // Hence I've moved them here.
@@ -179,15 +182,16 @@ collapseLeft = function (component) {
     },
 
     addComponent = function (type) {
+
         gridState.layout.push(
             {
                 i: hat().toString(),
-                x: gridState.layout.length * 2 % 6,
+                x: gridState.layout.length * 10 % gridState.cols,
                 y: Infinity,
-                w: 2,
-                h: 2,
-                _w: 2,
-                _h: 2,
+                w: gridState.cols/3,
+                h: 15,
+                _w: gridState.cols/3,
+                _h: 15,
                 type: type,
                 visible: true,
                 isResizable: true,

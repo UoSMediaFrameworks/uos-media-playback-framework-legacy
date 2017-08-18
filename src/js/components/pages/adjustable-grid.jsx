@@ -30,6 +30,7 @@ var RespGrid = React.createClass({
         this.setState({data: GridStore.getGridState()})
     },
     componentWillMount: function () {
+        console.log("grid will mount")
         GridStore.addChangeListener(this._onChange);
     },
     componentWillUnmount: function () {
@@ -38,10 +39,10 @@ var RespGrid = React.createClass({
     },
     componentDidMount: function () {
         var dom = ReactDOM.findDOMNode(this);
+        console.log("it did mount")
         this.setState({parentHeight: dom.parentElement.clientHeight});
     },
     onLayoutChange: function (layout) {
-
         var self=this;
         // APEP TODO should we not be updating the store in this case?
         // APEP I guess each item keeps the values updated, but it does seem odd that we would not update store
@@ -167,80 +168,83 @@ var RespGrid = React.createClass({
         SceneActions.removeLayoutComponent(item.i);
     },
     render: function () {
+        console.log("we got to the render start",this)
         var self = this;
+        try{
+            var components = this.state.data.layout.map(function (item, index) {
+                    var comp = self.getComponent(item);
+                    var leftComp = self.getLeftSideComponent(item);
+                    var rightComp = self.getRightSideComponent(item);
+                    var shouldHide = (item.state === "default") ? true : false;
+                    var test = null;
+                    if (shouldHide) {
+                        test = (
+                            <div className="grid-layout-body">
+                                {leftComp}
+                                {comp}
+                                {rightComp}
+                            </div>
 
-        var components = this.state.data.layout.map(function (item, index) {
-            var comp = self.getComponent(item);
-            var leftComp = self.getLeftSideComponent(item);
-            var rightComp = self.getRightSideComponent(item);
-            var shouldHide = (item.state === "default") ? true : false;
-            var test = null;
-            if (shouldHide) {
-                test = (
-                    <div className="grid-layout-body">
-                        {leftComp}
-                        {comp}
-                        {rightComp}
-                    </div>
+                        )
+                    }else{
+                        test = (
+                            <div className="grid-layout-body">
+                                {leftComp}
+                                {rightComp}
+                            </div>
+                        )
+                    }
 
-                )
-            }else{
-                test = (
-                    <div className="grid-layout-body">
-                        {leftComp}
-                        {rightComp}
-                    </div>
-                )
-            }
-
-            if (comp && item.visible) {
-                    return (
-                        <div key={item.i} className="widget-container">
-                            <section className="widget">
-                                <header className="react-drag-handle">
+                    if (comp && item.visible) {
+                        return (
+                            <div key={item.i} className="widget-container">
+                                <section className="widget">
+                                    <header className="react-drag-handle">
                                      <span className="widget-title">
                                         <span>{item.type}</span>
                                     </span>
-                                    <div className="grid-layout-controls">
-                                        <i className={shouldHide?"fa fa-times mf-times":"hidden"}
-                                           onClick={self.removeComponent.bind(this, item) }>
-                                        </i>
-                                        <i className={ shouldHide?"hidden":"fa fa-window-restore mf-restore"}
-                                           onClick={self.restore.bind(this, index, item)}>
-                                        </i>
-                                        <i
-                                            onClick={self.max.bind(this, index, item)}
-                                            className={ shouldHide ? "fa fa-window-maximize mf-maximize":"hidden "}>
-                                        </i>
-                                    </div>
-                                </header>
-                                {test}
-                            </section>
-                        </div>
-                    )
-
-                } else {
-                    return null;
+                                        <div className="grid-layout-controls">
+                                            <i className={shouldHide?"fa fa-times mf-times":"hidden"}
+                                               onClick={self.removeComponent.bind(this, item) }>
+                                            </i>
+                                            <i className={ shouldHide?"hidden":"fa fa-window-restore mf-restore"}
+                                               onClick={self.restore.bind(this, index, item)}>
+                                            </i>
+                                            <i
+                                                onClick={self.max.bind(this, index, item)}
+                                                className={ shouldHide ? "fa fa-window-maximize mf-maximize":"hidden "}>
+                                            </i>
+                                        </div>
+                                    </header>
+                                    {test}
+                                </section>
+                            </div>
+                        )
+                    } else {
+                        return null;
+                    }
                 }
+            );
 
-            }
-        );
+            components = _.filter(components, function (c) {
+                return c != null;
+            });
+            console.log("we got to the components")
+            return (
+                <ReactGridLayout onDragStart={this.onDragStopHandler} className="layout" autoSize={true} draggableHandle=".react-drag-handle"
+                                 onLayoutChange={this.onLayoutChange}
+                                 layout={this.state.data.layout}
+                                 verticalCompact={true}
+                                 cols={this.state.cols}
+                                 rowHeight={(this.state.parentHeight != null) ? this.state.parentHeight / 30 : 30}>
+                    {components}
 
-        components = _.filter(components, function (c) {
-            return c != null;
-        });
+                </ReactGridLayout>
+            )
+        }catch(e){
+            console.log("exception",e)
+        }
 
-        return (
-            <ReactGridLayout onDragStart={this.onDragStopHandler} className="layout" autoSize={true} draggableHandle=".react-drag-handle"
-                             onLayoutChange={this.onLayoutChange}
-                             layout={this.state.data.layout}
-                             verticalCompact={true}
-                             cols={this.state.cols}
-                             rowHeight={(this.state.parentHeight != null) ? this.state.parentHeight / 30 : 30}>
-                {components}
-
-            </ReactGridLayout>
-        )
     }
 
 });

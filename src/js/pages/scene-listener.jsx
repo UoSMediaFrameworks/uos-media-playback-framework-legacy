@@ -381,7 +381,7 @@ var SceneListener = React.createClass({
                 </div>
             );
         } else {
-            return (<div> No scene loaded for vieweing</div>)
+            return (<div className="mf-empty-grid-component">No scene loaded for viewing</div>)
         }
 
     }
