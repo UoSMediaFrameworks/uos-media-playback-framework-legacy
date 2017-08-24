@@ -109,18 +109,14 @@ var RespGrid = React.createClass({
         if(item.state == "default"){
             if(item.x == 0){
                 return (
-                    <button className="mf-vertical-collapse-btn btn-dark left" onClick={this.collapseComponent.bind(this,item,"left")}>
-                        <span className="glyphicon glyphicon-chevron-left"></span>
-                    </button>
+                        <i className="glyphicon glyphicon-chevron-left" onClick={this.collapseComponent.bind(this,item,"left")}></i>
                 )
             }else{
                 return null
             }
         }else if(item.state == "collapsed-left"){
             return (
-                <button className="mf-vertical-expand-btn btn-dark left" onClick={this.expandComponent.bind(this,item,"left")}>
-                     <span className="glyphicon glyphicon-chevron-right"></span>
-                </button>
+                     <i className="glyphicon glyphicon-chevron-right"  onClick={this.expandComponent.bind(this,item,"left")}></i>
             )
         }
     },
@@ -128,18 +124,15 @@ var RespGrid = React.createClass({
         if(item.state == "default"){
             if(item.x == this.state.cols - item.w){
                 return (
-                    <button className="mf-vertical-collapse-btn btn-dark right" onClick={this.collapseComponent.bind(this,item,"right")}>
-                        <span className="glyphicon glyphicon-chevron-right"> </span>
-                    </button>
+                        <i className="glyphicon glyphicon-chevron-right" onClick={this.collapseComponent.bind(this,item,"right")}> </i>
                 )
             }else{
                 return null
             }
         }else if(item.state == "collapsed-right"){
             return (
-                <button className="mf-vertical-expand-btn btn-dark right" onClick={this.expandComponent.bind(this,item,"right")}>
-                    <span className="glyphicon glyphicon-chevron-left"></span>
-                </button>
+
+                    <i className="glyphicon glyphicon-chevron-left"  onClick={this.expandComponent.bind(this,item,"right")}></i>
             )
         }
     },
@@ -172,28 +165,16 @@ var RespGrid = React.createClass({
         var self = this;
         try{
             var components = this.state.data.layout.map(function (item, index) {
-                    var comp = self.getComponent(item);
+                    var comp = <a></a>;
+
+
                     var leftComp = self.getLeftSideComponent(item);
                     var rightComp = self.getRightSideComponent(item);
                     var shouldHide = (item.state === "default") ? true : false;
-                    var test = null;
-                    if (shouldHide) {
-                        test = (
-                            <div className="grid-layout-body">
-                                {leftComp}
-                                {comp}
-                                {rightComp}
-                            </div>
-
-                        )
-                    }else{
-                        test = (
-                            <div className="grid-layout-body">
-                                {leftComp}
-                                {rightComp}
-                            </div>
-                        )
+                    if(shouldHide){
+                      comp =  self.getComponent(item);
                     }
+
 
                     if (comp && item.visible) {
                         return (
@@ -204,6 +185,8 @@ var RespGrid = React.createClass({
                                         <span>{item.type.replace(/-/g, ' ')}</span>
                                     </span>
                                         <div className="grid-layout-controls">
+                                            {leftComp}
+                                            {rightComp}
                                             <i className={shouldHide?"fa fa-times mf-times":"hidden"}
                                                onClick={self.removeComponent.bind(this, item) }>
                                             </i>
@@ -216,7 +199,7 @@ var RespGrid = React.createClass({
                                             </i>
                                         </div>
                                     </header>
-                                    {test}
+                                    {comp}
                                 </section>
                             </div>
                         )
