@@ -80,13 +80,13 @@ var NavigationBar = React.createClass({
             case "Scene":
                 return <li><span  className="navbar-text">Scene</span></li>;
                 break;
-            case "Scene-Graph":
+            case "Scene Graph":
                 return <li>
                     <span  className="navbar-text">Scene Graph</span>
 
                 </li>;
                 break;
-            case "Scene-List":
+            case "Scene List":
                 return  <li>
                     <form className='form-inline mf-form' onSubmit={this.handleCreateScene} role='form'>
                         <div className='form-group mf-input'>
@@ -97,7 +97,7 @@ var NavigationBar = React.createClass({
                     </form>
                 </li>;
                 break;
-            case "Scene-Graph-List":
+            case "Scene Graph List":
                 return <li>
                     <form className='form-inline mf-form' onSubmit={this.handleCreateSceneGraph} role='form'>
                             <label for="scene-graph-input"  className="mf-text">Scene Graph List</label>
@@ -114,7 +114,7 @@ var NavigationBar = React.createClass({
                     </form>
                 </li>;
                 break;
-            case "Graph-Viewer":
+            case "Graph Viewer":
                 return <li>
                     <form className='form-inline mf-form' onSubmit={this.handleRoomChange} role='form'>
                         <label for="scene-graph-input"  className="mf-text">Graph Viewer</label>
@@ -123,7 +123,7 @@ var NavigationBar = React.createClass({
                     </form>
                 </li>
                 break;
-            case "Scene-Viewer":
+            case "Scene Viewer":
                 return <li><span  className="navbar-text">Scene Viewer</span> <span classname="navbar-text"> </span></li>;
                 break;
             case "Graph":
