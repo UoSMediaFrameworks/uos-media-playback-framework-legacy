@@ -63,19 +63,19 @@ var RespGrid = React.createClass({
                 case "Scene":
                     return <Scene isLayout={true} _id={self.state.data.scene._id}/>;
                     break;
-                case "Scene Graph":
+                case "Scene-Graph":
                     return <SceneGraph isLayout={true} _id={self.state.data.sceneGraph._id}/>;
                     break;
-                case "Scene List":
+                case "Scene-List":
                     return <SceneChooser isLayout={true} sceneFocusHandler={GridStore.focusScene}/>;
                     break;
-                case "Scene Graph List":
+                case "Scene-Graph-List":
                     return <SceneGraphChooser isLayout={true} sceneGraphFocusHandler={GridStore.focusSceneGraph}/>;
                     break;
-                case "Graph Viewer":
+                case "Graph-Viewer":
                     return <GraphViewer isLayout={true} roomId={self.state.data.roomId}></GraphViewer>;
                     break;
-                case "Scene Viewer":
+                case "Scene-Viewer":
                     return <SceneListener isLayout={true} sceneId={self.state.data.scene._id}/>;
                     break;
                 case "Graph":
@@ -201,7 +201,7 @@ var RespGrid = React.createClass({
                                 <section className="widget">
                                     <header className="react-drag-handle">
                                      <span className="widget-title">
-                                        <span>{item.type}</span>
+                                        <span>{item.type.replace(/-/g, ' ')}</span>
                                     </span>
                                         <div className="grid-layout-controls">
                                             <i className={shouldHide?"fa fa-times mf-times":"hidden"}

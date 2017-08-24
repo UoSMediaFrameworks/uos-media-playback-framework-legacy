@@ -20,7 +20,7 @@ var defaultComponents = [
         _h: 16,
         isResizable: true,
         visible: true,
-        type: "Scene List",
+        type: "Scene-List",
         state: "default"
     },
     {
@@ -47,7 +47,7 @@ var defaultComponents = [
         _h: 8,
         isResizable: true,
         visible: true,
-        type: "Scene Viewer",
+        type: "Scene-Viewer",
         state: "default"
     }];
 
