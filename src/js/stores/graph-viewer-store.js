@@ -10,6 +10,11 @@ var CHANGE_EVENT = 'CHANGE_EVENT';
 var _scenes = [];
 var _themes = [];
 var _isScore = false;
+var lastActive = {
+    activeScene:null,
+    activeSceneId:null,
+    themeQuery:null
+};
 
 var GraphViewerStore = assign({}, EventEmitter.prototype, {
 
@@ -23,7 +28,12 @@ var GraphViewerStore = assign({}, EventEmitter.prototype, {
 
         return _scenes;
     },
-
+    updateLastActive:function(obj){
+        lastActive = obj;
+    },
+    getLastActive :function () {
+       return lastActive;
+    },
     getThemesForPlayback: function() {
         return _themes;
     },

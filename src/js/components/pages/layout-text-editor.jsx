@@ -107,7 +107,6 @@ var SceneMonacoTextEditor = React.createClass({
     _onChange: function() {
         // console.log("SceneMonacoTextEditor - _onChange [ react based update ]")
         var scene = SceneStore.getScene(this.props._id);
-        console.log(scene)
         var sceneVal = _.omit(scene, ['_id', '_groupID']);
 
         // APEP Add schema property for monaco editor
@@ -310,7 +309,7 @@ var SceneMonacoTextEditor = React.createClass({
 
     },
     componentWillReceiveProps:function(nextProps){
-        HubSendActions.loadScene(nextProps._id);
+       /* HubSendActions.loadScene(nextProps._id);*/
     },
     componentDidUpdate: function(previousProps, previousState) {
 

@@ -173,10 +173,12 @@ var HubClient = {
 
     subscribeScene: function(id) {
         // no confirmation handler as of yet
+        console.log("subscribeSceneid",id)
         socket.emit('subScene', id, function(err, scene) {
             if (err) {
                 HubRecieveActions.errorMessage("Couldn't subscribe to scene, please reload the page");
             } else {
+                console.log("subscribeScene",scene)
                 HubRecieveActions.recieveScene(scene);
             }
         });

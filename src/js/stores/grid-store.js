@@ -7,6 +7,7 @@ var assign = require('object-assign');
 var _ = require('lodash');
 var hat = require('hat');
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
+var HubSendActions = require('../actions/hub-send-actions');
 var CHANGE_EVENT = 'CHANGE_EVENT';
 
 var defaultComponents = [
@@ -216,6 +217,7 @@ var GridStore = assign({}, EventEmitter.prototype, {
     },
     focusScene: function (scene) {
         gridState.scene = scene;
+        HubSendActions.loadScene(scene._id)
         GridStore.emitChange();
     },
     focusSceneGraph: function (sceneGraph) {

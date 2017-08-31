@@ -1,7 +1,8 @@
 'use strict';
 
 var _ = require('lodash');
-var TagMatcher = require('../tag-matcher');
+var
+    TagMatcher = require('../tag-matcher');
 
 var SCENE_PROP_DEFAULTS = {
     displayInterval: 3,
@@ -240,8 +241,8 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
 
         var autoreplayMedia = _.filter(masterBucketsList[masterBucketListIndex], function(mo) { return (mo.hasOwnProperty("autoreplay") && mo.autoreplay > 0) || (mo._obj.hasOwnProperty("autoreplay") && mo._obj.autoreplay > 0) });
 
-        console.log("isCurrentBucketSolo: ", autoreplayMedia.length > 0);
-
+ /*       console.log("isCurrentBucketSolo: ", autoreplayMedia.length > 0);
+*/
         if(!autoreplayMedia.length > 0) {
             console.log("isCurrentBucketSolo: masterBucketsList[masterBucketListIndex], ", masterBucketsList[masterBucketListIndex])
         }
@@ -258,9 +259,11 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
 
         // APEP check if the current bucket has any autoreplay > 0 if so, we need to respect the active or not
         var autoreplayMedia = _.filter(masterBucketsList[masterBucketListIndex], function(mo) { return (mo.hasOwnProperty("autoreplay") && mo.autoreplay > 0) || (mo._obj.hasOwnProperty("autoreplay") && mo._obj.autoreplay > 0) });
+/*
 
         console.log("isLinearQueueEmpty - autoreplayMedia.length: ", autoreplayMedia.length);
         console.log("isLinearQueueEmpty - active.length: ", active.length);
+*/
 
         // APEP if the current bucket has autoreplay media, we need to inspect the active list before we can allow the process to the next bucket
         var hasAutoReplayMediaAndActiveNotEmpty = autoreplayMedia.length > 0;

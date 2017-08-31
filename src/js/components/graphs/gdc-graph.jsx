@@ -384,7 +384,12 @@ var GDCGraph = React.createClass({
             node._x = node.cx;
             node.cy = (Math.sin(angle * i) * self.props.innerHeight / 2) + self.props.innerHeight / 2;
             node._y = node.cy;
-            node.color = d3.rgb(cityColors[i][0], cityColors[i][1], cityColors[i][2]);
+            try{
+                node.color = d3.rgb(cityColors[i][0], cityColors[i][1], cityColors[i][2]);
+            }catch(e){
+                node.color = "black"
+            }
+
             node._r = node.r = 16;
 
         });

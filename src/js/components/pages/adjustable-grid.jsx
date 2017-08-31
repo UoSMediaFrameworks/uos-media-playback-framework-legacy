@@ -40,6 +40,7 @@ var RespGrid = React.createClass({
     componentWillMount: function () {
         GridStore.addChangeListener(this._onChange);
     },
+
     componentWillUnmount: function () {
 
         GridStore.removeChangeListener(this._onChange);
@@ -82,7 +83,7 @@ var RespGrid = React.createClass({
                     return <GraphViewer isLayout={true} roomId={self.state.data.roomId}></GraphViewer>;
                     break;
                 case "Scene-Viewer":
-                    return <SceneListener isLayout={true} sceneId={self.state.data.scene._id}/>;
+                    return <SceneListener isLayout={true} sceneViewer={true} sceneId={self.state.data.scene._id}/>;
                     break;
                 case "Graph":
                     return <GraphTest isLayout={true} _id={self.state.data.sceneGraph._id}/>;
@@ -176,6 +177,7 @@ var RespGrid = React.createClass({
         SceneActions.removeLayoutComponent(item.i);
     },
     render: function () {
+        console.log("adj-grid",this)
         var self = this;
         try{
             var components = this.state.data.layout.map(function (item, index) {
@@ -188,7 +190,9 @@ var RespGrid = React.createClass({
                     if(shouldHide){
                       comp =  self.getComponent(item);
                     }
-
+                    if(leftComp && rightComp){
+                        leftComp=rightComp = null;
+                    }
 
                     if (comp && item.visible) {
                         return (
@@ -213,7 +217,9 @@ var RespGrid = React.createClass({
                                             </i>
                                         </div>
                                     </header>
+                                    <div className={"grid-layout-body"}>
                                     {comp}
+                                    </div>
                                 </section>
                             </div>
                         )

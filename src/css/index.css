@@ -871,3 +871,6 @@ html, body, #main, .app {
 .mf-empty-grid-component{
     width:100%;
 }
+.mf-local-height{
+    height:100%;
+}

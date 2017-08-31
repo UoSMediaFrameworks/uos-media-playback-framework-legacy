@@ -76,7 +76,10 @@ var GraphViewer = React.createClass({
             callback(fullScenes);
         });
     },
-
+    componentWillMount:function(){
+        var obj = GraphViewerStore.getLastActive();
+        this.setState(obj);
+    },
     // APEP we have a new scene / theme list from the graph
     _onChange: function() {
 
@@ -204,8 +207,9 @@ var GraphViewer = React.createClass({
         self.setTimeoutWithDelayForNextScene(delay);
 
         console.log("GraphViewer - nextScene - activeScene, activeSceneId: ", newScene, newScene._id);
-
-        self.setState({activeScene: newScene, activeSceneId: newScene._id, themeQuery: themeQuery});
+        var obj ={activeScene: newScene, activeSceneId: newScene._id, themeQuery: themeQuery}
+        GraphViewerStore.updateLastActive(obj);
+        self.setState(obj);
     },
 
     render: function() {
@@ -214,7 +218,7 @@ var GraphViewer = React.createClass({
         var sceneListener;
 
         if(this.state.activeSceneId)
-            sceneListener = <SceneListener sceneId={this.state.activeSceneId} activeScene={this.state.activeScene} themeQuery={this.state.themeQuery} />;
+            sceneListener = <SceneListener sceneId={this.state.activeSceneId} sceneViewer={false} activeScene={this.state.activeScene} themeQuery={this.state.themeQuery} />;
         else
             sceneListener = <h2>Graph Viewer </h2>;
         var randomHex = this.state.hex;

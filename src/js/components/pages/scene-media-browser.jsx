@@ -33,12 +33,11 @@ var SceneMediaBrowser = React.createClass({
     },
 
     componentDidMount: function () {
-        HubSendActions.loadScene(this.props._id);
+
         SceneStore.addChangeListener(this._onChange);
         GridStore.addChangeListener(this._onFocusChange)
     },
     componentWillReceiveProps: function (nextProps) {
-        HubSendActions.loadScene(nextProps._id);
     },
     componentWillUnmount: function () {
         SceneStore.removeChangeListener(this._onChange);
@@ -60,9 +59,9 @@ var SceneMediaBrowser = React.createClass({
     },
 
     render: function () {
-        console.log("scene browser",this);
+
         var saveFlagKlass = this.props.saveStatus ? "green-save-flag" : "red-save-flag";
-            console.log("saveFLagKlass",saveFlagKlass)
+
         var showOverlay = this.state.uploading ? "show-overlay-when-uploading" : "hide-overlay-when-uploading";
         if (this.props._id == null) {
             return (

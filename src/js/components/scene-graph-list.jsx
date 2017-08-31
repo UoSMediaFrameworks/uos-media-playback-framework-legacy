@@ -20,7 +20,8 @@ var SceneGraphList = React.createClass({
         return _getState();
     },
 
-    componentDidMount: function () {
+    componentWillMount: function () {
+
         SceneGraphListStore.addChangeListener(this._onChange);
     },
 
