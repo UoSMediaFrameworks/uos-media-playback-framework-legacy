@@ -13,6 +13,7 @@ module.exports = {
         COMP_RESTORE:null,
         COMP_SWITCH_MODE:null,
         COMP_FOCUS_SWITCH:null,
+        COMP_MEDIA_OBJECT_FOCUS_SWITCH:null,
         ADD_COMPONENT:null,
         REMOVE_COMPONENT:null,
         LAYOUT_CHANGE:null,

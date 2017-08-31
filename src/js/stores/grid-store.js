@@ -86,6 +86,7 @@ var gridState = {
     roomId: "presentation1",
     modeToggle: true,
     focusedType: null,
+    focusedMediaObject:null,
     layout: getLayoutFromLS()
 };
 
@@ -152,26 +153,26 @@ collapseLeft = function (component) {
     item.isResizable = false;
 
 },
-    collapseRight = function (component) {
-        var item = _.find(gridState.layout, function (layoutItem) {
-            return layoutItem.i == component.i;
-        });
-        item.state = "collapsed-right";
-        item._w = item.w;
-        item.w = 1;
-        item.x = (gridState.cols - item.w);
-        item.isResizable = false;
-    },
-    expandLeft = function (component) {
-        var item = _.find(gridState.layout, function (layoutItem) {
-            return layoutItem.i == component.i;
-        });
-        item.state = "default";
-        item.w = item._w;
-        item.isResizable = true;
+collapseRight = function (component) {
+    var item = _.find(gridState.layout, function (layoutItem) {
+        return layoutItem.i == component.i;
+    });
+    item.state = "collapsed-right";
+    item._w = item.w;
+    item.w = 1;
+    item.x = (gridState.cols - item.w);
+    item.isResizable = false;
+},
+expandLeft = function (component) {
+    var item = _.find(gridState.layout, function (layoutItem) {
+        return layoutItem.i == component.i;
+    });
+    item.state = "default";
+    item.w = item._w;
+    item.isResizable = true;
 
-    },
-    expandRight = function (component) {
+},
+expandRight = function (component) {
         var item = _.find(gridState.layout, function (layoutItem) {
             return layoutItem.i == component.i;
         });
@@ -180,8 +181,7 @@ collapseLeft = function (component) {
         item.x = (gridState.cols - item._w);
         item.isResizable = true;
     },
-
-    addComponent = function (type) {
+addComponent = function (type) {
 
         gridState.layout.push(
             {
@@ -205,6 +205,9 @@ removeComponent = function (id) {
 
 changeFocus = function (type) {
     gridState.focusedType = type;
+};
+changeMediaObjectFocus = function(index){
+    gridState.focusedMediaObject = index;
 };
 var GridStore = assign({}, EventEmitter.prototype, {
     emitChange: function () {
@@ -230,6 +233,9 @@ var GridStore = assign({}, EventEmitter.prototype, {
     },
     getFocusedSceneGraphID: function () {
         return gridState.sceneGraph._id;
+    },
+    getFocusedMediaObject:function(){
+      return gridState.focusedMediaObject;
     },
     setRoomId: function (room) {
         gridState.roomId = room;
@@ -280,6 +286,10 @@ var GridStore = assign({}, EventEmitter.prototype, {
                 break;
             case ActionTypes.COMP_FOCUS_SWITCH:
                 changeFocus(action.itemType);
+                GridStore.emitChange();
+                break;
+            case ActionTypes.COMP_MEDIA_OBJECT_FOCUS_SWITCH:
+                changeMediaObjectFocus(action.index);
                 GridStore.emitChange();
                 break;
             case ActionTypes.ADD_COMPONENT:

@@ -77,9 +77,9 @@ var NavigationBar = React.createClass({
     },
     getNavComponent: function () {
         switch (this.state.focusedLayoutItem) {
-            case "Scene":
+/*            case "Scene":
                 return <li><span  className="navbar-text">Scene</span></li>;
-                break;
+                break;*/
             case "Scene-Graph":
                 return <li>
                     <span  className="navbar-text">Scene Graph</span>
@@ -135,6 +135,12 @@ var NavigationBar = React.createClass({
                     </form>
                 </li>;
                 break;
+            case "Scene-Media-Browser":
+                return <li><span  className="navbar-text">Scene Viewer</span></li>
+                    break;
+            case "Scene-Editor":
+                return <li><span  className="navbar-text">Scene Viewer</span></li>
+                    break;
             case "":
                 return null;
                 break;
@@ -145,7 +151,6 @@ var NavigationBar = React.createClass({
 
     },
     stopPropHandler:function(e){
-        console.log("whattt",e)
       e.stopPropagation();
     },
     render: function () {
@@ -202,12 +207,13 @@ var NavigationBar = React.createClass({
                             <li className="mf-dropdown">
                                 <DropdownButton title={title} className="btn btn-dark navbar-btn">
                                     <MenuItem eventKey="1" onClick={self.addComponent.bind(this,"Scene-List")}>Scene List</MenuItem>
-                                    <MenuItem eventKey="2" onClick={self.addComponent.bind(this,"Scene")}>Scene Editor</MenuItem>
                                     <MenuItem eventKey="3" onClick={self.addComponent.bind(this,"Scene-Graph-List")}>Scene Graph List</MenuItem>
                                     <MenuItem eventKey="4" onClick={self.addComponent.bind(this,"Scene-Graph")}>Scene Graph Editor</MenuItem>
                                     <MenuItem eventKey="5" onClick={self.addComponent.bind(this,"Graph")}>Graph</MenuItem>
                                     <MenuItem eventKey="6" onClick={self.addComponent.bind(this,"Scene-Viewer")}>Scene Viewer</MenuItem>
                                     <MenuItem eventKey="7" onClick={self.addComponent.bind(this,"Graph-Viewer")}>Graph Viewer</MenuItem>
+                                        <MenuItem eventKey="8" onClick={self.addComponent.bind(this,"Scene-Editor")}>Scene Editor</MenuItem>
+                                        <MenuItem eventKey="9" onClick={self.addComponent.bind(this,"Scene-Media-Browser")}>Scene Media Browser</MenuItem>
                                 </DropdownButton>
                             </li>
                             <li>

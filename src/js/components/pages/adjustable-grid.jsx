@@ -3,7 +3,8 @@ var ReactDOM = require('react-dom');
 var ReactGridLayout = require('react-grid-layout');
 var ResponsiveGridLayout = require('react-grid-layout').Responsive;
 var WidthProvider = require('react-grid-layout').WidthProvider;
-var Scene = require('./scene.jsx');
+var Scene = require('./scene.jsx')
+var SceneMediaBrowser = require('./scene-media-browser.jsx');
 var SceneGraph = require('./scenegraph.jsx');
 var GraphTest = require('../graphs/index.jsx');
 var SceneChooser = require('./scene-choose-or-create.jsx');
@@ -11,6 +12,9 @@ var SceneGraphChooser = require('./scene-graph-choose-or-create.jsx');
 var SceneListener = require('../../pages/scene-listener.jsx');
 var GraphViewer = require("../../pages/viewer/graph-viewer.jsx");
 var GridStore = require("../../stores/grid-store.js");
+var SceneStore = require("../../stores/scene-store");
+var SceneMonacoTextEditor = require('../scene-monaco-text-editor.jsx');
+var LayoutMonacoTextEditor = require("./layout-text-editor.jsx");
 var NavBar = require('../navigation-bar.jsx');
 var _ = require("lodash");
 var hat = require("hat");
@@ -22,15 +26,18 @@ var RespGrid = React.createClass({
         return {
             data: GridStore.getGridState(),
             parentHeight: null,
+            saveStatus: true,
             cols:30
         }
+    },
+    sceneSavingHandler: function(saveStatus) {
+        this.setState({saveStatus: saveStatus});
     },
 
     _onChange: function () {
         this.setState({data: GridStore.getGridState()})
     },
     componentWillMount: function () {
-        console.log("grid will mount")
         GridStore.addChangeListener(this._onChange);
     },
     componentWillUnmount: function () {
@@ -39,7 +46,6 @@ var RespGrid = React.createClass({
     },
     componentDidMount: function () {
         var dom = ReactDOM.findDOMNode(this);
-        console.log("it did mount")
         this.setState({parentHeight: dom.parentElement.clientHeight});
     },
     onLayoutChange: function (layout) {
@@ -60,9 +66,9 @@ var RespGrid = React.createClass({
         var self = this;
 
             switch (item.type) {
-                case "Scene":
+               /* case "Scene":
                     return <Scene isLayout={true} _id={self.state.data.scene._id}/>;
-                    break;
+                    break;*/
                 case "Scene-Graph":
                     return <SceneGraph isLayout={true} _id={self.state.data.sceneGraph._id}/>;
                     break;
@@ -80,6 +86,15 @@ var RespGrid = React.createClass({
                     break;
                 case "Graph":
                     return <GraphTest isLayout={true} _id={self.state.data.sceneGraph._id}/>;
+                    break;
+                case "Scene-Media-Browser":
+                    return <SceneMediaBrowser isLayout={true}   scene={ SceneStore.getScene(this.state.data.scene._id)|| {} }
+                                              saveStatus={this.state.saveStatus}  focusedMediaObject={this.state.data.focusedMediaObject} _id={self.state.data.scene._id}></SceneMediaBrowser>;
+                    break;
+                case "Scene-Editor":
+                    return <LayoutMonacoTextEditor isLayout={true} focusedMediaObject={this.state.data.focusedMediaObject} sceneSavingHandler={this.sceneSavingHandler}
+                                                   _id={this.state.data.scene._id}  focusHandler={SceneActions.changeMediaObjectFocus}
+                                                 ></LayoutMonacoTextEditor>;
                     break;
                 default:
                     return null;
@@ -137,7 +152,7 @@ var RespGrid = React.createClass({
         }
     },
     collapseComponent:function(item,type){
-        console.log("collapse",type,item)
+
      switch(type){
          case "left":
              SceneActions.collapseLeft(item);
@@ -161,7 +176,6 @@ var RespGrid = React.createClass({
         SceneActions.removeLayoutComponent(item.i);
     },
     render: function () {
-        console.log("we got to the render start",this)
         var self = this;
         try{
             var components = this.state.data.layout.map(function (item, index) {
@@ -170,7 +184,7 @@ var RespGrid = React.createClass({
 
                     var leftComp = self.getLeftSideComponent(item);
                     var rightComp = self.getRightSideComponent(item);
-                    var shouldHide = (item.state === "default") ? true : false;
+                    var shouldHide = (item.state === "default" || item.state === "max") ? true : false;
                     if(shouldHide){
                       comp =  self.getComponent(item);
                     }
@@ -187,15 +201,15 @@ var RespGrid = React.createClass({
                                         <div className="grid-layout-controls">
                                             {leftComp}
                                             {rightComp}
-                                            <i className={shouldHide?"fa fa-times mf-times":"hidden"}
+                                            <i className={item.state ==="default"  ?"fa fa-times mf-times":"hidden"}
                                                onClick={self.removeComponent.bind(this, item) }>
                                             </i>
-                                            <i className={ shouldHide?"hidden":"fa fa-window-restore mf-restore"}
+                                            <i className={ item.state !=="max" ? "hidden":"fa fa-window-restore mf-restore"}
                                                onClick={self.restore.bind(this, index, item)}>
                                             </i>
                                             <i
                                                 onClick={self.max.bind(this, index, item)}
-                                                className={ shouldHide ? "fa fa-window-maximize mf-maximize":"hidden "}>
+                                                className={ item.state ==="default" ? "fa fa-window-maximize mf-maximize":"hidden "}>
                                             </i>
                                         </div>
                                     </header>

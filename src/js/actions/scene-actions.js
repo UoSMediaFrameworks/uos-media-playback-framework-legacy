@@ -16,7 +16,12 @@ var toastr = require('toastr');
 
 var SceneActions = {
 
-
+    changeMediaObjectFocus:function(index){
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.COMP_MEDIA_OBJECT_FOCUS_SWITCH,
+            index: index
+        });
+    },
     changeFocus:function(itemType){
         AppDispatcher.handleViewAction({
             type: ActionTypes.COMP_FOCUS_SWITCH,

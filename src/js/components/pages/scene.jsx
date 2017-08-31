@@ -98,12 +98,6 @@ var Scene = React.createClass({
             <div className='flex-container monaco-editor vs-dark'>
                 <div className={ showOverlay} ></div>
                 <div className='top-bar'>
-                    <div className='page-nav'>
-                        {/*AngelP: these commented out links can be optionaly visible if the component is standalone*/}
-                  {/*      <Link className='btn btn-dark' to='scenes'>&lt; Back to Scene List</Link>*/}
-        {/*                <a className='btn btn-dark' href={viewerUrl}>Open in Scene Viewer</a>*/}
-                    </div>
-
                     <div className='scene-controls'>
                         <a className='btn btn-danger' onClick={this.deleteSceneHandler}>Delete Scene</a>
                     </div>
