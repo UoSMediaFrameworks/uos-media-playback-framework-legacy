@@ -255,6 +255,7 @@ var SceneGraph = React.createClass({
     },
 
     render: function () {
+        console.log("scene graph",this)
         var sceneGraphId = null;
         if (this.props.params) {
             sceneGraphId = this.props.params.id;

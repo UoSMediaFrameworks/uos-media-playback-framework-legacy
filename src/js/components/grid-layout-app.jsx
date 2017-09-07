@@ -39,13 +39,12 @@ var LayoutApp = React.createClass({
         this.setState(_getState());
     },
     render:function(){
-        console.log("rendering grid layout");
+
         var messages = this.state.messages;
 
         var statusAlerts = Object.keys(messages).map(function (name) {
             return <StatusAlert key={name} name={name} state={messages[name]}/>;
         });
-
        return(<div className='app'>
            <NavBar/>
             <div className="status-messages">

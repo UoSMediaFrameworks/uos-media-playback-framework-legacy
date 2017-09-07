@@ -188,7 +188,6 @@ var HubClient = {
         // no confirmation handler as of yet
         socket.emit('unsubScene', id);
     },
-
     publishSceneCommand: function(sceneList, roomId) {
         // APEP allow the score playback functionality to publish commands
         socket.emit("sendCommand", roomId, 'showScenes', sceneList);
@@ -213,7 +212,6 @@ var HubClient = {
         socket.emit('register', "/#" + roomId);
 
         var self = this;
-
         socket.on('command', function(data) {
 
             console.log("HubClient - on command - data: ", data);

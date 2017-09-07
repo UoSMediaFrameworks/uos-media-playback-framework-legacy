@@ -29,6 +29,9 @@ var SceneChooser = React.createClass({
             this.setState({filterText: input.value});
         }
     },
+    componentWillMount:function(){
+      console.log("Will mount",this)
+    },
     componentDidMount: function () {
         this.refs["filter"].value = this.state.filterText;
     },

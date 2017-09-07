@@ -98,6 +98,13 @@ var SceneActions = {
             maxHeight:maxHeight
         });
     },
+    popoutComp:function(index,item){
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.COMP_POPOUT,
+            index: index,
+            item: item
+        });
+    },
     restoreComp: function (index, item) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.COMP_RESTORE,

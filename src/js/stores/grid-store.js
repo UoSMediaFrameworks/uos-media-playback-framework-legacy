@@ -87,6 +87,8 @@ var gridState = {
     roomId: "presentation1",
     modeToggle: true,
     focusedType: null,
+    isPoppedOut:false,
+    poppedOutComponent:null,
     focusedMediaObject:null,
     layout: getLayoutFromLS()
 };
@@ -210,14 +212,21 @@ changeFocus = function (type) {
 changeMediaObjectFocus = function(index){
     gridState.focusedMediaObject = index;
 };
+popoutComponent = function(item){
+    console.log(item)
+    gridState.isPoppedOut = true;
+    gridState.poppedOutComponent = item.type;
+    var location = window.location.origin;
+
+    window.open(location+"/#/pop-out-component?sceneId=" + gridState.scene._id + "&&roomId=presentation2"+ "&&sceneGraphId=" + gridState.sceneGraph._id + "&&type=" +gridState.poppedOutComponent, '_blank');
+};
 var GridStore = assign({}, EventEmitter.prototype, {
     emitChange: function () {
-
         this.emit(CHANGE_EVENT);
     },
     focusScene: function (scene) {
         gridState.scene = scene;
-        HubSendActions.loadScene(scene._id)
+        HubSendActions.loadScene(scene._id);
         GridStore.emitChange();
     },
     focusSceneGraph: function (sceneGraph) {
@@ -232,6 +241,9 @@ var GridStore = assign({}, EventEmitter.prototype, {
     },
     getFocusedSceneID: function () {
         return gridState.scene._id;
+    },
+    getPoppedOut:function(){
+        return gridState.isPoppedOut;
     },
     getFocusedSceneGraphID: function () {
         return gridState.sceneGraph._id;
@@ -252,6 +264,7 @@ var GridStore = assign({}, EventEmitter.prototype, {
     removeChangeListener: function (callback) {
         this.removeListener(CHANGE_EVENT, callback);
     },
+
 
     // APEP every store should use the react view events + dispatcher, direct store manipulation is an anti pattern which adds complexity as it's not documented.
     dispatcherIndex: AppDispatcher.register(function (payload) {
@@ -305,6 +318,10 @@ var GridStore = assign({}, EventEmitter.prototype, {
             case ActionTypes.LAYOUT_CHANGE:
                 saveToLS(action.layout);
                 GridStore.emitChange();
+                break;
+            case ActionTypes.COMP_POPOUT:
+                popoutComponent(action.item);
+                GridStore.emitChange;
                 break;
 
         }

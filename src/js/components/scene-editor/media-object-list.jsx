@@ -70,10 +70,10 @@ var MediaObjectList = React.createClass({
         }
     },
 
-    shouldComponentUpdate: function(nextProps, nextState) {
+   /* shouldComponentUpdate: function(nextProps, nextState) {
         //Only allow component update if we have a change in focused media or scene media list length
         return this.state.selectedIndex === null ||  ( this.state.selectedIndex !== nextProps.focusedMediaObject || this.props.scene.scene.length !== nextProps.scene.scene.length );
-    },
+    },*/
     componentWillUnmount: function () {
       console.log("media-object-list unmounting")
     },
@@ -85,41 +85,46 @@ var MediaObjectList = React.createClass({
 
     render: function() {
         var items = null;
+        try{
+            if (this.props.scene && this.props.scene.scene && this.props.scene.scene.length !== 0) {
+                items = this.props.scene.scene.map(function(mediaObject, index) {
 
-        if (this.props.scene && this.props.scene.scene && this.props.scene.scene.length !== 0) {
-            items = this.props.scene.scene.map(function(mediaObject, index) {
+                    var klass = 'media-object-item' + (this.state.selectedIndex === index ? ' selected' : '');
 
-                var klass = 'media-object-item' + (this.state.selectedIndex === index ? ' selected' : '');
-
-                if(this.state.tagSearch.length > 0) {
-                    if(mediaObject.tags.indexOf(this.state.tagSearch) != -1) {
-                        //Highlights media objects that match the tag search.
-                        if(this.state.highlightType === "border")
-                            klass += ' ' + this.handleHighlightType();
-                    } else {
-                        if(this.state.highlightType !== "border")
-                            klass += ' ' + this.handleHighlightType();
+                    if(this.state.tagSearch.length > 0) {
+                        if(mediaObject.tags.indexOf(this.state.tagSearch) != -1) {
+                            //Highlights media objects that match the tag search.
+                            if(this.state.highlightType === "border")
+                                klass += ' ' + this.handleHighlightType();
+                        } else {
+                            if(this.state.highlightType !== "border")
+                                klass += ' ' + this.handleHighlightType();
+                        }
                     }
-                }
 
-                return (
-                    <li className={klass}
-                     key={index}
-                     onClick={this.handleSelect(index)}
-                     >
-                        <MediaObjectPreview mediaObject={mediaObject}>
-                            <button className='btn' onClick={this.handleDelete(this.props.scene, index)}>
-                                <Glyphicon icon='remove-circle' />
-                            </button>
-                        </MediaObjectPreview>
+                    return (
+                        <li className={klass}
+                            key={index}
+                            onClick={this.handleSelect(index)}
+                        >
+                            <MediaObjectPreview mediaObject={mediaObject}>
+                                <button className='btn' onClick={this.handleDelete(this.props.scene, index)}>
+                                    <Glyphicon icon='remove-circle' />
+                                </button>
+                            </MediaObjectPreview>
 
-                    </li>
-                );
-            }.bind(this));
-        } else {
-            items = [<li key='empty' className='empty-media-object-item '>Nothing in the scene yet</li>];
+                        </li>
+                    );
+                }.bind(this));
+            } else {
+                items = [<li key='empty' className='empty-media-object-item '>Nothing in the scene yet</li>];
+            }
+
+        }catch(e){
+            console.log(e)
         }
 
+        console.log("items",items)
         var wrapperClass = 'media-object-list media-object-list-' + this.state.listLayout;
 
         return (

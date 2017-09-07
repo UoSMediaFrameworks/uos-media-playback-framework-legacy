@@ -19,6 +19,7 @@ var SceneMediaBrowser = React.createClass({
     },
 
     _onChange: function () {
+        console.log("scene change",this.getStateFromStores())
         this.setState(this.getStateFromStores());
     },
     _onFocusChange:function(){
@@ -59,7 +60,7 @@ var SceneMediaBrowser = React.createClass({
     },
 
     render: function () {
-
+        console.log("media browser",this)
         var saveFlagKlass = this.props.saveStatus ? "green-save-flag" : "red-save-flag";
 
         var showOverlay = this.state.uploading ? "show-overlay-when-uploading" : "hide-overlay-when-uploading";

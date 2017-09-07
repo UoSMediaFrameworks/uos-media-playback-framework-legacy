@@ -13,6 +13,7 @@ function _getState() {
     return {
         loggedIn: ClientStore.loggedIn(),
         focusedLayoutItem:GridStore.getFocusedComponent(),
+        isPoppedOut:GridStore.getPoppedOut(),
         value:"GDC_SCENE_GRAPH",
         focusedSceneID: "",
         focusedSceneGraphID:""
@@ -180,7 +181,7 @@ var NavigationBar = React.createClass({
         }
         var title="Components";
         return (
-            this.state.loggedIn?<nav className='navbar navbar-inverse'>
+            this.state.loggedIn&& !this.state.isPoppedOut?<nav className='navbar navbar-inverse'>
                 <div className="container-fluid">
                     <div className="navbar-header">
                         <button type="button" className="navbar-toggle collapsed" data-toggle="collapse"
@@ -212,8 +213,8 @@ var NavigationBar = React.createClass({
                                     <MenuItem eventKey="5" onClick={self.addComponent.bind(this,"Graph")}>Graph</MenuItem>
                                     <MenuItem eventKey="6" onClick={self.addComponent.bind(this,"Scene-Viewer")}>Scene Viewer</MenuItem>
                                     <MenuItem eventKey="7" onClick={self.addComponent.bind(this,"Graph-Viewer")}>Graph Viewer</MenuItem>
-                                        <MenuItem eventKey="8" onClick={self.addComponent.bind(this,"Scene-Editor")}>Scene Editor</MenuItem>
-                                        <MenuItem eventKey="9" onClick={self.addComponent.bind(this,"Scene-Media-Browser")}>Scene Media Browser</MenuItem>
+                                    <MenuItem eventKey="8" onClick={self.addComponent.bind(this,"Scene-Editor")}>Scene Editor</MenuItem>
+                                    <MenuItem eventKey="9" onClick={self.addComponent.bind(this,"Scene-Media-Browser")}>Scene Media Browser</MenuItem>
                                 </DropdownButton>
                             </li>
                             <li>

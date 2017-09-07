@@ -1,9 +1,8 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var ReactGridLayout = require('react-grid-layout');
-var ResponsiveGridLayout = require('react-grid-layout').Responsive;
 var WidthProvider = require('react-grid-layout').WidthProvider;
-var Scene = require('./scene.jsx')
+var Scene = require('./scene.jsx');
 var SceneMediaBrowser = require('./scene-media-browser.jsx');
 var SceneGraph = require('./scenegraph.jsx');
 var GraphTest = require('../graphs/index.jsx');
@@ -13,11 +12,8 @@ var SceneListener = require('../../pages/scene-listener.jsx');
 var GraphViewer = require("../../pages/viewer/graph-viewer.jsx");
 var GridStore = require("../../stores/grid-store.js");
 var SceneStore = require("../../stores/scene-store");
-var SceneMonacoTextEditor = require('../scene-monaco-text-editor.jsx');
 var LayoutMonacoTextEditor = require("./layout-text-editor.jsx");
-var NavBar = require('../navigation-bar.jsx');
 var _ = require("lodash");
-var hat = require("hat");
 var SceneActions = require("../../actions/scene-actions");
 
 ReactGridLayout = WidthProvider(ReactGridLayout);
@@ -33,7 +29,6 @@ var RespGrid = React.createClass({
     sceneSavingHandler: function(saveStatus) {
         this.setState({saveStatus: saveStatus});
     },
-
     _onChange: function () {
         this.setState({data: GridStore.getGridState()})
     },
@@ -101,7 +96,6 @@ var RespGrid = React.createClass({
                     return null;
                     break
             }
-
     },
     onDragStopHandler: function (e, u) {
         var item = _.find(this.state.data.layout, function (layoutItem) {
@@ -120,6 +114,9 @@ var RespGrid = React.createClass({
     max: function (index, item) {
         var maxHeightValue = this.state.parentHeight ? this.state.parentHeight / 30 : 30;
         SceneActions.maxComp(index, item, maxHeightValue);
+    },
+    popout:function(index,item){
+        SceneActions.popoutComp(index,item)
     },
     getLeftSideComponent:function(item){
         if(item.state == "default"){
@@ -177,7 +174,6 @@ var RespGrid = React.createClass({
         SceneActions.removeLayoutComponent(item.i);
     },
     render: function () {
-        console.log("adj-grid",this)
         var self = this;
         try{
             var components = this.state.data.layout.map(function (item, index) {
@@ -214,6 +210,10 @@ var RespGrid = React.createClass({
                                             <i
                                                 onClick={self.max.bind(this, index, item)}
                                                 className={ item.state ==="default" ? "fa fa-window-maximize mf-maximize":"hidden "}>
+                                            </i>
+                                            <i
+                                                onClick={self.popout.bind(this, index, item)}
+                                                className={ item.state ==="default" ? "fa fa-share-alt-square  mf-maximize":"hidden "}>
                                             </i>
                                         </div>
                                     </header>
