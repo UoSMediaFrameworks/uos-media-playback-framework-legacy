@@ -210,12 +210,11 @@ var HubClient = {
         console.log("HubClient - registerToGraphPlayerRoom - roomId: " + roomId);
 
         socket.emit('register', "/#" + roomId);
-
+        connectionCache.setSocketID(roomId);
         var self = this;
         socket.on('command', function(data) {
 
             console.log("HubClient - on command - data: ", data);
-
             if (data.name === 'showScenes') {
                 // APEP publish scene ID list
                 HubRecieveActions.recieveSceneListForPlayer(data.value);

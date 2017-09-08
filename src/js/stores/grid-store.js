@@ -8,6 +8,7 @@ var _ = require('lodash');
 var hat = require('hat');
 var ActionTypes = require('../constants/scene-constants').ActionTypes;
 var HubSendActions = require('../actions/hub-send-actions');
+var connectionCache = require('../utils/connection-cache');
 var CHANGE_EVENT = 'CHANGE_EVENT';
 
 var defaultComponents = [
@@ -84,7 +85,7 @@ var gridState = {
         _id: null
     },
     cols: 30,
-    roomId: "presentation1",
+    roomId: connectionCache.getSocketID(),
     modeToggle: true,
     focusedType: null,
     isPoppedOut:false,
@@ -218,7 +219,7 @@ popoutComponent = function(item){
     gridState.poppedOutComponent = item.type;
     var location = window.location.origin;
 
-    window.open(location+"/#/pop-out-component?sceneId=" + gridState.scene._id + "&&roomId=presentation2"+ "&&sceneGraphId=" + gridState.sceneGraph._id + "&&type=" +gridState.poppedOutComponent, '_blank');
+    window.open(location+"/#/pop-out-component?sceneId=" + gridState.scene._id + "&&roomId="+ connectionCache.getSocketID() + "&&sceneGraphId=" + gridState.sceneGraph._id + "&&type=" +gridState.poppedOutComponent, '_blank');
 };
 var GridStore = assign({}, EventEmitter.prototype, {
     emitChange: function () {

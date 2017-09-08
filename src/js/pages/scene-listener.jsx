@@ -374,7 +374,7 @@ var SceneListener = React.createClass({
                        console.log("rendering viewer",this.sceneViewer);
         if (this.state.scene) {
             return (
-                <div className={ self.props.sceneViewer ? "mf-local-height scene-listener" : "scene-listener"} ref="scene_listener">
+                <div className={ self.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"} ref="scene_listener">
                     <Loader loaded={this.state.scene ? true : false}></Loader>
                     <RandomVisualPlayer sceneStyle={this.state.scene.style} mediaQueue={this.state.mediaObjectQueue}
                                         triggerMediaActiveTheme={this.triggerMediaActiveTheme}

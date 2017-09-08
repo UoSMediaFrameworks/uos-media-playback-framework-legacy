@@ -8,14 +8,14 @@ var SceneGraphChooser = require('./scene-graph-choose-or-create.jsx');
 var SceneListener = require('../../pages/scene-listener.jsx');
 var GraphViewer = require("../../pages/viewer/graph-viewer.jsx");
 var GridStore = require("../../stores/grid-store.js");
-var SceneStore = require("../../stores/scene-store");
 var LayoutMonacoTextEditor = require("./layout-text-editor.jsx");
 var _ = require("lodash");
 var SceneActions = require("../../actions/scene-actions");
-var HubSendActions = require("../../actions/hub-send-actions");
+var HubClient = require('../../utils/HubClient');
+
+
 var PopOutComp = React.createClass({
     getInitialState: function () {
-        console.log("initiing",this)
         return {
             data: this.props.location.query,
                 gridData:GridStore.getGridState(),
@@ -28,13 +28,12 @@ var PopOutComp = React.createClass({
         this.setState({saveStatus: saveStatus});
     },
     componentWillMount: function () {
-        try{
-            console.log("pop",this);
-            HubSendActions.loadScene(this.state.data.sceneId) ;
+/*        try{
+
         }catch(e)
         {
             console.log(e)
-        }
+        }*/
         GridStore.addChangeListener(this._onChange);
     },
 
@@ -44,7 +43,6 @@ var PopOutComp = React.createClass({
     },
     getComponent: function (item) {
         var self = this;
-        console.log(item);
         switch (item) {
             case "Scene-Graph":
                 return <SceneGraph  _id={self.state.data.sceneGraphId}/>;
@@ -56,7 +54,8 @@ var PopOutComp = React.createClass({
                 return <SceneGraphChooser sceneGraphFocusHandler={GridStore.focusSceneGraph}/>;
                 break;
             case "Graph-Viewer":
-                return <GraphViewer roomId={self.state.gridData.roomId}></GraphViewer>;
+                HubClient.registerToGraphPlayerRoom(self.state.data.roomId);
+                return <GraphViewer ></GraphViewer>;
                 break;
             case "Scene-Viewer":
                 return <SceneListener sceneViewer={true} sceneId={self.state.data.sceneId}/>;
@@ -65,12 +64,12 @@ var PopOutComp = React.createClass({
                 return <GraphTest  _id={self.state.data.sceneGraphId}/>;
                 break;
             case "Scene-Media-Browser":
-                return <SceneMediaBrowser saveStatus={this.state.saveStatus}  focusedMediaObject={this.state.gridData.focusedMediaObject}
+                return <SceneMediaBrowser saveStatus={self.state.saveStatus}  focusedMediaObject={self.state.gridData.focusedMediaObject}
                                            _id={self.state.data.sceneId}></SceneMediaBrowser>;
                 break;
             case "Scene-Editor":
-                return <LayoutMonacoTextEditor focusedMediaObject={this.state.gridData.focusedMediaObject} sceneSavingHandler={this.sceneSavingHandler}
-                                               _id={this.state.data.sceneId}  focusHandler={SceneActions.changeMediaObjectFocus}
+                return <LayoutMonacoTextEditor focusedMediaObject={self.state.gridData.focusedMediaObject} sceneSavingHandler={self.sceneSavingHandler}
+                                               _id={self.state.data.sceneId}  focusHandler={SceneActions.changeMediaObjectFocus}
                 ></LayoutMonacoTextEditor>;
                 break;
             default:
@@ -83,13 +82,12 @@ var PopOutComp = React.createClass({
         var self = this;
         try{
             var component = self.getComponent(self.state.data.type);
-            console.log("single",self);
         }catch(e)
         {
             console.log(e)
         }
         return (
-            <div>
+            <div className="mf-pop-out-component">
             {component}
             </div>
         );
