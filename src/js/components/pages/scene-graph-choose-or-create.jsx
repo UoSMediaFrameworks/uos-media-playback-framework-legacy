@@ -27,10 +27,10 @@ var SceneGraphChooser = React.createClass({
         }
     },
     handleFilterUpdate: function (e) {
-        if (e.key === 'Enter') {
+
             var input = this.refs["filter"];
             this.setState({filterText: input.value});
-        }
+
     },
     componentDidMount: function () {
         this.refs["filter"].value = this.state.filterText;
@@ -53,18 +53,13 @@ var SceneGraphChooser = React.createClass({
     render: function () {
         localStorage.setItem('scene-graph-filters', JSON.stringify(this.state));
         return (
-
                 <div>
-                        <div className="col-xs-12">
+                    <div className='col-xs-12'>
+                        <h4>Edit an Existing Scene Graph</h4>
+
+                        <div>
                             <div className="sort-section">
-                                <h4>Filter</h4>
-                                <input type='text' ref="filter" onKeyPress={this.handleFilterUpdate}
-                                       className='form-control' placeholder='scene name'/>
-                            </div>
-                        </div>
-                        <div className="col-xs-12">
-                            <div className="sort-section">
-                                <h4>Sort by</h4>
+                                <h5>Sort by</h5>
                                 <button type="button" className="btn btn-dark" value="asc" onClick={this._onSort}>
                                     Name Asc
                                 </button>
@@ -73,8 +68,12 @@ var SceneGraphChooser = React.createClass({
                                 </button>
                             </div>
                         </div>
-                    <div className='col-xs-12'>
-                        <h4>Edit an Existing Scene Graph</h4>
+                        <div>
+                            <div className="sort-section">
+                                <input type='text' ref="filter" onKeyPress={this.handleFilterUpdate}
+                                       className='form-control' placeholder='Filter Scene Graph List'/>
+                            </div>
+                        </div>
                         <SceneGraphList  filterText={this.state.filterText} _sceneGraphFocusHandler={this.props.sceneGraphFocusHandler} sortBy={this.state.sortBy}/>
                     </div>
 

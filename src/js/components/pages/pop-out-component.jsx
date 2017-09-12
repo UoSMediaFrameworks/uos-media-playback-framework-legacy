@@ -28,12 +28,7 @@ var PopOutComp = React.createClass({
         this.setState({saveStatus: saveStatus});
     },
     componentWillMount: function () {
-/*        try{
 
-        }catch(e)
-        {
-            console.log(e)
-        }*/
         GridStore.addChangeListener(this._onChange);
     },
 
@@ -61,7 +56,7 @@ var PopOutComp = React.createClass({
                 return <SceneListener sceneViewer={true} sceneId={self.state.data.sceneId}/>;
                 break;
             case "Graph":
-                return <GraphTest  _id={self.state.data.sceneGraphId}/>;
+                return <GraphTest isLayout={true}  _id={self.state.data.sceneGraphId}/>;
                 break;
             case "Scene-Media-Browser":
                 return <SceneMediaBrowser saveStatus={self.state.saveStatus}  focusedMediaObject={self.state.gridData.focusedMediaObject}

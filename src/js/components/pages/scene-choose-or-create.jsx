@@ -24,10 +24,10 @@ var SceneChooser = React.createClass({
 
     },
     handleFilterUpdate: function (e) {
-        if (e.key === 'Enter') {
+
             var input = this.refs["filter"];
             this.setState({filterText: input.value});
-        }
+
     },
     componentWillMount:function(){
       console.log("Will mount",this)
@@ -59,9 +59,9 @@ var SceneChooser = React.createClass({
         localStorage.setItem('scene-filters', JSON.stringify(this.state));
         var optionsArr = this.getGroupOptions();
         var isAdmin = ConnectionCache.getGroupID() == 0 ? 1:0;
-        var groupFilter = isAdmin ? <div className="col-xs-12">
+        var groupFilter = isAdmin ? <div >
             <div className="sort-section">
-                <h4>Show Only</h4>
+                <h5>Show Only</h5>
                 <Select
                     ref="group-filter"
                     name="group-filter"
@@ -76,20 +76,10 @@ var SceneChooser = React.createClass({
         return (
 
                 <div id="scene-list">
-                    <div >
-                        <div className="col-xs-12">
-                            <div className="sort-section">
-                                <h4>Filter</h4>
-                                <input type='text' ref="filter" onKeyPress={this.handleFilterUpdate}
-                                       className='form-control' placeholder='scene name'/>
-                            </div>
-                        </div>
-                        {groupFilter}
-                    </div>
                     <div className='col-md-12'>
                         <h4> Example Scenes </h4>
                         <ul className="nav nav-pills .nav-stacked col-xs-12">
-                            <li className="col-xs-12">
+                            <li>
                                 <label onClick={GridStore.focusScene.bind(this,"589c9dc3f0b2aca4bdfe444a")}
                                  onTouchEndCapture={GridStore.focusScene.bind(this,"589c9dc3f0b2aca4bdfe444a")}>MF Style Example</label>
                             </li>
@@ -97,6 +87,13 @@ var SceneChooser = React.createClass({
                     </div>
                     <div className='col-xs-12'>
                         <h4>Edit an Existing Scene</h4>
+                        {groupFilter}
+                        <div>
+                            <div className="sort-section">
+                                <input type='text' ref="filter" onKeyPress={this.handleFilterUpdate}
+                                       className='form-control' placeholder='Filter Scene List'/>
+                            </div>
+                        </div>
                         <SceneList filterText={this.state.filterText} _sceneFocusHandler={this.props.sceneFocusHandler} sortBy={this.state.sortBy}
                                    filterGroupId={this.state.filterGroupId}/>
 

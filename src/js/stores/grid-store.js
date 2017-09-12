@@ -204,7 +204,11 @@ addComponent = function (type) {
         )
     };
 removeComponent = function (id) {
-    gridState.layout.splice(_.indexOf(gridState.layout, _.findWhere(gridState.layout, {i: id})), 1);
+    gridState.layout.splice(
+        _.indexOf(gridState.layout,
+            _.findWhere(gridState.layout,
+                {i: id})),
+        1);
 };
 
 changeFocus = function (type) {
@@ -214,12 +218,17 @@ changeMediaObjectFocus = function(index){
     gridState.focusedMediaObject = index;
 };
 popoutComponent = function(item){
-    console.log(item)
     gridState.isPoppedOut = true;
     gridState.poppedOutComponent = item.type;
     var location = window.location.origin;
+    console.log("item",item,gridState)
+    gridState.layout.splice(
+        _.indexOf(gridState.layout,
+            _.findWhere(gridState.layout,
+                {i: item.i})),
+        1);
+    window.open(location+"/#/pop-out-component?sceneId=" + gridState.scene._id + "&&roomId="+ connectionCache.getSocketID() + "&&sceneGraphId=" + gridState.sceneGraph._id + "&&type=" +gridState.poppedOutComponent +"&&graphId=" + gridState.graphId, '_blank',"height="+window.innerHeight+",width=200");
 
-    window.open(location+"/#/pop-out-component?sceneId=" + gridState.scene._id + "&&roomId="+ connectionCache.getSocketID() + "&&sceneGraphId=" + gridState.sceneGraph._id + "&&type=" +gridState.poppedOutComponent, '_blank');
 };
 var GridStore = assign({}, EventEmitter.prototype, {
     emitChange: function () {

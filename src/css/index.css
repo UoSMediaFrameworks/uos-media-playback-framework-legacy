@@ -888,3 +888,6 @@ html, body, #main, .app {
     position: relative;
     word-break: break-word;
 }
+.sort-section{
+    margin-bottom: 10px;
+}
