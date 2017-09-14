@@ -221,14 +221,15 @@ popoutComponent = function(item){
     gridState.isPoppedOut = true;
     gridState.poppedOutComponent = item.type;
     var location = window.location.origin;
-    console.log("item",item,gridState)
     gridState.layout.splice(
         _.indexOf(gridState.layout,
             _.findWhere(gridState.layout,
                 {i: item.i})),
         1);
-    window.open(location+"/#/pop-out-component?sceneId=" + gridState.scene._id + "&&roomId="+ connectionCache.getSocketID() + "&&sceneGraphId=" + gridState.sceneGraph._id + "&&type=" +gridState.poppedOutComponent +"&&graphId=" + gridState.graphId, '_blank',"height="+window.innerHeight+",width=200");
-
+  var newWindow =  window.open(location+"/#/pop-out-component?sceneId=" + gridState.scene._id + "&&roomId="+ connectionCache.getSocketID() + "&&sceneGraphId=" + gridState.sceneGraph._id + "&&type=" +gridState.poppedOutComponent +"&&graphId=" + gridState.graphId, '_blank',"height="+window.innerHeight+",width=200");
+    newWindow.onload=function(){
+        GridStore.emitChange()
+    }
 };
 var GridStore = assign({}, EventEmitter.prototype, {
     emitChange: function () {
@@ -330,8 +331,8 @@ var GridStore = assign({}, EventEmitter.prototype, {
                 GridStore.emitChange();
                 break;
             case ActionTypes.COMP_POPOUT:
-                popoutComponent(action.item);
-                GridStore.emitChange;
+                popoutComponent(action.item);/*
+                GridStore.emitChange;*/
                 break;
 
         }
