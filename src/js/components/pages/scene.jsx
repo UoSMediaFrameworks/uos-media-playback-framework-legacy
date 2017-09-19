@@ -4,7 +4,6 @@
 
 var React = require('react');
 var _ = require('lodash');
-var SceneTextEditor = require('../scene-text-editor.jsx');
 var SceneStore = require('../../stores/scene-store');
 var HubSendActions = require('../../actions/hub-send-actions');
 var SceneActions = require('../../actions/scene-actions');

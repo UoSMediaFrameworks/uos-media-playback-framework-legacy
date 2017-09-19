@@ -25,7 +25,7 @@ var concat = require('gulp-concat'),
 var realFs = require('fs');
 var gracefulFs = require('graceful-fs');
 
-var cssGlobs = ['src/css/**/*.css', 'node_modules/codemirror/lib/*.css'];
+var cssGlobs = ['src/css/**/*.css'];
 gracefulFs.gracefulify(realFs);
 var static_server = require('./static_server');
 
