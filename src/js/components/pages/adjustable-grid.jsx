@@ -62,9 +62,6 @@ var RespGrid = React.createClass({
         var self = this;
 
             switch (item.type) {
-               /* case "Scene":
-                    return <Scene isLayout={true} _id={self.state.data.scene._id}/>;
-                    break;*/
                 case "Scene-Graph":
                     return <SceneGraph isLayout={true} _id={self.state.data.sceneGraph._id}/>;
                     break;
@@ -178,8 +175,6 @@ var RespGrid = React.createClass({
         try{
             var components = this.state.data.layout.map(function (item, index) {
                     var comp = <a></a>;
-
-
                     var leftComp = self.getLeftSideComponent(item);
                     var rightComp = self.getRightSideComponent(item);
                     var shouldHide = (item.state === "default" || item.state === "max") ? true : false;

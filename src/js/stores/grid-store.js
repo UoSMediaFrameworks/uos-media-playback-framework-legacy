@@ -26,20 +26,6 @@ var defaultComponents = [
         state: "default"
     },
     {
-        i: 'b',
-        x:10,
-        y: 1,
-        w: 20,
-        h: 8,
-        _w: 20,
-        _h: 8,
-        isDraggable: true,
-        isResizable: true,
-        visible: true,
-        type: "Scene",
-        state: "default"
-    },
-    {
         i: 'd',
         x: 10,
         y: 12,

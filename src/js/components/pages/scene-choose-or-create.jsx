@@ -6,6 +6,7 @@ var FormHelper = require('../../mixins/form-helper');
 var hat = require('hat');
 var ConnectionCache = require('../../utils/connection-cache');
 var Select = require('react-select');
+var SelectPlus = require('react-select-plus');
 var GridStore = require("../../stores/grid-store.js");
 
 
@@ -62,7 +63,7 @@ var SceneChooser = React.createClass({
         var groupFilter = isAdmin ? <div >
             <div className="sort-section">
                 <h5>Show Only</h5>
-                <Select
+                <SelectPlus
                     ref="group-filter"
                     name="group-filter"
                     value={this.state.filterGroupId}
@@ -94,7 +95,7 @@ var SceneChooser = React.createClass({
                                        className='form-control' placeholder='Filter Scene List'/>
                             </div>
                         </div>
-                        <SceneList filterText={this.state.filterText} _sceneFocusHandler={this.props.sceneFocusHandler} sortBy={this.state.sortBy}
+                        <SceneList filterText={this.state.filterText} _sceneFocusHandler={GridStore.focusScene} sortBy={this.state.sortBy}
                                    filterGroupId={this.state.filterGroupId}/>
 
                     </div>
