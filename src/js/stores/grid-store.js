@@ -203,16 +203,21 @@ changeFocus = function (type) {
 changeMediaObjectFocus = function(index){
     gridState.focusedMediaObject = index;
 };
-popoutComponent = function(item){
+
+popoutComponent = function(item, width, height){
+
     gridState.isPoppedOut = true;
     gridState.poppedOutComponent = item.type;
+
+    // APEP first we remove the component from the grid
+    removeComponent(item.i);
+
+    // APEP generate the new deep linking URL for the single component and all state required for transfer
     var location = window.location.origin;
-    gridState.layout.splice(
-        _.indexOf(gridState.layout,
-            _.findWhere(gridState.layout,
-                {i: item.i})),
-        1);
-  var newWindow =  window.open(location+"/#/pop-out-component?sceneId=" + gridState.scene._id + "&&roomId="+ connectionCache.getSocketID() + "&&sceneGraphId=" + gridState.sceneGraph._id + "&&type=" +gridState.poppedOutComponent +"&&graphId=" + gridState.graphId, '_blank',"height="+window.innerHeight+",width=200");
+    var newWindowUrl = location+"/#/pop-out-component?sceneId=" + gridState.scene._id + "&roomId="+ connectionCache.getSocketID() + "&sceneGraphId=" + gridState.sceneGraph._id + "&type=" +gridState.poppedOutComponent +"&graphId=" + gridState.graphId;
+
+    var newWindow =  window.open(newWindowUrl, '_blank',"height="+height+",width="+width);
+
     newWindow.onload=function(){
         GridStore.emitChange()
     }
@@ -317,8 +322,8 @@ var GridStore = assign({}, EventEmitter.prototype, {
                 GridStore.emitChange();
                 break;
             case ActionTypes.COMP_POPOUT:
-                popoutComponent(action.item);/*
-                GridStore.emitChange;*/
+                popoutComponent(action.item, action.width, action.height);
+                // APEP deferred emit change and delegated to popoutComponent function
                 break;
 
         }

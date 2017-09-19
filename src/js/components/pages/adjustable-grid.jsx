@@ -113,7 +113,8 @@ var RespGrid = React.createClass({
         SceneActions.maxComp(index, item, maxHeightValue);
     },
     popout:function(index,item){
-        SceneActions.popoutComp(index,item)
+        var popoutElementDom = this.refs[item.i];
+        SceneActions.popoutComp(index,item,popoutElementDom.offsetWidth,popoutElementDom.offsetHeight)
     },
     getLeftSideComponent:function(item){
         if(item.state == "default"){
@@ -188,7 +189,7 @@ var RespGrid = React.createClass({
                     if (comp && item.visible) {
                         var compTitle =   item.type == "Scene-Viewer" ?<span>{item.type.replace(/-/g, ' ') +" " + self.state.data.scene.name}</span> : <span>{item.type.replace(/-/g, ' ')}</span>;
                         return (
-                            <div key={item.i} className="widget-container">
+                            <div key={item.i} ref={item.i} className="widget-container">
                                 <section className="widget">
                                     <header className="react-drag-handle">
                                      <span className="widget-title">
