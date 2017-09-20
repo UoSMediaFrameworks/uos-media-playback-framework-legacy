@@ -325,6 +325,13 @@ var GridStore = assign({}, EventEmitter.prototype, {
                 popoutComponent(action.item, action.width, action.height);
                 // APEP deferred emit change and delegated to popoutComponent function
                 break;
+            case ActionTypes.SAVED_SCENE:
+                GridStore.focusScene(action.scene);
+                break;
+            case ActionTypes.SAVED_SCENE_GRAPH:
+                GridStore.focusSceneGraph(action.sceneGraph);
+                break;
+
 
         }
 
