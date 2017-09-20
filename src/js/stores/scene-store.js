@@ -34,9 +34,6 @@ var SceneStore = assign({}, EventEmitter.prototype, {
 
     dispatcherIndex: AppDispatcher.register(function (payload) {
         var action = payload.action; // this is our action from handleViewAction
-
-        var hC = HubClient;
-
         switch (action.type) {
             case ActionTypes.SCENE_CHANGE:
                 _updateScene(action.scene);
@@ -59,9 +56,17 @@ var SceneStore = assign({}, EventEmitter.prototype, {
                 break;
 
             case ActionTypes.ADD_MEDIA_OBJECT:
-                var scene = _scenes[action.sceneId];
-                scene.scene.push(action.mediaObject);
-                HubClient.save(scene);
+                try{
+                    var scene = _scenes[action.sceneId];
+                    scene.scene.push(action.mediaObject);
+                    //TODO: AngelP the age old bug continues - suspission is circular ref
+                   require('../utils/HubClient').save(scene);
+
+                }catch(e){
+                    console.log("Eeeeeee",e)
+                }
+
+
                 break;
 
             // should only be triggered when server sends data back, so no need to save
