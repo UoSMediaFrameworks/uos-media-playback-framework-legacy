@@ -120,14 +120,14 @@ var RespGrid = React.createClass({
         if(item.state == "default"){
             if(item.x == 0){
                 return (
-                        <i className="glyphicon glyphicon-chevron-left" onClick={this.collapseComponent.bind(this,item,"left")}></i>
+                        <i className="glyphicon glyphicon-chevron-left" onClick={this.collapseComponent.bind(null,item,"left")}></i>
                 )
             }else{
                 return null
             }
         }else if(item.state == "collapsed-left"){
             return (
-                     <i className="glyphicon glyphicon-chevron-right"  onClick={this.expandComponent.bind(this,item,"left")}></i>
+                     <i className="glyphicon glyphicon-chevron-right"  onClick={this.expandComponent.bind(null,item,"left")}></i>
             )
         }
     },
@@ -135,7 +135,7 @@ var RespGrid = React.createClass({
         if(item.state == "default"){
             if(item.x == this.state.cols - item.w){
                 return (
-                        <i className="glyphicon glyphicon-chevron-right" onClick={this.collapseComponent.bind(this,item,"right")}> </i>
+                        <i className="glyphicon glyphicon-chevron-right" onClick={this.collapseComponent.bind(null,item,"right")}> </i>
                 )
             }else{
                 return null
@@ -143,7 +143,7 @@ var RespGrid = React.createClass({
         }else if(item.state == "collapsed-right"){
             return (
 
-                    <i className="glyphicon glyphicon-chevron-left"  onClick={this.expandComponent.bind(this,item,"right")}></i>
+                    <i className="glyphicon glyphicon-chevron-left"  onClick={this.expandComponent.bind(null,item,"right")}></i>
             )
         }
     },
@@ -199,17 +199,17 @@ var RespGrid = React.createClass({
                                             {leftComp}
                                             {rightComp}
                                             <i className={item.state ==="default"  ?"fa fa-times mf-times":"hidden"}
-                                               onClick={self.removeComponent.bind(this, item) }>
+                                               onClick={self.removeComponent.bind(null, item) }>
                                             </i>
                                             <i className={ item.state !=="max" ? "hidden":"fa fa-window-restore mf-restore"}
-                                               onClick={self.restore.bind(this, index, item)}>
+                                               onClick={self.restore.bind(null, index, item)}>
                                             </i>
                                             <i
-                                                onClick={self.max.bind(this, index, item)}
+                                                onClick={self.max.bind(null, index, item)}
                                                 className={ item.state ==="default" ? "fa fa-window-maximize mf-maximize":"hidden "}>
                                             </i>
                                             <i
-                                                onClick={self.popout.bind(this, index, item)}
+                                                onClick={self.popout.bind(null, index, item)}
                                                 className={ item.state ==="default" ? "fa fa-share-alt-square  mf-maximize":"hidden "}>
                                             </i>
                                         </div>

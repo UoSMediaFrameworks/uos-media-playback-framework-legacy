@@ -23,7 +23,7 @@ var SceneMediaBrowser = React.createClass({
         this.setState(this.getStateFromStores());
     },
     _onFocusChange:function(){
-        this.setState(GridStore.getFocusedMediaObject());
+        this.setState({focusedMediaObject:GridStore.getFocusedMediaObject()});
     },
 
     getStateFromStores: function() {
