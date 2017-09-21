@@ -117,14 +117,14 @@ var RespGrid = React.createClass({
         if(item.state == "default"){
             if(item.x == 0){
                 return (
-                        <i className="glyphicon glyphicon-chevron-left" onClick={this.collapseComponent.bind(this,item,"left")}></i>
+                        <i className="glyphicon glyphicon-chevron-left" onClick={this.collapseComponent.bind(null,item,"left")}></i>
                 )
             }else{
                 return null
             }
         }else if(item.state == "collapsed-left"){
             return (
-                     <i className="glyphicon glyphicon-chevron-right"  onClick={this.expandComponent.bind(this,item,"left")}></i>
+                     <i className="glyphicon glyphicon-chevron-right"  onClick={this.expandComponent.bind(null,item,"left")}></i>
             )
         }
     },
@@ -132,7 +132,7 @@ var RespGrid = React.createClass({
         if(item.state == "default"){
             if(item.x == this.state.cols - item.w){
                 return (
-                        <i className="glyphicon glyphicon-chevron-right" onClick={this.collapseComponent.bind(this,item,"right")}> </i>
+                        <i className="glyphicon glyphicon-chevron-right" onClick={this.collapseComponent.bind(null,item,"right")}> </i>
                 )
             }else{
                 return null
@@ -140,7 +140,7 @@ var RespGrid = React.createClass({
         }else if(item.state == "collapsed-right"){
             return (
 
-                    <i className="glyphicon glyphicon-chevron-left"  onClick={this.expandComponent.bind(this,item,"right")}></i>
+                    <i className="glyphicon glyphicon-chevron-left"  onClick={this.expandComponent.bind(null,item,"right")}></i>
             )
         }
     },
@@ -184,7 +184,7 @@ var RespGrid = React.createClass({
                     }
 
                     if (comp && item.visible) {
-                        var compTitle =   item.type == "Scene-Viewer" ?<span>{item.type.replace(/-/g, ' ') +" " + self.state.data.scene.name}</span> : <span>{item.type.replace(/-/g, ' ')}</span>;
+                        var compTitle =   item.type == "Scene-Viewer" ?<span>{item.type.replace(/-/g, ' ') +" - " + self.state.data.scene.name}</span> : <span>{item.type.replace(/-/g, ' ')}</span>;
                         return (
                             <div key={item.i} ref={item.i} className="widget-container">
                                 <section className="widget">

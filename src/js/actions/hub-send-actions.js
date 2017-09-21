@@ -7,6 +7,7 @@ var HubRecieveActions = require('./hub-recieve-actions');
 var SceneActions = require('./scene-actions');
 var hashHistory = require('react-router').hashHistory;
 
+
 const GDC_SCENE_GRAPH_TYPE = "GDC_SCENE_GRAPH";
 const MEMOIR_SCENE_GRAPH_TYPE = "MEMOIR_SCENE_GRAPH";
 const NARM_SCENE_GRAPH_TYPE = "NARM_SCENE_GRAPH";
@@ -18,7 +19,6 @@ const CHAPER_NODE_TYPE = "chapter";
 
 const GDC_GRAPH_VERSION = "1.0.0";
 const GRAPH_ALPHA_VERSION = "alpha-1";
-console.log(HubClient);
 module.exports = {
     tryLogin: function(creds) {
     	AppDispatcher.handleViewAction({
@@ -532,8 +532,9 @@ module.exports = {
         }
 
         HubClient.saveSceneGraph(sceneGraph, function(newSceneGraph) {
+            HubRecieveActions.savedSceneGraph(newSceneGraph);
             HubRecieveActions.recieveSceneGraph(newSceneGraph);
-            hashHistory.push('scenegraph/' + newSceneGraph._id);
+
         });
 
     },
@@ -559,8 +560,8 @@ module.exports = {
     	};
 
     	HubClient.save(scene, function(newScene) {
+            HubRecieveActions.savedScene(newScene);
             HubRecieveActions.recieveScene(newScene);
-            hashHistory.push('scene/' + newScene._id);
         });
     },
     loadScene: HubClient.loadScene,

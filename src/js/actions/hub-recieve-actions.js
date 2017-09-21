@@ -57,6 +57,19 @@ var HubRecieveActions = {
         });
     },
 
+    //TODO: Angel P : this is a temp fix , flow of the application needs to be revisited and redesigned
+    savedScene: function(scene) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.SAVED_SCENE,
+            scene: scene
+        });
+    },
+    savedSceneGraph: function(sceneGraph) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.SAVED_SCENE_GRAPH,
+            sceneGraph: sceneGraph
+        });
+    },
     recieveSceneAndThemeListForPlayer: function(scoreCommand) {
 
         var sceneIds = scoreCommand.play.scenes;

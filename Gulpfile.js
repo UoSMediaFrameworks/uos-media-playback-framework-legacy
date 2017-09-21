@@ -55,10 +55,10 @@ if(debugMode) {
   abstract out the process of making a bundler, and then leave it open to manual triggering
 */
 var indexBundler = bundlerBuilder('./src/js/index.jsx', 'index.js', true);
-var viewerBundler = bundlerBuilder('./src/js/viewer.jsx', 'viewer.js', true);
-var manifest2015Bundler = bundlerBuilder('./src/js/manifest2015.js', 'manifest2015.js', false);
-var graphViewerBundler = bundlerBuilder('./src/js/graph-viewer.jsx', 'graph-viewer.js', true);
-var adjustablGridBundler= bundlerBuilder('./src/js/single-page-grid-layout.jsx','single-page-grid-layout.js',true);
+// var viewerBundler = bundlerBuilder('./src/js/viewer.jsx', 'viewer.js', true);
+// var manifest2015Bundler = bundlerBuilder('./src/js/manifest2015.js', 'manifest2015.js', false);
+// var graphViewerBundler = bundlerBuilder('./src/js/graph-viewer.jsx', 'graph-viewer.js', true);
+// var adjustablGridBundler= bundlerBuilder('./src/js/single-page-grid-layout.jsx','single-page-grid-layout.js',true);
 function bundlerBuilder (startPath, finishName, useReactify) {
     var bundler = watchify(browserify(startPath, objectAssign({debug: true, cache: {}, packageCache: {}}, watchify.args)));
     if (useReactify) {
@@ -98,10 +98,10 @@ gulp.task('watch', function () {
     gulp.watch(cssGlobs, ['css']);
 
     indexBundler.bundler.on('update', indexBundler.rebundle);
-    viewerBundler.bundler.on('update', viewerBundler.rebundle);
-    manifest2015Bundler.bundler.on('update', manifest2015Bundler.rebundle);
-    graphViewerBundler.bundler.on('update', graphViewerBundler.rebundle);
-    adjustablGridBundler.bundler.on('update', adjustablGridBundler.rebundle);
+    // viewerBundler.bundler.on('update', viewerBundler.rebundle);
+    // manifest2015Bundler.bundler.on('update', manifest2015Bundler.rebundle);
+    // graphViewerBundler.bundler.on('update', graphViewerBundler.rebundle);
+    // adjustablGridBundler.bundler.on('update', adjustablGridBundler.rebundle);
 });
 
 gulp.task('html', function() {
@@ -117,11 +117,11 @@ gulp.task('css', function() {
 
 gulp.task('bundlejs', function() {
     return mergeStream(
-        indexBundler.rebundle(),
-        viewerBundler.rebundle(),
-        manifest2015Bundler.rebundle(),
-        graphViewerBundler.rebundle(),
-        adjustablGridBundler.rebundle()
+        indexBundler.rebundle()
+        // viewerBundler.rebundle(),
+        // manifest2015Bundler.rebundle(),
+        // graphViewerBundler.rebundle(),
+        // adjustablGridBundler.rebundle()
     );
 });
 
@@ -147,10 +147,10 @@ gulp.task('build', ['build-dist'], function() {
     // watchify watch handles must be closed, otherwise gulp task will hang,
     // thus the .on('end', ...)
     indexBundler.bundler.close();
-    viewerBundler.bundler.close();
-    manifest2015Bundler.bundler.close();
-    graphViewerBundler.bundler.close();
-    adjustablGridBundler.bundler.close();
+    // viewerBundler.bundler.close();
+    // manifest2015Bundler.bundler.close();
+    // graphViewerBundler.bundler.close();
+    // adjustablGridBundler.bundler.close();
 });
 
 gulp.task('serve', function(next) {

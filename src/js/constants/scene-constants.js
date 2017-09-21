@@ -18,6 +18,10 @@ module.exports = {
         ADD_COMPONENT:null,
         REMOVE_COMPONENT:null,
         LAYOUT_CHANGE:null,
+        SAVED_SCENE:null,
+        SAVED_SCENE_GRAPH:null,
+
+
         /*Breadrumbs*/
         BREADCRUMBS_CLEAR_ALL:null,
         BREADCRUMBS_PLAY:null,
