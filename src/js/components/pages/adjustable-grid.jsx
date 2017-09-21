@@ -45,18 +45,15 @@ var RespGrid = React.createClass({
         this.setState({parentHeight: dom.parentElement.clientHeight});
     },
     onLayoutChange: function (layout) {
-        var self=this;
-        // APEP TODO should we not be updating the store in this case?
-        // APEP I guess each item keeps the values updated, but it does seem odd that we would not update store
-        // AngelP : This function can be used to keep component layout changes in the store, but the use case for it, to record changes
-        // for local storage.
+        var self = this;
 
-            var mergedList = _.map(self.state.data.layout, function(item){
-                return _.extend(item, _.findWhere(layout, { i: item.i }));
-            });
+        // TODO APEP Not sure if we need to do this remapping, I think we can just send layout param straight through actions
+        // Will need testing to confirm
+        var mergedList = _.map(self.state.data.layout, function(item){
+            return _.extend(item, _.findWhere(layout, { i: item.i }));
+        });
 
-            SceneActions.layoutChange(mergedList);
-
+        SceneActions.layoutChange(mergedList);
     },
     getComponent: function (item) {
         var self = this;
@@ -199,17 +196,17 @@ var RespGrid = React.createClass({
                                             {leftComp}
                                             {rightComp}
                                             <i className={item.state ==="default"  ?"fa fa-times mf-times":"hidden"}
-                                               onClick={self.removeComponent.bind(this, item) }>
+                                               onClick={self.removeComponent.bind(self, item) }>
                                             </i>
                                             <i className={ item.state !=="max" ? "hidden":"fa fa-window-restore mf-restore"}
-                                               onClick={self.restore.bind(this, index, item)}>
+                                               onClick={self.restore.bind(self, index, item)}>
                                             </i>
                                             <i
-                                                onClick={self.max.bind(this, index, item)}
+                                                onClick={self.max.bind(self, index, item)}
                                                 className={ item.state ==="default" ? "fa fa-window-maximize mf-maximize":"hidden "}>
                                             </i>
                                             <i
-                                                onClick={self.popout.bind(this, index, item)}
+                                                onClick={self.popout.bind(self, index, item)}
                                                 className={ item.state ==="default" ? "fa fa-share-alt-square  mf-maximize":"hidden "}>
                                             </i>
                                         </div>
