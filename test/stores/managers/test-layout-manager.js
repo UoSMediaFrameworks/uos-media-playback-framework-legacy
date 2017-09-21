@@ -5,6 +5,7 @@ var assert = require('chai').assert;
 var chance = require('chance').Chance();
 var LayoutManager = require('../../../src/js/stores/managers/layout-manager');
 var LayoutComponentConstants = require('../../../src/js/constants/layout-constants').ComponentTypes;
+var LayoutComponentColumns = require('../../../src/js/constants/layout-constants').ColumnTypes;
 
 describe('LayoutManager', function() {
    describe('constructor', function() {
@@ -81,7 +82,7 @@ describe('LayoutManager', function() {
            assert(neighbours.length === 0);
        });
 
-       it('should find one neighbour when connected directly', function() {
+       it('should find one neighbour when connected directly LHS', function() {
            this.manager.addComponent(LayoutComponentConstants.SceneMediaBrowser);
            this.manager.addComponent(LayoutComponentConstants.SceneEditor);
 
@@ -118,6 +119,37 @@ describe('LayoutManager', function() {
            assert(Array.isArray(neighbours));
            assert(neighbours.length === 1);
            assert(neighbours[0] === this.manager.layout[1]);
+       });
+
+       it('should fine one neighbour when connected directly on the RHS column', function() {
+           this.manager.addComponent(LayoutComponentConstants.SceneMediaBrowser);
+           this.manager.addComponent(LayoutComponentConstants.SceneEditor);
+           this.manager.addComponent(LayoutComponentConstants.GraphViewer);
+
+           var neighbours = this.manager.findNeighbours(this.manager.layout[2], LayoutComponentColumns.RHS);
+
+           assert(Array.isArray(neighbours));
+
+           assert(neighbours.length === 1);
+           assert(neighbours[0] === this.manager.layout[1]);
+       });
+
+       it('should find one neighbour when connected directly on RHS after collapse', function() {
+           this.manager.addComponent(LayoutComponentConstants.SceneMediaBrowser);
+           this.manager.addComponent(LayoutComponentConstants.SceneEditor);
+           this.manager.addComponent(LayoutComponentConstants.GraphViewer);
+
+           var rhsColumnCollapsed = this.manager.layout[2];
+           var middleComponent = this.manager.layout[1];
+           middleComponent.w = 19;
+
+           rhsColumnCollapsed.x = 29;
+           rhsColumnCollapsed.w = 1;
+
+           var neighbours = this.manager.findNeighbours(rhsColumnCollapsed, LayoutComponentColumns.RHS);
+
+           assert(neighbours.length === 1);
+           assert(neighbours[0] === middleComponent);
        });
    });
 
@@ -164,7 +196,7 @@ describe('LayoutManager', function() {
             // x 0, y 12, w 7, h 12
             // x 7, y 0, w 10, h 15
         */
-        it('should not collapse the middle component when the top left hand comp is collapsed', function() {
+        it('should not expand the middle component when the top left hand comp is collapsed and then expand after second LHS comp is collapsed', function() {
             this.manager.addComponent(LayoutComponentConstants.SceneMediaBrowser);
             this.manager.addComponent(LayoutComponentConstants.SceneEditor);
             this.manager.addComponent(LayoutComponentConstants.Graph);
@@ -210,7 +242,7 @@ describe('LayoutManager', function() {
         });
    });
 
-    describe('expandLeft', function() {
+   describe('expandLeft', function() {
         beforeEach(function() {
             this.manager = new LayoutManager();
             this.manager.defaultComponentStartingY = 0;
@@ -256,5 +288,59 @@ describe('LayoutManager', function() {
             assert(middleComp.w === 10, "The middle comp is has now shrank to allow the component to be expanded");
         });
     });
+
+   describe('collapseRight', function() {
+       beforeEach(function() {
+           this.manager = new LayoutManager();
+           this.manager.defaultComponentStartingY = 0;
+       });
+
+       it('should expand the middle when the RHS comp is collapsed', function() {
+           this.manager.addComponent(LayoutComponentConstants.SceneMediaBrowser);
+           this.manager.addComponent(LayoutComponentConstants.SceneEditor);
+           this.manager.addComponent(LayoutComponentConstants.Graph);
+
+           var rhsComponent = this.manager.layout[2];
+           var middleComponent = this.manager.layout[1];
+
+           this.manager.collapseRight(rhsComponent);
+
+           assert(rhsComponent.w === 1);
+           assert(rhsComponent.x === 29);
+
+           assert(middleComponent.w === 19);
+           assert(middleComponent.x === 10);
+       });
+   });
+
+   describe('expandRight', function() {
+       beforeEach(function() {
+           this.manager = new LayoutManager();
+           this.manager.defaultComponentStartingY = 0;
+       });
+
+       it('should shrink the middle when the RHS comp is expanded', function() {
+           this.manager.addComponent(LayoutComponentConstants.SceneMediaBrowser);
+           this.manager.addComponent(LayoutComponentConstants.SceneEditor);
+           this.manager.addComponent(LayoutComponentConstants.Graph);
+
+           var rhsComponent = this.manager.layout[2];
+           var middleComponent = this.manager.layout[1];
+
+           this.manager.collapseRight(rhsComponent);
+
+           assert(rhsComponent.w === 1);
+           assert(rhsComponent.x === 29);
+
+           assert(middleComponent.w === 19);
+           assert(middleComponent.x === 10);
+
+           this.manager.expandRight(rhsComponent);
+           assert(rhsComponent.w === 10);
+           assert(rhsComponent.x === 20);
+           assert(middleComponent.x === 10);
+           assert(middleComponent.w === 10, "w: "+ middleComponent.w);
+       });
+   });
 
 });

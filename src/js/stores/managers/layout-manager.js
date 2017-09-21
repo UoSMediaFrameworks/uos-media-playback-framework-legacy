@@ -3,6 +3,7 @@
 var _ = require('lodash');
 var hat = require('hat');
 var ReactGridUtils = require('react-grid-layout').utils;
+var LayoutComponentColumns = require('../../constants/layout-constants').ColumnTypes;
 
 class LayoutManager {
     constructor() {
@@ -89,6 +90,9 @@ class LayoutManager {
     }
 
     collapseRight(component) {
+        // APEP find all neighbours this is required before we change the size
+        var allNeighboursForExpansion = this.findNeighbours(component, LayoutComponentColumns.RHS);
+
         var item = _.find(this.layout, function (layoutItem) {
             return layoutItem.i === component.i;
         });
@@ -97,6 +101,8 @@ class LayoutManager {
         item.w = 1;
         item.x = (this.cols - item.w);
         item.isResizable = false;
+
+        this.expandNeighboursAfterCollapse(item._w - 1, allNeighboursForExpansion, LayoutComponentColumns.RHS);
     }
 
     expandLeft(component) {
@@ -116,6 +122,9 @@ class LayoutManager {
     }
 
     expandRight(component) {
+        // APEP find all neighbours this is required before we change the size
+        var allNeighboursForShrinkage = this.findNeighbours(component, LayoutComponentColumns.RHS);
+
         var item = _.find(this.layout, function (layoutItem) {
             return layoutItem.i === component.i;
         });
@@ -123,6 +132,9 @@ class LayoutManager {
         item.w = item._w;
         item.x = (this.cols - item._w);
         item.isResizable = true;
+
+        // APEP we must strink or move neighbours before we expand
+        this.strinkNeighboursAfterExpandOfCollapsedComponent(item.w - 1, allNeighboursForShrinkage, LayoutComponentColumns.RHS);
     }
 
     calculateStartingPositionXForNewComponent() {
@@ -210,8 +222,10 @@ class LayoutManager {
         // Then confirm if the x is correct and we have a match
         return _.filter(componentsIntersectingWithRowScan, function(comp) {
 
-            // APEP TODO using leftOrRightColumn adjust this logic
-            return component.x + component.w === comp.x;
+            if (leftOrRightColumn === LayoutComponentColumns.RHS)
+                return comp.x + comp.w === component.x;
+            else
+                return component.x + component.w === comp.x;
         });
 
     }
@@ -224,7 +238,7 @@ class LayoutManager {
         });
     }
 
-    expandNeighboursAfterCollapse(changeInX, allNeighboursForExpansion) {
+    expandNeighboursAfterCollapse(changeInX, allNeighboursForExpansion, leftOrRightColumn) {
         var self = this;
 
         _.forEach(allNeighboursForExpansion, function(neighbour) {
@@ -235,8 +249,13 @@ class LayoutManager {
             _.remove(layoutMinusNeighbour, function(comp) { return comp.i === neighbour.i});
 
             var neighbourClone = _.cloneDeep(neighbour);
-            neighbourClone.x -= changeInX;
-            neighbourClone.w += changeInX;
+
+            if(leftOrRightColumn === LayoutComponentColumns.RHS) {
+                neighbourClone.w += changeInX;
+            } else {
+                neighbourClone.x -= changeInX;
+                neighbourClone.w += changeInX;
+            }
 
             // APEP Search for collisions for the new candidate size of the neighbour
             var collisions = _.filter(layoutMinusNeighbour, function(component){
@@ -245,13 +264,17 @@ class LayoutManager {
 
             // APEP with no collision we can expand the neighbour into the newly vacated space
             if(collisions.length === 0) {
-                neighbour.x -= changeInX;
-                neighbour.w += changeInX;
+                if(leftOrRightColumn === LayoutComponentColumns.RHS) {
+                    neighbour.w += changeInX;
+                } else {
+                    neighbour.x -= changeInX;
+                    neighbour.w += changeInX;
+                }
             }
         });
     }
 
-    strinkNeighboursAfterExpandOfCollapsedComponent(changeInX, allNeighboursForStrinkage) {
+    strinkNeighboursAfterExpandOfCollapsedComponent(changeInX, allNeighboursForStrinkage, leftOrRightColumn) {
         var self = this;
 
         _.forEach(allNeighboursForStrinkage, function(neighbour) {
@@ -262,15 +285,22 @@ class LayoutManager {
             _.remove(layoutMinusNeighbour, function(comp) { return comp.i === neighbour.i});
 
             var neighbourClone = _.cloneDeep(neighbour);
-            neighbourClone.x += changeInX;
-            neighbourClone.w -= changeInX;
+
+            if(leftOrRightColumn === LayoutComponentColumns.RHS) {
+                neighbourClone.w -= changeInX;
+            } else {
+                neighbourClone.x += changeInX;
+                neighbourClone.w -= changeInX;
+            }
 
             if(neighbourClone.w >= 2) {
                 // APEP if we meet minimum requirements we resize
-                neighbour.x += changeInX;
-                neighbour.w -= changeInX;
-            } else {
-                // APEP else we must move it to a free space
+                if(leftOrRightColumn === LayoutComponentColumns.RHS) {
+                    neighbour.w -= changeInX;
+                } else {
+                    neighbour.x += changeInX;
+                    neighbour.w -= changeInX;
+                }
             }
         });
     }
