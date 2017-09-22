@@ -8,6 +8,7 @@ var MenuItem = require('react-bootstrap').MenuItem;
 var FormHelper = require('../mixins/form-helper');
 var HubSendActions = require('../actions/hub-send-actions');
 var HubClient = require('../utils/HubClient');
+var LayoutComponentConstants = require('../constants/layout-constants').ComponentTypes;
 
 function _getState() {
     return {
@@ -29,13 +30,11 @@ var NavigationBar = React.createClass({
         this.setState({loggedIn: ClientStore.loggedIn()});
     },
     _onLayoutChange:function(){
-        this.setState(
-            {
-                focusedLayoutItem: GridStore.getFocusedComponent(),
-                focusedSceneID:GridStore.getFocusedSceneID(),
-                focusedSceneGraphID:GridStore.getFocusedSceneGraphID()
-            }
-            );
+        this.setState({
+            focusedLayoutItem: GridStore.getFocusedComponent(),
+            focusedSceneID:GridStore.getFocusedSceneID(),
+            focusedSceneGraphID:GridStore.getFocusedSceneGraphID()
+        });
     },
     _onOptionValueChange:function(){
         this.setState({value:"GDC_SCENE_GRAPH"})
@@ -51,8 +50,8 @@ var NavigationBar = React.createClass({
 
     },
     componentWillMount:function(){
-        ClientStore.addChangeListener(this._onLoginChange)
-        GridStore.addChangeListener(this._onLayoutChange)
+        ClientStore.addChangeListener(this._onLoginChange);
+        GridStore.addChangeListener(this._onLayoutChange);
     },
     handleCreateScene:function(event){
         event.preventDefault();
@@ -60,8 +59,8 @@ var NavigationBar = React.createClass({
     },
     handleRoomChange:function(event){
         event.preventDefault();
+        // APEP TODO just setting the socket ID is not enough see handleGraphRoomChange, you have to register in back end not just the front end!
         connectionCache.setSocketID(this.getRefVal('name'));
-
     },
     handleGraphRoomChange:function(event){
         event.preventDefault();
@@ -76,6 +75,8 @@ var NavigationBar = React.createClass({
         ClientStore.removeChangeListener(this._onLoginChange)
         GridStore.removeChangeListener(this._onLayoutChange)
     },
+
+    // APEP TODO these components should be separate React Classes in my opinion, it would make this a lot less messy.
     getNavComponent: function () {
         switch (this.state.focusedLayoutItem) {
 /*            case "Scene":
@@ -157,10 +158,12 @@ var NavigationBar = React.createClass({
     render: function () {
         var self=this;
         var nc = this.getNavComponent();
-        var isAdmin = connectionCache.getGroupID() == 0 ? 1:0;
+        var isAdmin = connectionCache.getGroupID() == 0 ? 1:0; // APEP TODO unusual usage of 1 and 0 for true and false, normalise to boolean.
         var sessionNav = null;
         var adminDropDown = null;
+
         if (this.state.loggedIn) {
+            // APEP TODO no reason why this can't be it's own react class.  We might already have one...
             sessionNav = (   <li>
 
                     <p className="navbar-text">{connectionCache.getGroupID()}
@@ -170,6 +173,7 @@ var NavigationBar = React.createClass({
             )
         }
         if(isAdmin){
+            // APEP TODO no reason why this can't be it's own react class.
             adminDropDown = (
             <li className="mf-dropdown">
                 <DropdownButton title={"Admin"} className="btn btn-dark navbar-btn" >
@@ -179,8 +183,12 @@ var NavigationBar = React.createClass({
             </li>
             )
         }
+
         var title="Components";
+
         return (
+            // APEP TODO remove one of the most obfuscated if statements achievable.
+            // APEP TODO We should add browser tool tips to the dropdown button menu to show that key bindings can be used.
             this.state.loggedIn&& !this.state.isPoppedOut?<nav className='navbar navbar-inverse'>
                 <div className="container-fluid">
                     <div className="navbar-header">
@@ -207,14 +215,14 @@ var NavigationBar = React.createClass({
                             {adminDropDown}
                             <li className="mf-dropdown">
                                 <DropdownButton title={title} className="btn btn-dark navbar-btn">
-                                    <MenuItem eventKey="1" onClick={self.addComponent.bind(this,"Scene-List")}>Scene List</MenuItem>
-                                    <MenuItem eventKey="3" onClick={self.addComponent.bind(this,"Scene-Graph-List")}>Scene Graph List</MenuItem>
-                                    <MenuItem eventKey="4" onClick={self.addComponent.bind(this,"Scene-Graph")}>Scene Graph Editor</MenuItem>
-                                    <MenuItem eventKey="5" onClick={self.addComponent.bind(this,"Graph")}>Graph</MenuItem>
-                                    <MenuItem eventKey="6" onClick={self.addComponent.bind(this,"Scene-Viewer")}>Scene Viewer</MenuItem>
-                                    <MenuItem eventKey="7" onClick={self.addComponent.bind(this,"Graph-Viewer")}>Graph Viewer</MenuItem>
-                                    <MenuItem eventKey="8" onClick={self.addComponent.bind(this,"Scene-Editor")}>Scene Editor</MenuItem>
-                                    <MenuItem eventKey="9" onClick={self.addComponent.bind(this,"Scene-Media-Browser")}>Scene Media Browser</MenuItem>
+                                    <MenuItem eventKey="1" onClick={self.addComponent.bind(this,LayoutComponentConstants.SceneList)}>Scene List</MenuItem>
+                                    <MenuItem eventKey="3" onClick={self.addComponent.bind(this,LayoutComponentConstants.SceneGraphList)}>Scene Graph List</MenuItem>
+                                    <MenuItem eventKey="4" onClick={self.addComponent.bind(this,LayoutComponentConstants.SceneGraph)}>Scene Graph Editor</MenuItem>
+                                    <MenuItem eventKey="5" onClick={self.addComponent.bind(this,LayoutComponentConstants.Graph)}>Graph</MenuItem>
+                                    <MenuItem eventKey="6" onClick={self.addComponent.bind(this,LayoutComponentConstants.SceneViewer)}>Scene Viewer</MenuItem>
+                                    <MenuItem eventKey="7" onClick={self.addComponent.bind(this,LayoutComponentConstants.GraphViewer)}>Graph Viewer</MenuItem>
+                                    <MenuItem eventKey="8" onClick={self.addComponent.bind(this,LayoutComponentConstants.SceneEditor)}>Scene Editor</MenuItem>
+                                    <MenuItem eventKey="9" onClick={self.addComponent.bind(this,LayoutComponentConstants.SceneMediaBrowser)}>Scene Media Browser</MenuItem>
                                 </DropdownButton>
                             </li>
                             <li>
