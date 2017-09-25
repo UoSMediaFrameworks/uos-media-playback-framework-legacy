@@ -4,6 +4,7 @@ var _ = require('lodash');
 var hat = require('hat');
 var ReactGridUtils = require('react-grid-layout').utils;
 var LayoutComponentColumns = require('../../constants/layout-constants').ColumnTypes;
+var LayoutComponentConstants = require('../../constants/layout-constants').ComponentTypes;
 
 class LayoutManager {
     constructor() {
@@ -16,6 +17,9 @@ class LayoutManager {
 
         // APEP specified so we can adjust.
         this.defaultComponentStartingY = Infinity;
+
+        this.addComponent(LayoutComponentConstants.SceneList);
+        this.addComponent(LayoutComponentConstants.SceneMediaBrowser);
     }
 
     minimize(index, component) {
