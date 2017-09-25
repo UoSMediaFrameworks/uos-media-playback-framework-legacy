@@ -6,10 +6,19 @@ var chance = require('chance').Chance();
 var LayoutManager = require('../../../src/js/stores/managers/layout-manager');
 var LayoutComponentConstants = require('../../../src/js/constants/layout-constants').ComponentTypes;
 var LayoutComponentColumns = require('../../../src/js/constants/layout-constants').ColumnTypes;
+var ls = require('mock-local-storage');
 
 describe('LayoutManager', function() {
 
    describe('constructor', function() {
+
+       before(function() {
+           localStorage.clear();
+       });
+
+       after(function() {
+           localStorage.clear();
+       });
 
        it('should setup the default state', function() {
            var manager = new LayoutManager();
@@ -38,6 +47,63 @@ describe('LayoutManager', function() {
            });
            assert(Array.isArray(mediaBrowserComponent));
            assert(mediaBrowserComponent.length === 1);
+       });
+
+       it('should use the local storage layout if it exists', function() {
+           var manager = new LayoutManager();
+           manager.addComponent(LayoutComponentConstants.Graph);
+           // APEP Hack for now, Infinity breaks it.
+           _.forEach(manager.layout, function(component){
+               component.y = 0;
+           });
+           manager.saveLayoutToLocalStorage();
+
+           var newManager = new LayoutManager();
+
+           assert(_.isEqual(newManager.layout, manager.layout));
+       });
+   });
+
+   describe('local storage tests', function() {
+
+       afterEach(function() {
+          localStorage.clear();
+       });
+
+       it('should be able to save to local storage', function() {
+
+           assert(localStorage.length === 0, "The local storage is empty ready for the test");
+
+           var manager = new LayoutManager();
+
+           assert(Array.isArray(manager.layout), "We have an layout array defined");
+
+           manager.saveLayoutToLocalStorage();
+
+           assert(localStorage.length === 1);
+       });
+
+       it('should be able to load from local storage', function() {
+           assert(localStorage.length === 0, "The local storage is empty ready for the test");
+
+           var manager = new LayoutManager();
+
+           assert(Array.isArray(manager.layout), "We have an layout array defined");
+
+           manager.addComponent(LayoutComponentConstants.Graph);
+
+           // APEP Hack for now, Infinity breaks it.
+           _.forEach(manager.layout, function(component){
+              component.y = 0;
+           });
+
+           manager.saveLayoutToLocalStorage();
+
+           assert(localStorage.length === 1);
+
+           var layoutFromLocalStorage = manager.getLayoutFromLocalStorage();
+
+           assert(_.isEqual(layoutFromLocalStorage, manager.layout));
        });
    });
 
