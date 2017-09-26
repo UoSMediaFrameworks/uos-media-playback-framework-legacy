@@ -32,6 +32,8 @@ var gridState = {
 
 changeFocus = function (type) {
     gridState.focusedType = type;
+    //AngelP: this is done to reset the focused media object when the scene changes
+    gridState.focusedMediaObject  = null;
 };
 changeMediaObjectFocus = function(index){
     gridState.focusedMediaObject = index;
@@ -63,6 +65,7 @@ var GridStore = assign({}, EventEmitter.prototype, {
     focusScene: function (scene) {
         gridState.scene = scene;
         HubSendActions.loadScene(scene._id);
+        gridState.focusedMediaObject= null;
         GridStore.emitChange();
     },
     focusSceneGraph: function (sceneGraph) {
