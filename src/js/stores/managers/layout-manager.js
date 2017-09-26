@@ -4,6 +4,7 @@ var _ = require('lodash');
 var hat = require('hat');
 var ReactGridUtils = require('react-grid-layout').utils;
 var LayoutComponentColumns = require('../../constants/layout-constants').ColumnTypes;
+var LayoutComponentConstants = require('../../constants/layout-constants').ComponentTypes;
 
 class LayoutManager {
     constructor() {
@@ -16,6 +17,15 @@ class LayoutManager {
 
         // APEP specified so we can adjust.
         this.defaultComponentStartingY = Infinity;
+
+        var loadedLayout = this.getLayoutFromLocalStorage();
+
+        if(loadedLayout.length === 0) {
+            this.addComponent(LayoutComponentConstants.SceneList);
+            this.addComponent(LayoutComponentConstants.SceneMediaBrowser);
+        } else {
+            this.layout = loadedLayout;
+        }
     }
 
     minimize(index, component) {
@@ -87,6 +97,7 @@ class LayoutManager {
 
     setLayout(layout) {
         this.layout = layout;
+        this.saveLayoutToLocalStorage();
     }
 
     collapseRight(component) {
@@ -175,25 +186,26 @@ class LayoutManager {
             1);
     };
 
+    // APEP static method
     getLayoutFromLocalStorage() {
         var parsedLayout = JSON.parse(localStorage.getItem('layout')) || [];
         if (parsedLayout.length < 1) {
             return [];
         } else {
+            // APEP TODO Values of Infinity get converted to nulls in local storage.  Must write test to fix
             return parsedLayout;
         }
     }
 
-    saveLayoutToLocalStorage(newLayout) {
-        // APEP TODO Ask why in a save to local storage are we also applying a delta to our state.
-        _.each(newLayout, function (item) {
+    // APEP TODO Ask why in a save to local storage are we also applying a delta to our state.
+    saveLayoutToLocalStorage() {
+        _.each(this.layout, function (item) {
             if (item.state === "default") {
                 item._w = item.w;
                 item._h = item.h;
             }
         });
-        this.layout = newLayout;
-        localStorage.setItem("layout", JSON.stringify(newLayout))
+        localStorage.setItem("layout", JSON.stringify(this.layout))
     }
 
     findNeighbours(component, leftOrRightColumn) {

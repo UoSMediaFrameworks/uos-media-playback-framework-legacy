@@ -6,23 +6,112 @@ var chance = require('chance').Chance();
 var LayoutManager = require('../../../src/js/stores/managers/layout-manager');
 var LayoutComponentConstants = require('../../../src/js/constants/layout-constants').ComponentTypes;
 var LayoutComponentColumns = require('../../../src/js/constants/layout-constants').ColumnTypes;
+var ls = require('mock-local-storage');
 
 describe('LayoutManager', function() {
+
    describe('constructor', function() {
+
+       before(function() {
+           localStorage.clear();
+       });
+
+       after(function() {
+           localStorage.clear();
+       });
 
        it('should setup the default state', function() {
            var manager = new LayoutManager();
 
-           assert(Array.isArray(manager.layout), "We have an empty array");
+           assert(Array.isArray(manager.layout), "We have an layout array defined");
            assert(manager.cols === 30, "We have a hardcoded fix number of cols")
        });
 
        // APEP TODO it.should use local storage....
+
+       it('should setup a basic layout', function() {
+           var manager = new LayoutManager();
+
+           assert(Array.isArray(manager.layout), "We have an layout array defined");
+
+           assert(manager.layout.length === 2, "We have two components by default");
+
+           var sceneListComponent = _.filter(manager.layout, function(comp){
+               return comp.type === LayoutComponentConstants.SceneList;
+           });
+           assert(Array.isArray(sceneListComponent));
+           assert(sceneListComponent.length === 1);
+
+           var mediaBrowserComponent = _.filter(manager.layout, function(comp){
+               return comp.type === LayoutComponentConstants.SceneMediaBrowser;
+           });
+           assert(Array.isArray(mediaBrowserComponent));
+           assert(mediaBrowserComponent.length === 1);
+       });
+
+       it('should use the local storage layout if it exists', function() {
+           var manager = new LayoutManager();
+           manager.addComponent(LayoutComponentConstants.Graph);
+           // APEP Hack for now, Infinity breaks it.
+           _.forEach(manager.layout, function(component){
+               component.y = 0;
+           });
+           manager.saveLayoutToLocalStorage();
+
+           var newManager = new LayoutManager();
+
+           assert(_.isEqual(newManager.layout, manager.layout));
+       });
+   });
+
+   describe('local storage tests', function() {
+
+       afterEach(function() {
+          localStorage.clear();
+       });
+
+       it('should be able to save to local storage', function() {
+
+           assert(localStorage.length === 0, "The local storage is empty ready for the test");
+
+           var manager = new LayoutManager();
+
+           assert(Array.isArray(manager.layout), "We have an layout array defined");
+
+           manager.saveLayoutToLocalStorage();
+
+           assert(localStorage.length === 1);
+       });
+
+       it('should be able to load from local storage', function() {
+           assert(localStorage.length === 0, "The local storage is empty ready for the test");
+
+           var manager = new LayoutManager();
+
+           assert(Array.isArray(manager.layout), "We have an layout array defined");
+
+           manager.addComponent(LayoutComponentConstants.Graph);
+
+           // APEP Hack for now, Infinity breaks it.
+           _.forEach(manager.layout, function(component){
+              component.y = 0;
+           });
+
+           manager.saveLayoutToLocalStorage();
+
+           assert(localStorage.length === 1);
+
+           var layoutFromLocalStorage = manager.getLayoutFromLocalStorage();
+
+           assert(_.isEqual(layoutFromLocalStorage, manager.layout));
+       });
    });
 
    describe('calculateStartingPositionXForNewComponent', function() {
         it('should estimate the X position using the number of layout items added', function() {
             var manager = new LayoutManager();
+
+            manager.layout = []; // APEP remove default added components
 
             assert(manager.calculateStartingPositionXForNewComponent() === 0, "With no components added we will always get 0");
 
@@ -35,6 +124,8 @@ describe('LayoutManager', function() {
    describe('addComponent {type: "LayoutComponentConstants.ComponentTypes"}', function() {
         it('should add the component of the correct type with valid defaults', function() {
             var manager = new LayoutManager();
+
+            manager.layout = []; // APEP remove default added components
 
             manager.addComponent(LayoutComponentConstants.SceneMediaBrowser);
 
@@ -65,6 +156,7 @@ describe('LayoutManager', function() {
        beforeEach(function() {
             this.manager = new LayoutManager();
             this.manager.defaultComponentStartingY = 0;
+            this.manager.layout = []; // APEP remove default added components
        });
 
        it('should find no neighbours when no component is given to the method', function() {
@@ -157,6 +249,7 @@ describe('LayoutManager', function() {
        beforeEach(function() {
            this.manager = new LayoutManager();
            this.manager.defaultComponentStartingY = 0;
+           this.manager.layout = []; // APEP remove default added components
        });
 
        it('finds none when no items are in the layout', function() {
@@ -187,6 +280,7 @@ describe('LayoutManager', function() {
        beforeEach(function() {
            this.manager = new LayoutManager();
            this.manager.defaultComponentStartingY = 0;
+           this.manager.layout = []; // APEP remove default added components
        });
 
        /*
@@ -246,6 +340,7 @@ describe('LayoutManager', function() {
         beforeEach(function() {
             this.manager = new LayoutManager();
             this.manager.defaultComponentStartingY = 0;
+            this.manager.layout = []; // APEP remove default added components
         });
 
         it('should shrink the middle component when expanding a previously collapsed component', function() {
@@ -293,6 +388,7 @@ describe('LayoutManager', function() {
        beforeEach(function() {
            this.manager = new LayoutManager();
            this.manager.defaultComponentStartingY = 0;
+           this.manager.layout = []; // APEP remove default added components
        });
 
        it('should expand the middle when the RHS comp is collapsed', function() {
@@ -317,6 +413,7 @@ describe('LayoutManager', function() {
        beforeEach(function() {
            this.manager = new LayoutManager();
            this.manager.defaultComponentStartingY = 0;
+           this.manager.layout = []; // APEP remove default added components
        });
 
        it('should shrink the middle when the RHS comp is expanded', function() {
