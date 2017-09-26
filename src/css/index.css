@@ -871,6 +871,7 @@ html, body, #main, .app {
 .mf-empty-grid-component{
     width:100%;
 }
+
 .mf-local-height{
     height:100%;
 
@@ -890,4 +891,24 @@ html, body, #main, .app {
 }
 .sort-section{
     margin-bottom: 10px;
+}
+
+.mf-no-scroll-grid-component {
+    width: 100%;
+    overflow-y: none;
+    overflow-x: none;
+}
+
+.mf-scene-layout-area {
+    position:  relative;
+    width: 100%;
+    height: 100%;
+    background: black;
+    border: 1px box blue;
+    overflow: hidden;
+}
+
+.mf-scene-layout-media-object {
+    width: 100%;
+    height: 100%;
 }
