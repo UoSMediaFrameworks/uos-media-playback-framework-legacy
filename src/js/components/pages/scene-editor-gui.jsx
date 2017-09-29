@@ -18,11 +18,11 @@ var SceneEditorGUI = React.createClass({
             focusedMediaObject: null,
             scene: null,
             placement: null,
-            height: 0,
-            width: 0,
             mediaObject: null,
             mediaTypeSupported: null,
-            shouldSave: false
+            shouldSave: false,
+            height: 0,
+            width: 0,
         });
     },
 
@@ -44,7 +44,7 @@ var SceneEditorGUI = React.createClass({
     },
 
     componentWillReceiveProps: function (nextProps) {
-        //same as focus change, same handling procedure
+        //same as focus change, same handling procedure, required because selected scene change dosn't appear to reliably fire change event?? 
         this._onFocusChange();
     },
 
@@ -104,7 +104,7 @@ var SceneEditorGUI = React.createClass({
             placement: placement,
             mediaObject: mediaObject,
             mediaTypeSupported: mediaTypeSupported,
-            shouldSave: false
+            shouldSave: false,
         }));
 
     },
@@ -124,8 +124,8 @@ var SceneEditorGUI = React.createClass({
         if (mediaObject.style.position === "absolute") {
             try {
                 console.log("SceneEditorGUI: Loading Position");
-                placement.x = parseFloat(mediaObject.style.top)
-                placement.y = parseFloat(mediaObject.style.left)
+                placement.x = parseFloat(mediaObject.style.left)
+                placement.y = parseFloat(mediaObject.style.top)
                 placement.width = parseFloat(mediaObject.style.width)
                 placement.height = parseFloat(mediaObject.style.height)
                 placement.isRandom = false
@@ -153,6 +153,14 @@ var SceneEditorGUI = React.createClass({
         return placement;
     },
 
+    getImageSize(url, callback) {
+        var img = new Image();
+        img.src = url;
+        img.onload = function () {
+            callback(this.width, this.height);
+        }
+    },
+
     // post render events: 
     componentDidUpdate() {
         //check for resize and update if size changed
@@ -169,6 +177,60 @@ var SceneEditorGUI = React.createClass({
             this.setSave();
         }
 
+    },
+
+      //get the best placement of an image while preserving aspect ratio
+      getDefaultPlacement() {
+          console.log("SceneEditorGUI: Getting Default Placement")
+          placement = this.state.placement;
+          if (this.state.mediaObject.type === "image") {
+            var self = this
+            this.getImageSize(self.state.mediaObject.url, function(imgWidth, imgHeight) {
+    
+                scaleX = imgWidth/self.state.width;
+                scaleY = imgHeight/self.state.height;
+    
+                scaleX = self.state.width/imgWidth
+                scaleY = self.state.height/imgHeight;
+                
+                var newWidth, newHeight
+                //choose the smallest scale to get best fit
+                if (scaleX < scaleY) {
+                    newWidth = scaleX*imgWidth;
+                    newHeight = scaleX*imgHeight;
+                } else {
+                    newWidth = scaleY*imgWidth;
+                    newHeight = scaleY*imgHeight;
+                }
+    
+                //convert back to relative units
+                placement.x = 0;
+                placement.y = 0;
+                placement.width =  (newWidth/self.state.width)*100;
+                placement.height = (newHeight/self.state.height)*100;
+    
+                //center image
+                placement.x = 50 - placement.width / 2;
+                placement.y = 50 - placement.height / 2;
+                
+                //set flags
+                placement.lockAspectRatio = true; //lock aspect ratio to try to preserve 
+                placement.isRandom = false;
+                console.log("SceneEditorGUI: Placing with optimum aspect")
+                self.setState({placement: placement, shouldSave: true})
+            })
+        
+        } else {
+            //can't auto find aspect
+            console.log("SceneEditorGUI: Placing with default full")
+            placement.x = 0;
+            placement.y = 0;
+            placement.width = 100;
+            placement.height = 100;
+            placement.isRandom = false;
+            this.setState({placement: placement, shouldSave: true})
+        }
+ 
     },
 
     //schedules a save in 1 second. Avoids to many saves
@@ -345,10 +407,6 @@ var SceneEditorGUI = React.createClass({
                 placement.y += 10;
                 break;
 
-            case "randomPlacement":
-                placement.isRandom = !placement.isRandom;
-                break;
-
             case "aspectRatio":
                 placement.IsAspectLocked = !placement.IsAspectLocked;
                 break;
@@ -367,6 +425,17 @@ var SceneEditorGUI = React.createClass({
 
         this.setState({placement: placement, shouldSave: true})
 
+    },
+
+    toggleRandomPlacement() {
+        console.log("SceneEditorGUI: Toggle Random Placement")
+        placement = this.state.placement;
+        if (placement.isRandom == true) {
+            this.getDefaultPlacement();
+        } else {
+            placement.isRandom = true;
+            this.setState({placement: placement, shouldSave: true})
+        }
     },
 
     //Appy template based on ID of clicked button
@@ -544,7 +613,7 @@ var SceneEditorGUI = React.createClass({
                                 <FontAwesome
                                     id="randomPlacement"
                                     className='mf-gui-toolbar-icon'
-                                    onClick={this.toolbarButtonClick}
+                                    onClick={this.toggleRandomPlacement}
                                     name='check-square-o'
                                     size='2x'/>
                             </span>
@@ -657,7 +726,7 @@ var SceneEditorGUI = React.createClass({
                                     <FontAwesome
                                         id="randomPlacement"
                                         className='mf-gui-toolbar-icon'
-                                        onClick={this.toolbarButtonClick}
+                                        onClick={this.toggleRandomPlacement}
                                         name='square-o'
                                         size='2x'/>
                                 </span>
@@ -669,6 +738,15 @@ var SceneEditorGUI = React.createClass({
                                         className='mf-gui-toolbar-icon'
                                         onClick={this.toolbarButtonClick}
                                         name={aspectIcon}
+                                        size='2x'/>
+                                </span>
+
+                                <span>
+                                    <FontAwesome
+                                        id="refresh"
+                                        className='mf-gui-toolbar-icon'
+                                        onClick={this.getDefaultPlacement}
+                                        name='refresh'
                                         size='2x'/>
                                 </span>
 

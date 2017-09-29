@@ -918,6 +918,11 @@ html, body, #main, .app {
     width: 100%;
     height: auto;
     vertical-align: center;
+    display: inline-block;
+  }
+
+  .mf-gui-toolbar span {
+    display: inline-block;
   }
   
   .mf-gui-toolbar-icon {
