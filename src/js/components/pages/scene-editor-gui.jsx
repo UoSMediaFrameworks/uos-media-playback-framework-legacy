@@ -45,7 +45,7 @@ var SceneEditorGUI = React.createClass({
 
     componentWillReceiveProps: function (nextProps) {
         //same as focus change, same handling procedure, required because selected scene change dosn't appear to reliably fire change event?? 
-        this._onFocusChange();
+        //this._onFocusChange();
     },
 
     componentWillUnmount: function () {
@@ -105,6 +105,7 @@ var SceneEditorGUI = React.createClass({
             mediaObject: mediaObject,
             mediaTypeSupported: mediaTypeSupported,
             shouldSave: false,
+            scene: scene
         }));
 
     },
@@ -129,6 +130,15 @@ var SceneEditorGUI = React.createClass({
                 placement.width = parseFloat(mediaObject.style.width)
                 placement.height = parseFloat(mediaObject.style.height)
                 placement.isRandom = false
+
+
+                //get rotation
+                if(mediaObject.style.transform != null) {
+                    var rotateString = mediaObject.style.transform.match(/\(([^)]+)deg\)/)[1] //regex to extract rotate transform only
+                    placement.rotation=parseInt(rotateString);
+                } else {
+                    placement.rotation = 0;
+                }
 
                 //check to test old content that only has partial position.
                 if (isNaN(placement.y) || isNaN(placement.x) || isNaN(placement.width) || isNaN(placement.height)) {
@@ -179,8 +189,8 @@ var SceneEditorGUI = React.createClass({
 
     },
 
-      //get the best placement of an image while preserving aspect ratio
-      getDefaultPlacement() {
+    //get the best placement of an image while preserving aspect ratio
+    getDefaultPlacement() {
           console.log("SceneEditorGUI: Getting Default Placement")
           placement = this.state.placement;
           if (this.state.mediaObject.type === "image") {
@@ -222,7 +232,7 @@ var SceneEditorGUI = React.createClass({
         
         } else {
             //can't auto find aspect
-            console.log("SceneEditorGUI: Placing with default full")
+            console.log("SceneEditorGUI: Can't find aspect ratio, defaulting to full screen")
             placement.x = 0;
             placement.y = 0;
             placement.width = 100;
