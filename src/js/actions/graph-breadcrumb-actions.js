@@ -1,13 +1,9 @@
 var AppDispatcher = require('../dispatchers/app-dispatcher');
-var HubClient = require('../utils/HubClient');
-var ActionTypes = SceneConstants.ActionTypes;
-var hat = require('hat');
+var ActionTypes = require('../constants/scene-constants').ActionTypes;
 var _ = require('lodash');
-var objectAssign = require('object-assign');
 
 
-var GraphActions = {
-
+var GraphBreadcrumbActions = {
     startRecording:function(){
         AppDispatcher.handleViewAction({
             type: ActionTypes.BREADCRUMBS_RECORD_START
@@ -22,6 +18,12 @@ var GraphActions = {
         AppDispatcher.handleViewAction({
             type: ActionTypes.BREADCRUMBS_RECORD_CONTINUE
         });
+    },
+    editRecordingName:function(name){
+        AppDispatcher.handleViewAction({
+            type:ActionTypes.BREADCRUMBS_RECORD_EDIT_NAME,
+            name:name
+        })
     },
     finishRecording:function(){
         AppDispatcher.handleViewAction({
@@ -63,8 +65,14 @@ var GraphActions = {
             type: ActionTypes.BREADCRUMBS_REMOVE_CRUMB,
             props:props
         });
+    },
+    importCrumbs:function(crumbs){
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.BREADCRUMBS_IMPORT_CRUMBS,
+            crumbs: crumbs
+        })
     }
 
 
 };
-module.exports = GraphActions;
+module.exports = GraphBreadcrumbActions;

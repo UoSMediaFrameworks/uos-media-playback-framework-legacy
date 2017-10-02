@@ -8,20 +8,24 @@ var _ = require("lodash");
 var connectionCache = require("../../utils/connection-cache");
 var HubClient = require("../../utils/HubClient");
 var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
+var GraphBreadcrumbActions =require("../../actions/graph-breadcrumb-actions");
 var AutowalkStore = require('../../stores/autowalk-store.js');
 
+
+var _autowalkHandlerInterval = null;
+var _playRandomNodeInterval = null;
 var NarmGraph = React.createClass({
 
     getInitialState: function () {
         return {data: null}
     },
     componentWillMount: function () {
-        this.setupNodes(this.props.data)
+        this.setupNodes(this.props.data,this.props)
       /*  this.setState({data:this.props.data})*/
     },
     componentWillReceiveProps: function (nextProps) {
         if(nextProps.shouldUpdateId != this.props.shouldUpdateId){
-            this.setupNodes(nextProps.data)
+            this.setupNodes(nextProps.data,nextProps)
         }
 
     },
@@ -29,12 +33,39 @@ var NarmGraph = React.createClass({
         document.addEventListener('keyup', this.optionsMenuHandler, false);
         BreadcrumbsStore.addPlayListener(this._playBreadcrumbs);
         BreadcrumbsStore.addTraceListener(this._traceBreadcrumbs);
+        AutowalkStore.addChangeListener(this._autowalkHandler);
     },
 
     componentWillUnmount: function () {
         document.removeEventListener('keyup', this.optionsMenuHandler, false);
         BreadcrumbsStore.removePlayListener(this._playBreadcrumbs);
         BreadcrumbsStore.removeTraceListener(this._traceBreadcrumbs);
+        AutowalkStore.removeTraceListener(this._autowalkHandler);
+    },
+    _autowalkHandler: function (props) {
+        var self = this;
+        clearTimeout(_autowalkHandlerInterval);
+        clearTimeout(_playRandomNodeInterval);
+        if (props.enabled) {
+
+            _autowalkHandlerInterval = setTimeout(function () {
+                self._playRandomNode(props.node_switch_duration)
+            }, props.inactivity_wait_duration)
+        }
+    },
+    _playRandomNode: function (switchTime) {
+        var self=this;
+
+        if (_playRandomNodeInterval) {
+            clearTimeout(_playRandomNodeInterval);
+        }
+        _playRandomNodeInterval = setInterval(function () {
+            var i = self.getRandomInt(0, self.state.data.nodes.length);
+            self.tapHandler(self.state.data.nodes[i]);
+        }, switchTime)
+    },
+    getRandomInt: function (min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
     },
     _playBreadcrumbs: function (crumbs) {
         var self = this;
@@ -107,7 +138,7 @@ var NarmGraph = React.createClass({
     tapHandler(t){
         var recording = BreadcrumbsStore.getRecording();
         if(recording){
-            BreadcrumbsStore.addCrumb("tap",t.name)
+            GraphBreadcrumbActions.addCrumb("tap",t.name)
         }
         this.highlight(t)
         var list = [];
@@ -142,28 +173,26 @@ var NarmGraph = React.createClass({
             HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID())
         }
     },
-    setupRootNodes: function (data) {
-        var self = this;
+    setupRootNodes: function (data,p) {
         var rootNodes = _.filter(data.nodes, function (node) {
             return node.type == 'root';
         });
         _.each(rootNodes, function (node) {
-            node.cx = self.props.innerWidth / 2;
-            node.cy = self.props.innerHeight / 2;
+            node.cx =  p.innerWidth / 2;
+            node.cy = p.innerHeight / 2;
             node.color = "#c60c30";
             node.r = 90;
         })
     },
-    setupSceneNodes: function (data) {
-        var self = this;
+    setupSceneNodes: function (data,p) {
         var sceneNodes = _.filter(data.nodes, function (node) {
             return node.type == 'scene';
         });
         _.each(sceneNodes, function (node, i) {
             var radian = ((2 * Math.PI) * i / sceneNodes.length) - 1.5708;
-            node.cx = (Math.cos(radian) * self.props.innerHeight / 2) + self.props.innerWidth / 2;
+            node.cx = (Math.cos(radian) * p.innerHeight / 2) + p.innerWidth / 2;
             node._x = node.cx;
-            node.cy = (Math.sin(radian) * self.props.innerHeight / 2) + self.props.innerHeight / 2;
+            node.cy = (Math.sin(radian) * p.innerHeight / 2) + p.innerHeight / 2;
             node._y = node.cy;
             node.color = "#0099b1";
             node.r = 60;
@@ -172,8 +201,8 @@ var NarmGraph = React.createClass({
                 if (parent.type == "theme") {
                     parent.r = 30;
                     var radian = ((2 * Math.PI) * i / 6);
-                    parent.cx = (Math.cos(radian) * self.props.innerHeight / 4) + node.cx;
-                    parent.cy = (Math.sin(radian) * self.props.innerHeight / 4) + node.cy;
+                    parent.cx = (Math.cos(radian) * p.innerHeight / 4) + node.cx;
+                    parent.cy = (Math.sin(radian) * p.innerHeight / 4) + node.cy;
                     parent.color = "#c60c30";
                 }
             })
@@ -217,16 +246,15 @@ var NarmGraph = React.createClass({
             node.color = "#c60c30";
         })
     },
-    setupNodes: function (data) {
+    setupNodes: function (data, properties) {
         var self = this;
-        self.setupRootNodes(data);
-        self.setupSceneNodes(data);
-        /*        this.setupOtherNodes();*/
+        self.setupRootNodes(data, properties);
+        self.setupSceneNodes(data, properties);
         self.setState({data:data});
     },
     render(){
-        var windowW = window.innerWidth * 0.1;
-        var windowH = window.innerHeight * 0.2;
+        var windowW = this.props.innerWidth * 0.1;
+        var windowH = this.props.innerHeight * 0.2;
         var self = this;
         var nodes = this.state.data.nodes.map((node, i) => {
             return (<g key={i} >
@@ -236,7 +264,7 @@ var NarmGraph = React.createClass({
             </g>)
         });
         var links = this.state.data.links.map((link, i) => {
-            return (<Path data={link} key={i} innerW={this.props.innerWidth} innerH={this.props.innerHeight}></Path>);
+            return (<Path data={link} key={i} innerW={self.props.innerWidth} innerH={self.props.innerHeight}></Path>);
         });
 
         var translate = 'translate(' + windowW + ',' + windowH + ')';
