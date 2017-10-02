@@ -51,11 +51,6 @@ var Scene = React.createClass({
         });
     },
 
-    fileHandler: function(fileList) {
-        for (var i = 0; i < fileList.length; i++) {
-            SceneActions.uploadAsset(this.state.scene._id, fileList[i]);
-        }
-    },
     deleteSceneHandler: function(event) {
         if (confirm('Deleting a scene will remove all associated images and tags.\n\nAre you sure?')) {
             HubSendActions.deleteScene(this.state.scene._id);
