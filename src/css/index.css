@@ -891,3 +891,7 @@ html, body, #main, .app {
 .sort-section{
     margin-bottom: 10px;
 }
+.mf-image-logo{
+
+    max-height: 50px;
+}

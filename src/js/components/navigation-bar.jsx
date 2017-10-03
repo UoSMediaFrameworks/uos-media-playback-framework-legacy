@@ -202,6 +202,7 @@ var NavigationBar = React.createClass({
                     </div>
                     <div className="collapse navbar-collapse">
                         <ul className="nav navbar-nav navbar-left">
+                            <li>  <img className="mf-image-logo" src="/images/50_YEAR_PRIMARY_LOGO-RGB-V2.jpg"  /> </li>
                             <li>
                                 <span className="navbar-text"> Media Framework</span>
                             </li>

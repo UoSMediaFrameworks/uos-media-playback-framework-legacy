@@ -109,7 +109,14 @@ gulp.task('html', function() {
         .pipe(template({polyfillFeatures: 'Element.prototype.classList,Object.create'}))
         .pipe(gulp.dest(dest));
 });
-
+gulp.task('icon',function(){
+    return gulp.src('src/*.ico')
+        .pipe(gulp.dest(dest));
+});
+gulp.task('images',function(){
+   return gulp.src('images/*')
+       .pipe(gulp.dest(dest+ '/images'));
+});
 gulp.task('css', function() {
     return gulp.src(cssGlobs)
         .pipe(gulp.dest(dest + '/css'));
@@ -138,7 +145,7 @@ gulp.task('include-schemas', function() {
     return gulp.src(['src/schemas/**']).pipe(gulp.dest('dist/schemas'));
 });
 
-gulp.task('build-dist', ['bundlejs', 'html', 'css', 'include-monaco-editor', 'include-schemas', 'build-version-document']);
+gulp.task('build-dist', ['bundlejs', 'html', 'css','icon','images', 'include-monaco-editor', 'include-schemas', 'build-version-document']);
 
 
 ///// BEGIN CLI TASKS ////////////////////////////////
