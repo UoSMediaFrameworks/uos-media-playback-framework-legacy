@@ -10,3 +10,4 @@ dist
 /dev-env.sh
 /prod-env.sh
 /env-azure.sh
+run.sh
