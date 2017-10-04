@@ -2,6 +2,7 @@ var React = require('react');
 var Audio5 = require('audio5');
 var soundCloud = require('../../../utils/sound-cloud');
 var TWEEN = require('tween.js');
+var AudioUtils = require('../../../utils/audio-utils');
 
 var AudioMediaObject = React.createClass({
 
@@ -27,6 +28,12 @@ var AudioMediaObject = React.createClass({
         this.play();
     },
 
+    // APEP if the component is unmounted we must clean up.
+    componentWillUnmount: function() {
+        this.setState({"playing": false});
+        this.destoryAudioPlayer();
+    },
+
     // tween the audio for this audio player between a start and end volume value and for a duration
     tweenAudio: function(start, end, duration, audioPlayer) {
         var position = {vol: start};
@@ -35,7 +42,9 @@ var AudioMediaObject = React.createClass({
         return new TWEEN.Tween(position)
             .to(target, duration)
             .onUpdate(function() {
-                this.volume(position.vol);
+                if(this.volume){
+                    this.volume(position.vol);
+                }
             }.bind(player));
     },
 
@@ -105,12 +114,9 @@ var AudioMediaObject = React.createClass({
 
         // APEP we need to allow an audio media object of 0 to only play for duration
         // if autoreplay 0, we want to use data.displayDuration to be able to end an audio track early
-        console.log("audio - timeupdate - position:, duration: , self.props.data.displayDuration: ", position, duration, self.props.data.displayDuration / 1000);
         // APEP if autoreplay is 0, follow the displayDuration, else allow the audio object to fully play & handle looping
         if (self.state.autoreplay === 0) {
-            console.log("audio - timeupdate - (position + transitionSeconds), (self.props.data.displayDuration / 1000)", (position + transitionSeconds), (self.props.data.displayDuration / 1000));
             if((position + transitionSeconds) > (self.props.data.displayDuration / 1000)) {
-                console.log("position + transitionSeconds > self.props.data.displayDuration");
                 self.loopingHandler();
             }
         } else {
@@ -123,6 +129,47 @@ var AudioMediaObject = React.createClass({
 
     },
 
+    audio5Play: function(mediaObject, streamUrl) {
+
+        var self = this;
+
+        var volume = mediaObject.volume;
+        if (isNaN(volume)) {
+            volume = 100;
+        }
+        volume = volume / 100;
+
+        self.state.player = new Audio5({
+            throw_errors: false,
+            format_time: false,
+            ready: function() {
+                if(!self.state.playing) {
+                    return;
+                }
+
+                this.load(streamUrl);
+
+                // APEP TODO resolve audio volume bug then we can turn this back on
+                this.volume(volume);
+
+                self.unlockCuePointsForMediaObject(mediaObject);
+
+                this.play();
+
+                //APEP tween volume TODO Turn back on with time to diagnose
+                var _ops = self.props.data.mediaObject._ops;
+                // self.state.playingAudioTween = self.tweenAudio(0, volume, _ops.transitionDuration, this);
+                // self.state.playingAudioTween.start();
+
+                this.on('timeupdate', self.audioPlayerTimeUpdate);
+
+                this.on('error', function(err) {
+                    self.destoryAudioPlayer();
+                });
+            }
+        });
+    },
+
     play: function() {
 
         var mediaObject = this.props.data.mediaObject._obj;
@@ -133,57 +180,34 @@ var AudioMediaObject = React.createClass({
 
         var self = this;
 
-        soundCloud.streamUrl(mediaObject.url, function(err, streamUrl) {
-            if(err) {
-                throw err;
-                return;
-            }
-
-            var volume = mediaObject.volume;
-            if (isNaN(volume)) {
-                volume = 100;
-            }
-            volume = volume / 100;
-
-            self.state.player = new Audio5({
-                throw_errors: false,
-                format_time: false,
-                ready: function() {
-                    if(!self.state.playing) {
-                        return;
-                    }
-
-                    this.load(streamUrl);
-
-                    this.volume(0);
-
-                    self.unlockCuePointsForMediaObject(mediaObject);
-
-                    this.play();
-
-                    var _ops = self.props.data.mediaObject._ops;
-
-                    //APEP tween volume
-                    self.state.playingAudioTween = self.tweenAudio(0, volume, _ops.transitionDuration, this);
-                    self.state.playingAudioTween.start();
-
-                    this.on('timeupdate', self.audioPlayerTimeUpdate);
-
-                    this.on('error', function(err) {
-                        self.destoryAudioPlayer();
-                    });
+        // APEP soundcloud audio - a simple search of the URL is OK.
+        if (mediaObject.url.indexOf("soundcloud.com") !== -1) {
+            soundCloud.streamUrl(mediaObject.url, function(err, streamUrl) {
+                if(err) {
+                    // APEP if we get an error from soundcloud, we will not be able to play the audio file. clean up immediately
+                    self.destoryAudioPlayer();
                 }
-            })
-        });
 
+                self.audio5Play(mediaObject, streamUrl);
+            });
+        } else {
+            // APEP TODO Must check if it is transcoded.  We will need the full scene object with appended DB values
+
+            // var transcodedUrl = AudioUtils.getTranscodedUrl(mediaObject.url);
+
+            self.audio5Play(mediaObject, mediaObject.url);
+        }
     },
 
     destoryAudioPlayer: function() {
-        var self = this;
-        self.state.player.pause();
         // APEP Ensure the Audio5 component cleans up
-        self.state.player.destroy();
-        self.props.data.moDoneHandler(self);
+        if(this.state.player) {
+            this.state.player.pause();
+            this.state.player.destroy();
+            this.state.player.off("timeupdate", this.audioPlayerTimeUpdate);
+            this.state.player = null;
+        }
+        this.props.data.moDoneHandler(this);
     },
 
     transition: function() {
@@ -199,32 +223,21 @@ var AudioMediaObject = React.createClass({
 
         // APEP Make sure we are still playing, if not we are trying to transition this element out and do not need to handle this anymore
         if(this.state.playing) {
-
             this.setState({"playing": false});
+            if(self.state.player) {
+                self.state.player.off("timeupdate", self.audioPlayerTimeUpdate);
 
-            setTimeout(function() {
-                if(self.state.player) {
+                self.destoryAudioPlayer();
 
-                    self.state.player.off("timeupdate", self.audioPlayerTimeUpdate);
-
-                    var _ops = self.props.data.mediaObject._ops;
-
-                    // APEP the below is causing errors, with the tween that is starting ends up with null pointers
-                    self.tweenAudio(self.state.player.volume(), 0, _ops.transitionDuration, self.state.player)
-                        .onComplete(function() {
-
-                            console.log("Audio Tween Completed");
-
-                            self.destoryAudioPlayer();
-
-                        })
-                        .start();
-                }
-            }, 1);
-
-
+                // APEP TODO the below is causing errors, with the tween that is starting ends up with null pointers
+                // var _ops = self.props.data.mediaObject._ops;
+                /*self.tweenAudio(self.state.player.volume(), 0, _ops.transitionDuration, self.state.player)
+                    .onComplete(function() {
+                        console.log("Audio Tween Completed");
+                    })
+                    .start();*/
+            }
         }
-
     },
 
     render: function() {

@@ -1,10 +1,9 @@
 'use strict';
 var React = require('react');
-var soundCloud = require('../../utils/sound-cloud');
-var getVimeoId = require('../../utils/get-vimeo-id');
 var toastr = require('toastr');
 var hat = require('hat');
 var VideoMediaPreviewPlayer = require('./components/video-media-preview-player.jsx');
+var AudioMediaPreviewPlayer = require('./components/audio-media-preview-player.jsx');
 var _ = require('lodash');
 
 var MediaObjectPreviewPlayer = React.createClass({
@@ -67,20 +66,9 @@ var MediaObjectPreviewPlayer = React.createClass({
                 break;
             case 'audio':
                 var self = this; //APEP required for scope resolution within the soundcloud stream URL callback.
-                soundCloud.streamUrl(mediaObject.url, function (err, streamUrl) {
-                    var preview;
-                    if (err) {
-                        toastr.warning(err)
-                    } else {
-                        preview = <audio
-                            id={uniqueComponentKey}
-                            className="react-audio-player"
-                            src={streamUrl}
-                            controls>
-                        </audio>;
-                    }
-                    self.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
-                });
+                var preview = <AudioMediaPreviewPlayer id={uniqueComponentKey}
+                                                        mediaObject={mediaObject}/>;
+                self.setState({preview: preview, previewClass: 'media-object-item-preview-player'});
                 break;
 
             case 'video':

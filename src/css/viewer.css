@@ -6,8 +6,17 @@ html, body {
        the vimeo iframe is directly in the body */
     overflow: hidden;
 }
-
-#main, .player, .scene-listener, .login-loader, .media-object-wrapper {
+.layout-border{
+    border:white solid 1px;
+}
+.scene-listener{
+    flex:1 1 auto;
+}
+.mf-graph-viewer{
+    flex:1 1 auto;
+    display: flex;
+}
+#main, .player, .login-loader, .media-object-wrapper {
     height: 100%;
 }
 
@@ -62,4 +71,13 @@ html, body {
 .theme-selector button:focus {
     outline: none;
 
+}
+
+/* APEP Hack required for PIP to work with iframe positioned relative to its container
+    as the container is the thing we position with out PIP work
+ */
+.picture-in-picture-graph-holder iframe {
+    position: relative !important;
+    width: 100%;
+    height: 90% !important;
 }

@@ -1,11 +1,12 @@
 var React = require('react');
 var MediaObject = require('../viewer/models/media-object.jsx');
-var lodash = require('lodash');
+var _ = require('lodash');
 var VideoMediaObject = require('../../utils/media-object/video-media-object');
 var ImageMediaObject = require('../../utils/media-object/image-media-object');
 var TextMediaObject = require('../../utils/media-object/text-media-object');
 var AudioMediaObject = require('../../utils/media-object/audio-media-object');
 var hat = require('hat');
+var $ = require('jquery');
 
 var RandomVisualPlayer = React.createClass({
     getInitialState: function () {
@@ -23,7 +24,7 @@ var RandomVisualPlayer = React.createClass({
         try {
             var objs = queue.mediaQueue.take([VideoMediaObject, ImageMediaObject, TextMediaObject, AudioMediaObject]);
 
-            lodash.forEach(objs, function(obj){
+            _.forEach(objs, function(obj){
                 if (obj !== undefined) {
                     obj.guid = obj.guid || hat();
                     self.state.arr.push(obj);
@@ -70,7 +71,7 @@ var RandomVisualPlayer = React.createClass({
 
         var previous = arr.length;
 
-        lodash.remove(arr, function (currentObject) {
+        _.remove(arr, function (currentObject) {
             return currentObject.guid === mediaObject.props.data.mediaObject.guid;
         });
 
@@ -91,7 +92,7 @@ var RandomVisualPlayer = React.createClass({
     shouldComponentUpdate(nextProps, nextState){
         var stateUpdate = this.state === nextState;
         var propsUpdate = this.props === nextProps;
-        var intervalUpdate = this.state.interval == nextState.interval;
+        var intervalUpdate = this.state.interval === nextState.interval;
 
         var willUpdate;
 
@@ -106,7 +107,32 @@ var RandomVisualPlayer = React.createClass({
     },
     componentWillMount: function () {
     },
+    componentWillUpdate:function(nextProps){
+        console.log("refs",this.refs,nextProps.sceneStyle)
+        var self=this;
+        if(nextProps.sceneStyle){
+            $(self.refs.player).removeAttr("style");
+            _.forEach(Object.keys(nextProps.sceneStyle), function (styleKey) {
+                var styleValue =nextProps.sceneStyle[styleKey];
+                $(self.refs.player).css(styleKey, styleValue);
+            });
+        }
+
+    },
+    componentWillUnmount:function(){
+        clearInterval(this.state.loadMediaObjectInterval);
+    },
     componentDidMount: function () {
+        console.log("refs",this.refs,this.props.sceneStyle)
+        var self = this;
+        if(this.props.sceneStyle){
+            $(this.refs.player).removeAttr("style");
+            _.forEach(Object.keys(self.props.sceneStyle), function (styleKey) {
+                var styleValue = self.props.sceneStyle[styleKey];
+                $(self.refs.player).css(styleKey, styleValue);
+            });
+        }
+
         this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
     },
 
@@ -136,6 +162,11 @@ var RandomVisualPlayer = React.createClass({
             console.log("FAILED TO TRANSITION MEDIA OBJECT E: ", e);
         }
 
+    },
+
+    // APEP If the player is removed from the grid we must clear the interval
+    componentWillUnmount: function() {
+        clearInterval(this.state.loadMediaObjectInterval);
     },
 
     startLoadMediaObjectsInterval: function() {

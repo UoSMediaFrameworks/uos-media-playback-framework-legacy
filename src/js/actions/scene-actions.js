@@ -15,6 +15,111 @@ var hashHistory = require('react-router').hashHistory;
 var toastr = require('toastr');
 
 var SceneActions = {
+
+    changeMediaObjectFocus:function(index){
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.COMP_MEDIA_OBJECT_FOCUS_SWITCH,
+            index: index
+        });
+    },
+    changeFocus:function(itemType){
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.COMP_FOCUS_SWITCH,
+            itemType: itemType
+        });
+    },
+    layoutChange:function(layout){
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.LAYOUT_CHANGE,
+            layout:layout
+        })
+    },
+    addLayoutComponent:function(componentType){
+      AppDispatcher.handleViewAction({
+          type:ActionTypes.ADD_COMPONENT,
+          componentType:componentType
+      })
+    },
+   removeLayoutComponent:function(componentId){
+        AppDispatcher.handleViewAction({
+            type:ActionTypes.REMOVE_COMPONENT,
+            componentId:componentId
+        })
+    },
+    collapseLeft:function(item){
+        AppDispatcher.handleViewAction(
+            {
+                type:ActionTypes.COMP_COLLAPSE_LEFT,
+                item:item
+            }
+        )
+    },
+    collapseRight:function(item){
+        AppDispatcher.handleViewAction(
+            {
+                type:ActionTypes.COMP_COLLAPSE_RIGHT,
+                item:item
+            }
+        )
+    },
+    expandLeft:function(item){
+        AppDispatcher.handleViewAction(
+            {
+                type:ActionTypes.COMP_EXPAND_LEFT,
+                item:item
+            }
+        )
+    },
+    expandRight:function(item){
+        AppDispatcher.handleViewAction(
+            {
+                type:ActionTypes.COMP_EXPAND_RIGHT,
+                item:item
+            }
+        )
+    },
+    // APEP TODO this should really be in a different Actions object, not something related to Scenes
+    // APEP say a GridLayoutActions object or ApplicationViewActions are two suggested terms, the name will be more clear when the full scope is defined
+    minComp: function (index, item) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.COMP_MIN,
+            index: index,
+            item: item
+        });
+    },
+
+    // APEP TODO this should really be in a different Actions object, not something related to Scenes
+    // APEP say a GridLayoutActions object or ApplicationViewActions are two suggested terms, the name will be more clear when the full scope is defined
+    maxComp: function (index, item,maxHeight) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.COMP_MAX,
+            index: index,
+            item: item,
+            maxHeight:maxHeight
+        });
+    },
+    popoutComp:function(index,item,width,height){
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.COMP_POPOUT,
+            index: index,
+            item: item,
+            width: width,
+            height: height
+        });
+    },
+    restoreComp: function (index, item) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.COMP_RESTORE,
+            index: index,
+            item: item
+        });
+    },
+    switchCompMode: function () {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.COMP_SWITCH_MODE
+        });
+    },
+
     updateScene: function (scene) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.SCENE_CHANGE,
@@ -156,18 +261,18 @@ var SceneActions = {
     },
 
     // APEP OPTIONAL callback (cp) for allowing upload after upload
-    _handleUploadAsset: function(alertId, sceneId, status, data, file, cb){
+    _handleUploadAsset: function (alertId, sceneId, status, data, file, cb) {
         var msg;
-        if(status === 'warning' ){
+        if (status === 'warning') {
             msg = 'No tags found in ' + file.name;
-        }else if(status === 'danger' ){
-            msg =  'Upload unsuccessful!';
-        }else if(status === 'unsupported'){
-            msg =  'File Type is unsupported';
-        }else if(status === 'uppercase'){
-            msg =   'Please make sure that your file has a lowercase extension';
-        }   else{
-            msg =   'Upload successful!';
+        } else if (status === 'danger') {
+            msg = 'Upload unsuccessful!';
+        } else if (status === 'unsupported') {
+            msg = 'File Type is unsupported';
+        } else if (status === 'uppercase') {
+            msg = 'Please make sure that your file has a lowercase extension';
+        } else {
+            msg = 'Upload successful!';
         }
 
         AppDispatcher.handleServerAction({
@@ -187,7 +292,7 @@ var SceneActions = {
         }, msecs);
 
         if (status !== 'danger') {
-            if(data.type != "video"){
+            if (data.type != "video") {
                 SceneActions.addMediaObject(sceneId, {
                     type: data.type,
                     url: data.url,
@@ -196,28 +301,28 @@ var SceneActions = {
                         'z-index': '1'
                     }
                 });
-            }else{
+            } else {
                 SceneActions.addMediaObject(sceneId, {
                     type: data.type,
                     url: data.url,
                     tags: data.tags,
-                    volume:100,
+                    volume: 100,
                     style: {
                         'z-index': '1'
                     },
-                    autoreplay:1
+                    autoreplay: 1
                 });
             }
 
         }
 
         // APEP
-        if(cb) {
+        if (cb) {
             cb();
         }
     },
 
-    finaliseResumableUploadAsset: function(sceneId, file, resumableFile, cb) {
+    finaliseResumableUploadAsset: function (sceneId, file, resumableFile, cb) {
         var alertId = hat();
 
         AppDispatcher.handleViewAction({
@@ -229,26 +334,11 @@ var SceneActions = {
 
         var self = this;
 
-        assetStore.resumableCreate(file, resumableFile, function (status, data){
+        assetStore.resumableCreate(file, resumableFile, function (status, data) {
             self._handleUploadAsset(alertId, sceneId, status, data, file, cb);
         });
     },
 
-    uploadAsset: function (sceneId, file) {
-        var alertId = hat();
-        AppDispatcher.handleViewAction({
-            type: ActionTypes.STATUS_MESSAGE,
-            message: 'Uploading ' + file.name + '...',
-            id: alertId,
-            status: 'info'
-        });
-
-        var self = this;
-
-        assetStore.create(file, function (status, data) {
-            self._handleUploadAsset(alertId, sceneId, status, data, file);
-        });
-    },
     getVideoMediaObjectData: function (mediaObject) {
         var alertId = hat();
         AppDispatcher.handleViewAction({
@@ -262,12 +352,12 @@ var SceneActions = {
                 console.log("checkTranscodedStatus Error", err)
                 AppDispatcher.handleViewAction({
                     type: ActionTypes.GET_TRANSCODED_STATUS_FAILURE,
-                    value:err
+                    value: err
                 })
             } else {
                 AppDispatcher.handleViewAction({
                     type: ActionTypes.GET_TRANSCODED_STATUS_SUCCESS,
-                    value:data
+                    value: data
                 })
             }
         })
@@ -276,12 +366,12 @@ var SceneActions = {
     // APEP this is not async - this could be changed if required but like other scene store, this should be preloaded
     // Probably shouldn't add callback as react component can have a listener for FullSceneStore (will just need to
     // make sure this is called to load the data from server)
-    getFullScene: function(sceneId, cb) {
-        assetStore.getFullScene(sceneId, function(err, scene){
-            if(!err && scene) {
+    getFullScene: function (sceneId, cb) {
+        assetStore.getFullScene(sceneId, function (err, scene) {
+            if (!err && scene) {
 
-                if(cb) {
-                    cb (scene);
+                if (cb) {
+                    cb(scene);
                 } else {
                     AppDispatcher.handleServerAction({
                         type: ActionTypes.RECIEVE_FULL_SCENE,
@@ -289,8 +379,8 @@ var SceneActions = {
                     });
                 }
             } else {
-                if(cb) {
-                    cb (null);
+                if (cb) {
+                    cb(null);
                 }
             }
         });

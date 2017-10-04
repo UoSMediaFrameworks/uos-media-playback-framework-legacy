@@ -22,9 +22,11 @@ var concat = require('gulp-concat'),
     livereload = require('gulp-livereload'),
     dest = 'dist',
     lvPort = 35729;
+var realFs = require('fs');
+var gracefulFs = require('graceful-fs');
 
-var cssGlobs = ['src/css/**/*.css', 'node_modules/codemirror/lib/*.css'];
-
+var cssGlobs = ['src/css/**/*.css'];
+gracefulFs.gracefulify(realFs);
 var static_server = require('./static_server');
 
 /*
@@ -53,10 +55,10 @@ if(debugMode) {
   abstract out the process of making a bundler, and then leave it open to manual triggering
 */
 var indexBundler = bundlerBuilder('./src/js/index.jsx', 'index.js', true);
-var viewerBundler = bundlerBuilder('./src/js/viewer.jsx', 'viewer.js', true);
-var manifest2015Bundler = bundlerBuilder('./src/js/manifest2015.js', 'manifest2015.js', false);
-var graphViewerBundler = bundlerBuilder('./src/js/graph-viewer.jsx', 'graph-viewer.js', true);
-
+// var viewerBundler = bundlerBuilder('./src/js/viewer.jsx', 'viewer.js', true);
+// var manifest2015Bundler = bundlerBuilder('./src/js/manifest2015.js', 'manifest2015.js', false);
+// var graphViewerBundler = bundlerBuilder('./src/js/graph-viewer.jsx', 'graph-viewer.js', true);
+// var adjustablGridBundler= bundlerBuilder('./src/js/single-page-grid-layout.jsx','single-page-grid-layout.js',true);
 function bundlerBuilder (startPath, finishName, useReactify) {
     var bundler = watchify(browserify(startPath, objectAssign({debug: true, cache: {}, packageCache: {}}, watchify.args)));
     if (useReactify) {
@@ -78,7 +80,7 @@ function bundlerBuilder (startPath, finishName, useReactify) {
             // .pipe(gulpif(production, sourcemaps.init({loadMaps: true})))
             // .pipe(gulpif(production, uglify()))
             // .pipe(gulpif(production, sourcemaps.write('./')))
-            .pipe(gulp.dest('dist/js'));
+            .pipe(gulp.dest(dest + '/js'));
     };
 
     return {bundler: bundler, rebundle: rebundle};
@@ -87,24 +89,36 @@ function bundlerBuilder (startPath, finishName, useReactify) {
 gulp.task('watch', function () {
     // trigger livereload on any change to dest
     livereload.listen(lvPort);
-    gulp.watch(dest + '/**').on('change', livereload.changed);
+    gulp.watch('src/**').on('change', livereload.changed);
 
     // html changes
     gulp.watch('src/*.html', ['html']);
+
+    gulp.watch('src/images/**', ['images']);
 
     // css changes
     gulp.watch(cssGlobs, ['css']);
 
     indexBundler.bundler.on('update', indexBundler.rebundle);
-    viewerBundler.bundler.on('update', viewerBundler.rebundle);
-    manifest2015Bundler.bundler.on('update', manifest2015Bundler.rebundle);
-    graphViewerBundler.bundler.on('update', graphViewerBundler.rebundle);
+    // viewerBundler.bundler.on('update', viewerBundler.rebundle);
+    // manifest2015Bundler.bundler.on('update', manifest2015Bundler.rebundle);
+    // graphViewerBundler.bundler.on('update', graphViewerBundler.rebundle);
+    // adjustablGridBundler.bundler.on('update', adjustablGridBundler.rebundle);
 });
 
 gulp.task('html', function() {
     return gulp.src('src/*.html')
         .pipe(template({polyfillFeatures: 'Element.prototype.classList,Object.create'}))
-        .pipe(gulp.dest('dist'));
+        .pipe(gulp.dest(dest));
+});
+
+gulp.task('icon',function(){
+    return gulp.src('src/*.ico')
+        .pipe(gulp.dest(dest));
+});
+gulp.task('images',function(){
+   return gulp.src('src/images/*')
+       .pipe(gulp.dest(dest+ '/images'));
 });
 
 gulp.task('css', function() {
@@ -114,10 +128,11 @@ gulp.task('css', function() {
 
 gulp.task('bundlejs', function() {
     return mergeStream(
-        indexBundler.rebundle(),
-        viewerBundler.rebundle(),
-        manifest2015Bundler.rebundle(),
-        graphViewerBundler.rebundle()
+        indexBundler.rebundle()
+        // viewerBundler.rebundle(),
+        // manifest2015Bundler.rebundle(),
+        // graphViewerBundler.rebundle(),
+        // adjustablGridBundler.rebundle()
     );
 });
 
@@ -130,12 +145,14 @@ gulp.task('include-monaco-editor', function() {
     return gulp.src(['node_modules/react-monaco-editor/node_modules/monaco-editor/**']).pipe(gulp.dest('dist/monaco-editor'));
 });
 
-gulp.task('include-schemas', function() {
+gulp.task('external-deps-for-china', function() {
+    return gulp.src(['external-client-side-deps/**']).pipe(gulp.dest('dist/external'));
+});
+gulp.task('include-schemas',function(){
     return gulp.src(['src/schemas/**']).pipe(gulp.dest('dist/schemas'));
 });
 
-gulp.task('build-dist', ['bundlejs', 'html', 'css', 'include-monaco-editor', 'include-schemas', 'build-version-document']);
-
+gulp.task('build-dist', ['bundlejs', 'html', 'css', 'icon', 'images', 'external-deps-for-china',  'include-monaco-editor', 'include-schemas', 'build-version-document']);
 
 ///// BEGIN CLI TASKS ////////////////////////////////
 
@@ -143,13 +160,15 @@ gulp.task('build', ['build-dist'], function() {
     // watchify watch handles must be closed, otherwise gulp task will hang,
     // thus the .on('end', ...)
     indexBundler.bundler.close();
-    viewerBundler.bundler.close();
-    manifest2015Bundler.bundler.close();
-    graphViewerBundler.bundler.close();
+    // viewerBundler.bundler.close();
+    // manifest2015Bundler.bundler.close();
+    // graphViewerBundler.bundler.close();
+    // adjustablGridBundler.bundler.close();
 });
 
 gulp.task('serve', function(next) {
     static_server(dest, {callback: next, livereload: true});
 });
 
+//, 'watch'
 gulp.task('default', ['build-dist', 'serve', 'watch']);

@@ -1,0 +1,9 @@
+/*
+ * Jeju Myeongjo (Korean) http://www.google.com/fonts/earlyaccess
+ */
+@font-face {
+    font-family: 'Jeju Myeongjo';
+    font-style: normal;
+    font-weight: 400;
+    src: url("./fonts/JejuMyeongjo-Regular.ttf") format('truetype');
+}

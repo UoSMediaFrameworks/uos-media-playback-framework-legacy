@@ -10,6 +10,11 @@ var CHANGE_EVENT = 'CHANGE_EVENT';
 var _scenes = [];
 var _themes = [];
 var _isScore = false;
+var lastActive = {
+    activeScene:null,
+    activeSceneId:null,
+    themeQuery:null
+};
 
 var GraphViewerStore = assign({}, EventEmitter.prototype, {
 
@@ -23,7 +28,12 @@ var GraphViewerStore = assign({}, EventEmitter.prototype, {
 
         return _scenes;
     },
-
+    updateLastActive:function(obj){
+        lastActive = obj;
+    },
+    getLastActive :function () {
+       return lastActive;
+    },
     getThemesForPlayback: function() {
         return _themes;
     },
@@ -48,6 +58,7 @@ var GraphViewerStore = assign({}, EventEmitter.prototype, {
                 _isScore = false; // APEP ensure we know we are from graph so we want shuffle
                 _scenes = action.sceneIds;
                 _themes = []; // APEP currently from graph we only get scenes so ensure we override any if used by scene and themes
+/*                console.log("graphStore",_scenes,_themes,_isScore);*/
                 GraphViewerStore.emitChange();
                 // APEP we have received a new request from the graph
 

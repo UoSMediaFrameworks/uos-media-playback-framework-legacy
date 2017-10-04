@@ -48,22 +48,46 @@ var SceneListener = React.createClass({
             return this.props.activeScene._id;
         }
 
-        var sceneId = this.props.sceneId || this.props.params.id;
+        /* Better logic is required to handle the difference between a layout or standalone component*/
+        var sceneId = null;
+        if (this.props.sceneId) {
+            sceneId = this.props.sceneId;
+        }
+        else if (this.props.params) {
+            sceneId = this.props.params.id
+        }
 
-        return sceneId;
+        if(!sceneId){
+            return null;
+        }
+        return sceneId
     },
 
     _getScene: function () {
 
-        if (this.props.activeScene) {
-            return this.props.activeScene;
+        try {
+            if (this.props.activeScene) {
+                return this.props.activeScene;
+            }
+            var sceneId = null;
+            if (this.props.sceneId) {
+                sceneId = this.props.sceneId;
+            }
+            else if (this.props.params) {
+                sceneId = this.props.params.id
+            }
+
+            if(!sceneId){
+                return null;
+            }
+            var scene = SceneStore.getScene(sceneId);
+            console.log("SceneListener - _getScene - sceneId: ", sceneId,scene);
+            return scene;
+        } catch (e) {
+            console.log(e)
+            return null;
         }
 
-        var sceneId = this.props.sceneId || this.props.params.id;
-
-        // console.log("SceneListener - _getScene - sceneId: ", sceneId);
-
-        return SceneStore.getScene(sceneId);
     },
 
     getInitialState: function () {
@@ -88,7 +112,6 @@ var SceneListener = React.createClass({
     _setPlayerClassCssForScene: function (style) {
         _.forEach(Object.keys(style), function (styleKey) {
             var styleValue = style[styleKey];
-
             $('.player').css(styleKey, styleValue);
         });
     },
@@ -98,11 +121,11 @@ var SceneListener = React.createClass({
         var scene = this._getSceneForUpdatingPlayerComponent();
 
         if (scene) {
-            // APEP Remove the old style added ready for new style or fallback to css class
+         /*   // APEP Remove the old style added ready for new style or fallback to css class
             $('.player').removeAttr("style");
             if (scene.style) {
                 this._setPlayerClassCssForScene(scene.style);
-            }
+            }*/
 
             // console.log("SceneListenr - setScene for mediaObjectQueue - this.props.activeScene:", this.props.activeScene);
 
@@ -118,6 +141,7 @@ var SceneListener = React.createClass({
     },
 
     componentWillMount: function () {
+        console.log("listener will mount",this);
         try {
             this.mediaObjectQueue = new MediaObjectQueueManager(
                 [TextMediaObject, AudioMediaObject, VideoMediaObject, ImageMediaObject],
@@ -138,8 +162,14 @@ var SceneListener = React.createClass({
             } else {
                 tag_form.style.display = "block";
             }
-            this.setState({shouldHide:!this.state.shouldHide});
+            this.setState({shouldHide: !this.state.shouldHide});
         }
+    },
+    componentWillReceiveProps:function(nextProps){
+        console.log("listener will mount wiilRP",nextProps);
+        HubSendActions.subscribeScene(this._getSceneId());
+        var scene = this._getScene();
+        this.setState({scene:scene})
     },
     componentDidMount: function () {
         HubSendActions.subscribeScene(this._getSceneId());
@@ -159,19 +189,19 @@ var SceneListener = React.createClass({
     componentDidUpdate: function (prevProps, prevState) {
 
         if (!_.isEqual(prevState.scene, this.state.scene)) {
-            console.log("state.scene changed - update player");
+          /*  console.log("state.scene changed - update player");*/
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevProps.activeScene, this.props.activeScene)) {
-            console.log("activeScene changed - update player");
+           /* console.log("activeScene changed - update player");*/
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevState.activeThemes, this.state.activeThemes)) {
-            console.log("ActiveTheme changed - update player");
+          /*  console.log("ActiveTheme changed - update player");*/
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevState.triggeredActiveThemes, this.state.triggeredActiveThemes)) {
-            console.log("TriggeredActiveTheme changed - update player");
+       /*     console.log("TriggeredActiveTheme changed - update player");*/
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevProps.themeQuery, this.props.themeQuery)) {
-            console.log("themeQuery changed - update player");
+            /*console.log("themeQuery changed - update player");*/
             this._maybeUpdatePlayer();
         }
 
@@ -192,7 +222,7 @@ var SceneListener = React.createClass({
 
         // APEP join all the individual sets of tags from themes in a bool OR statement
         var tagsJoinedForBoolStatement = filterStrings.join(' OR ');
-        console.log("mergeTagAndThemeFilters: ", tagsJoinedForBoolStatement);
+      /*  console.log("mergeTagAndThemeFilters: ", tagsJoinedForBoolStatement);*/
         return new TagMatcher(tagsJoinedForBoolStatement);
     },
 
@@ -328,7 +358,7 @@ var SceneListener = React.createClass({
     },
 
     render: function () {
-
+        var self = this;
         // APEP Display Active Theme if available, if not provide a theme selector
         var ThemeDisplay = this.state.fromGraphViewer ?
             <ActiveTheme ref="theme" themeQuery={this.props.themeQuery}/> :
@@ -341,19 +371,24 @@ var SceneListener = React.createClass({
                 <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...'
                        className='form-control scene-listener-tag-input'/>
             </form> : <span></span>;
+                       console.log("rendering viewer",this.sceneViewer);
+        if (this.state.scene) {
+            return (
+                <div className={ self.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"} ref="scene_listener">
+                    <Loader loaded={this.state.scene ? true : false}></Loader>
+                    <RandomVisualPlayer sceneStyle={this.state.scene.style} mediaQueue={this.state.mediaObjectQueue}
+                                        triggerMediaActiveTheme={this.triggerMediaActiveTheme}
+                                        removeMediaActiveThemesAfterDone={this.removeMediaActiveThemesAfterDone}
+                                        cuePointMediaObjects={this.state.cuePointMediaObjects}
+                                        cueMediaObjectDoneHandler={this.cueMediaObjectDoneHandler}/>
+                    {ThemeDisplay}
+                    {TagForm}
+                </div>
+            );
+        } else {
+            return (<div className="mf-empty-grid-component">No scene loaded for viewing</div>)
+        }
 
-        return (
-            <div className='scene-listener' ref="scene_listener">
-                <Loader loaded={this.state.scene ? true : false}></Loader>
-                <RandomVisualPlayer mediaQueue={this.state.mediaObjectQueue}
-                                    triggerMediaActiveTheme={this.triggerMediaActiveTheme}
-                                    removeMediaActiveThemesAfterDone={this.removeMediaActiveThemesAfterDone}
-                                    cuePointMediaObjects={this.state.cuePointMediaObjects}
-                                    cueMediaObjectDoneHandler={this.cueMediaObjectDoneHandler}/>
-                {ThemeDisplay}
-                {TagForm}
-            </div>
-        );
     }
 
 });

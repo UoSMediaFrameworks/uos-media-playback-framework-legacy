@@ -2,6 +2,40 @@ html, body, #main, .app {
     height: 100%;
 }
 
+.layout-button{
+    float:right;
+}
+.layout-button i{
+ color:white;
+}
+.layout-border::-webkit-scrollbar-track
+{
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 10px;
+    background-color: #F5F5F5;
+}
+
+.layout-border::-webkit-scrollbar
+{
+    width: 12px;
+    background-color: #F5F5F5;
+}
+
+.layout-border::-webkit-scrollbar-thumb
+{
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+    background-color: #555;
+}
+
+.layout-border{
+    border:white solid 1px;
+    overflow:auto;
+}
+
+.scene-chooser-opl{
+    overflow:hidden;
+}
 .media-object-item-preview-player-hidden {
     flex: 1;
     border: 1px solid #5a5a5a; /*Monaco grey - should probably change to use monaco css class*/
@@ -608,3 +642,349 @@ html, body, #main, .app {
 }
 
 /* END OF SCORE RELATED WORK */
+
+
+/* APEP Hack required for PIP to work with iframe positioned relative to its container
+    as the container is the thing we position with out PIP work
+ */
+.picture-in-picture-graph-holder iframe {
+    position: relative !important;
+}
+
+
+.widget{
+    box-shadow: 2px 2px 2px -1px white;
+    border-radius: 1px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 5px 5px;
+    color: #fff;
+    contain: strict;
+    height: 100%;
+    overflow: hidden;
+    background:rgba(51,51,51,0.4);
+    position: relative;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+.widget::-webkit-scrollbar{
+    width: 7px;
+    height: 7px;
+}
+.widget::-webkit-scrollbar-corner{
+    background: rgba(0,0,0,0.2);
+    border-color: rgba(0,0,0,0.2);
+}
+.widget::-webkit-scrollbar-thumb{
+    min-height: 35px;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.2);
+}
+.widget::-webkit-scrollbar-track{
+    background: rgba(77,76,76,0.2);
+    border-radius: 4px;
+}
+.widget>header{
+    height: 30px;
+    line-height: 30px;
+    font-weight: 600;
+    font-size: 1.0769230769rem;
+    background: #4d4d4d;
+    border-bottom: 1px solid #828282;
+    margin: -5px -5px 0;
+    padding: 0 8px 0;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+}
+.widget>header .widget-title{
+    color:#ffffff;
+    max-width: 100%;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    line-height: 30px;
+    font-weight: 600;
+    font-size: 1.0769230769rem;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.widget>header .grid-layout-controls{
+    height: 30px;
+    float: right;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    cursor: default;
+    -webkit-box-flex: 0;
+    -webkit-flex: 0 0 auto;
+    -ms-flex: 0 0 auto;
+    flex: 0 0 auto;
+    -webkit-align-self: flex-end;
+    -ms-flex-item-align: end;
+    align-self: flex-end;
+    margin-right: -2.5px;
+}
+.widget>header .grid-layout-controls>i{
+    margin-right: 5px;
+    padding: 4px 6px;
+    cursor: pointer
+}
+.widget .grid-layout-body{
+    overflow-y:auto;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    display: flex;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    position: relative;
+    word-break: break-word;
+}
+.grid-layout-body::-webkit-scrollbar-corner{
+    background: rgba(0,0,0,0.2);
+    border-color: rgba(0,0,0,0.2);
+}
+.grid-layout-body::-webkit-scrollbar-thumb{
+    min-height: 35px;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.69);
+}
+.grid-layout-body::-webkit-scrollbar-track{
+    background: rgba(77,76,76,0.2);
+    border-radius: 4px;
+}
+.grid-layout-body::-webkit-scrollbar{
+    width: 7px;
+    height: 7px;
+}
+.widget-container::-webkit-scrollbar-corner{
+    background: rgba(0,0,0,0.2);
+    border-color: rgba(0,0,0,0.2);
+}
+.widget-container::-webkit-scrollbar-thumb{
+    min-height: 35px;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.2);
+}
+.widget-container::-webkit-scrollbar-track{
+    background: rgba(77,76,76,0.2);
+    border-radius: 4px;
+}
+.widget-container::-webkit-scrollbar{
+    width: 7px;
+    height: 7px;
+}
+.widget-container{
+    overflow:overlay;
+}
+.mf-dropdown ul{
+    background-color: #1e1e1e;
+}
+/*
+.mf-dropdown .dropdown-menu{
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 160px;
+    padding: 5px 0;
+    margin: 2px 0 0;
+    font-size: 14px;
+    text-align: left;
+    list-style: none;
+    background-color: #1e1e1e;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+}
+*/
+
+.mf-dropdown li {
+    color: #bbb;
+    background-color: #222;
+}
+
+.mf-dropdown .dropdown-menu>li>a{
+    color: white;
+}
+.mf-dropdown .dropdown-menu>li>a:hover{
+    text-decoration: none;
+    background-color: #171717;
+}
+
+.mf-times:hover{
+  color:red
+}
+.mf-restore:hover{
+    color:green
+}
+.mf-maximize:hover{
+    color:green
+}
+.mf-times:active{
+    color:darkred
+}
+.mf-restore:active{
+    color:darkgreen
+}
+.mf-maximize:active{
+    color:darkgreen
+}
+.mf-input{
+    padding-left:0;
+}
+.mf-link label{
+    padding-left:10px;
+}
+.mf-form{
+    margin:8px
+}
+.mf-text{
+    margin-left:15px;
+    margin-right:15px;
+}
+.mf-empty-grid-component{
+    width:100%;
+}
+
+.mf-local-height{
+    height:100%;
+
+}
+.mf-local-width{
+    width: 100%;
+}
+.mf-pop-out-component{
+    overflow-y: auto;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    display: flex;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    position: relative;
+    word-break: break-word;
+}
+.sort-section{
+    margin-bottom: 10px;
+}
+
+.mf-image-logo{
+    max-height: 50px;
+}
+
+.breadcrumbsInput{
+    color:black;
+}
+
+.mf-no-scroll-grid-component {
+    width: 100%;
+    overflow-y: none;
+    overflow-x: none;
+}
+
+.mf-scene-layout-area {
+    position:  relative;
+    width: 100%;
+    height: 100%;
+    background: black;
+    border: 1px box blue;
+    overflow: hidden;
+}
+
+.mf-scene-layout-media-object {
+    width: 100%;
+    height: 100%;
+}
+
+.mf-gui-toolbar {
+  background: #555;
+  width: 100%;
+  height: auto;
+  vertical-align: center;
+  display: inline-block;
+}
+
+.mf-gui-toolbar span {
+  display: inline-block;
+}
+
+.mf-gui-toolbar-icon {
+  color: orange;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px;
+  margin: 5px;
+}
+
+.mf-gui-toolbar-icon:hover {
+  color: white;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px;
+  margin: 5px;
+}
+
+.mf-gui-toolbar-text {
+  color: #FFF;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px;
+  margin: 5px;
+}
+
+.mf-gui-editor-templateBar img {
+  color: orange;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px;
+  margin: 5px;
+  width: 32px;
+  height: 32px;
+}
+
+.mf-gui-editor-templateBar img:hover {
+  color: orange;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px;
+  margin: 5px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid white;
+}
+
+.mf-media-loader-box {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    border: 1px solid blue;
+}
+
+.mf-media-loader-spinner {
+  top: 50%;
+}

@@ -5,7 +5,6 @@ var SceneGraphList = require('../scene-graph-list.jsx');
 var FormHelper = require('../../mixins/form-helper');
 var ConnectionCache = require('../../utils/connection-cache');
 var Select = require('react-select');
-var GraphTypes = require('../../constants/graph-constants').GraphTypes;
 
 var mediaHubGraphURL = process.env.MEDIA_HUB_GRAPH_URL || "";
 var presentationNamespaceQueryParams = "?roomId=presentation";
@@ -27,15 +26,11 @@ var SceneGraphChooser = React.createClass({
             console.log("err", E)
         }
     },
-    handleSubmit: function (event) {
-        event.preventDefault();
-        HubSendActions.tryCreateSceneGraph(this.getRefVal('name'), this.state.value);
-    },
     handleFilterUpdate: function (e) {
-        if (e.key === 'Enter') {
+
             var input = this.refs["filter"];
             this.setState({filterText: input.value});
-        }
+
     },
     componentDidMount: function () {
         this.refs["filter"].value = this.state.filterText;
@@ -43,10 +38,8 @@ var SceneGraphChooser = React.createClass({
     componentDidUpdate: function () {
         this.refs["filter"].value = this.state.filterText;
     },
-    handleChange(event) {
-        this.setState({value: event.target.value});
-    },
-    _onSort(event) {
+    _onSort(event)
+    {
         this.setState({sortBy: event.target.value});
     },
     getGroupOptions: function () {
@@ -60,41 +53,13 @@ var SceneGraphChooser = React.createClass({
     render: function () {
         localStorage.setItem('scene-graph-filters', JSON.stringify(this.state));
         return (
-            <div className='container'>
-                <div className='row'>
-                    <div className='col-xs-6'>
-                        <h2>Edit an Existing Scene Graph</h2>
-                        <SceneGraphList filterText={this.state.filterText} sortBy={this.state.sortBy}/>
-                    </div>
-                    <div className='col-xs-6'>
-                        <div className="col-xs-12">
-                            <h2>Create a new Scene Graph</h2>
-                            <form className='form-inline' onSubmit={this.handleSubmit} role='form'>
-                                <div >
-                                    <input type='text' ref='name' className='form-control' placeholder='name'/>
-                                    <span id="basic-addon2">
-                                    <select className="form-control" value={this.state.value}
-                                            onChange={this.handleChange}>
-                                        <option value={GraphTypes.GDC_GRAPH_VERSION}>GDC</option>
-                                        <option value={GraphTypes.MEMOIR_SCENE_GRAPH}>Memoir</option>
-                                        <option value={GraphTypes.NARM_SCENE_GRAPH}>NARM</option>
-                                        <option value={GraphTypes.SALFORD_PRESS_GRAPH}>Salford Press</option>
-                                    </select>
-                                </span>
-                                    <button type='submit' className='btn btn-default'>Create</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div className="col-xs-12">
+                <div>
+                    <div className='col-xs-12'>
+                        <h4>Edit an Existing Scene Graph</h4>
+
+                        <div>
                             <div className="sort-section">
-                                <h2>Filter</h2>
-                                <input type='text' ref="filter" onKeyPress={this.handleFilterUpdate}
-                                       className='form-control' placeholder='scene name'/>
-                            </div>
-                        </div>
-                        <div className="col-xs-12">
-                            <div className="sort-section">
-                                <h2>Sort by</h2>
+                                <h5>Sort by</h5>
                                 <button type="button" className="btn btn-dark" value="asc" onClick={this._onSort}>
                                     Name Asc
                                 </button>
@@ -103,9 +68,18 @@ var SceneGraphChooser = React.createClass({
                                 </button>
                             </div>
                         </div>
+                        <div>
+                            <div className="sort-section">
+                                <input type='text' ref="filter" onKeyPress={this.handleFilterUpdate}
+                                       className='form-control' placeholder='Filter Scene Graph List'/>
+                            </div>
+                        </div>
+                        <SceneGraphList  filterText={this.state.filterText} _sceneGraphFocusHandler={this.props.sceneGraphFocusHandler} sortBy={this.state.sortBy}/>
                     </div>
+
+
                     <div className="col-xs-12">
-                        <h2>Open Presentation Graphs</h2>
+                        <h4>Open Presentation Graphs</h4>
                         <ul className="graph-type-buttons">
                             <a className='btn btn-dark' href={presentationMediaHubGraphURL}>
                                 <li key="primary">Default Graph</li>
@@ -116,7 +90,6 @@ var SceneGraphChooser = React.createClass({
                         </ul>
                     </div>
                 </div>
-            </div>
         );
     }
 

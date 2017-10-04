@@ -26,7 +26,14 @@ function _updateSceneGraph (sceneGraph) {
 
 var SceneGraphListStore = assign({}, EventEmitter.prototype, {
     getAll: function() {
+        console.log("getAll",_sceneGraphs);
         return _.values(_sceneGraphs);
+    },
+
+    getSceneGraphByID:function(id){
+        if (_sceneGraphs.hasOwnProperty(id)) {
+            return _.cloneDeep(_sceneGraphs[id]);
+        }
     },
 
     loadingScenes: function() {
@@ -57,6 +64,7 @@ var SceneGraphListStore = assign({}, EventEmitter.prototype, {
             case ActionTypes.RECEIVE_SCENE_GRAPH_LIST:
                 _addSceneGraphs(action.sceneGraphs);
                 _loadingScenes = false;
+                console.log("well now I should receive a change")
                 SceneGraphListStore.emitChange();
                 break;
             case ActionTypes.RECEIVE_SCENE_GRAPH:

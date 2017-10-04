@@ -10,7 +10,7 @@ var ThemeButton = React.createClass({
 	},
 
 	render: function() {
-		var klass = 'btn',
+		var klass = 'btn btn-dark',
 			aria = '';
 		if (this.props.selected) {
 			klass += ' active';

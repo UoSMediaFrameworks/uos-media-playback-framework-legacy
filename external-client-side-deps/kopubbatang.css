@@ -1,0 +1,22 @@
+/*
+ * KoPub Batang (Korean) http://www.google.com/fonts/earlyaccess
+ */
+@font-face {
+    font-family: 'KoPub Batang';
+    font-style: normal;
+    font-weight: 300;
+    src: url(./fonts/KoPubBatang-Light.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'KoPub Batang';
+    font-style: normal;
+    font-weight: 400;
+    src:
+    url(./fonts/KoPubBatang-Regular.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'KoPub Batang';
+    font-style: normal;
+    font-weight: 700;
+    src: url(./fonts/KoPubBatang-Bold.ttf) format('truetype');
+}

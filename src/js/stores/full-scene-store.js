@@ -17,6 +17,7 @@ function _updateScene (scene) {
 
 var FullSceneStore = assign({}, EventEmitter.prototype, {
     getScene: function(id) {
+        console.log("getting scene",_scenes,id)
         if (_scenes.hasOwnProperty(id)) {
             return _.cloneDeep(_scenes[id]);
         }
@@ -39,6 +40,7 @@ var FullSceneStore = assign({}, EventEmitter.prototype, {
         switch(action.type){
             // should only be triggered when server sends data back, so no need to save
             case ActionTypes.RECIEVE_FULL_SCENE:
+                console.log("receive-full-scene")
                 _updateScene(action.scene);
                 FullSceneStore.emitChange();
                 break;

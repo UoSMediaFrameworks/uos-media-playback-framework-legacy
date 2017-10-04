@@ -47,7 +47,7 @@ TagRule.prototype.match = function(tagList) {
         });
     }
     // APEP Split the tag list using the delimiter we've enforced on the user
-    console.log("matches",matches);
+/*    console.log("matches",matches);*/
 
     return matches.length > 0;
 };
@@ -238,7 +238,7 @@ function tokenizeQuery (query) {
 }
 
 TagMatcher.prototype.match = function(tagList) {
-    console.log("tag",tagList)
+/*    console.log("tag",tagList)*/
 	return this._query.match(tagList);
 };
 

@@ -6,6 +6,9 @@ var FormHelper = require('../../mixins/form-helper');
 var hat = require('hat');
 var ConnectionCache = require('../../utils/connection-cache');
 var Select = require('react-select');
+var SelectPlus = require('react-select-plus');
+var GridStore = require("../../stores/grid-store.js");
+
 
 
 var SceneChooser = React.createClass({
@@ -21,15 +24,14 @@ var SceneChooser = React.createClass({
 
 
     },
-    handleSubmit: function (event) {
-        event.preventDefault();
-        HubSendActions.tryCreateScene(this.getRefVal('name'));
-    },
     handleFilterUpdate: function (e) {
-        if (e.key === 'Enter') {
+
             var input = this.refs["filter"];
             this.setState({filterText: input.value});
-        }
+
+    },
+    componentWillMount:function(){
+      console.log("Will mount",this)
     },
     componentDidMount: function () {
         this.refs["filter"].value = this.state.filterText;
@@ -58,10 +60,10 @@ var SceneChooser = React.createClass({
         localStorage.setItem('scene-filters', JSON.stringify(this.state));
         var optionsArr = this.getGroupOptions();
         var isAdmin = ConnectionCache.getGroupID() == 0 ? 1:0;
-        var groupFilter = isAdmin ? <div className="col-xs-12">
+        var groupFilter = isAdmin ? <div >
             <div className="sort-section">
-                <h2>Show Only</h2>
-                <Select
+                <h5>Show Only</h5>
+                <SelectPlus
                     ref="group-filter"
                     name="group-filter"
                     value={this.state.filterGroupId}
@@ -73,42 +75,34 @@ var SceneChooser = React.createClass({
 
 
         return (
-            <div className='container'>
-                <div className='row'>
-                    <div className='col-xs-6'>
-                        <h2>Edit an Existing Scene</h2>
-                        <SceneList filterText={this.state.filterText} sortBy={this.state.sortBy}
-                                   filterGroupId={this.state.filterGroupId}/>
-                    </div>
-                    <div className='col-xs-6'>
-                        <div className="col-xs-12">
-                            <h2>Create a new Scene</h2>
-                            <form className='form-inline' onSubmit={this.handleSubmit} role='form'>
-                                <div className='form-group'>
-                                    <input type='text' ref='name' className='form-control' placeholder='name'/>
-                                </div>
-                                <button type='submit' className='btn btn-default'>Create</button>
-                            </form>
-                        </div>
-                        <div className="col-xs-12">
-                            <div className="sort-section">
-                                <h2>Filter</h2>
-                                <input type='text' ref="filter" onKeyPress={this.handleFilterUpdate}
-                                       className='form-control' placeholder='scene name'/>
-                            </div>
-                        </div>
-                        {groupFilter}
-                    </div>
-                    <div className='col-md-6'>
+
+                <div id="scene-list">
+                    <div className='col-md-12'>
                         <h4> Example Scenes </h4>
                         <ul className="nav nav-pills .nav-stacked col-xs-12">
-                            <li className="col-xs-12">
-                                <a href="/#/scene/589c9dc3f0b2aca4bdfe444a">MF Style Example</a>
+                            <li>
+                                <label onClick={GridStore.focusScene.bind(this,"589c9dc3f0b2aca4bdfe444a")}
+                                 onTouchEndCapture={GridStore.focusScene.bind(this,"589c9dc3f0b2aca4bdfe444a")}>MF Style Example</label>
                             </li>
                         </ul>
                     </div>
+                    <div className='col-xs-12'>
+                        <h4>Edit an Existing Scene</h4>
+                        {groupFilter}
+                        <div>
+                            <div className="sort-section">
+                                <input type='text' ref="filter" onKeyPress={this.handleFilterUpdate}
+                                       className='form-control' placeholder='Filter Scene List'/>
+                            </div>
+                        </div>
+                        <SceneList filterText={this.state.filterText} _sceneFocusHandler={GridStore.focusScene} sortBy={this.state.sortBy}
+                                   filterGroupId={this.state.filterGroupId}/>
+
+                    </div>
+
+
                 </div>
-            </div>
+
 
         );
     }

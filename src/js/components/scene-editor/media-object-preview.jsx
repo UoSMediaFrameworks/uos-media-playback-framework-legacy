@@ -7,7 +7,7 @@ var vimeoApi = require('../../utils/vimeo-api');
 var getVimeoId = require('../../utils/get-vimeo-id');
 
 var getImageMediaObjectThumbnailUrl = function(mediaObjectUrl) {
-    if(!mediaObjectUrl || mediaObjectUrl.length == 0) {
+    if(!mediaObjectUrl || mediaObjectUrl.length === 0) {
         return mediaObjectUrl;
     }
 
@@ -16,8 +16,11 @@ var getImageMediaObjectThumbnailUrl = function(mediaObjectUrl) {
     }
 
     var trailingSlash = mediaObjectUrl.lastIndexOf('/');
-    var mediaURL = mediaObjectUrl.substring(0, trailingSlash + 1) + "thumbnail-" + mediaObjectUrl.substring(trailingSlash + 1, mediaObjectUrl.length);
-    return mediaURL;
+    return mediaObjectUrl.substring(0, trailingSlash + 1) + "thumbnail-" + mediaObjectUrl.substring(trailingSlash + 1, mediaObjectUrl.length);
+};
+
+var getFilenameFromUrl = function(url) {
+    return url.substring(url.lastIndexOf('/')+1);
 };
 
 var MediaObjectPreview = React.createClass({
@@ -29,6 +32,23 @@ var MediaObjectPreview = React.createClass({
 		};
 	},
 
+    loadSoundcloudThumbnailAndTitle: function(mediaObject) {
+        soundCloud.waveformUrl(mediaObject.url, function(err,url) {
+            if(!err){
+                this.setState({thumbImage: url});
+            }
+        }.bind(this));
+        soundCloud.title(mediaObject.url, function(err,title) {
+            if(!err){
+                this.setState({title: title});
+            }
+        }.bind(this));
+    },
+
+    loadAudioTitle: function(mediaObject) {
+	    this.setState({title: getFilenameFromUrl(mediaObject.url)});
+    },
+
 	loadObjectExtras: function(mediaObject) {
 
         if(!mediaObject || !mediaObject.type) {
@@ -37,26 +57,15 @@ var MediaObjectPreview = React.createClass({
 
 		switch(mediaObject.type) {
 			case 'audio':
-				soundCloud.waveformUrl(mediaObject.url, function(err,url) {
-                    if(err){
-                        console.log('Unable to load waveform URL')
-                    }else{
-                        this.setState({thumbImage: url});
-                    }
-
-				}.bind(this));
-				soundCloud.title(mediaObject.url, function(err,title) {
-                    if(err){
-                        console.log('Unable to load title')
-                    }else{
-                        this.setState({title: title});
-                    }
-
-				}.bind(this));
+			    if(mediaObject.url.indexOf('soundcloud.com') !== -1) {
+                    this.loadSoundcloudThumbnailAndTitle(mediaObject);
+                } else {
+			        this.loadAudioTitle(mediaObject);
+                }
 				break;
 
 			case 'video':
-                if(mediaObject.url.indexOf('vimeo.com') != -1) {
+                if(mediaObject.url.indexOf('vimeo.com') !== -1) {
                     vimeoApi.video(getVimeoId(mediaObject.url), function (err, data) {
                         var url;
                         try {

@@ -17,14 +17,14 @@ var Router = require('react-router'),
 var mediaHubGraphURL = process.env.MEDIA_HUB_GRAPH_URL || "";
 
 var SceneItem = React.createClass({
-    render: function() {
+    render: function () {
         return <option value={this.props.scene._id}>{this.props.scene.name}</option>;
     }
 });
 
 var SceneItemForList = React.createClass({
 
-    getInitialState: function() {
+    getInitialState: function () {
         return {
             scene: this.props.scene,
             sceneGraphId: this.props.sceneGraphId
@@ -32,7 +32,7 @@ var SceneItemForList = React.createClass({
     },
 
 
-    onSceneItemSelected: function(event) {
+    onSceneItemSelected: function (event) {
         var sceneId = this.state.scene._id;
 
         this.props.handleSceneItemForSelection(sceneId);
@@ -40,19 +40,20 @@ var SceneItemForList = React.createClass({
         SceneGraphActions.selectSceneForSceneGraphDisplay(this.state.sceneGraphId, sceneId);
     },
 
-    render: function() {
+    render: function () {
         return <li onClick={this.onSceneItemSelected}>{this.state.scene.name}</li>;
     }
 });
 
 var SceneGraphNode = React.createClass({
-    render: function() {
+    render: function () {
         return (
             <li className={this.props.indentation}>
                 <p> {this.props.node} </p>
                 <ul>
-                    { Object.keys(this.props.graphTheme).map(function(property){
-                        return <SceneGraphNode indentation="firstLevel" graphTheme={this.props.graphTheme[property]} node={property}/>
+                    { Object.keys(this.props.graphTheme).map(function (property) {
+                        return <SceneGraphNode indentation="firstLevel" graphTheme={this.props.graphTheme[property]}
+                                               node={property}/>
                     }, this)}
 
                 </ul>
@@ -62,17 +63,17 @@ var SceneGraphNode = React.createClass({
 });
 
 var ThemeForList = React.createClass({
-    render: function() {
+    render: function () {
         return <li>{this.props.value}</li>;
     }
 });
 
 var ThemesList = React.createClass({
-    render: function() {
+    render: function () {
         return (
             <div>
-                { this.props.tagList.map(function(tag){
-                    return <ThemeForList key={tag} value={tag} />
+                { this.props.tagList.map(function (tag) {
+                    return <ThemeForList key={tag} value={tag}/>
                 })}
             </div>
         )
@@ -80,38 +81,38 @@ var ThemesList = React.createClass({
 });
 
 var SceneTheme = React.createClass({
-    render: function() {
+    render: function () {
         return (
             <ul>
-                { this.props.themes.map(function(theme){
-                    return <ThemeForList key={this.props.scene._id + "_" + theme} value={theme} />
+                { this.props.themes.map(function (theme) {
+                    return <ThemeForList key={this.props.scene._id + "_" + theme} value={theme}/>
                 }.bind(this))}
             </ul>
         )
     }
 });
 
-var generateThemeListForSelectedScene = function(selectedScene) {
+var generateThemeListForSelectedScene = function (selectedScene) {
     var themes = [];
 
-    if(!selectedScene || !selectedScene.themes)
+    if (!selectedScene || !selectedScene.themes)
         return themes;
 
-    for(var property in selectedScene.themes) {
+    for (var property in selectedScene.themes) {
         themes.push(property);
     }
 
     return themes;
 };
 
-var generateTagListFromThemeList = function(selectedScene) {
+var generateTagListFromThemeList = function (selectedScene) {
 
     var tags = [];
 
-    if(!selectedScene || !selectedScene.themes)
+    if (!selectedScene || !selectedScene.themes)
         return tags;
 
-    for(var theme in selectedScene.themes) {
+    for (var theme in selectedScene.themes) {
         tags.push(selectedScene.themes[theme]);
     }
 
@@ -120,21 +121,29 @@ var generateTagListFromThemeList = function(selectedScene) {
 
 var SceneGraph = React.createClass({
 
-    loadAllScenesForSceneGraph: function(sceneGraph) {
+    loadAllScenesForSceneGraph: function (sceneGraph) {
 
         var sceneIds = sceneGraph && sceneGraph.sceneIds ? Object.keys(sceneGraph.sceneIds) : [];
 
-        for(var sceneId2 in sceneIds) {
+        for (var sceneId2 in sceneIds) {
             HubSendActions.loadScene(sceneIds[sceneId2]);
         }
 
     },
 
-    getStateFromStores: function() {
+    getStateFromStores: function () {
+        //TODO: Imrpove this condition statement
+        var sceneGraphId = null;
+        if (this.props._id) {
+            sceneGraphId = this.props._id;
+        }
+        if (this.props.params) {
+            sceneGraphId = this.props.params.id;
+        }
 
-        var sceneGraph = SceneGraphStore.getSceneGraph(this.props.params.id);
+        var sceneGraph = SceneGraphStore.getSceneGraph(sceneGraphId);
 
-        if(sceneGraph && this.state && ! this.state.sceneGraph) {
+        if (sceneGraph && this.state && !this.state.sceneGraph) {
             this.loadAllScenesForSceneGraph(sceneGraph);
         }
 
@@ -155,23 +164,23 @@ var SceneGraph = React.createClass({
 
         var sceneIds = state.sceneGraph && state.sceneGraph.sceneIds ? Object.keys(state.sceneGraph.sceneIds) : [];
 
-        for(var sceneIdFromlist in sceneIds) {
+        for (var sceneIdFromlist in sceneIds) {
             var fullScene = SceneStore.getScene(sceneIds[sceneIdFromlist]);
-            if(fullScene) {
+            if (fullScene) {
                 var storedFullScenes = state.storedFullScenes;
                 storedFullScenes[fullScene._id] = fullScene;
                 state.storedFullScenes = storedFullScenes;
             }
         }
 
-        for(var sceneKey in Object.keys(state.storedFullScenes)) {
+        for (var sceneKey in Object.keys(state.storedFullScenes)) {
             var fullSceneObj = state.storedFullScenes[Object.keys(state.storedFullScenes)[sceneKey]];
             var themeKeys = Object.keys(fullSceneObj.themes);
 
             var excludedThemeList = Object.keys(state.sceneGraph.excludedThemes);
 
-            for(var property in themeKeys) {
-                if(excludedThemeList.indexOf(themeKeys[property]) === -1)
+            for (var property in themeKeys) {
+                if (excludedThemeList.indexOf(themeKeys[property]) === -1)
                     state.themeUnionForScenesInGraph[themeKeys[property]] = {};
             }
         }
@@ -181,45 +190,56 @@ var SceneGraph = React.createClass({
         return state;
     },
 
-    componentDidMount:function(){
+    componentDidMount: function () {
+        var sceneGraphId = null;
+        if (this.props._id) {
+            sceneGraphId = this.props._id;
+        }
+        if (this.props.params) {
+            sceneGraphId = this.props.params.id;
+        }
         SceneGraphListStore.addChangeListener(this._onChange);
         SceneGraphStore.addChangeListener(this._onChange);
         SceneListStore.addChangeListener(this._onChange);
         SceneStore.addChangeListener(this._onChange);
-        HubSendActions.loadSceneGraph(this.props.params.id);
+        HubSendActions.loadSceneGraph(sceneGraphId);
     },
-
-    componentWillUnmount: function() {
+    componentWillReceiveProps:function(nextProps){
+        if( !_.isEqual(this.props._id,nextProps._id)){
+            HubSendActions.loadSceneGraph(nextProps._id);
+        }
+    },
+    componentWillUnmount: function () {
         SceneGraphListStore.removeChangeListener(this._onChange);
         SceneGraphStore.removeChangeListener(this._onChange);
         SceneListStore.removeChangeListener(this._onChange);
         SceneStore.removeChangeListener(this._onChange);
     },
 
-    _onChange:function(){
+    _onChange: function () {
         this.setState(this.getStateFromStores());
     },
 
-    getInitialState: function() {
+    getInitialState: function () {
         return _.extend(this.getStateFromStores(), {});
     },
 
-    changeSceneSelection: function(selectedSceneId) {
+    changeSceneSelection: function (selectedSceneId) {
         this.setState({"selectedSceneId": selectedSceneId});
     },
 
-    onSceneSelected: function(event) {
+    onSceneSelected: function (event) {
         var selectedSceneId = event.target.value;
         HubSendActions.loadScene(selectedSceneId);
         this.changeSceneSelection(selectedSceneId);
     },
 
-    addSelectedScene: function(event) {
+    addSelectedScene: function (event) {
         SceneGraphActions.addScene(this.state.sceneGraph._id, this.state.selectedSceneId);
     },
 
-    removeSelectedSceneFromSceneGraphSceneList: function(event) {
-        if(!this.state.selectedSceneId) {
+    removeSelectedSceneFromSceneGraphSceneList: function (event) {
+        if (!this.state.selectedSceneId) {
             return;
         }
 
@@ -228,53 +248,78 @@ var SceneGraph = React.createClass({
         this.setState({selectedScene: undefined, selectedSceneId: undefined});
     },
 
-    deleteSceneGraphHandler: function(event) {
-        if(confirm('Deleting a scene graph is a permament operation.\n\nAre you sure?')) {
+    deleteSceneGraphHandler: function (event) {
+        if (confirm('Deleting a scene graph is a permament operation.\n\nAre you sure?')) {
             HubSendActions.deleteSceneGraph(this.state.sceneGraph._id);
         }
     },
 
-    render: function() {
+    render: function () {
+        console.log("scene graph",this)
+        var sceneGraphId = null;
+        if (this.props.params) {
+            sceneGraphId = this.props.params.id;
+        }
+        if (this.props._id) {
+            sceneGraphId = this.props._id;
+        }
 
-        var viewerUrl = mediaHubGraphURL + "/?id=" + this.props.params.id;
-
+        var viewerUrl = mediaHubGraphURL + "/?id=" + sceneGraphId;
+        if (this.props._id == null) {
+            return (
+                <div>
+                    Scene graph has not been selected
+                </div>
+            );
+        }
         return (
             <div className="container scene-graph">
 
                 <div className="row">
-                    <div className="col-md-12" style={{"paddingTop":"12px"}}>
-                        <Link className='btn btn-dark' to='scenegraphs'>&lt; Back to Scene Graph List</Link> <button className='btn btn-danger' style={{"float":"right"}} onClick={this.deleteSceneGraphHandler}>Delete Scene Graph</button>
-                        <h3 className="scene-graph-title" >SceneGraph:{this.state.name}</h3>
-                        <a className='btn btn-dark' href={viewerUrl}>Open Graph</a>
+                    <div className="col-md-12" style={{"paddingTop": "12px"}}>
+                     {/*   <Link className='btn btn-dark' to='scenegraphs'>&lt; Back to Scene Graph List</Link>*/}
+                        <button className='btn btn-danger' style={{"float": "right"}}
+                                onClick={this.deleteSceneGraphHandler}>Delete Scene Graph
+                        </button>
+                        <h3 className="scene-graph-title">SceneGraph:{this.state.name}</h3>
+                        {/*<a className='btn btn-dark' href={viewerUrl}>Open Graph</a>*/}
                     </div>
                     <div className="col-md-12 scene-graph-scene-list-container">
-                        <h4 style={{float:"left"}}>Add a scene to the graph</h4>
-                        <select className="form-control scene-list" onChange={this.onSceneSelected} value={this.state.selectedSceneId}>
-                            {this.state.scenes.map(function(sc){
-                                return <SceneItem key={sc._id} scene={sc} />;
+                        <h4 style={{float: "left"}}>Add a scene to the graph</h4>
+                        <select className="form-control scene-list" onChange={this.onSceneSelected}
+                                value={this.state.selectedSceneId}>
+                            {this.state.scenes.map(function (sc) {
+                                return <SceneItem key={sc._id} scene={sc}/>;
                             })}
                         </select>
                     </div>
 
                     <div className="col-md-12">
                         <div className="no-side-padding col-md-4">
-                            <button className="btn btn-info add-scene-button" onClick={this.addSelectedScene}>Add Scene</button>
+                            <button className="btn btn-info add-scene-button" onClick={this.addSelectedScene}>Add
+                                Scene
+                            </button>
                             <div className="panel panel-default scenes-themes-tags no-margin-bottom">
                                 <div className="panel-heading">Scenes</div>
                                 <div className="panel-body">
-                                    {Object.keys(this.state.storedFullScenes).map(function(sceneIdKey){
+                                    {Object.keys(this.state.storedFullScenes).map(function (sceneIdKey) {
                                         var sc = this.state.storedFullScenes[sceneIdKey];
-                                        return <SceneItemForList scene={sc} key={sc._id} sceneGraphId={this.state.sceneGraph._id} handleSceneItemForSelection={this.changeSceneSelection} />;
+                                        return <SceneItemForList scene={sc} key={sc._id}
+                                                                 sceneGraphId={this.state.sceneGraph._id}
+                                                                 handleSceneItemForSelection={this.changeSceneSelection}/>;
                                     }, this)}
                                 </div>
                             </div>
-                            <button className="btn btn-warning remove-scene-button" onClick={this.removeSelectedSceneFromSceneGraphSceneList}>Remove Scene</button>
+                            <button className="btn btn-warning remove-scene-button"
+                                    onClick={this.removeSelectedSceneFromSceneGraphSceneList}>Remove Scene
+                            </button>
                         </div>
                         <div className="col-md-4">
                             <div className="panel panel-default scenes-themes-tags margin-top-34">
                                 <div className="panel-heading">Themes</div>
                                 <div className="panel-body">
-                                    <SceneTheme scene={this.state.selectedScene} themes={this.state.selectedSceneThemeList} />
+                                    <SceneTheme scene={this.state.selectedScene}
+                                                themes={this.state.selectedSceneThemeList}/>
                                 </div>
                             </div>
                         </div>
