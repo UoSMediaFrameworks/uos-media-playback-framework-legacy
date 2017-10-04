@@ -145,12 +145,14 @@ gulp.task('include-monaco-editor', function() {
     return gulp.src(['node_modules/react-monaco-editor/node_modules/monaco-editor/**']).pipe(gulp.dest('dist/monaco-editor'));
 });
 
-gulp.task('include-schemas', function() {
+gulp.task('external-deps-for-china', function() {
+    return gulp.src(['external-client-side-deps/**']).pipe(gulp.dest('dist/external'));
+});
+gulp.task('include-schemas',function(){
     return gulp.src(['src/schemas/**']).pipe(gulp.dest('dist/schemas'));
 });
 
-
-gulp.task('build-dist', ['bundlejs', 'html', 'css','icon','images', 'include-monaco-editor', 'include-schemas', 'build-version-document']);
+gulp.task('build-dist', ['bundlejs', 'html', 'css', 'icon', 'images', 'external-deps-for-china',  'include-monaco-editor', 'include-schemas', 'build-version-document']);
 
 ///// BEGIN CLI TASKS ////////////////////////////////
 
