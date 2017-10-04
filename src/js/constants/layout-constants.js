@@ -9,6 +9,7 @@ module.exports = {
         "GraphViewer": "Graph-Viewer",
         "SceneEditor": "Scene-Editor",
         "SceneMediaBrowser": "Scene-Media-Browser",
+        "SceneEditorGUI": "Scene-Editor-GUI",
     },
     ColumnTypes: {
         "RHS": "RightHandSide",

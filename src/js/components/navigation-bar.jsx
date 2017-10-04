@@ -222,6 +222,7 @@ var NavigationBar = React.createClass({
                                     <MenuItem eventKey="7" onClick={self.addComponent.bind(this,LayoutComponentConstants.GraphViewer)}>Graph Viewer</MenuItem>
                                     <MenuItem eventKey="8" onClick={self.addComponent.bind(this,LayoutComponentConstants.SceneEditor)}>Scene Editor</MenuItem>
                                     <MenuItem eventKey="9" onClick={self.addComponent.bind(this,LayoutComponentConstants.SceneMediaBrowser)}>Scene Media Browser</MenuItem>
+                                    <MenuItem eventKey="e" onClick={self.addComponent.bind(this,LayoutComponentConstants.SceneEditorGUI)}>Visual Scene Editor</MenuItem>
                                 </DropdownButton>
                             </li>
                             <li>

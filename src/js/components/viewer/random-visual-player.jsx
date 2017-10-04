@@ -119,6 +119,9 @@ var RandomVisualPlayer = React.createClass({
         }
 
     },
+    componentWillUnmount:function(){
+        clearInterval(this.state.loadMediaObjectInterval);
+    },
     componentDidMount: function () {
         console.log("refs",this.refs,this.props.sceneStyle)
         var self = this;
