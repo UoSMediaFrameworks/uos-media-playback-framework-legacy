@@ -171,4 +171,4 @@ gulp.task('serve', function(next) {
 });
 
 //, 'watch'
-gulp.task('default', ['build-dist', 'serve', 'watch']);
+gulp.task('default', ['build', 'serve', 'watch']);
