@@ -9,6 +9,7 @@ var _ = require("lodash");
 var connectionCache = require("../../utils/connection-cache");
 var HubClient = require("../../utils/HubClient");
 var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
+var GraphBreadcrumbActions = require("../../actions/graph-breadcrumb-actions");
 var AutowalkStore = require('../../stores/autowalk-store.js');
 
 var cityColors = [
@@ -35,12 +36,15 @@ var GDCGraph = React.createClass({
 
 
     componentWillMount: function () {
-        this.setupNodes(this.props.data)
-       /* this.setState({data: this.props.data})*/
+        this.setupNodes(this.props.data, this.props)
     },
     componentWillReceiveProps: function (nextProps) {
-        if (nextProps.shouldUpdateId != this.props.shouldUpdateId)
-            this.setupNodes(nextProps.data)
+
+        if (nextProps.shouldUpdateId !== this.props.shouldUpdateId)
+        {
+            this.setupNodes(nextProps.data, nextProps)
+        }
+
     },
     componentDidMount: function () {
         document.addEventListener('keyup', this.optionsMenuHandler, false);
@@ -58,8 +62,8 @@ var GDCGraph = React.createClass({
     },
     _autowalkHandler: function (props) {
         var self = this;
-            clearTimeout(_autowalkHandlerInterval);
-            clearTimeout(_playRandomNodeInterval);
+        clearTimeout(_autowalkHandlerInterval);
+        clearTimeout(_playRandomNodeInterval);
         if (props.enabled) {
 
             _autowalkHandlerInterval = setTimeout(function () {
@@ -68,7 +72,7 @@ var GDCGraph = React.createClass({
         }
     },
     _playRandomNode: function (switchTime) {
-        var self=this;
+        var self = this;
 
         if (_playRandomNodeInterval) {
             clearTimeout(_playRandomNodeInterval);
@@ -242,11 +246,11 @@ var GDCGraph = React.createClass({
             link.highlighted = true;
         })
     },
-    contextualizeHandler(t){
+    contextualizeHandler(t) {
 
         var recording = BreadcrumbsStore.getRecording();
         if (recording) {
-            BreadcrumbsStore.addCrumb("contextualize", t._id)
+            GraphBreadcrumbActions.addCrumb("contextualize", t._id)
         }
         try {
             this.resetToOrigin();
@@ -291,7 +295,7 @@ var GDCGraph = React.createClass({
 
 
     },
-    pluckArray(array){
+    pluckArray(array) {
         var index = this.getRandomInt(0, array.length);
         //console.log('Rand index ' + index)
         var obj = array[index];
@@ -299,7 +303,7 @@ var GDCGraph = React.createClass({
         array = array.splice(index, 1);
         return obj;
     },
-    clusterNodes(node){
+    clusterNodes(node) {
         var self = this;
         node.r = 15;
         node.related = _.union(node.children, node.parents);
@@ -336,7 +340,7 @@ var GDCGraph = React.createClass({
             self.moveNode(refference, x, y, "null", 15);
         });
     },
-    moveNode(node, x, y, interactionType, radius){
+    moveNode(node, x, y, interactionType, radius) {
         var ratio = 1 - Math.pow(1 / 5000, 5);
         if (ratio => 1) {
             node.cx = x;
@@ -351,42 +355,42 @@ var GDCGraph = React.createClass({
         }
         node.r = radius;
     },
-    tapHandler(t){
+    tapHandler(t) {
         var recording = BreadcrumbsStore.getRecording();
         if (recording) {
-            BreadcrumbsStore.addCrumb("tap", t._id)
+            GraphBreadcrumbActions.addCrumb("tap", t._id)
         }
         this.highlight(t);
     },
-    setupRootNodes: function (data) {
+    setupRootNodes: function (data,p) {
         var self = this;
         var rootNodes = _.filter(data.nodes, function (node) {
             return node.type == 'root';
         });
         var length = rootNodes.length;
         _.each(rootNodes, function (node, i) {
-            node.cx = ((self.props.innerWidth / length) / 2) * i + self.props.innerWidth / length;
+            node.cx = ((p.innerWidth / length) / 2) * i +p.innerWidth / length;
             node._x = node.cx;
-            node.cy = self.props.innerHeight / 2;
+            node.cy = p.innerHeight / 2;
             node._y = node.cy;
             node.color = "url(#radial-gradient)";
             node._r = node.r = 18;
         })
     },
-    setupCityNodes: function (data) {
+    setupCityNodes: function (data,p) {
         var self = this;
         var cityNodes = _.filter(data.nodes, function (node) {
             return node.type == 'city';
         });
         var angle = (2 * Math.PI) / cityNodes.length;
         _.each(cityNodes, function (node, i) {
-            node.cx = (Math.cos(angle * i) * self.props.innerWidth / 2) + self.props.innerWidth / 2;
+            node.cx = (Math.cos(angle * i) * p.innerWidth / 2) + p.innerWidth / 2;
             node._x = node.cx;
-            node.cy = (Math.sin(angle * i) * self.props.innerHeight / 2) + self.props.innerHeight / 2;
+            node.cy = (Math.sin(angle * i) * p.innerHeight / 2) + p.innerHeight / 2;
             node._y = node.cy;
-            try{
+            try {
                 node.color = d3.rgb(cityColors[i][0], cityColors[i][1], cityColors[i][2]);
-            }catch(e){
+            } catch (e) {
                 node.color = "black"
             }
 
@@ -435,15 +439,15 @@ var GDCGraph = React.createClass({
             node._r = node.r = self.getRandomInt(2, 4);
         })
     },
-    setupOtherNodes: function (data, w, h) {
+    setupOtherNodes: function (data, w, h,p) {
         var self = this;
         var otherNodes = _.filter(data.nodes, function (node) {
             return node.type != 'city' && node.type != 'root';
         });
 
         _.each(otherNodes, function (node) {
-            node.cx = (Math.random() * self.props.fullWidth) - w;
-            node.cy = (Math.random() * self.props.fullHeight) - h;
+            node.cx = (Math.random() * p.fullWidth) - w;
+            node.cy = (Math.random() * p.fullHeight) - h;
             node._x = node.cx;
             node._y = node.cy;
         })
@@ -474,23 +478,23 @@ var GDCGraph = React.createClass({
         }
         return dedupeList;
     },
-    setupNodes: function (data) {
+    setupNodes: function (data, properties) {
         var self = this;
-        var windowW = window.innerWidth * 0.1;
-        var windowH = window.innerHeight * 0.2;
-        self.setupRootNodes(data);
-        self.setupCityNodes(data);
-        self.setupGThemeNodes(data);
-        self.setupSThemeNodes(data);
-        self.setupSceneNodes(data);
-        self.setupOtherNodes(data, windowW, windowH);
+        var windowW = properties.fullWidth * 0.1;
+        var windowH = properties.fullHeight * 0.2;
+        self.setupRootNodes(data,properties);
+        self.setupCityNodes(data,properties);
+        self.setupGThemeNodes(data,properties);
+        self.setupSThemeNodes(data,properties);
+        self.setupSceneNodes(data,properties);
+        self.setupOtherNodes(data, windowW, windowH,properties);
         /*     self.clearOverlap(data);*/
         self.setState({data: data});
     },
-    render(){
+    render() {
         var self = this;
-        var windowW = window.innerWidth * 0.1;
-        var windowH = window.innerHeight * 0.2;
+        var windowW = self.props.fullWidth * 0.1;
+        var windowH = self.props.fullHeight * 0.2;
         var translate = 'translate(' + windowW + ',' + windowH + ')';
         var nodes = self.state.data.nodes.map((node, i) => {
 
@@ -501,8 +505,8 @@ var GDCGraph = React.createClass({
             </g>)
         });
         var links = self.state.data.links.map((link, i) => {
-            return (<Path data={link} key={i} innerH={this.props.innerHeight}
-                          innerW={this.props.innerWidth}></Path>);
+            return (<Path data={link} key={i} innerH={self.props.innerHeight}
+                          innerW={self.props.innerWidth}></Path>);
         });
 
         return (

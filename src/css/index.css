@@ -893,6 +893,10 @@ html, body, #main, .app {
     margin-bottom: 10px;
 }
 
+.breadcrumbsInput{
+    color:black;
+}
+
 .mf-no-scroll-grid-component {
     width: 100%;
     overflow-y: none;

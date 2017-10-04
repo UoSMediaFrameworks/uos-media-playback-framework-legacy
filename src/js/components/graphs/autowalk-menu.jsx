@@ -19,6 +19,10 @@ var AutowalkMenu = React.createClass({
     componentDidMount:function(){
         document.onclick = this.updateInactivitySetting;
     },
+    //APt : removing the trigger when inactivity component is not rendered
+    componentWillUnmount:function(){
+        document.onclick = null;
+    },
     changeNSvalue:function(e){
         this.setState({node_switch_duration: e.target.value})
     },

@@ -18,7 +18,7 @@ var Circle = React.createClass({
     componentWillReceiveProps: function (nextProps) {
         var node = d3.select(ReactDOM.findDOMNode(this));
         var self = this;
-        node.transition().ease(d3.easeLinear).duration(5000)
+        node.transition().ease(d3.easeLinear).duration(3000)
             .attr("cy", nextProps.data.cy)
             .attr("cx", nextProps.data.cx)
             .attr("x", nextProps.data.x)
