@@ -92,7 +92,7 @@ var RandomVisualPlayer = React.createClass({
     shouldComponentUpdate(nextProps, nextState){
         var stateUpdate = this.state === nextState;
         var propsUpdate = this.props === nextProps;
-        var intervalUpdate = this.state.interval == nextState.interval;
+        var intervalUpdate = this.state.interval === nextState.interval;
 
         var willUpdate;
 
@@ -159,6 +159,11 @@ var RandomVisualPlayer = React.createClass({
             console.log("FAILED TO TRANSITION MEDIA OBJECT E: ", e);
         }
 
+    },
+
+    // APEP If the player is removed from the grid we must clear the interval
+    componentWillUnmount: function() {
+        clearInterval(this.state.loadMediaObjectInterval);
     },
 
     startLoadMediaObjectsInterval: function() {
