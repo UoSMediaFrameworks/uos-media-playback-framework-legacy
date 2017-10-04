@@ -26,7 +26,7 @@ var Path = React.createClass({
             ].join(" ");
 
 
-        link.transition().ease(d3.easeLinear).duration(5000)
+        link.transition().ease(d3.easeLinear).duration(3000)
             .attr("d",diagonal)
             .on('end',function(){
                     self.setState({

@@ -202,9 +202,8 @@ var NavigationBar = React.createClass({
                     </div>
                     <div className="collapse navbar-collapse">
                         <ul className="nav navbar-nav navbar-left">
-                            <li>
-                                <span className="navbar-text"> Media Framework</span>
-                            </li>
+                            <li>  <img className="mf-image-logo" src="/images/salford-logo.png"  /> </li>
+                            <li>  <img className="mf-image-logo" src="/images/MF_transparent.png"  /> </li>
                         </ul>
                         <ul className="nav navbar-nav navbar-right">
 
@@ -223,6 +222,7 @@ var NavigationBar = React.createClass({
                                     <MenuItem eventKey="7" onClick={self.addComponent.bind(this,LayoutComponentConstants.GraphViewer)}>Graph Viewer</MenuItem>
                                     <MenuItem eventKey="8" onClick={self.addComponent.bind(this,LayoutComponentConstants.SceneEditor)}>Scene Editor</MenuItem>
                                     <MenuItem eventKey="9" onClick={self.addComponent.bind(this,LayoutComponentConstants.SceneMediaBrowser)}>Scene Media Browser</MenuItem>
+                                    <MenuItem eventKey="e" onClick={self.addComponent.bind(this,LayoutComponentConstants.SceneEditorGUI)}>Visual Scene Editor</MenuItem>
                                 </DropdownButton>
                             </li>
                             <li>

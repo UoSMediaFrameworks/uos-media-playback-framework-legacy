@@ -1,7 +1,7 @@
 var React = require("react");
 var classes = require('classnames');
 var _ = require('lodash');
-var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
+var GraphBreadcrumbActions =require("../../actions/graph-breadcrumb-actions");
 
 var Crumb = React.createClass({
     getInitialState: function () {
@@ -12,7 +12,7 @@ var Crumb = React.createClass({
     render(){
         return (
             <li>
-                <a>{this.props.node + "." + this.props.event}<i className="fa fa-times" onClick={BreadcrumbsStore.removeCrumb.bind(this,this.props)}>
+                <a>{this.props.node + "." + this.props.event}<i className="fa fa-times" onClick={GraphBreadcrumbActions.removeCrumb.bind(this,this.props)}>
                 </i></a>
             </li>
         );

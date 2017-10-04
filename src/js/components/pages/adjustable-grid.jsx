@@ -4,6 +4,7 @@ var ReactGridLayout = require('react-grid-layout');
 var WidthProvider = require('react-grid-layout').WidthProvider;
 var Scene = require('./scene.jsx');
 var SceneMediaBrowser = require('./scene-media-browser.jsx');
+var SceneEditorGUI = require('./scene-editor-gui.jsx');
 var SceneGraph = require('./scenegraph.jsx');
 var GraphTest = require('../graphs/index.jsx');
 var SceneChooser = require('./scene-choose-or-create.jsx');
@@ -58,6 +59,7 @@ var RespGrid = React.createClass({
     getComponent: function (item) {
         var self = this;
 
+            //TODO: should we not be using layout constants here as well? MK.
             switch (item.type) {
                 case "Scene-Graph":
                     return <SceneGraph isLayout={true} _id={self.state.data.sceneGraph._id}/>;
@@ -80,6 +82,16 @@ var RespGrid = React.createClass({
                 case "Scene-Media-Browser":
                     return <SceneMediaBrowser isLayout={true}   scene={ SceneStore.getScene(this.state.data.scene._id)|| {} }
                                               saveStatus={this.state.saveStatus}  focusedMediaObject={this.state.data.focusedMediaObject} _id={self.state.data.scene._id}></SceneMediaBrowser>;
+                    break;
+                case "Scene-Editor-GUI":
+                    return (
+                        <SceneEditorGUI isLayout={true}   
+                                           scene={SceneStore.getScene(this.state.data.scene._id)|| {} }
+                                           saveStatus={this.state.saveStatus}  
+                                           focusedMediaObject={this.state.data.focusedMediaObject} 
+                                           _id={self.state.data.scene._id}>
+                        </SceneEditorGUI>
+                    );
                     break;
                 case "Scene-Editor":
                     return <LayoutMonacoTextEditor isLayout={true} focusedMediaObject={this.state.data.focusedMediaObject} sceneSavingHandler={this.sceneSavingHandler}
