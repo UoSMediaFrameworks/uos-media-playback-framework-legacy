@@ -94,6 +94,8 @@ gulp.task('watch', function () {
     // html changes
     gulp.watch('src/*.html', ['html']);
 
+    gulp.watch('src/images/**', ['images']);
+
     // css changes
     gulp.watch(cssGlobs, ['css']);
 
@@ -108,6 +110,11 @@ gulp.task('html', function() {
     return gulp.src('src/*.html')
         .pipe(template({polyfillFeatures: 'Element.prototype.classList,Object.create'}))
         .pipe(gulp.dest(dest));
+});
+
+gulp.task('images', function() {
+    return gulp.src('src/images/**')
+        .pipe(gulp.dest(dest + '/images'));
 });
 
 gulp.task('css', function() {
@@ -138,7 +145,7 @@ gulp.task('include-schemas', function() {
     return gulp.src(['src/schemas/**']).pipe(gulp.dest('dist/schemas'));
 });
 
-gulp.task('build-dist', ['bundlejs', 'html', 'css', 'include-monaco-editor', 'include-schemas', 'build-version-document']);
+gulp.task('build-dist', ['bundlejs', 'html', 'css','images', 'include-monaco-editor', 'include-schemas', 'build-version-document']);
 
 
 ///// BEGIN CLI TASKS ////////////////////////////////
