@@ -117,7 +117,7 @@ gulp.task('icon',function(){
         .pipe(gulp.dest(dest));
 });
 gulp.task('images',function(){
-   return gulp.src('images/*')
+   return gulp.src('src/images/*')
        .pipe(gulp.dest(dest+ '/images'));
 });
 
