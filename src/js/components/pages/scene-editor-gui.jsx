@@ -585,7 +585,7 @@ var SceneEditorGUI = React.createClass({
         console.log("SceneEditorGUI: Rendering", this.state)
 
         if (this.state.scene == null) {
-            return(<div className="mf-no-scroll-grid-component">Please select a scene</div>)
+            return(<div className="mf-empty-grid-component">Please select a scene</div>)
         }
 
         if (this.state.focusedMediaObject == null) {
