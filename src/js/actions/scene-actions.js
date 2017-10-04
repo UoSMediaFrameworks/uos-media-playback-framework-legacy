@@ -339,21 +339,6 @@ var SceneActions = {
         });
     },
 
-    uploadAsset: function (sceneId, file) {
-        var alertId = hat();
-        AppDispatcher.handleViewAction({
-            type: ActionTypes.STATUS_MESSAGE,
-            message: 'Uploading ' + file.name + '...',
-            id: alertId,
-            status: 'info'
-        });
-
-        var self = this;
-
-        assetStore.create(file, function (status, data) {
-            self._handleUploadAsset(alertId, sceneId, status, data, file);
-        });
-    },
     getVideoMediaObjectData: function (mediaObject) {
         var alertId = hat();
         AppDispatcher.handleViewAction({
