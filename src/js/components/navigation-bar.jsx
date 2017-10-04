@@ -202,9 +202,8 @@ var NavigationBar = React.createClass({
                     </div>
                     <div className="collapse navbar-collapse">
                         <ul className="nav navbar-nav navbar-left">
-                            <li>
-                                <span className="navbar-text"> Media Framework</span>
-                            </li>
+                            <li>  <img className="mf-image-logo" src="/images/salford-logo.png"  /> </li>
+                            <li>  <img className="mf-image-logo" src="/images/MF_transparent.png"  /> </li>
                         </ul>
                         <ul className="nav navbar-nav navbar-right">
 

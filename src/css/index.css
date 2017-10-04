@@ -893,6 +893,10 @@ html, body, #main, .app {
     margin-bottom: 10px;
 }
 
+.mf-image-logo{
+    max-height: 50px;
+}
+
 .breadcrumbsInput{
     color:black;
 }
@@ -918,69 +922,69 @@ html, body, #main, .app {
 }
 
 .mf-gui-toolbar {
-    background: #555;
+  background: #555;
+  width: 100%;
+  height: auto;
+  vertical-align: center;
+  display: inline-block;
+}
+
+.mf-gui-toolbar span {
+  display: inline-block;
+}
+
+.mf-gui-toolbar-icon {
+  color: orange;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px;
+  margin: 5px;
+}
+
+.mf-gui-toolbar-icon:hover {
+  color: white;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px;
+  margin: 5px;
+}
+
+.mf-gui-toolbar-text {
+  color: #FFF;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px;
+  margin: 5px;
+}
+
+.mf-gui-editor-templateBar img {
+  color: orange;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px;
+  margin: 5px;
+  width: 32px;
+  height: 32px;
+}
+
+.mf-gui-editor-templateBar img:hover {
+  color: orange;
+  text-align: center;
+  vertical-align: middle;
+  padding: 5px;
+  margin: 5px;
+  width: 32px;
+  height: 32px;
+  border: 1px solid white;
+}
+
+.mf-media-loader-box {
     width: 100%;
-    height: auto;
-    vertical-align: center;
-    display: inline-block;
-  }
+    height: 100%;
+    text-align: center;
+    border: 1px solid blue;
+}
 
-  .mf-gui-toolbar span {
-    display: inline-block;
-  }
-  
-  .mf-gui-toolbar-icon {
-    color: orange;
-    text-align: center;
-    vertical-align: middle;
-    padding: 5px;
-    margin: 5px;
-  }
-  
-  .mf-gui-toolbar-icon:hover {
-    color: white;
-    text-align: center;
-    vertical-align: middle;
-    padding: 5px;
-    margin: 5px;
-  }
-  
-  .mf-gui-toolbar-text {
-    color: #FFF;
-    text-align: center;
-    vertical-align: middle;
-    padding: 5px;
-    margin: 5px;
-  }
-  
-  .mf-gui-editor-templateBar img {
-    color: orange;
-    text-align: center;
-    vertical-align: middle;
-    padding: 5px;
-    margin: 5px;
-    width: 32px;
-    height: 32px;
-  }
-
-  .mf-gui-editor-templateBar img:hover {
-    color: orange;
-    text-align: center;
-    vertical-align: middle;
-    padding: 5px;
-    margin: 5px;
-    width: 32px;
-    height: 32px;
-    border: 1px solid white;
-  }
-
-  .mf-media-loader-box {
-      width: 100%;
-      height: 100%;
-      text-align: center;
-      border: 1px solid blue;
-  }
-
-  .mf-media-loader-spinner {
-    top: 50%;
+.mf-media-loader-spinner {
+  top: 50%;
 }
