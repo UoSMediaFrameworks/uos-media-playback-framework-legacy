@@ -52,8 +52,8 @@ var Circle = React.createClass({
                 x={this.state.x}
                 y={this.state.y}
                 fill={this.state.color}
-                onClick={this.props.clickHandler.bind(this,this.props.data)}
-                onDoubleClick={this.props.dblClickHandler.bind(this, this.props.data)}
+                onClick={this.props.clickHandler.bind(null,this.props.data)}
+                onDoubleClick={this.props.dblClickHandler.bind(null, this.props.data)}
             >
             </circle>
         )

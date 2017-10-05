@@ -12,7 +12,7 @@ var Crumb = React.createClass({
     render(){
         return (
             <li>
-                <a>{this.props.node + "." + this.props.event}<i className="fa fa-times" onClick={GraphBreadcrumbActions.removeCrumb.bind(this,this.props)}>
+                <a>{this.props.node + "." + this.props.event}<i className="fa fa-times" onClick={GraphBreadcrumbActions.removeCrumb.bind(null,this.props)}>
                 </i></a>
             </li>
         );

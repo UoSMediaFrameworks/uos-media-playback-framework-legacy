@@ -6,7 +6,6 @@ var ReactDOM = require("react-dom");
 var Circle = React.createClass({
 
     componentWillMount:function(){
-        console.log("narm circle", this.props)
         var self = this;
         self.setState({
             x: self.props.data.x,
@@ -53,7 +52,7 @@ var Circle = React.createClass({
                 x={this.state.x}
                 y={this.state.y}
                 fill={this.state.color}
-                onClick={this.props.eventHandler.bind(this, this.props.data)}
+                onClick={this.props.eventHandler.bind(null, this.props.data)}
             >
             </circle>
         )
