@@ -70,7 +70,7 @@ var SceneGraphChooser = React.createClass({
                         </div>
                         <div>
                             <div className="sort-section">
-                                <input type='text' ref="filter" onKeyPress={this.handleFilterUpdate}
+                                <input type='text' ref="filter" onKeyUp={this.handleFilterUpdate}
                                        className='form-control' placeholder='Filter Scene Graph List'/>
                             </div>
                         </div>

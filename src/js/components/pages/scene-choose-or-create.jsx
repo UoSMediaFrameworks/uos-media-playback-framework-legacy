@@ -91,7 +91,7 @@ var SceneChooser = React.createClass({
                         {groupFilter}
                         <div>
                             <div className="sort-section">
-                                <input type='text' ref="filter" onKeyPress={this.handleFilterUpdate}
+                                <input type='text' ref="filter" onKeyUp={this.handleFilterUpdate}
                                        className='form-control' placeholder='Filter Scene List'/>
                             </div>
                         </div>
