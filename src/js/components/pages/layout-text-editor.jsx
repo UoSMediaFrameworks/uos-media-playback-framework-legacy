@@ -4,8 +4,6 @@ var React = require('react');
 var MonacoEditor = require('react-monaco-editor').default;
 var SceneActions = require('../../actions/scene-actions');
 var SceneStore = require('../../stores/scene-store');
-var HubSendActions = require('../../actions/hub-send-actions');
-var SceneList = require('../scene-list.jsx');
 var _ = require('lodash');
 
 var saveTimeout;  //APEP global timeout variable to allow us storage the id for clear intervals.
@@ -91,7 +89,7 @@ var SceneMonacoTextEditor = React.createClass({
         console.log("basicSceneSanityChecks - errors: ", errors);
         console.log("basicSceneSanityChecks - warnings: ", warnings);
     },
-    // this.getSceneString()
+
     getState: function() {
         return {
             scene: null,
@@ -182,8 +180,6 @@ var SceneMonacoTextEditor = React.createClass({
     },
 
     onTextSelection: function(e) {
-        // console.log("MONACO - On Text Selection: ", e);
-
 
         var matches = this.refs.monaco.editor.getModel().findMatches(sceneMediaObjectRegex, false, true, false, false);
 
@@ -294,18 +290,15 @@ var SceneMonacoTextEditor = React.createClass({
         if(! _.isEqual(nextProps.focusedMediaObject, this.props.focusedMediaObject)) {
             return true;
         }
-        if(this.refs.monaco) {
-            return true;
-        }
         if(!this.refs.monaco.editor) {
             return true;
         }
 
-
         // Check if the scene in the next props is the same as the editor copy
+        var compareNewPropsAndCurrentEditorCopy = !_.isEqual(nextState.scene, this.getMonacoEditorVersionOfScene());
         // If so the editor initiated the change and does not need a component update
         // If the component does update it can cause the cursor to lose position in editor (bad UX)
-        return !_.isEqual(nextState.scene, this.getMonacoEditorVersionOfScene());
+        return compareNewPropsAndCurrentEditorCopy;
 
     },
     componentWillReceiveProps:function(nextProps){
@@ -349,7 +342,7 @@ var SceneMonacoTextEditor = React.createClass({
         };
 
         var requireConfig = {
-            url: 'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.1/require.js',
+            url: 'external/require.js',
             paths: {
                 'vs': 'monaco-editor/min/vs'
             }
