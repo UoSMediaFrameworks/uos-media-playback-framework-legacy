@@ -68,7 +68,7 @@ var Loader = React.createClass({
     },
 
     spin: function () {
-      if (this.isMounted() && !this.state.loaded) {
+      if (!this.state.loaded) {
         var spinner = new Spinner(this.state.options);
         var target = ReactDOM.findDOMNode(this);
 

@@ -209,11 +209,14 @@ var HubClient = {
 
         console.log("HubClient - registerToGraphPlayerRoom - roomId: " + roomId);
 
-        socket.emit('register', "/#" + roomId);
-        connectionCache.setSocketID(roomId);
-        var self = this;
-        socket.on('command', function(data) {
+        // APEP TODO we need to unregister the old room.
 
+        // APEP register for updates.
+        socket.emit('register', "/#" + roomId);
+
+        connectionCache.setSocketID(roomId);
+
+        socket.on('command', function(data) {
             console.log("HubClient - on command - data: ", data);
             if (data.name === 'showScenes') {
                 // APEP publish scene ID list
