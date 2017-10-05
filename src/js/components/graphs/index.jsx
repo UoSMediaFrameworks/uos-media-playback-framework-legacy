@@ -55,6 +55,7 @@ var GraphContainer = React.createClass({
         this.setState({title: title})
     },
     _initialize(sceneList) {
+        var self=this;
         var localRoot = {
             nodes: [],
             links: []
@@ -62,7 +63,7 @@ var GraphContainer = React.createClass({
         var circularRef = [];
 
         function processNodes(data) {
-            var self=this;
+
             data.forEach(function (obj) {
                 obj.x = obj.y = 0;
                 obj.cx = self.state.width/ 2 - self.state.width* 0.1;
@@ -112,7 +113,6 @@ var GraphContainer = React.createClass({
                     }
                 })
             });
-            //console.log(circularRef)
             _.each(circularRef, function (o) {
                 var _children = _.reject(o.node.children, function (child) {
                     return child._id == o.duplicate._id;
@@ -147,7 +147,6 @@ var GraphContainer = React.createClass({
     },
     _getGraphTypeComponent() {
         if (this.state.sceneList) {
-
             switch (this.state.type) {
                 case GraphTypes.MEMOIR:
                     return (

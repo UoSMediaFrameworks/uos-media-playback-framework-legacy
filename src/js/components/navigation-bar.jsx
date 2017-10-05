@@ -36,14 +36,13 @@ var NavigationBar = React.createClass({
             focusedSceneGraphID:GridStore.getFocusedSceneGraphID()
         });
     },
-    _onOptionValueChange:function(){
-        this.setState({value:"GDC_SCENE_GRAPH"})
+    _onOptionValueChange:function(e){
+        this.setState({value:e.target.value})
     },
     handleLogout: function (event) {
         SceneActions.logout();
     },
     addComponent:function(type){
-        console.log("addComponent",type);
         SceneActions.addLayoutComponent(type);
     },
     componentDidMount:function(){
@@ -102,7 +101,7 @@ var NavigationBar = React.createClass({
                             <label htmlFor="scene-graph-input"  className="mf-text">Scene Graph List</label>
                             <input type='text' ref='name' id="scene-graph-input" className='form-control' placeholder='name'/>
                             <span id="basic-addon2">
-                                    <select className="form-control" value={this.state.value}
+                                    <select className="form-control" ref="graphType" value={this.state.value}
                                             onChange={this._onOptionValueChange}>
                                         <option value="GDC_SCENE_GRAPH">GDC</option>
                                         <option value="MEMOIR_SCENE_GRAPH">Memoir</option>
