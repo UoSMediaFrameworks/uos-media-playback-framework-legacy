@@ -26,7 +26,7 @@ var Path = React.createClass({
                 "A", 0, 0, 0, 0, 1, nextProps.data.target.cx, nextProps.data.target.cy
             ].join(" ");
 
-        link.transition().ease(d3.easeLinear).duration(5000)
+        link.transition().ease(d3.easeCubicInOut).duration(5000)
             .attr("d",diagonal)
             .on('end',function(){
                 self.setState({
@@ -34,6 +34,10 @@ var Path = React.createClass({
                     });
                 }
             )
+    },
+    componentWillUnmount:function(){
+        var link = d3.select(ReactDOM.findDOMNode(this));
+        link.transition()
     },
     render(){
        /* console.log(this.props.data)*/

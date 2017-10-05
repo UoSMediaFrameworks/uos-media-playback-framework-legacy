@@ -40,11 +40,14 @@ var SceneEditorGUI = React.createClass({
         GridStore.addChangeListener(this._onFocusChange)
 
         //this is the first point where rendered size of area can be captured
-        this.setState({width: this.SceneLayoutArea.offsetWidth, height: this.SceneLayoutArea.offsetHeight})
+        if(this.SceneLayoutArea){
+            this.setState({width: this.SceneLayoutArea.offsetWidth, height: this.SceneLayoutArea.offsetHeight})
+        }
+
     },
 
     componentWillReceiveProps: function (nextProps) {
-        //same as focus change, same handling procedure, required because selected scene change dosn't appear to reliably fire change event?? 
+        //same as focus change, same handling procedure, required because selected scene change dosn't appear to reliably fire change event??
         //this._onFocusChange();
     },
 
@@ -52,7 +55,7 @@ var SceneEditorGUI = React.createClass({
         if (saveTimeout) {
             //this.saveToScene()
             clearTimeout(saveTimeout);
-        }    
+        }
         SceneStore.removeChangeListener(this._onChange);
         GridStore.removeChangeListener(this._onFocusChange)
     },
@@ -171,7 +174,7 @@ var SceneEditorGUI = React.createClass({
         }
     },
 
-    // post render events: 
+    // post render events:
     componentDidUpdate() {
         //check for resize and update if size changed
 
@@ -197,10 +200,10 @@ var SceneEditorGUI = React.createClass({
           if (this.state.mediaObject.type === "image") {
             var self = this
             this.getImageSize(self.state.mediaObject.url, function(imgWidth, imgHeight) {
-    
+
                 var scaleX = self.state.width/imgWidth
                 var scaleY = self.state.height/imgHeight;
-                
+
                 var newWidth, newHeight
                 //choose the smallest scale to get best fit
                 if (scaleX < scaleY) {
@@ -210,24 +213,24 @@ var SceneEditorGUI = React.createClass({
                     newWidth = scaleY*imgWidth;
                     newHeight = scaleY*imgHeight;
                 }
-    
+
                 //convert back to relative units
                 placement.x = 0;
                 placement.y = 0;
                 placement.width =  (newWidth/self.state.width)*100;
                 placement.height = (newHeight/self.state.height)*100;
-    
+
                 //center image
                 placement.x = 50 - placement.width / 2;
                 placement.y = 50 - placement.height / 2;
-                
+
                 //set flags
-                placement.lockAspectRatio = true; //lock aspect ratio to try to preserve 
+                placement.lockAspectRatio = true; //lock aspect ratio to try to preserve
                 placement.isRandom = false;
                 console.log("SceneEditorGUI: Placing with optimum aspect")
                 self.setState({placement: placement, shouldSave: true})
             })
-        
+
         } else {
             //can't auto find aspect
             console.log("SceneEditorGUI: Can't find aspect ratio, defaulting to full screen")
@@ -238,7 +241,7 @@ var SceneEditorGUI = React.createClass({
             placement.isRandom = false;
             this.setState({placement: placement, shouldSave: true})
         }
- 
+
     },
 
     //schedules a save in 1 second. Avoids to many saves
@@ -251,18 +254,18 @@ var SceneEditorGUI = React.createClass({
     },
 
     saveToScene() {
-        
+
                 //Capture current state
                 var placement = this.state.placement;
-        
+
                 //Used to build the new style
                 var mfStyle = {}
-        
+
                 //Random placement, provide no style so MF player uses random positioning
                 if (this.state.placement.isRandom == true) {
                     mfStyle["z-index"] = 1;
                 }
-        
+
                 //Map placement to correct CSS style
                 if (this.state.placement.isRandom == false) {
                     mfStyle["z-index"] = 1;
@@ -281,7 +284,7 @@ var SceneEditorGUI = React.createClass({
                     mfStyle["height"] = '' + placement
                         .height
                         .toFixed(2) + '%';
-        
+
                     mfStyle["max-width"] = '' + placement
                         .width
                         .toFixed(2) + '%';
@@ -291,7 +294,7 @@ var SceneEditorGUI = React.createClass({
                     //Rotation (degrees)
                     mfStyle["transform"] = 'rotate(' + placement.rotation + 'deg)';
                 }
-        
+
                 //Attemp to save back to the scene store
                 try {
                     var scene = this.state.scene
@@ -301,10 +304,10 @@ var SceneEditorGUI = React.createClass({
                 } catch (error) {
                     console.log("SceneEditorGUI: Failed to save changes:", error)
                 }
-        
+
             },
 
-    
+
     //object being dragged (don't save to many events generated)
     onSceneObjectResizing(e, direction, ref, delta, position) {
         var relativePlacement = this.state.placement
@@ -532,7 +535,7 @@ var SceneEditorGUI = React.createClass({
 
     getMediaRepresentation(mediaObject) {
         switch (mediaObject.type) {
-            
+
             case "image":
                 return (
                     <ImageLoader
@@ -553,7 +556,7 @@ var SceneEditorGUI = React.createClass({
                     </ImageLoader>
                 )
             break;
-            
+
             case "video":
                return (
                     <img
@@ -567,7 +570,7 @@ var SceneEditorGUI = React.createClass({
                     />
                 )
             break;
-            
+
             default:
                 //supported but not displayable
                 return (
@@ -606,7 +609,7 @@ var SceneEditorGUI = React.createClass({
                 if (this.state.placement.valid == false) {
                     return(<div className="mf-empty-grid-component">This objects placement is invalid, please check it's style is fully specifed with top, left, width and height in the JSON</div>)
                 }
-        
+
 
                 if (this.state.placement.isRandom) {
                     //placement is random disable all controls and display message
@@ -633,8 +636,8 @@ var SceneEditorGUI = React.createClass({
                     </div>
                     )
                 } else {
-                    //placement is manual, load the full editor 
-                    
+                    //placement is manual, load the full editor
+
                     //get the correct icon state
                     var aspectIcon;
                     if (this.state.placement.IsAspectLocked) {
@@ -782,7 +785,7 @@ var SceneEditorGUI = React.createClass({
                     );
                 }
 
-                
+
 
             }
         }

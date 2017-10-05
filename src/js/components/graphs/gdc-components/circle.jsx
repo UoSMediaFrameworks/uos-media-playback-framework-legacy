@@ -18,7 +18,7 @@ var Circle = React.createClass({
     componentWillReceiveProps: function (nextProps) {
         var node = d3.select(ReactDOM.findDOMNode(this));
         var self = this;
-        node.transition().ease(d3.easeLinear).duration(3000)
+        node.transition().ease(d3.easeCubicInOut).duration(3000)
             .attr("cy", nextProps.data.cy)
             .attr("cx", nextProps.data.cx)
             .attr("x", nextProps.data.x)
@@ -35,6 +35,10 @@ var Circle = React.createClass({
                     color: nextProps.data.color
                 })
             });
+    },
+    componentWillUnmount:function(){
+        var node = d3.select(ReactDOM.findDOMNode(this));
+        node.transition()
     },
     render(){
         var classes = classNames({

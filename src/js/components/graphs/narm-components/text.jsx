@@ -16,7 +16,7 @@ var Text = React.createClass({
     componentWillReceiveProps:function(nextProps){
         var textNode = d3.select(ReactDOM.findDOMNode(this));
         var self =this;
-        textNode.transition().ease(d3.easeLinear).duration(5000)
+        textNode.transition().ease(d3.easeCubicInOut).duration(5000)
             .attr("x", nextProps.data.cx)
             .attr("y", nextProps.data.cy)
             .attr("font-size",this.calculateTextSize(nextProps))
@@ -28,6 +28,10 @@ var Text = React.createClass({
                     fontSize: self.calculateTextSize(nextProps)
                 })
             });
+    },
+    componentWillUnmount:function(){
+        var textNode = d3.select(ReactDOM.findDOMNode(this));
+        textNode.transition()
     },
     calculateTextSize: function (props) {
 
