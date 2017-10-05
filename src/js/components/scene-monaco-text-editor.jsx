@@ -12,6 +12,7 @@ var saveTimeout;  //APEP global timeout variable to allow us storage the id for 
 var sceneMediaObjectRegex = "{[\\s\\S\\n]{1,10}tags[\\s\\S\\n]*?type[\\s\\S\\n]*?[\\s\\S\\n]}"; //APEP Full media object selection
 var SCHEMA_URL = window.location.origin + "/schemas/scene-schema.json"; // "http://mediaframework.salford.ac.uk/schemas/scene-schema.json";
 
+// APEP This file seems redundent / not used within the grid layout application.  We should follow the dependencies through and clean up
 var SceneMonacoTextEditor = React.createClass({
 
     getHumanReadableScene: function() {
