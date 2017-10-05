@@ -139,13 +139,17 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
 
         // transition out all active mediaObjects
         if (ops.hardReset) {
-            _.forEach(_.clone(active), function(activeMo) {
-                if(transitionFunc) {
-                    transitionFunc(activeMo);
-                }
-            });
+            this.removalAllActiveMedia();
         }
 
+    };
+
+    this.removalAllActiveMedia = function() {
+        _.forEach(_.clone(active), function(activeMo) {
+            if(transitionFunc) {
+                transitionFunc(activeMo);
+            }
+        });
     };
 
     // APEP allow the first bucket to be assigned to local state

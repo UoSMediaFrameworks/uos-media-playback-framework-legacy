@@ -170,13 +170,17 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
 
         // transition out all active mediaObjects
         if (ops.hardReset) {
-            _.forEach(_.clone(active), function(activeMo) {
-                if(transitionFunc) {
-                    transitionFunc(activeMo);
-                }
-            });
+            this.removalAllActiveMedia();
         }
 
+    };
+
+    this.removalAllActiveMedia = function() {
+        _.forEach(_.clone(active), function(activeMo) {
+            if(transitionFunc) {
+                transitionFunc(activeMo);
+            }
+        });
     };
 
     this.take = function(typesArray) {

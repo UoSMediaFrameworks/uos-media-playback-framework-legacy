@@ -1,12 +1,9 @@
 'use strict';
 
 var React = require('react');
-var ReactDOM = require('react-dom');
 var SceneStore = require('../stores/full-scene-store');
 var ThemeSelector = require('../components/theme-selector.jsx');
 var HubSendActions = require('../actions/hub-send-actions');
-var FormHelper = require('../mixins/form-helper');
-var Router = require('react-router');
 var Authentication = require('../mixins/Authentication');
 var Loader = require('../components/loader.jsx');
 var _ = require('lodash');
@@ -184,6 +181,7 @@ var SceneListener = React.createClass({
 
     componentWillUnmount: function () {
         SceneStore.removeChangeListener(this._onChange);
+        document.removeEventListener("keyup", this.toggleTagMatcherAndThemes)
     },
 
     componentDidUpdate: function (prevProps, prevState) {
@@ -363,7 +361,7 @@ var SceneListener = React.createClass({
         var ThemeDisplay = this.state.fromGraphViewer ?
             <ActiveTheme ref="theme" themeQuery={this.props.themeQuery}/> :
             <ThemeSelector ref="theme" shouldHide={this.state.shouldHide} themeChange={this.handleThemeChange}
-                           scene={this._getSceneForUpdatingPlayerComponent()}/>
+                           scene={this._getSceneForUpdatingPlayerComponent()}/>;
 
         // APEP Only display the tag form when this component is not used within the graph viewer
         var TagForm = !this.state.fromGraphViewer ?
@@ -371,7 +369,7 @@ var SceneListener = React.createClass({
                 <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...'
                        className='form-control scene-listener-tag-input'/>
             </form> : <span></span>;
-                       console.log("rendering viewer",this.sceneViewer);
+
         if (this.state.scene) {
             return (
                 <div className={ self.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"} ref="scene_listener">

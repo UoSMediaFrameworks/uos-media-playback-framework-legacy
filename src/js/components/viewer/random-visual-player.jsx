@@ -9,6 +9,10 @@ var hat = require('hat');
 var $ = require('jquery');
 
 var RandomVisualPlayer = React.createClass({
+
+    // APEP allow us to keep track of unmounting incase we have any transitioning media
+    isUmounting: false,
+
     getInitialState: function () {
         return {
             queue: [],
@@ -50,7 +54,7 @@ var RandomVisualPlayer = React.createClass({
         // scene duration, this is toggled inside the Scene JSON
         if(this.props.mediaQueue && this.props.mediaQueue.isLinear) {
             console.log("moDoneHandler - isLinear");
-            if(this.props.mediaQueue.isLinearQueueEmpty()) {
+            if(this.props.mediaQueue.isLinearQueueEmpty() && !this.isUmounting) {
                 console.log("moDoneHandler - linearQueue allowing the next linear bucket to be take early");
                 this.props.mediaQueue.linearMediaObjectQueue.nextBucket();
                 this.startLoadMediaObjectsInterval();
@@ -103,36 +107,30 @@ var RandomVisualPlayer = React.createClass({
         } else if (!stateUpdate) {
             willUpdate = true;
         }
+
         return willUpdate;
     },
     componentWillMount: function () {
     },
-    componentWillUpdate:function(nextProps){
-        console.log("refs",this.refs,nextProps.sceneStyle)
-        var self=this;
-        if(nextProps.sceneStyle){
-            $(self.refs.player).removeAttr("style");
-            _.forEach(Object.keys(nextProps.sceneStyle), function (styleKey) {
-                var styleValue =nextProps.sceneStyle[styleKey];
-                $(self.refs.player).css(styleKey, styleValue);
-            });
-        }
 
-    },
-    componentWillUnmount:function(){
-        clearInterval(this.state.loadMediaObjectInterval);
-    },
-    componentDidMount: function () {
-        console.log("refs",this.refs,this.props.sceneStyle)
+    setPlayerCssFromProps(props) {
         var self = this;
-        if(this.props.sceneStyle){
+        if(props.sceneStyle){
             $(this.refs.player).removeAttr("style");
-            _.forEach(Object.keys(self.props.sceneStyle), function (styleKey) {
-                var styleValue = self.props.sceneStyle[styleKey];
+            _.forEach(Object.keys(props.sceneStyle), function (styleKey) {
+                var styleValue = props.sceneStyle[styleKey];
                 $(self.refs.player).css(styleKey, styleValue);
             });
         }
+    },
 
+    componentWillUpdate:function(nextProps) {
+        // APEP TODO should we really update the style every update? I'm sure its mostly the same
+        this.setPlayerCssFromProps(nextProps);
+    },
+
+    componentDidMount: function () {
+        this.setPlayerCssFromProps(this.props);
         this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
     },
 
@@ -166,7 +164,21 @@ var RandomVisualPlayer = React.createClass({
 
     // APEP If the player is removed from the grid we must clear the interval
     componentWillUnmount: function() {
+
+        this.isUmounting = true;
+
         clearInterval(this.state.loadMediaObjectInterval);
+
+        // APEP we need to force clear all children because if the user is unmounting the component
+        // APEP we cannot wait for everything to clean up after itself
+        var self = this;
+        _.forEach(this.state.arr, function(mediaOnScreen) {
+            self.mediaObjectTransition(mediaOnScreen);
+        });
+
+        _.forEach(this.props.cuePointMediaObjects, function(cuePointMediaOnScreen){
+            self.mediaObjectTransition(cuePointMediaOnScreen);
+        });
     },
 
     startLoadMediaObjectsInterval: function() {

@@ -113,6 +113,10 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
         this.activeQueue.setTransitionHandler(funct);
     };
 
+    this.removalAllActiveMedia = function() {
+        this.activeQueue.removalAllActiveMedia();
+    };
+
     this.moTransitionHandler = function(mediaObject) {
         this.randomMediaObjectQueue.moTransitionHandler(mediaObject);
         this.linearMediaObjectQueue.moTransitionHandler(mediaObject);

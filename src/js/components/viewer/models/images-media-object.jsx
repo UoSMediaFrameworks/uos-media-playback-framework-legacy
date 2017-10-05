@@ -20,7 +20,9 @@ var ImageMediaObject = React.createClass({
     },
     componentWillUnmount: function() {
         imageWillUnmount++;
-        // console.log("Image - componentDidMount - imageMount, imageWillUnmount: ", imageMount, imageWillUnmount);
+
+        // APEP as this component is being unmounted, we do not need the media object to call its own transition
+        if (this.playTimeout) clearTimeout(this.playTimeout);
     },
     play: function () {
         var self = this;
@@ -35,21 +37,25 @@ var ImageMediaObject = React.createClass({
             }, self.props.data.displayDuration
         );
     },
-    transition: function () {
+    transition: function (forceCleared) {
         //APEP Clear the time out if transition is called outside rather than trigger by self
         var self = this;
 
         try {
             if (this.playTimeout) clearTimeout(this.playTimeout);
             self.setState({shown: false});
-            setTimeout(function () {
-                self.props.data.moDoneHandler(self);
-            }, self.props.data.transitionDuration);
 
+            // APEP if we are not force clearing, we can transition smoothly
+            if(!forceCleared) {
+                setTimeout(function () {
+                    self.props.data.moDoneHandler(self);
+                }, self.props.data.transitionDuration);
+            } else {
+                self.props.data.moDoneHandler(self);
+            }
         } catch (e) {
             console.log("ImageMediaObject - failed to clear timeout for playTimeout");
         }
-
     },
 
     // APEP when the image has loaded can call the play function after positioning the element now we have the sizes

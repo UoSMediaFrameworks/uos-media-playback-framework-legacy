@@ -1,7 +1,6 @@
 'use strict';
 var React = require('react');
 var classNames = require('classnames');
-var nl2br = require('react-newline-to-break');
 
 var TextMediaObject = React.createClass({
     playTimeout: null,
@@ -14,6 +13,11 @@ var TextMediaObject = React.createClass({
     componentDidMount: function () {
         this.play();
     },
+
+    componentWillUnmount: function() {
+        if (this.playTimeout) clearTimeout(this.playTimeout);
+    },
+
     play: function () {
         var self = this;
 
@@ -27,7 +31,7 @@ var TextMediaObject = React.createClass({
             }, self.props.data.displayDuration
         );
     },
-    transition: function () {
+    transition: function (forceClear) {
         // console.log("TextMediaObject - transition - Text transition call made: ", this.props.data.mediaObject._obj.text);
 
         if(this.playTimeout) clearTimeout(this.playTimeout);
@@ -37,9 +41,15 @@ var TextMediaObject = React.createClass({
         self.setState({shown: false});
 
         if(self.props.data.mediaObject) {
-            setTimeout(function () {
+
+            // APEP if we are not force clearing, we can transition smoothly
+            if(!forceClear) {
+                setTimeout(function () {
+                    self.props.data.moDoneHandler(self);
+                }, self.props.data.transitionDuration)
+            } else {
                 self.props.data.moDoneHandler(self);
-            }, self.props.data.transitionDuration)
+            }
         }
     },
     render: function () {
@@ -54,7 +64,6 @@ var TextMediaObject = React.createClass({
             "show-media-object": this.state.shown
         });
 
-        // APEP nl2br is used to interpret any new line characters and producing valid html for this use case
         return <p style={style} ref={this.props.data.mediaObject._obj._id}  dangerouslySetInnerHTML={{__html: this.props.data.mediaObject._obj.text}} className={objectClasses} onClick={this.props.clickHandler}>
               </p>;
     }
