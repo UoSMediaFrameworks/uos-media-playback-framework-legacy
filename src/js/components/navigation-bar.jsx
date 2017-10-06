@@ -75,16 +75,13 @@ var NavigationBar = React.createClass({
     // APEP TODO these components should be separate React Classes in my opinion, it would make this a lot less messy.
     getNavComponent: function () {
         switch (this.state.focusedLayoutItem) {
-/*            case "Scene":
-                return <li><span  className="navbar-text">Scene</span></li>;
-                break;*/
-            case "Scene-Graph":
+            case LayoutComponentConstants.SceneGraph:
                 return <li>
                     <span  className="navbar-text">Scene Graph</span>
 
                 </li>;
                 break;
-            case "Scene-List":
+            case LayoutComponentConstants.SceneList:
                 return  <li>
                     <form className='form-inline mf-form' onSubmit={this.handleCreateScene} role='form'>
                         <div className='form-group mf-input'>
@@ -95,7 +92,7 @@ var NavigationBar = React.createClass({
                     </form>
                 </li>;
                 break;
-            case "Scene-Graph-List":
+            case LayoutComponentConstants.SceneGraphList:
                 return <li>
                     <form className='form-inline mf-form' onSubmit={this.handleCreateSceneGraph} role='form'>
                             <label htmlFor="scene-graph-input"  className="mf-text">Scene Graph List</label>
@@ -112,7 +109,7 @@ var NavigationBar = React.createClass({
                     </form>
                 </li>;
                 break;
-            case "Graph-Viewer":
+            case LayoutComponentConstants.GraphViewer:
                 return <li>
                     <form className='form-inline mf-form' onSubmit={this.handleGraphRoomChange} role='form'>
                         <label htmlFor="scene-graph-input"  className="mf-text">Graph Viewer</label>
@@ -121,10 +118,10 @@ var NavigationBar = React.createClass({
                     </form>
                 </li>
                 break;
-            case "Scene-Viewer":
-                return <li><span  className="navbar-text">Scene Viewer</span> <span classname="navbar-text"> </span></li>;
+            case LayoutComponentConstants.SceneViewer:
+                return <li><span  className="navbar-text">Scene Viewer</span></li>;
                 break;
-            case "Graph":
+            case LayoutComponentConstants.Graph:
                 return <li>
                     <form className='form-inline mf-form' onSubmit={this.handleGraphRoomChange} role='form'>
                         <label htmlFor="scene-graph-input"  className="mf-text">Graph</label>
@@ -133,17 +130,14 @@ var NavigationBar = React.createClass({
                     </form>
                 </li>;
                 break;
-            case "Scene-Media-Browser":
+            case LayoutComponentConstants.SceneMediaBrowser:
                 return <li><span  className="navbar-text">Scene Viewer</span></li>
                     break;
-            case "Scene-Editor":
+            case LayoutComponentConstants.SceneEditor:
                 return <li><span  className="navbar-text">Scene Viewer</span></li>
                     break;
-            case "":
-                return null;
-                break;
             default:
-                return <li><span  className="navbar-text">None of the component types have been provided</span></li>    ;
+                return <li><span  className="navbar-text">None of the component types have been provided</span></li>;
                 break
         }
 
