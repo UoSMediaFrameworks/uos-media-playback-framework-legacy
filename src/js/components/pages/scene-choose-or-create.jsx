@@ -1,14 +1,11 @@
 'use strict';
 var React = require('react');
-var HubSendActions = require('../../actions/hub-send-actions');
 var SceneList = require('../scene-list.jsx');
 var FormHelper = require('../../mixins/form-helper');
 var hat = require('hat');
 var ConnectionCache = require('../../utils/connection-cache');
-var Select = require('react-select');
 var SelectPlus = require('react-select-plus');
 var GridStore = require("../../stores/grid-store.js");
-
 
 
 var SceneChooser = React.createClass({
@@ -21,14 +18,10 @@ var SceneChooser = React.createClass({
         } catch (E) {
             console.log("err", E)
         }
-
-
     },
     handleFilterUpdate: function (e) {
-
-            var input = this.refs["filter"];
-            this.setState({filterText: input.value});
-
+        var input = this.refs["filter"];
+        this.setState({filterText: input.value});
     },
     componentWillMount:function(){
       console.log("Will mount",this)
