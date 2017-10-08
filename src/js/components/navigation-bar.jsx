@@ -175,6 +175,7 @@ var NavigationBar = React.createClass({
 
          if(this.state.loggedIn && !this.state.isPoppedOut)
              // APEP TODO We should add browser tool tips to the dropdown button menu to show that key bindings can be used.
+             // APEP TODO we need to add an on select handler for the event keys
              // APEP TODO Look at why we have a hard coded Version: 0
              // APEP TODO A lot of these can be React classes
              return (
@@ -203,32 +204,32 @@ var NavigationBar = React.createClass({
                                  <li className="mf-dropdown">
                                      <DropdownButton id="add-component-drop-down" title={"Components"}
                                                      className="btn btn-dark navbar-btn">
+                                         <MenuItem divider/>
+                                         <MenuItem header>Scenes</MenuItem>
                                          <MenuItem eventKey="1"
-                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneList)}>Scene
-                                             List</MenuItem>
+                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneList)}>Scene List</MenuItem>
+                                         <MenuItem eventKey="2"
+                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditor)}>Scene Editor</MenuItem>
                                          <MenuItem eventKey="3"
-                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneGraphList)}>Scene
-                                             Graph List</MenuItem>
-                                         <MenuItem eventKey="4"
-                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneGraph)}>Scene
-                                             Graph Editor</MenuItem>
-                                         <MenuItem eventKey="5"
-                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.Graph)}>Graph</MenuItem>
-                                         <MenuItem eventKey="6"
-                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneViewer)}>Scene
-                                             Viewer</MenuItem>
-                                         <MenuItem eventKey="7"
-                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.GraphViewer)}>Graph
-                                             Viewer</MenuItem>
-                                         <MenuItem eventKey="8"
-                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditor)}>Scene
-                                             Editor</MenuItem>
-                                         <MenuItem eventKey="9"
-                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneMediaBrowser)}>Scene
-                                             Media Browser</MenuItem>
+                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneMediaBrowser)}>Scene Media Browser</MenuItem>
                                          <MenuItem eventKey="e"
-                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditorGUI)}>Visual
-                                             Scene Editor</MenuItem>
+                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditorGUI)}>Visual Scene Editor</MenuItem>
+
+                                         <MenuItem divider/>
+                                         <MenuItem header>Graphs</MenuItem>
+                                         <MenuItem eventKey="4"
+                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneGraphList)}>Scene Graph List</MenuItem>
+                                         <MenuItem eventKey="5"
+                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneGraph)}>Scene Graph Editor</MenuItem>
+                                         <MenuItem eventKey="6"
+                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.Graph)}>Graph</MenuItem>
+
+                                         <MenuItem divider/>
+                                         <MenuItem header>Players</MenuItem>
+                                         <MenuItem eventKey="7"
+                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneViewer)}>Scene Preview Player</MenuItem>
+                                         <MenuItem eventKey="8"
+                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.GraphViewer)}>External Player</MenuItem>
                                      </DropdownButton>
                                  </li>
                                  <li>
