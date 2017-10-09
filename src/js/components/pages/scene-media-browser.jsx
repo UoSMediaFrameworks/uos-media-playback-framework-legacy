@@ -1,6 +1,7 @@
 var React = require('react');
 var _ = require('lodash');
 var SceneStore = require('../../stores/scene-store');
+var FullSceneStore =  require('../../stores/full-scene-store');
 var GridStore = require("../../stores/grid-store");
 var HubSendActions = require('../../actions/hub-send-actions');
 var SceneActions = require('../../actions/scene-actions');
@@ -19,7 +20,6 @@ var SceneMediaBrowser = React.createClass({
     },
 
     _onChange: function () {
-        console.log("scene change",this.getStateFromStores())
         this.setState(this.getStateFromStores());
     },
     _onFocusChange:function(){
@@ -32,24 +32,22 @@ var SceneMediaBrowser = React.createClass({
             uploading: false
         };
     },
-
     componentDidMount: function () {
-
+/*        FullSceneStore.addChangeListener(this._onFullSceneChange);*/
         SceneStore.addChangeListener(this._onChange);
         GridStore.addChangeListener(this._onFocusChange)
     },
     componentWillReceiveProps: function (nextProps) {
+
     },
     componentWillUnmount: function () {
+     /*   FullSceneStore.removeChangeListener(this._onFullSceneChange);*/
         SceneStore.removeChangeListener(this._onChange);
         GridStore.removeChangeListener(this._onFocusChange)
     },
-
-
     uploadStarted: function() {
         this.setState({uploading: true});
     },
-
     uploadEnded: function() {
         this.setState({uploading: false});
     },
@@ -60,11 +58,10 @@ var SceneMediaBrowser = React.createClass({
     },
 
     render: function () {
-        console.log("media browser",this)
         var saveFlagKlass = this.props.saveStatus ? "green-save-flag" : "red-save-flag";
 
         var showOverlay = this.state.uploading ? "show-overlay-when-uploading" : "hide-overlay-when-uploading";
-        if (this.props._id == null) {
+        if (this.props._id == null || this.state.scene==null) {
             return (
                 <div className="mf-empty-grid-component">
                     Scene has not been selected

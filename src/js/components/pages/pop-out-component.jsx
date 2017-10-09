@@ -12,7 +12,7 @@ var LayoutMonacoTextEditor = require("./layout-text-editor.jsx");
 var _ = require("lodash");
 var SceneActions = require("../../actions/scene-actions");
 var HubClient = require('../../utils/HubClient');
-
+var HubSendActions =require('../../actions/hub-send-actions');
 
 var PopOutComp = React.createClass({
     getInitialState: function () {
@@ -42,12 +42,6 @@ var PopOutComp = React.createClass({
             case "Scene-Graph":
                 return <SceneGraph  _id={self.state.data.sceneGraphId}/>;
                 break;
-            case "Scene-List":
-                return <SceneChooser  sceneFocusHandler={GridStore.focusScene}/>;
-                break;
-            case "Scene-Graph-List":
-                return <SceneGraphChooser sceneGraphFocusHandler={GridStore.focusSceneGraph}/>;
-                break;
             case "Graph-Viewer":
                 HubClient.registerToGraphPlayerRoom(self.state.data.roomId);
                 return <GraphViewer ></GraphViewer>;
@@ -59,16 +53,20 @@ var PopOutComp = React.createClass({
                 return <GraphTest isLayout={true}  _id={self.state.data.sceneGraphId}/>;
                 break;
             case "Scene-Media-Browser":
+                          HubSendActions.loadScene(self.state.data.sceneId)
                 return <SceneMediaBrowser saveStatus={self.state.saveStatus}  focusedMediaObject={self.state.gridData.focusedMediaObject}
                                            _id={self.state.data.sceneId}></SceneMediaBrowser>;
                 break;
             case "Scene-Editor":
+                HubSendActions.loadScene(self.state.data.sceneId)
                 return <LayoutMonacoTextEditor focusedMediaObject={self.state.gridData.focusedMediaObject} sceneSavingHandler={self.sceneSavingHandler}
                                                _id={self.state.data.sceneId}  focusHandler={SceneActions.changeMediaObjectFocus}
                 ></LayoutMonacoTextEditor>;
                 break;
             default:
-                return null;
+                return <div>
+                    This Component does not work by itself.
+                </div>;
                 break
         }
 
