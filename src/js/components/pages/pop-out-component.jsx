@@ -12,55 +12,74 @@ var LayoutMonacoTextEditor = require("./layout-text-editor.jsx");
 var _ = require("lodash");
 var SceneActions = require("../../actions/scene-actions");
 var HubClient = require('../../utils/HubClient');
+var LayoutComponentConstants = require('../../constants/layout-constants').ComponentTypes;
 var HubSendActions =require('../../actions/hub-send-actions');
 
 var PopOutComp = React.createClass({
     getInitialState: function () {
         return {
             data: this.props.location.query,
-                gridData:GridStore.getGridState(),
-            saveStatus: true};
+            gridData: GridStore.getGridState(),
+            saveStatus: true
+        };
     },
     _onChange: function () {
         this.setState({gridData: GridStore.getGridState()})
     },
-    sceneSavingHandler: function(saveStatus) {
+    sceneSavingHandler: function (saveStatus) {
         this.setState({saveStatus: saveStatus});
     },
     componentWillMount: function () {
 
         GridStore.addChangeListener(this._onChange);
     },
-
+    componentDidMount:function(){
+        SceneActions.changeFocus(this.state.data.type);
+    },
     componentWillUnmount: function () {
 
         GridStore.removeChangeListener(this._onChange);
     },
     getComponent: function (item) {
         var self = this;
+
         switch (item) {
-            case "Scene-Graph":
-                return <SceneGraph  _id={self.state.data.sceneGraphId}/>;
+            case LayoutComponentConstants.SceneGraph:
+                return <SceneGraph _id={self.state.data.sceneGraphId}/>;
                 break;
-            case "Graph-Viewer":
-                HubClient.registerToGraphPlayerRoom(self.state.data.roomId);
-                return <GraphViewer ></GraphViewer>;
+            case LayoutComponentConstants.SceneList:
+                return <SceneChooser sceneFocusHandler={GridStore.focusScene}/>;
                 break;
-            case "Scene-Viewer":
+            case LayoutComponentConstants.SceneGraphList:
+                return <SceneGraphChooser sceneGraphFocusHandler={GridStore.focusSceneGraph}/>;
+                break;
+            case LayoutComponentConstants.GraphViewer:
+                if(self.state.data.roomId) {
+                    HubClient.registerToGraphPlayerRoom(self.state.data.roomId);
+                }
+                return <GraphViewer></GraphViewer>;
+                break;
+            case LayoutComponentConstants.SceneViewer:
                 return <SceneListener sceneViewer={true} sceneId={self.state.data.sceneId}/>;
                 break;
-            case "Graph":
-                return <GraphTest isLayout={true}  _id={self.state.data.sceneGraphId}/>;
+            case LayoutComponentConstants.Graph:
+                if(self.state.data.roomId){
+                    HubClient.registerToGraphPlayerRoom(self.state.data.roomId)
+                }
+                return <GraphTest isLayout={true} _id={self.state.data.sceneGraphId}/>;
                 break;
-            case "Scene-Media-Browser":
-                          HubSendActions.loadScene(self.state.data.sceneId)
-                return <SceneMediaBrowser saveStatus={self.state.saveStatus}  focusedMediaObject={self.state.gridData.focusedMediaObject}
-                                           _id={self.state.data.sceneId}></SceneMediaBrowser>;
-                break;
-            case "Scene-Editor":
+            case LayoutComponentConstants.SceneMediaBrowser:
                 HubSendActions.loadScene(self.state.data.sceneId)
-                return <LayoutMonacoTextEditor focusedMediaObject={self.state.gridData.focusedMediaObject} sceneSavingHandler={self.sceneSavingHandler}
-                                               _id={self.state.data.sceneId}  focusHandler={SceneActions.changeMediaObjectFocus}
+                return <SceneMediaBrowser saveStatus={self.state.saveStatus}
+                                          focusedMediaObject={self.state.gridData.focusedMediaObject}
+                                          _id={self.state.data.sceneId}></SceneMediaBrowser>;
+                break;
+            case LayoutComponentConstants.SceneEditor:
+                HubSendActions.loadScene(self.state.data.sceneId)
+                return <LayoutMonacoTextEditor focusedMediaObject={self.state.gridData.focusedMediaObject}
+                                               sceneSavingHandler={self.sceneSavingHandler}
+                                               _id={self.state.data.sceneId}
+                                               focusHandler={SceneActions.changeMediaObjectFocus}
                 ></LayoutMonacoTextEditor>;
                 break;
             default:
@@ -73,15 +92,14 @@ var PopOutComp = React.createClass({
     },
     render: function () {
         var self = this;
-        try{
+        try {
             var component = self.getComponent(self.state.data.type);
-        }catch(e)
-        {
+        } catch (e) {
             console.log(e)
         }
         return (
             <div className="mf-pop-out-component">
-            {component}
+                {component}
             </div>
         );
     }
