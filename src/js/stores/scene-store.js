@@ -66,7 +66,7 @@ var SceneStore = assign({}, EventEmitter.prototype, {
 
             // should only be triggered when server sends data back, so no need to save
             case ActionTypes.RECIEVE_SCENE:
-                SceneActions.getFullScene(action.scene._id);
+                SceneActions.getFullScene(action.scene._id)
                 _updateScene(action.scene);
                 SceneStore.emitChange();
                 break;

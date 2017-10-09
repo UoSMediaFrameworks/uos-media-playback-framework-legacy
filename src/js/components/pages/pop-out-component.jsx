@@ -13,6 +13,7 @@ var _ = require("lodash");
 var SceneActions = require("../../actions/scene-actions");
 var HubClient = require('../../utils/HubClient');
 var LayoutComponentConstants = require('../../constants/layout-constants').ComponentTypes;
+var HubSendActions =require('../../actions/hub-send-actions');
 
 var PopOutComp = React.createClass({
     getInitialState: function () {
@@ -68,11 +69,13 @@ var PopOutComp = React.createClass({
                 return <GraphTest isLayout={true} _id={self.state.data.sceneGraphId}/>;
                 break;
             case LayoutComponentConstants.SceneMediaBrowser:
+                HubSendActions.loadScene(self.state.data.sceneId)
                 return <SceneMediaBrowser saveStatus={self.state.saveStatus}
                                           focusedMediaObject={self.state.gridData.focusedMediaObject}
                                           _id={self.state.data.sceneId}></SceneMediaBrowser>;
                 break;
             case LayoutComponentConstants.SceneEditor:
+                HubSendActions.loadScene(self.state.data.sceneId)
                 return <LayoutMonacoTextEditor focusedMediaObject={self.state.gridData.focusedMediaObject}
                                                sceneSavingHandler={self.sceneSavingHandler}
                                                _id={self.state.data.sceneId}
@@ -80,7 +83,9 @@ var PopOutComp = React.createClass({
                 ></LayoutMonacoTextEditor>;
                 break;
             default:
-                return null;
+                return <div>
+                    This Component does not work by itself.
+                </div>;
                 break
         }
 
