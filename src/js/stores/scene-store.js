@@ -41,7 +41,6 @@ var SceneStore = assign({}, EventEmitter.prototype, {
                 break;
 
             case ActionTypes.DELETE_SCENE:
-                console.log("SceneStore - DELETE SCENE");
                 try {
                     var sceneId = action.sceneId;
                     //APEP Unsure why but HubClient is null here.. so have had to hack and use require
@@ -49,36 +48,29 @@ var SceneStore = assign({}, EventEmitter.prototype, {
                     delete _scenes[sceneId];
                     SceneStore.emitChange();
                 } catch (e) {
-                    alert(e);
                     throw e;
                 }
-
                 break;
 
             case ActionTypes.ADD_MEDIA_OBJECT:
-                try{
+                try {
                     var scene = _scenes[action.sceneId];
                     scene.scene.push(action.mediaObject);
                     //TODO: AngelP the age old bug continues - suspission is circular ref
-                   require('../utils/HubClient').save(scene);
-
-                }catch(e){
-                    console.log("Eeeeeee",e)
+                    require('../utils/HubClient').save(scene);
+                    SceneStore.emitChange();
+                } catch(e){
+                    throw e;
                 }
-
-
                 break;
 
             // should only be triggered when server sends data back, so no need to save
             case ActionTypes.RECIEVE_SCENE:
-                console.log("scene Receive",action)
-                SceneActions.getFullScene(action.scene._id)
+                SceneActions.getFullScene(action.scene._id);
                 _updateScene(action.scene);
                 SceneStore.emitChange();
                 break;
         }
-
-        SceneStore.emitChange();
 
         return true;
     })
