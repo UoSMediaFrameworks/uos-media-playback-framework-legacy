@@ -91,7 +91,7 @@ var GraphContainer = React.createClass({
                     //if there is a parent push the edge/relationship
                     if (node != parentObj) {
                         if (parentObj != undefined) {
-                            localRoot.links.push({source: parentObj, target: node, visible: true, highlighted: false});
+                            localRoot.links.push({source: parentObj, target: node, visible: true, highlighted: false,textHighlighted:true});
                         }
                         // add the references to those object for later usage to the objects themselves.
                         parentObj.children.push(node);
@@ -303,10 +303,10 @@ var GraphContainer = React.createClass({
          var logos = this.state.type == GraphTypes.NARM?<div>
              <div className={this.state.graphType + "narm-logo"}>
                 <img
-                src="http://www.salford.ac.uk/__data/assets/image/0005/906287/university-of-salford-web-logo-clear-back-113x70.png"/>
+                src="/images/salford.png"/>
                 </div>
                 <div className={this.state.graphType + "narm-logo2"}>
-                <img src="http://salfordmediafestival.co.uk/wp-content/uploads/2014/06/media_conference.png"/>
+                <img src="/images/narmc.png"/>
                 </div>
          </div> : null;
         return (

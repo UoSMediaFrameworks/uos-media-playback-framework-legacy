@@ -998,3 +998,11 @@ html, body, #main, .app {
 .mf-media-loader-spinner {
   top: 50%;
 }
+.invisible-text{
+    display:none;
+}
+.gdc-text{
+    color:white;
+    fill:white;
+    font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
+}

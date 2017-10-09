@@ -39,38 +39,32 @@ var SceneList = React.createClass({
         var filteredScene = this.state.scenes;
 
         // APEP the filter should be done outside of the render function and managed in component state with the suitable event pattern used for ensuring it's correctly updated.
-        if(this.props.filterGroupId != null && this.props.filterGroupId !== "None"){
+        if(this.props.filterGroupId !== null && this.props.filterGroupId !== "None"){
             filteredScene = _.filter(filteredScene,function(scene){
-                return scene._groupID.toString() == self.props.filterGroupId
-            })
+                return scene._groupID.toString() === self.props.filterGroupId
+            });
         }
         if (this.props.filterText) {
             filteredScene = _.filter(filteredScene, function (scene) {
                 return scene.name.toLowerCase().indexOf(self.props.filterText.toLowerCase()) !== -1;
             });
         }
-        try{
-            var links = filteredScene.map(function (scene) {
-                var sceneLinkText = ConnectionCache.getShortGroupName(scene._groupID) + ' - ' + scene.name;
-                return (
-                    <dd key={scene._id} className="col-xs-12 mf-link">
-                        <div>
-                            {/*
-                             Change from a link to a label, since we are not switching url's
-                             but passing data through handlers. This can be a conditional statement
-                             for the component be it standalone or part of the layout.
-                             */}
-                            <label  onClick={self.props._sceneFocusHandler.bind(self,scene)} onTouchEndCapture={self.props._sceneFocusHandler.bind(self,scene)}>{ sceneLinkText }</label>
-                            {/* <Link to={'scene/' + scene._id}>{ sceneLinkText }</Link>*/}
-                        </div>
-
-                    </dd>
-                );
+        if(this.props.filterById) {
+            filteredScene = _.filter(filteredScene, function(scene) {
+               return scene._id.indexOf(self.props.filterById) !== -1;
             });
-        }catch(e){
-            console.log(e)
         }
 
+        var links = filteredScene.map(function (scene) {
+            var sceneLinkText = ConnectionCache.getShortGroupName(scene._groupID) + ' - ' + scene.name;
+            return (
+                <dd key={scene._id} className="col-xs-12 mf-link">
+                    <div>
+                        <label  onClick={self.props._sceneFocusHandler.bind(self,scene)} onTouchEndCapture={self.props._sceneFocusHandler.bind(self,scene)}>{ sceneLinkText }</label>
+                    </div>
+                </dd>
+            );
+        });
 
         return (
             <Loader className='scene-list-loader' message='Retrieving Scene list...' loaded={!this.state.loading}>
