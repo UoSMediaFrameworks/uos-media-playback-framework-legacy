@@ -183,7 +183,8 @@ var GDCGraph = React.createClass({
     removeHighlights: function () {
         var self = this;
         _.each(self.state.data.nodes, function (node) {
-            node.highlighted = false
+            node.highlighted = false;
+            node.textHighlighted = false;
         });
         _.each(self.state.data.links, function (link) {
             link.highlighted = false;
@@ -210,6 +211,7 @@ var GDCGraph = React.createClass({
 
         _.each(node, function (node) {
             node.highlighted = true;
+            node.textHighlighted = true;
         });
         var links = _.filter(filteredEdges, function (item) {
             return item.source == data || item.target == data;
@@ -238,12 +240,14 @@ var GDCGraph = React.createClass({
         var node = _.filter(self.state.data.nodes, function (node) {
             return node._id == data._id;
         });
-        node.highlighted = true;
+        node.textHighlighted = true;
         var links = _.filter(filteredEdges, function (item) {
             return item.source == data || item.target == data;
         });
         _.each(links, function (link) {
             link.highlighted = true;
+            link.source.textHighlighted=true;
+            link.target.textHighlighted=true;
         })
     },
     contextualizeHandler(t) {
@@ -337,6 +341,7 @@ var GDCGraph = React.createClass({
             var refference = _.find(self.state.data.nodes, function (d) {
                 return d == child;
             });
+            refference.highlighted = true;
             self.moveNode(refference, x, y, "null", 15);
         });
     },
@@ -501,7 +506,7 @@ var GDCGraph = React.createClass({
             return (<g key={i}>
                 <Circle data={node} clickHandler={self.tapHandler} dblClickHandler={self.contextualizeHandler}></Circle>
 
-                {/*           <Text data={node}></Text>*/}
+                <Text data={node}></Text>
             </g>)
         });
         var links = self.state.data.links.map((link, i) => {

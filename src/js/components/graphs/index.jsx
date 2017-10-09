@@ -91,7 +91,7 @@ var GraphContainer = React.createClass({
                     //if there is a parent push the edge/relationship
                     if (node != parentObj) {
                         if (parentObj != undefined) {
-                            localRoot.links.push({source: parentObj, target: node, visible: true, highlighted: false});
+                            localRoot.links.push({source: parentObj, target: node, visible: true, highlighted: false,textHighlighted:true});
                         }
                         // add the references to those object for later usage to the objects themselves.
                         parentObj.children.push(node);
