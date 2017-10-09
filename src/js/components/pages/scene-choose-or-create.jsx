@@ -30,6 +30,10 @@ var SceneChooser = React.createClass({
             this.setState({filterText: input.value});
 
     },
+    handleIdFilterUpdate: function(e) {
+        var input = this.refs["id_filter"];
+        this.setState({filterId: input.value});
+    },
     componentWillMount:function(){
       console.log("Will mount",this)
     },
@@ -41,11 +45,9 @@ var SceneChooser = React.createClass({
     },
     _onSelect: function (e) {
         var element = this.refs['group-filter'];
-
         this.setState({filterGroupId: e.value});
     },
     _onSort: function (val) {
-
         this.setState({sortBy: null});
     },
     getGroupOptions: function () {
@@ -57,53 +59,67 @@ var SceneChooser = React.createClass({
         return optionsArr;
     },
     render: function () {
-        localStorage.setItem('scene-filters', JSON.stringify(this.state));
-        var optionsArr = this.getGroupOptions();
-        var isAdmin = ConnectionCache.getGroupID() == 0 ? 1:0;
-        var groupFilter = isAdmin ? <div >
-            <div className="sort-section">
-                <h5>Show Only</h5>
-                <SelectPlus
-                    ref="group-filter"
-                    name="group-filter"
-                    value={this.state.filterGroupId}
-                    options={optionsArr}
-                    onChange={this._onSelect}
-                />
-            </div>
-        </div> : null ;
 
+        localStorage.setItem('scene-filters', JSON.stringify(this.state));
+
+        var optionsArr = this.getGroupOptions();
+
+        var isAdmin = parseInt(ConnectionCache.getGroupID()) === 0;
+        var groupFilter = null;
+        var sceneIdFilter = null;
+        if (isAdmin) {
+            groupFilter =  <div >
+                <div className="sort-section">
+                    <h5>Show Only</h5>
+                    <SelectPlus
+                        ref="group-filter"
+                        name="group-filter"
+                        value={this.state.filterGroupId}
+                        options={optionsArr}
+                        onChange={this._onSelect}
+                    />
+                </div>
+            </div>;
+
+            sceneIdFilter = <div>
+                <div className="sort-section">
+                    <input type='text' ref="filter" onKeyUp={this.handleIdFilterUpdate}
+                           className='form-control' placeholder='Filter By ID'/>
+                </div>
+            </div>;
+        }
+
+        var sceneNameFilter = <div>
+            <div className="sort-section">
+                <input type='text' ref="filter" onKeyUp={this.handleFilterUpdate}
+                       className='form-control' placeholder='Filter Scene List'/>
+            </div>
+        </div>;
 
         return (
-
-                <div id="scene-list">
-                    <div className='col-md-12'>
-                        <h4> Example Scenes </h4>
-                        <ul className="nav nav-pills .nav-stacked col-xs-12">
-                            <li>
-                                <label onClick={GridStore.focusScene.bind(this,"589c9dc3f0b2aca4bdfe444a")}
-                                 onTouchEndCapture={GridStore.focusScene.bind(this,"589c9dc3f0b2aca4bdfe444a")}>MF Style Example</label>
-                            </li>
-                        </ul>
-                    </div>
-                    <div className='col-xs-12'>
-                        <h4>Edit an Existing Scene</h4>
-                        {groupFilter}
-                        <div>
-                            <div className="sort-section">
-                                <input type='text' ref="filter" onKeyUp={this.handleFilterUpdate}
-                                       className='form-control' placeholder='Filter Scene List'/>
-                            </div>
-                        </div>
-                        <SceneList filterText={this.state.filterText} _sceneFocusHandler={GridStore.focusScene} sortBy={this.state.sortBy}
-                                   filterGroupId={this.state.filterGroupId}/>
-
-                    </div>
-
-
+            <div id="scene-list">
+                <div className='col-md-12'>
+                    <h4> Example Scenes </h4>
+                    <ul className="nav nav-pills .nav-stacked col-xs-12">
+                        <li>
+                            <label onClick={GridStore.focusScene.bind(this,"589c9dc3f0b2aca4bdfe444a")}
+                             onTouchEndCapture={GridStore.focusScene.bind(this,"589c9dc3f0b2aca4bdfe444a")}>MF Style Example</label>
+                        </li>
+                    </ul>
                 </div>
+                <div className='col-xs-12'>
+                    <h4>Edit an Existing Scene</h4>
+                    {groupFilter}
+                    {sceneIdFilter}
+                    {sceneNameFilter}
 
-
+                    <SceneList filterText={this.state.filterText}
+                               _sceneFocusHandler={GridStore.focusScene}
+                               sortBy={this.state.sortBy}
+                               filterGroupId={this.state.filterGroupId}
+                               filterById={this.state.filterId}/>
+                </div>
+            </div>
         );
     }
 
