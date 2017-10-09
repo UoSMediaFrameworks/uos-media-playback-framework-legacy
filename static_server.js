@@ -9,8 +9,6 @@ var connect = require('connect'),
 
 module.exports = function(dest, opt) {
 
-    dest = path.resolve(dest);
-
     var o = opt || {},
         livereload = o.livereload || false,
         callback = o.callback || null;
@@ -20,7 +18,7 @@ module.exports = function(dest, opt) {
         server.use(connectLivereload());
     }
 
-    server.use(serverStatic(dest, {'index': ['index.html']}));
+    server.use(serverStatic(path.join(__dirname, dest), {'index': ['index.html']}));
     server.listen(process.env.PORT || 5000, callback);
 };
 
