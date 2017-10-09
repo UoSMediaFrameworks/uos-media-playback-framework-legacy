@@ -1,11 +1,7 @@
 'use strict';
 var React = require('react');
-var HubSendActions = require('../../actions/hub-send-actions');
 var SceneGraphList = require('../scene-graph-list.jsx');
 var FormHelper = require('../../mixins/form-helper');
-var ConnectionCache = require('../../utils/connection-cache');
-var Select = require('react-select');
-
 var mediaHubGraphURL = process.env.MEDIA_HUB_GRAPH_URL || "";
 var presentationNamespaceQueryParams = "?roomId=presentation";
 var presentationMediaHubGraphURL = mediaHubGraphURL.length > 0 ? mediaHubGraphURL + presentationNamespaceQueryParams : "";
@@ -38,22 +34,14 @@ var SceneGraphChooser = React.createClass({
     componentDidUpdate: function () {
         this.refs["filter"].value = this.state.filterText;
     },
-    _onSort(event)
-    {
+    _onSort(event) {
         this.setState({sortBy: event.target.value});
     },
-    getGroupOptions: function () {
-        var options = ConnectionCache.getGroupNameArray();
-        var optionsArr = [{value: "None", label: "None"}];
-        options.forEach(function (value, key) {
-            optionsArr.push({value: key, label: value});
-        });
-        return optionsArr;
-    },
+
     render: function () {
         localStorage.setItem('scene-graph-filters', JSON.stringify(this.state));
         return (
-                <div>
+                <div id="scene-graph-list">
                     <div className='col-xs-12'>
                         <h4>Edit an Existing Scene Graph</h4>
 

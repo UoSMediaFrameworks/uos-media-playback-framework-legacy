@@ -643,6 +643,17 @@ html, body, #main, .app {
 
 /* END OF SCORE RELATED WORK */
 
+#scene-list {
+    overflow-y: auto;
+}
+
+#scene-graph-list {
+    overflow-y: auto;
+}
+
+.scene-graph {
+    overflow-y: auto;
+}
 
 /* APEP Hack required for PIP to work with iframe positioned relative to its container
     as the container is the thing we position with out PIP work
@@ -751,7 +762,6 @@ html, body, #main, .app {
     cursor: pointer
 }
 .widget .grid-layout-body{
-    overflow-y:auto;
     -webkit-box-flex: 1;
     -webkit-flex: 1 1 auto;
     display: flex;
@@ -987,4 +997,12 @@ html, body, #main, .app {
 
 .mf-media-loader-spinner {
   top: 50%;
+}
+.invisible-text{
+    display:none;
+}
+.gdc-text{
+    color:white;
+    fill:white;
+    font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif;
 }

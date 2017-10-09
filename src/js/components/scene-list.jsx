@@ -51,7 +51,7 @@ var SceneList = React.createClass({
         }
         if(this.props.filterById) {
             filteredScene = _.filter(filteredScene, function(scene) {
-               return scene._id.indexOf(this.props.filterById) !== -1;
+               return scene._id.indexOf(self.props.filterById) !== -1;
             });
         }
 

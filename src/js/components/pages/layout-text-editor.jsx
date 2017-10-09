@@ -21,9 +21,9 @@ var SceneMonacoTextEditor = React.createClass({
         SceneStore.removeChangeListener(this._onChange);
         if (saveTimeout) clearTimeout(saveTimeout);
     },
-    getHumanReadableScene: function() {
+    getHumanReadableScene: function(scene) {
         // APEP Strip out the IDs so they are not displayed
-        var sceneVal = _.omit(this.state.scene, ['_id', '_groupID']);
+        var sceneVal = _.omit(scene, ['_id', '_groupID']);
         // APEP Add schema property for monaco editor
         sceneVal.$schema = SCHEMA_URL;
         return sceneVal;
@@ -34,7 +34,7 @@ var SceneMonacoTextEditor = React.createClass({
     },
 
     getSceneString: function() {
-        var scene = this.getHumanReadableScene();
+        var scene = this.getHumanReadableScene(this.state.scene);
 
         return this.getSceneStringForSceneObj(scene);
     },
@@ -104,14 +104,16 @@ var SceneMonacoTextEditor = React.createClass({
 
     _onChange: function() {
         // console.log("SceneMonacoTextEditor - _onChange [ react based update ]")
+
         var scene = SceneStore.getScene(this.props._id);
-        var sceneVal = _.omit(scene, ['_id', '_groupID']);
 
-        // APEP Add schema property for monaco editor
-        sceneVal.$schema = SCHEMA_URL;
-        var code =JSON.stringify(sceneVal, null, '\t');
-        this.setState({scene:scene,code:code})
+        var compareNewPropsAndCurrentEditorCopy = !_.isEqual(scene, this.getMonacoEditorVersionOfScene());
 
+        if(compareNewPropsAndCurrentEditorCopy) {
+            var sceneVal = this.getHumanReadableScene(scene);
+            var code = this.getSceneStringForSceneObj(sceneVal);
+            this.setState({scene:scene,code:code})
+        }
     },
 
     handleSceneJSONSave: function(saved) {
