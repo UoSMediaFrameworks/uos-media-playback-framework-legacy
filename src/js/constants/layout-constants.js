@@ -11,6 +11,17 @@ module.exports = {
         "SceneMediaBrowser": "Scene-Media-Browser",
         "SceneEditorGUI": "Scene-Editor-GUI",
     },
+    ComponentTitles:{
+        "Scene-List":"Scene List",
+        "Scene-Graph-List": "Scene Graph List",
+        "Scene-Graph": "Scene Graph Editor",
+        "Graph" : "Graph",
+        "Scene-Viewer":"Scene Preview Player",
+        "Graph-Viewer":"External Player",
+        "Scene-Editor":"Scene Editor",
+        "Scene-Media-Browser":"Scene Media Browser",
+        "Scene-Editor-GUI":"Visual Scene Editor"
+    },
     ColumnTypes: {
         "RHS": "RightHandSide",
         "LHS": "LeftHandSide"
