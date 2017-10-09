@@ -3,10 +3,14 @@
 var connect = require('connect'),
     serverStatic = require('serve-static'),
     connectLivereload = require('connect-livereload'),
+    path = require('path'),
     server = connect();
 
 
 module.exports = function(dest, opt) {
+
+    dest = path.resolve(dest);
+
     var o = opt || {},
         livereload = o.livereload || false,
         callback = o.callback || null;
