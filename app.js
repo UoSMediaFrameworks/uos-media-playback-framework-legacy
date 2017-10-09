@@ -2,4 +2,4 @@
 
 var static_server = require('./static_server');
 
-static_server('dist');
+static_server(process.env.DIST || 'dist');
