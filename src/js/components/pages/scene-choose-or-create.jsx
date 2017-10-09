@@ -25,10 +25,8 @@ var SceneChooser = React.createClass({
 
     },
     handleFilterUpdate: function (e) {
-
-            var input = this.refs["filter"];
-            this.setState({filterText: input.value});
-
+        var input = this.refs["filter"];
+        this.setState({filterText: input.value});
     },
     handleIdFilterUpdate: function(e) {
         var input = this.refs["id_filter"];
@@ -83,7 +81,7 @@ var SceneChooser = React.createClass({
 
             sceneIdFilter = <div>
                 <div className="sort-section">
-                    <input type='text' ref="filter" onKeyUp={this.handleIdFilterUpdate}
+                    <input type='text' ref="id_filter" onKeyUp={this.handleIdFilterUpdate}
                            className='form-control' placeholder='Filter By ID'/>
                 </div>
             </div>;
