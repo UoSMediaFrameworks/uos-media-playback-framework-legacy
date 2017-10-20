@@ -178,12 +178,18 @@ class LayoutManager {
     }
 
     removeComponent(id) {
-        var self = this;
-        self.layout.splice(
-            _.indexOf(self.layout,
-                _.findWhere(self.layout,
-                    {i: id})),
-            1);
+        var comp = _.find(this.layout, function(c){return c.id === id;});
+        var shouldEnableOtherComponents = comp ? comp.state === "max" : false; // APEP if the component was maximized we should unhide items
+
+        if(comp) {
+            this.layout.splice(_.indexOf(this.layout, comp),1);
+        }
+
+        if(shouldEnableOtherComponents) {
+            _.each(this.layout, function (layoutItem) {
+                layoutItem.visible = true;
+            });
+        }
     };
 
     // APEP static method
