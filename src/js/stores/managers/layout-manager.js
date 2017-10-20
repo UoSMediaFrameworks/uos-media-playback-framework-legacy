@@ -178,7 +178,7 @@ class LayoutManager {
     }
 
     removeComponent(id) {
-        var comp = _.find(this.layout, function(c){return c.id === id;});
+        var comp = _.find(this.layout, function(c){return c.i === id;});
         var shouldEnableOtherComponents = comp ? comp.state === "max" : false; // APEP if the component was maximized we should unhide items
 
         if(comp) {

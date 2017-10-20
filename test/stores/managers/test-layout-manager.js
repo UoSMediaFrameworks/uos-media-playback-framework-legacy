@@ -501,7 +501,7 @@ describe('LayoutManager', function() {
 
            assert(this.manager.layout.length === 1, "Setup state is correct");
 
-           this.manager.removeComponent(this.manager.layout[0].id);
+           this.manager.removeComponent(this.manager.layout[0].i);
 
            assert(this.manager.layout.length === 0, "the item was removed");
        });
@@ -521,7 +521,7 @@ describe('LayoutManager', function() {
            assert(comp.visible === true);
            assert(otherComp.visible === false);
 
-           this.manager.removeComponent(comp.id);
+           this.manager.removeComponent(comp.i);
 
            assert(otherComp.visible === true);
        });
