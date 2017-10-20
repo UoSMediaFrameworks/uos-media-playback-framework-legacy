@@ -218,7 +218,7 @@ var RespGrid = React.createClass({
         }
     },
     removeComponent: function (item) {
-        SceneActions.removeLayoutComponent(item.i);g
+        SceneActions.removeLayoutComponent(item.i);
     },
     render: function () {
         var self = this;
