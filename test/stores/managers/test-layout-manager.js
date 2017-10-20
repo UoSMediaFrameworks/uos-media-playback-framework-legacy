@@ -440,4 +440,91 @@ describe('LayoutManager', function() {
        });
    });
 
+   describe('maximise', function() {
+       beforeEach(function() {
+           this.manager = new LayoutManager();
+           this.manager.defaultComponentStartingY = 0;
+           this.manager.layout = []; // APEP remove default added components
+       });
+
+       it('should maximise a single component, changing state, w, h and visible', function() {
+           this.manager.addComponent(LayoutComponentConstants.SceneMediaBrowser);
+
+           var comp = this.manager.layout[0];
+
+           var expectedMaximisedW = this.manager.cols;
+           var expectedMaximisedH = 20;
+
+           this.manager.maximize(0, comp, expectedMaximisedH);
+
+           assert(comp.state === "max");
+           assert(comp.visible === true);
+           assert(comp.w === expectedMaximisedW);
+           assert(comp.h === expectedMaximisedH);
+       });
+
+       it('should maximise a single component, and minimise the rest (visible false)', function() {
+           this.manager.addComponent(LayoutComponentConstants.SceneMediaBrowser);
+           this.manager.addComponent(LayoutComponentConstants.Graph);
+           this.manager.addComponent(LayoutComponentConstants.GraphViewer);
+
+           var comp = this.manager.layout[0];
+           var otherComp = this.manager.layout[1];
+           var otherComp2 = this.manager.layout[1];
+
+           this.manager.maximize(0, comp, 20);
+
+           assert(otherComp.visible === false);
+           assert(otherComp2.visible === false);
+       });
+   });
+
+   describe('removeComponent', function() {
+       beforeEach(function() {
+           this.manager = new LayoutManager();
+           this.manager.defaultComponentStartingY = 0;
+           this.manager.layout = []; // APEP remove default added components
+       });
+
+       it('should do nothing if no component is found', function() {
+           this.manager.addComponent(LayoutComponentConstants.SceneMediaBrowser);
+
+           assert(this.manager.layout.length === 1, "Setup state is correct");
+
+           this.manager.removeComponent("fakeid");
+
+           assert(this.manager.layout.length === 1, "We still have all items");
+       });
+
+       it('should remove a component if found', function() {
+           this.manager.addComponent(LayoutComponentConstants.SceneMediaBrowser);
+
+           assert(this.manager.layout.length === 1, "Setup state is correct");
+
+           this.manager.removeComponent(this.manager.layout[0].i);
+
+           assert(this.manager.layout.length === 0, "the item was removed");
+       });
+
+       it('should unhide all components if a maximized item was removed', function() {
+           this.manager.addComponent(LayoutComponentConstants.SceneMediaBrowser);
+           this.manager.addComponent(LayoutComponentConstants.Graph);
+
+           assert(this.manager.layout.length === 2, "Setup state is correct");
+
+           var comp = this.manager.layout[0];
+           var otherComp = this.manager.layout[1];
+
+           this.manager.maximize(0, comp, 10);
+
+           assert(comp.state === "max");
+           assert(comp.visible === true);
+           assert(otherComp.visible === false);
+
+           this.manager.removeComponent(comp.i);
+
+           assert(otherComp.visible === true);
+       });
+   });
+
 });

@@ -218,7 +218,7 @@ var RespGrid = React.createClass({
         }
     },
     removeComponent: function (item) {
-        SceneActions.removeLayoutComponent(item.i);g
+        SceneActions.removeLayoutComponent(item.i);
     },
     render: function () {
         var self = this;
@@ -253,8 +253,9 @@ var RespGrid = React.createClass({
                                 <div className="grid-layout-controls">
                                     {leftComp}
                                     {rightComp}
-                                    <i className={item.state === "default" ? "fa fa-times mf-times" : "hidden"}
-                                       onClick={self.removeComponent.bind(self, item)}>
+
+                                    <i className={item.state === "default" ? "fa fa-share-alt-square  mf-maximize" : "hidden "}
+                                       onClick={self.popout.bind(self, index, item)}>
                                     </i>
                                     <i className={item.state !== "max" ? "hidden" : "fa fa-window-restore mf-restore"}
                                        onClick={self.restore.bind(self, index, item)}>
@@ -262,8 +263,8 @@ var RespGrid = React.createClass({
                                     <i className={item.state === "default" ? "fa fa-window-maximize mf-maximize" : "hidden "}
                                        onClick={self.max.bind(self, index, item)}>
                                     </i>
-                                    <i className={item.state === "default" ? "fa fa-share-alt-square  mf-maximize" : "hidden "}
-                                       onClick={self.popout.bind(self, index, item)}>
+                                    <i className={"fa fa-times mf-times"}
+                                       onClick={self.removeComponent.bind(self, item)}>
                                     </i>
                                 </div>
                             </header>
