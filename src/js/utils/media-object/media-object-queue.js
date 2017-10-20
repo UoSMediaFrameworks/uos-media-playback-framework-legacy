@@ -217,6 +217,8 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
                 }
             }
 
+            var matchedMos = [];
+
             for (var i = 0; i < queue.length; i++) {
                 matchedType = checkType(queue[i]);
 
@@ -225,21 +227,25 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
 
                     // if the next mo in the queue is marked as solo, only give it back once
                     // all other active mo's of the same type are off the stage
-                    if (matchedMo._obj.solo !== true || (matchedMo._obj.solo === true && activeCount(matchedType.typeName) === 0)) {
+
+                    // APEP the addition activeCount check in the first boolean branch allows us to ensure only the correct number of media are going on the screen.
+                    if ((matchedMo._obj.solo !== true && activeCount(matchedType.typeName) < maximumOnScreen[matchedType.typeName]) || (matchedMo._obj.solo === true && activeCount(matchedType.typeName) === 0)) {
                         queue.splice(i, 1);
                         active.push(matchedMo);
 
                         // ensure it's set to be playing
                         matchedMo._playing = true;
+                        matchedMos.push(matchedMo);
 
-                        return [matchedMo];
-                    } else {
-                        // there is a solo waiting at the front of the queue
-                        // so return nothing and wait till next time
-                        return [];
+                        // APEP after taking one from the type, we should remove as eligible - I think we should make this toggleable
+                        eligibleTypes = _.filter(eligibleTypes, function(type) {
+                            return matchedType.typeName !== type.typeName
+                        });
                     }
                 }
             }
+
+            return matchedMos;
         }
 
 
