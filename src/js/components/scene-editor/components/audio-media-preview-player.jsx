@@ -15,6 +15,7 @@ var AudioMediaPreviewPlayer = React.createClass({
                 <span></span>
             );
         } else {
+            var self = this;
             if (this.props.mediaObject.url.indexOf("soundcloud.com") !== -1) {
                 soundCloud.streamUrl(this.props.mediaObject.url, function (err, streamUrl) {
                     if (err) {
@@ -24,7 +25,7 @@ var AudioMediaPreviewPlayer = React.createClass({
                     } else {
                         return (
                             <audio
-                                id={this.props.id}
+                                id={self.props.id}
                                 className="react-audio-player"
                                 src={streamUrl}
                                 controls>
