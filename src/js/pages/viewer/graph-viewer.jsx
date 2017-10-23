@@ -220,7 +220,8 @@ var GraphViewer = React.createClass({
         if(this.state.activeSceneId)
             sceneListener = <SceneListener sceneId={this.state.activeSceneId} sceneViewer={false} activeScene={this.state.activeScene} themeQuery={this.state.themeQuery} />;
         else
-            sceneListener = <h2>Graph Viewer </h2>;
+            sceneListener = <span/>;
+
         var randomHex = this.state.hex;
         return (
             <div className="mf-graph-viewer">
