@@ -3,7 +3,6 @@
 
 var HubRecieveActions = require('../actions/hub-recieve-actions');
 var io = require('socket.io-client');
-var HubSendActions = require('../actions/hub-send-actions');
 var SceneActions = require('../actions/scene-actions');
 var assetStore = require('./asset-store');
 var connectionCache = require('./connection-cache');
@@ -48,7 +47,7 @@ var HubClient = {
                     connectionCache.setSocketID(socketID);
                     console.log("Setting groupID in HubClient to: " + groupID);
                     connectionCache.setGroupID(groupID);//AJF: set the groupID
-                    connectionCache.setGroupNameArray();//AngelP: just sets the groups in the name array;
+
                     //Angel P: I am calling this function to register the listener to a specific room ID
                     //In order for the layout components graph to communicate with the Scene graph editor.
                     HubClient.registerToGraphPlayerRoom(socketID)

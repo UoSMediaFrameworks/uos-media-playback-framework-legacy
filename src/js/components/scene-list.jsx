@@ -1,10 +1,8 @@
 'use strict';
 
 var React = require('react');
-var Router = require('react-router');
 var SceneListStore = require('../stores/scene-list-store');
 var Loader = require('./loader.jsx');
-var Link = require('react-router').Link;
 var _ = require('lodash');
 var ConnectionCache = require('../utils/connection-cache.js');
 
@@ -50,7 +48,7 @@ var SceneList = React.createClass({
         }
         if(this.props.filterById) {
             filteredScene = _.filter(filteredScene, function(scene) {
-               return scene._id.indexOf(self.props.filterById) !== -1;
+                return scene._id.indexOf(self.props.filterById) !== -1;
             });
         }
 

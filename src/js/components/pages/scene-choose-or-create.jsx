@@ -4,7 +4,7 @@ var SceneList = require('../scene-list.jsx');
 var FormHelper = require('../../mixins/form-helper');
 var hat = require('hat');
 var ConnectionCache = require('../../utils/connection-cache');
-var SelectPlus = require('react-select-plus');
+var SelectPlus = require('react-select-plus').default;
 var GridStore = require("../../stores/grid-store.js");
 
 
@@ -37,7 +37,6 @@ var SceneChooser = React.createClass({
         this.refs["filter"].value = this.state.filterText;
     },
     _onSelect: function (e) {
-        var element = this.refs['group-filter'];
         this.setState({filterGroupId: e.value});
     },
     _onSort: function (val) {
@@ -52,11 +51,10 @@ var SceneChooser = React.createClass({
         return optionsArr;
     },
     render: function () {
-
+        // APEP TODO move this to a correct method, we should not be doing this in the render function.
         localStorage.setItem('scene-filters', JSON.stringify(this.state));
 
         var optionsArr = this.getGroupOptions();
-
         var isAdmin = parseInt(ConnectionCache.getGroupID()) === 0;
         var groupFilter = null;
         var sceneIdFilter = null;
