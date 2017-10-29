@@ -151,7 +151,6 @@ var SceneMonacoTextEditor = React.createClass({
                 return;
             }
             try {
-                this.handleSceneJSONSave(false);
 
                 var newScene = this.getMonacoEditorVersionOfScene();
 
@@ -161,7 +160,9 @@ var SceneMonacoTextEditor = React.createClass({
 
                 var shouldSave = mediaWithoutTagOrType.length === 0;
 
-                if (!_.isEqual(this.state.scene, newScene) || shouldSave) { //TODO ensure a save occurs for scene media without id - must update view with _id
+                // APEP ensure we should save, previously the || logic was forcing unrequired saves
+                if (!_.isEqual(this.state.scene, newScene) && shouldSave) { //TODO ensure a save occurs for scene media without id - must update view with _id
+                    this.handleSceneJSONSave(false);
                     SceneActions.updateScene(newScene);
                     this.handleSceneJSONSave(true);
                 }
@@ -277,7 +278,9 @@ var SceneMonacoTextEditor = React.createClass({
 
         editor.focus();
 
-        this.refs.monaco.editor.setValue(this.state.code);
+        // APEP we need to try setup state correctly after mounting.
+        // APEP this helps if a scene is selected before this component is mounted.
+        this._onChange();
 
         // this.refs.monaco.editor.onDidChangeCursorPosition(this.onChangeCursorPosition);
         //
@@ -332,11 +335,7 @@ var SceneMonacoTextEditor = React.createClass({
     },
 
     render: function() {
-        if(this.state.scene == undefined){
-            return (
-                <div className="scene-text-editor"></div>
-            );
-        }
+
         var options = {
             selectOnLineNumbers: true,
             automaticLayout:true,
