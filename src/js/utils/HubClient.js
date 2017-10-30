@@ -127,6 +127,9 @@ var HubClient = {
                     cb(newScene);
                 }
 
+                // APEP update the scene saving store for a successful save
+                HubRecieveActions.sceneSaved(newScene);
+                // APEP publish that we have received a new version of the scene
                 HubRecieveActions.recieveScene(newScene);
 
                 // APEP Make sure the V2 scene store is up to date
@@ -137,6 +140,8 @@ var HubClient = {
 
     saveSceneGraph: function(sceneGraph, cb) {
 
+        // APEP Hack - Block the merged graph from running node list generation.
+        // APEP this process was done by a script and we don't want to override its results
         if(sceneGraph._id !== "579a2186792e8b3c827d2b15") {
             NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
         }

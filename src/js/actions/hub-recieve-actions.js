@@ -22,6 +22,16 @@ var HubRecieveActions = {
             sceneGraphs: sceneGraphs
         });
     },
+
+    // APEP view action of the monaco editor trying to save scene JSON.
+    sceneSaved: function(scene) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.SCENE_SAVING,
+            scene: scene,
+            saved: true
+        });
+    },
+
     recieveScene: function(scene) {
         AppDispatcher.handleServerAction({
             type: ActionTypes.RECIEVE_SCENE,
