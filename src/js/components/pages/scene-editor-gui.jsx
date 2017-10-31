@@ -125,13 +125,14 @@ var SceneEditorGUI = React.createClass({
             valid: true
         };
 
-        if (mediaObject.style.position === "absolute") {
+        // APEP We must check to see if the mediaObject has the style property
+        if (mediaObject.hasOwnProperty("style") && mediaObject.style.position === "absolute") {
             try {
                 console.log("SceneEditorGUI: Loading Position");
-                placement.x = parseFloat(mediaObject.style.left)
-                placement.y = parseFloat(mediaObject.style.top)
-                placement.width = parseFloat(mediaObject.style.width)
-                placement.height = parseFloat(mediaObject.style.height)
+                placement.x = parseFloat(mediaObject.style.left);
+                placement.y = parseFloat(mediaObject.style.top);
+                placement.width = parseFloat(mediaObject.style.width);
+                placement.height = parseFloat(mediaObject.style.height);
                 placement.isRandom = false
 
 
