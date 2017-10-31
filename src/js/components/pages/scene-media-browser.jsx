@@ -1,7 +1,7 @@
 var React = require('react');
 var _ = require('lodash');
 var SceneStore = require('../../stores/scene-store');
-var FullSceneStore =  require('../../stores/full-scene-store');
+var SceneSavedStore = require('../../stores/scene-saving-store');
 var GridStore = require("../../stores/grid-store");
 var HubSendActions = require('../../actions/hub-send-actions');
 var SceneActions = require('../../actions/scene-actions');
@@ -29,20 +29,18 @@ var SceneMediaBrowser = React.createClass({
     getStateFromStores: function() {
         return {
             scene: SceneStore.getScene(this.props._id),
-            uploading: false
+            uploading: false,
+            savedStatus: SceneSavedStore.getSceneSaved()
         };
     },
     componentDidMount: function () {
-/*        FullSceneStore.addChangeListener(this._onFullSceneChange);*/
         SceneStore.addChangeListener(this._onChange);
-        GridStore.addChangeListener(this._onFocusChange)
-    },
-    componentWillReceiveProps: function (nextProps) {
-
+        SceneSavedStore.addChangeListener(this._onChange);
+        GridStore.addChangeListener(this._onFocusChange);
     },
     componentWillUnmount: function () {
-     /*   FullSceneStore.removeChangeListener(this._onFullSceneChange);*/
         SceneStore.removeChangeListener(this._onChange);
+        SceneSavedStore.removeChangeListener(this._onChange);
         GridStore.removeChangeListener(this._onFocusChange)
     },
     uploadStarted: function() {
@@ -58,7 +56,8 @@ var SceneMediaBrowser = React.createClass({
     },
 
     render: function () {
-        var saveFlagKlass = this.props.saveStatus ? "green-save-flag" : "red-save-flag";
+
+        var saveFlagKlass = this.state.savedStatus ? "green-save-flag" : "red-save-flag";
 
         var showOverlay = this.state.uploading ? "show-overlay-when-uploading" : "hide-overlay-when-uploading";
         if (this.props._id == null || this.state.scene==null) {

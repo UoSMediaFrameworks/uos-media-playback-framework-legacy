@@ -116,10 +116,6 @@ var SceneMonacoTextEditor = React.createClass({
         }
     },
 
-    handleSceneJSONSave: function(saved) {
-        this.props.sceneSavingHandler(saved);
-    },
-
     // Try get a JSON copy of the scene loaded in editor for comparsion check
     getMonacoEditorVersionOfScene: function() {
         try {
@@ -162,9 +158,7 @@ var SceneMonacoTextEditor = React.createClass({
 
                 // APEP ensure we should save, previously the || logic was forcing unrequired saves
                 if (!_.isEqual(this.state.scene, newScene) && shouldSave) { //TODO ensure a save occurs for scene media without id - must update view with _id
-                    this.handleSceneJSONSave(false);
                     SceneActions.updateScene(newScene);
-                    this.handleSceneJSONSave(true);
                 }
 
             } catch (e) {

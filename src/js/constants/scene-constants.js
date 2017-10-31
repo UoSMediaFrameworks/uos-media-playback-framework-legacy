@@ -40,6 +40,7 @@ module.exports = {
 
 
         SCENE_CHANGE: null,
+        SCENE_SAVING: null,
         DELETE_SCENE: null,
         ADD_MEDIA_OBJECT: null,
         ADD_MEDIA_ATTEMPT: null,

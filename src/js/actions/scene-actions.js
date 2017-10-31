@@ -40,7 +40,7 @@ var SceneActions = {
           componentType:componentType
       })
     },
-   removeLayoutComponent:function(componentId){
+    removeLayoutComponent:function(componentId){
         AppDispatcher.handleViewAction({
             type:ActionTypes.REMOVE_COMPONENT,
             componentId:componentId
@@ -121,6 +121,12 @@ var SceneActions = {
     },
 
     updateScene: function (scene) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.SCENE_SAVING,
+            scene: scene,
+            saved: false
+        });
+
         AppDispatcher.handleViewAction({
             type: ActionTypes.SCENE_CHANGE,
             scene: scene
