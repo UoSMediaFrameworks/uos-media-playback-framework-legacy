@@ -8,6 +8,7 @@ var Rnd = require('react-rnd');
 var FontAwesome = require('react-fontawesome');
 var Rectangle = require('react-rectangle');
 var ImageLoader = require('react-imageloader');
+var ScaleText = require('react-scale-text');
 
 var saveTimeout = null;
 
@@ -94,6 +95,11 @@ var SceneEditorGUI = React.createClass({
                 case "video":
                     mediaTypeSupported = true
                     placement = this.getPlacementFromMfJSON(mediaObject);
+                    break;
+                case "text":
+                    mediaTypeSupported = true
+                    placement = this.getPlacementFromMfJSON(mediaObject);
+                    placement.lockAspectRatio = false;
                     break;
                 default:
                     //unsupported media type
@@ -196,11 +202,22 @@ var SceneEditorGUI = React.createClass({
 
     //get the best placement of an image while preserving aspect ratio
     getDefaultPlacement() {
-          console.log("SceneEditorGUI: Getting Default Placement")
+          console.log("SceneEditorGUI: Getting Default Placement", this.state.mediaObject.type)
           var placement = this.state.placement;
-          if (this.state.mediaObject.type === "image") {
-            var self = this
-            this.getImageSize(self.state.mediaObject.url, function(imgWidth, imgHeight) {
+
+          switch (this.state.mediaObject.type) {
+            case "text":
+              placement.x = 0;
+              placement.y = 0;
+              placement.height = 5;
+              placement.width = this.state.mediaObject.text.lenght*10;
+              placement.lockAspectRatio = false; //lock aspect ratio to try to preserve
+              placement.isRandom = false;
+              this.setState({placement: placement, shouldSave: true})
+            break;
+            case "image":
+              var self = this
+              this.getImageSize(self.state.mediaObject.url, function(imgWidth, imgHeight) {
 
                 var scaleX = self.state.width/imgWidth
                 var scaleY = self.state.height/imgHeight;
@@ -230,19 +247,18 @@ var SceneEditorGUI = React.createClass({
                 placement.isRandom = false;
                 console.log("SceneEditorGUI: Placing with optimum aspect")
                 self.setState({placement: placement, shouldSave: true})
-            })
-
-        } else {
-            //can't auto find aspect
-            console.log("SceneEditorGUI: Can't find aspect ratio, defaulting to full screen")
-            placement.x = 0;
-            placement.y = 0;
-            placement.width = 100;
-            placement.height = 100;
-            placement.isRandom = false;
-            this.setState({placement: placement, shouldSave: true})
-        }
-
+              });
+            break;
+            default:
+              //can't auto find placement for this type
+              console.log("SceneEditorGUI: Can't find aspect ratio, defaulting to full screen")
+              placement.x = 0;
+              placement.y = 0;
+              placement.width = 100;
+              placement.height = 100;
+              placement.isRandom = false;
+              this.setState({placement: placement, shouldSave: true})
+          }
     },
 
     //schedules a save in 1 second. Avoids to many saves
@@ -570,6 +586,16 @@ var SceneEditorGUI = React.createClass({
                         draggable={false}
                     />
                 )
+            break;
+
+            case "text":
+              return (
+                <div className="mf-scene-layout-media-object">
+                  <ScaleText>
+                    <p className="child">{this.state.mediaObject.text}</p>
+                  </ScaleText>
+                </div>
+              )
             break;
 
             default:

@@ -931,6 +931,10 @@ html, body, #main, .app {
     height: 100%;
 }
 
+.mf-scene-layout-media-object:hover {
+    border: 1px solid #fff
+}
+
 .mf-gui-toolbar {
   background: #555;
   width: 100%;
