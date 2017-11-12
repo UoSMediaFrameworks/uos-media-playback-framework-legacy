@@ -5,6 +5,7 @@ var WidthProvider = require('react-grid-layout').WidthProvider;
 var Scene = require('./scene.jsx');
 var SceneMediaBrowser = require('./scene-media-browser.jsx');
 var SceneEditorGUI = require('./scene-editor-gui.jsx');
+var TagEditor = require('./tag-editor.jsx');
 var SceneGraph = require('./scenegraph.jsx');
 var GraphTest = require('../graphs/index.jsx');
 var SceneChooser = require('./scene-choose-or-create.jsx');
@@ -73,10 +74,11 @@ var RespGrid = React.createClass({
                 return <GraphTest isLayout={true} _id={self.state.data.sceneGraph._id}/>;
                 break;
             case LayoutComponentTypes.SceneMediaBrowser:
-                return <SceneMediaBrowser isLayout={true} scene={SceneStore.getScene(this.state.data.scene._id) || {}}
+                return ( <SceneMediaBrowser isLayout={true} scene={SceneStore.getScene(this.state.data.scene._id) || {}}
                                           focusedMediaObject={this.state.data.focusedMediaObject}
                                           _id={self.state.data.scene._id}>
-                    </SceneMediaBrowser>;
+                    </SceneMediaBrowser>
+                  )
                 break;
             case LayoutComponentTypes.SceneEditorGUI:
                 return (
@@ -87,17 +89,29 @@ var RespGrid = React.createClass({
                     </SceneEditorGUI>
                 );
                 break;
+            case LayoutComponentTypes.TagEditor:
+                return (
+                  <TagEditor
+                  isLayout={true}
+                  scene={SceneStore.getScene(this.state.data.scene._id) || {}}
+                  focusedMediaObject={this.state.data.focusedMediaObject}
+                  _id={self.state.data.scene._id}
+                  />
+                )
+                break;
             case LayoutComponentTypes.SceneEditor:
-                return <LayoutMonacoTextEditor isLayout={true} focusedMediaObject={this.state.data.focusedMediaObject}
+                return ( <LayoutMonacoTextEditor isLayout={true} focusedMediaObject={this.state.data.focusedMediaObject}
                                                _id={this.state.data.scene._id}
                                                focusHandler={SceneActions.changeMediaObjectFocus}>
-                    </LayoutMonacoTextEditor>;
+                    </LayoutMonacoTextEditor>
+                  )
                 break;
             default:
                 return null;
                 break
         }
     },
+
     getComponentTitle: function (item) {
         var self = this;
         switch (item.type) {
