@@ -22,8 +22,8 @@ var TagEditor = React.createClass({
         scene: SceneStore.getScene(this.props._id),
         focusedMediaObject: null,
         shouldSave: false,
-        tags: null,
-        suggestions: ["none"],
+        tags: [],
+        suggestions: [],
         mediaObjectSelected: false
       };
     },
@@ -88,6 +88,11 @@ var TagEditor = React.createClass({
 //change handlers
 
     componentWillReceiveProps: function (nextProps) {
+    },
+      
+
+
+    getNewState: function() {
       var scene = SceneStore.getScene(this.props._id)
       var focusedMediaObject = GridStore.getFocusedMediaObject();
 
@@ -126,15 +131,16 @@ var TagEditor = React.createClass({
       }
       //update display
       this.setState({scene: scene, suggestions: this.getSceneTags(scene), focusedMediaObject: focusedMediaObject, tags: tags});
+      
+    },
 
-      },
 
     _onChange: function () {
-
+      this.getNewState();
     },
 
     _onFocusChange: function () {
-
+      this.getNewState();
     },
 
     getSceneTags: function(scene) {
