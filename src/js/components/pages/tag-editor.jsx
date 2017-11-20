@@ -161,7 +161,9 @@ var TagEditor = React.createClass({
                     var newtag = newtags[j].trim()
 
                     //add tag only if it dosn't already exist
-                    tags.indexOf(newtag) === -1 ? tags.push(newtag) : console.log("Tag Already Exists")
+                    if(tags.indexOf(newtag) === -1) {
+                        tags.push(newtag);
+                    }
                 }
             }
             console.log("Tags", tags);
