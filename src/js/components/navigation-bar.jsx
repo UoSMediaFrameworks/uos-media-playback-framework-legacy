@@ -214,6 +214,8 @@ var NavigationBar = React.createClass({
                                                    onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneMediaBrowser)}>Scene Media Browser</MenuItem>
                                          <MenuItem eventKey="e"
                                                    onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditorGUI)}>Visual Scene Editor</MenuItem>
+                                         <MenuItem eventKey="t"
+                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.TagEditor)}>Tag Editor</MenuItem>
 
                                          <MenuItem divider/>
                                          <MenuItem header>Graphs</MenuItem>
