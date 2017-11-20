@@ -10,6 +10,7 @@ module.exports = {
         "SceneEditor": "Scene-Editor",
         "SceneMediaBrowser": "Scene-Media-Browser",
         "SceneEditorGUI": "Scene-Editor-GUI",
+        "TagEditor": "Tag-Editor"
     },
     ComponentTitles:{
         "Scene-List":"Scene List",
@@ -20,7 +21,8 @@ module.exports = {
         "Graph-Viewer":"External Player",
         "Scene-Editor":"Scene Editor",
         "Scene-Media-Browser":"Scene Media Browser",
-        "Scene-Editor-GUI":"Visual Scene Editor"
+        "Scene-Editor-GUI":"Visual Scene Editor",
+        "Tag-Editor": "Tag Editor"
     },
     ColumnTypes: {
         "RHS": "RightHandSide",

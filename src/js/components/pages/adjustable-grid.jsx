@@ -5,6 +5,7 @@ var WidthProvider = require('react-grid-layout').WidthProvider;
 var Scene = require('./scene.jsx');
 var SceneMediaBrowser = require('./scene-media-browser.jsx');
 var SceneEditorGUI = require('./scene-editor-gui.jsx');
+var TagEditor = require('./tag-editor.jsx');
 var SceneGraph = require('./scenegraph.jsx');
 var GraphTest = require('../graphs/index.jsx');
 var SceneChooser = require('./scene-choose-or-create.jsx');
@@ -26,13 +27,9 @@ var RespGrid = React.createClass({
     getInitialState: function () {
         return {
             data: GridStore.getGridState(),
-            saveStatus: true,
             cols: 30,
             rows: 30
         }
-    },
-    sceneSavingHandler: function (saveStatus) {
-        this.setState({saveStatus: saveStatus});
     },
     _onChange: function () {
         this.setState({data: GridStore.getGridState()})
@@ -68,7 +65,7 @@ var RespGrid = React.createClass({
                 return <SceneGraphChooser isLayout={true} sceneGraphFocusHandler={GridStore.focusSceneGraph}/>;
                 break;
             case LayoutComponentTypes.GraphViewer:
-                return <GraphViewer isLayout={true} roomId={self.state.data.roomId}></GraphViewer>;
+                return <GraphViewer isLayout={true} roomId={self.state.data.roomId} />;
                 break;
             case LayoutComponentTypes.SceneViewer:
                 return <SceneListener isLayout={true} sceneViewer={true} sceneId={self.state.data.scene._id}/>;
@@ -77,33 +74,44 @@ var RespGrid = React.createClass({
                 return <GraphTest isLayout={true} _id={self.state.data.sceneGraph._id}/>;
                 break;
             case LayoutComponentTypes.SceneMediaBrowser:
-                return <SceneMediaBrowser isLayout={true} scene={SceneStore.getScene(this.state.data.scene._id) || {}}
-                                          saveStatus={this.state.saveStatus}
+                return ( <SceneMediaBrowser isLayout={true} scene={SceneStore.getScene(this.state.data.scene._id) || {}}
                                           focusedMediaObject={this.state.data.focusedMediaObject}
-                                          _id={self.state.data.scene._id}></SceneMediaBrowser>;
+                                          _id={self.state.data.scene._id}>
+                    </SceneMediaBrowser>
+                  )
                 break;
             case LayoutComponentTypes.SceneEditorGUI:
                 return (
                     <SceneEditorGUI isLayout={true}
                                     scene={SceneStore.getScene(this.state.data.scene._id) || {}}
-                                    saveStatus={this.state.saveStatus}
                                     focusedMediaObject={this.state.data.focusedMediaObject}
                                     _id={self.state.data.scene._id}>
                     </SceneEditorGUI>
                 );
                 break;
+            case LayoutComponentTypes.TagEditor:
+                return (
+                  <TagEditor
+                  isLayout={true}
+                  scene={SceneStore.getScene(this.state.data.scene._id) || {}}
+                  focusedMediaObject={this.state.data.focusedMediaObject}
+                  _id={self.state.data.scene._id}
+                  />
+                )
+                break;
             case LayoutComponentTypes.SceneEditor:
-                return <LayoutMonacoTextEditor isLayout={true} focusedMediaObject={this.state.data.focusedMediaObject}
-                                               sceneSavingHandler={this.sceneSavingHandler}
+                return ( <LayoutMonacoTextEditor isLayout={true} focusedMediaObject={this.state.data.focusedMediaObject}
                                                _id={this.state.data.scene._id}
-                                               focusHandler={SceneActions.changeMediaObjectFocus}
-                ></LayoutMonacoTextEditor>;
+                                               focusHandler={SceneActions.changeMediaObjectFocus}>
+                    </LayoutMonacoTextEditor>
+                  )
                 break;
             default:
                 return null;
                 break
         }
     },
+
     getComponentTitle: function (item) {
         var self = this;
         switch (item.type) {
