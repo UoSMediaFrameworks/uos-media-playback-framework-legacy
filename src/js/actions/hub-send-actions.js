@@ -7,11 +7,11 @@ var HubRecieveActions = require('./hub-recieve-actions');
 var SceneActions = require('./scene-actions');
 var hashHistory = require('react-router').hashHistory;
 
-
+//ANGEL.P : these should probably be moved to the graph constants file.
 const GDC_SCENE_GRAPH_TYPE = "GDC_SCENE_GRAPH";
 const MEMOIR_SCENE_GRAPH_TYPE = "MEMOIR_SCENE_GRAPH";
 const NARM_SCENE_GRAPH_TYPE = "NARM_SCENE_GRAPH";
-
+const THUMBNAIL_SCENE_GRAPH_TYPE = "THUMBNAIL_SCENE_GRAPH";
 const ROOT_NODE_TYPE = "root";
 const CITY_NODE_TYPE = "city";
 const GTHEME_NODE_TYPE = "gtheme";
@@ -449,7 +449,27 @@ module.exports = {
             'nodeList': []
         }
     },
+    getNewThumnailSceneGraph:function(name){
+        return {
+            'name': name,
+            'sceneIds': {},
+            'type': THUMBNAIL_SCENE_GRAPH_TYPE,
+            'version': GRAPH_ALPHA_VERSION,
+            'graphThemes': {
+                type: "document",
+                children: {
+                    "Textiles": {
+                        type: ROOT_NODE_TYPE,
+                        children: {
 
+                        }
+                    }
+                }
+            },
+            'excludedThemes': {},
+            'nodeList': []
+        }
+    },
     getNewMemoirSceneGraph: function(name) {
         return  {
             'name': name,
@@ -527,8 +547,10 @@ module.exports = {
             sceneGraph = this.getNewGDCSceneGraph(name);
         } else if (type === MEMOIR_SCENE_GRAPH_TYPE) {
             sceneGraph = this.getNewMemoirSceneGraph(name);
-        } else {
+        } else  if (type=== NARM_SCENE_GRAPH_TYPE){
             sceneGraph = this.getNewNarmSceneGraph(name);
+        } else{
+            sceneGraph = this.getNewThumnailSceneGraph(name);
         }
 
         HubClient.saveSceneGraph(sceneGraph, function(newSceneGraph) {

@@ -103,6 +103,7 @@ var NavigationBar = React.createClass({
                                         <option value="GDC_SCENE_GRAPH">GDC</option>
                                         <option value="MEMOIR_SCENE_GRAPH">Memoir</option>
                                         <option value="NARM_SCENE_GRAPH">NARM</option>
+                                          <option value="THUMBNAIL_SCENE_GRAPH">THUMBNAIL</option>
                                     </select>
                                 </span>
                             <button type='submit' className='btn btn-dark'>Create</button>
