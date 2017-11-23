@@ -8,10 +8,10 @@ var Rectangle = React.createClass({
     componentWillMount:function(){
         var self = this;
         self.setState({
-            x: self.props.data.x,
-            y: self.props.data.y,
-            width:120,
-            height:90,
+            x: self.props.data.x -50,
+            y: self.props.data.y -50,
+            width:100,
+            height:100,
             color: self.props.data.color
         });
     },
@@ -19,14 +19,14 @@ var Rectangle = React.createClass({
         var node = d3.select(ReactDOM.findDOMNode(this));
         var self = this;
         node.transition().ease(d3.easeCubicInOut).duration(5000)
-            .attr("x", nextProps.data.x)
-            .attr("y", nextProps.data.y)
+            .attr("x", nextProps.data.x -50)
+            .attr("y", nextProps.data.y -50)
             .attr("fill", nextProps.data.color)
             .on('end', function () {
                 self.setState({
-                    x: nextProps.data.x,
-                    y: nextProps.data.y,
-                    color: nextProps.data.color
+                    x: nextProps.data.x -50,
+                    y: nextProps.data.y -50,
+                    color:nextProps.data.color
                 })
             });
     },
@@ -36,46 +36,51 @@ var Rectangle = React.createClass({
     },
     checkForThumbnails:function(){
         var thumbnail = null;
-        if(this.props.data.childrenRelationshipIds){
-            _.each(this.props.data.childrenRelationshipIds,function(child){
-              var doesExist =    child.tags.split(',').indexOf("thumbnail");
-              if(doesExist === 1){
-                  thumbnail = child.url;
-              }
+        if(this.props.data.children){
+            _.each(this.props.data.children,function(child){
+                if(child.type == "image"){
+                    var doesExist =    child.tags.split(',').indexOf("thumbnail");
+                    if(doesExist === 1){
+                        thumbnail = child.url;
+                    }
+                }
+
             })
         }
-        console.log(thumbnail);
       return thumbnail;
     },
     render(){
+        if(!this.props.data.visible){
+            return null;
+        }
         var classes = classNames({
             'shown-circle': this.props.data.visible,
             'highlight2': this.props.data.highlighted
+
         });
 
         var test = this.checkForThumbnails();
         return test != null ? (
             <image
                 className={classes}
-                x={this.state.x}
-                y={this.state.y}
-                width={120}
-                height={90}
+                x={this.state.x}  width={100}
+                y={this.state.y}        height={100}
                 href={test}
-
-                /*     onClick={this.props.eventHandler.bind(null, this.props.data)}*/
+                clipPath={"url(#"+this.props.clip+")"}
+                onClick={this.props.eventHandler.bind(null, this.props.data)}
             >
             </image>
         ):(
 
             <rect
                 className={classes}
-                x={this.state.x}
-                y={this.state.y}
-                width={120}
-                height={90}
+                x={this.state.x }
+                y={this.state.y }
+                width={100}
+                height={100}
                 fill={this.state.color}
-           /*     onClick={this.props.eventHandler.bind(null, this.props.data)}*/
+                clipPath={"url(#"+this.props.clip+")"}
+             onClick={this.props.eventHandler.bind(null, this.props.data)}
             >
             </rect>
         )

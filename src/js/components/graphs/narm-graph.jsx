@@ -40,7 +40,7 @@ var NarmGraph = React.createClass({
         document.removeEventListener('keyup', this.optionsMenuHandler, false);
         BreadcrumbsStore.removePlayListener(this._playBreadcrumbs);
         BreadcrumbsStore.removeTraceListener(this._traceBreadcrumbs);
-        AutowalkStore.removeTraceListener(this._autowalkHandler);
+        AutowalkStore.removeChangeListener(this._autowalkHandler);
     },
     _autowalkHandler: function (props) {
         var self = this;

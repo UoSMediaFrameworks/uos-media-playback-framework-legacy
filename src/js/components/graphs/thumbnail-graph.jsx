@@ -10,6 +10,7 @@ var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
 var GraphBreadcrumbActions =require("../../actions/graph-breadcrumb-actions");
 var AutowalkStore = require('../../stores/autowalk-store.js');
 var _autowalkHandlerInterval = null;
+var classNames = require('classnames');
 var _playRandomNodeInterval = null;
 
 var ThumbGraph = React.createClass({
@@ -73,7 +74,7 @@ var ThumbGraph = React.createClass({
         document.removeEventListener('keyup', this.optionsMenuHandler, false);
         BreadcrumbsStore.removePlayListener(this._playBreadcrumbs);
         BreadcrumbsStore.removeTraceListener(this._traceBreadcrumbs);
-        AutowalkStore.removeTraceListener(this._autowalkHandler);
+        AutowalkStore.removeChangeListener(this._autowalkHandler);
     },
     _playBreadcrumbs: function (crumbs) {
         var self = this;
@@ -106,6 +107,46 @@ var ThumbGraph = React.createClass({
             if(links[0] != undefined){
                 links[0].highlighted=true;
             }
+        }
+    },
+    tapHandler(t){
+
+       console.log("tap")
+        var recording = BreadcrumbsStore.getRecording();
+        if(recording){
+            GraphBreadcrumbActions.addCrumb("tap",t.name)
+        }
+        this.highlight(t)
+        var list = [];
+        if (t.type === "root") {
+            //FOR ROOT NODES ONLY SEARCH GTHEMES FOR STHEME + SCENES
+            var children = _.filter(t.children, function (child) {
+                return child.type === "subgraphtheme";
+            });
+
+            list = this._nodes(children, list);
+        } else if (t.type !== "scene") {
+            list = this._nodes(t.children, list);
+        } else {
+            list.push(t._id);
+        }
+
+        list = this.dedupeNodeList(list);
+        //To finalize this method it sends the list of scenes to the graph viewer
+        if (t.type != "theme") {
+            HubClient.publishSceneCommand(list, connectionCache.getSocketID())
+        } else {
+            var scoreList = {
+                "play": {
+                    "themes": [],
+                    "scenes": []
+                }
+            };
+            scoreList.play.themes.push(t.name.toString());
+            _.each(list, function (scene) {
+                scoreList.play.scenes.push(scene.toString());
+            });
+            HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID())
         }
     },
     highlight: function (data) {
@@ -163,8 +204,19 @@ var ThumbGraph = React.createClass({
             node.x =  p.innerWidth / 2 - node.width/2;
             node.y = p.innerHeight / 2 - node.height/2;
             node.color = self.randomColor();
+            node.visible = false;
+        })
+        var self = this;
+        var rootNodes = _.filter(data.nodes, function (node) {
+            return node.type == 'scene';
+        });
+        _.each(rootNodes, function (node) {
+
+
+            node.visible = false;
         })
     },
+
     getRandomInt: function (min, max) {
         return Math.floor(Math.random() * (max - min)) + min;
     },
@@ -180,6 +232,32 @@ var ThumbGraph = React.createClass({
             node._y = node.y;
             node.color = self.randomColor();
         })
+    },
+    setupCircularNodeFormation(data,p) {
+        var self = this;
+        var imageNodes = _.filter(data.nodes, function (node) {
+            return node.type == 'theme';
+        });
+        _.each(imageNodes, function (node,i) {
+            var radian = ((2 * Math.PI) * i / imageNodes.length) - 1.5708;
+
+            node.x = (Math.cos(radian) * p.innerHeight / 2) + p.innerWidth / 2;
+
+            node.y = (Math.sin(radian) * p.innerHeight / 2) + p.innerHeight / 2;
+        });
+    },
+
+
+    setupImageNodes:function(data,p){
+        var self =this;
+        var imageNodes = _.filter(data.nodes, function (node) {
+            return node.type == 'image';
+        });
+
+        _.each(imageNodes,function(node){
+            node.visible = false;
+        });
+
     },
     _nodes: function (list, sceneList) {
         var self = this;
@@ -213,7 +291,9 @@ var ThumbGraph = React.createClass({
         try{
             self.setupRootNodes(data, properties);
             self.setupSceneNodes(data, properties);
-            console.log("THUMB",data,properties);
+            self.setupImageNodes(data,properties);
+            self.setupCircularNodeFormation(data,properties)
+
             self.setState({data:data});
         }catch(ex){
             console.log("SetupNode Err",ex)
@@ -225,23 +305,21 @@ var ThumbGraph = React.createClass({
         var windowH = this.props.innerHeight * 0.2;
         var self = this;
 
-        try{
             var nodes = this.state.data.nodes.map((node, i) => {
-                return (<g key={i} >
-                    <Rectangle data={node} eventHandler={self.tapHandler}></Rectangle>
+                var classes = classNames({
+                    'rotate':node.highlighted,
+                });
+                return (<g key={i} className={classes} >
+                    <clipPath id={"clipC"+i}>
+                        <circle r="50" cx={node.x} cy={node.y}/>
+                    </clipPath>
+                    <Rectangle data={node} eventHandler={self.tapHandler} clip={"clipC"+i}></Rectangle>
                 </g>)
             });
             var links = this.state.data.links.map((link, i) => {
                 return (<Path data={link} key={i} innerW={self.props.innerWidth} innerH={self.props.innerHeight}></Path>);
             });
-            console.log("render succ", this.props)
 
-        }
-        catch(ex){
-            console.log("render fail", ex);
-        }
-
-        console.log();
         var translate = 'translate(' + windowW + ',' + windowH + ')';
         return (
 
