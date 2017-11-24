@@ -3,6 +3,7 @@
 
 var _ = require('lodash');
 var SceneStore = require('../../stores/scene-store');
+var TagMatcher = require('../tag-matcher');
 
 /**
  * Parses the node instance to return type for graph naming type
@@ -17,6 +18,10 @@ var getChildTypeFromNodeType = function(node) {
         case 'city':
         case 'scene':
         case 'chapter':
+        case 'image':
+        case 'video':
+        case 'audio':
+        case 'text':
             return node.type;
         case 'gtheme':
         case 'subgraphtheme':
@@ -46,6 +51,15 @@ var createNode = function(id, name, parentIds, childrenIds, type) {
     }
 };
 
+var createMediaObjectNode = function(id, name, parentIds, childrenIds, type, moTags, moUrl) {
+    var node = createNode(id, name, parentIds, childrenIds, type);
+
+    node.tags = moTags;
+    node.url = moUrl;
+
+    return node;
+};
+
 /**
  * Generates the list of scene name and id objects for each scene within the scene graph that features the given stheme
  * @param sceneGraph
@@ -63,8 +77,12 @@ var getSceneNodeListForSTheme = function(sceneGraph, sthemeId) {
 
         var sceneThemes = Object.keys(scene.themes);
 
+        // APEP for each scene, if we have a matching theme, we include this scene as a reference to that theme.
+        //  this can lead to the same named theme, bringing in too many scenes
+        //  this is like this from quick develop for the GDC event.
+        //   - We may wish to change this, when a theme is looked up, we probably want to allow a user to avoid duplicate theme names here
         if(sceneThemes.indexOf(sthemeId) !== -1) {
-            sceneNameIds.push( { name: scene.name, _id: scene._id });
+            sceneNameIds.push( { name: scene.name, _id: scene._id, media: scene.scene, themes: scene.themes });
         }
     });
 
@@ -74,19 +92,37 @@ var getSceneNodeListForSTheme = function(sceneGraph, sthemeId) {
 //TODO can offer non recursive function for large scene graphs
 var getChildrenNodes = function(node, nodeObj, sceneGraph) {
 
-    var rootNodeChildren = Object.keys(node.children);
+    var nodeChildren = Object.keys(node.children);
 
-    _.map(rootNodeChildren, function(childProp) {
+    // APEP (recursive function exit condition) if we have no children to process, map will not run and getChildrenNodes is not called for this branch of recursion.
+    // APEP start bubbling back up till the next recursive branch.
+    _.map(nodeChildren, function(childProp) {
+
         var child = node.children[childProp];
+
         var childObj = createNode(childProp, childProp, [], [], getChildTypeFromNodeType(child));
-        var childrenNodes = getChildrenNodes(child, childObj, sceneGraph);
+
+        // APEP process each childs children (recursive function)
+        getChildrenNodes(child, childObj, sceneGraph);
+
         childObj.parentRelationshipIds.push(nodeObj._id);
 
-        if(child.type === "stheme") { //if stheme attach all duplicate scene leaf nodes - dedupe process will prune these - as scenes are not provided in the document data structure
+        //if stheme attach all duplicate scene leaf nodes - dedupe process will prune these - as scenes are not provided in the document data structure
+        if(child.type === "stheme") {
             var sceneNodeData = getSceneNodeListForSTheme(sceneGraph, childProp);
             _.forEach(sceneNodeData, function(sceneNode) {
                 var sceneNodeObj = createNode(sceneNode._id, sceneNode.name, [childProp], [], "scene");
                 nodeList.push(sceneNodeObj);
+
+                // for all scenes getting added, we can add media objects
+                var themeTagMatcher = new TagMatcher(sceneNode.themes[childProp]);
+                var matchingMos = _.filter(sceneNode.media, function(mo) {
+                    return themeTagMatcher.match(mo.tags);
+                });
+                _.forEach(matchingMos, function(mo) {
+                    var mediaNodeObj = createMediaObjectNode(mo._id, mo._id, [childProp], [], mo.type, mo.tags, mo.url);
+                    nodeList.push(mediaNodeObj);
+                });
             });
         }
 
@@ -95,7 +131,7 @@ var getChildrenNodes = function(node, nodeObj, sceneGraph) {
         return childObj;
     });
 
-    return rootNodeChildren;
+    return nodeChildren;
 };
 
 /**
@@ -182,8 +218,21 @@ var getRootChildrenForSceneGraphType = function(sceneGraphType) {
 
 module.exports = {
 
+    NODE_TYPES: {
+        ROOT_NODE: 'root',
+        SCENE_THEME: 'stheme',
+    },
+
+    NODE_LIST_TYPES: {
+        ROOT_NODE: 'root',
+        SCENE_THEME: 'theme'
+    },
+
     //TODO attach the scenes as nodes
-    generateNodeListForSceneGraph: function(sceneGraph) {
+    // APEP Optional variable for test environment
+    generateNodeListForSceneGraph: function(sceneGraph, sceneStore) {
+
+        if(sceneStore) SceneStore = sceneStore;
 
         var root = sceneGraph.graphThemes;
 
@@ -196,7 +245,6 @@ module.exports = {
 
         nodeList = [];
 
-
         _.forEach(rootNodes, function(rootNodeKey){
             var rootNode = root.children[rootNodeKey];
 
@@ -205,8 +253,9 @@ module.exports = {
 
             nodeList.push(node);
 
-            //recursively iterate through children added them to node list
+            //start to recursively iterate through children added them to node list
             getChildrenNodes(rootNode, node, sceneGraph);
+
             nodeList = dedupeChildren(nodeList);
         });
 
