@@ -2,6 +2,7 @@ var React = require("react");
 var d3 = require("d3");
 var TransitionGroup = require('react-transition-group/TransitionGroup');
 var Circle = require("./narm-components/circle.jsx");
+var Text = require("./narm-components/text.jsx");
 var Path = require("./narm-components/path.jsx");
 var _ = require("lodash");
 var connectionCache = require("../../utils/connection-cache");
@@ -271,6 +272,8 @@ var CeramicGraph = React.createClass({
         var nodes = this.state.data.nodes.map((node, i) => {
             return (<g key={i} >
                 <Circle data={node} eventHandler={self.tapHandler}></Circle>
+
+                <Text data={node}></Text>
             </g>)
         });
         var links = this.state.data.links.map((link, i) => {
