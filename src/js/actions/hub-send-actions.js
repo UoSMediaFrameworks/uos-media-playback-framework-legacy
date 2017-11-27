@@ -7,22 +7,14 @@ var HubRecieveActions = require('./hub-recieve-actions');
 var SceneActions = require('./scene-actions');
 var hashHistory = require('react-router').hashHistory;
 
-//ANGEL.P : these should probably be moved to the graph constants file.
-const CERAMIC_SCENE_GRAPH_TYPE = "CWERAMIC_SCENE_GRAPH";
-const GDC_SCENE_GRAPH_TYPE = "GDC_SCENE_GRAPH";
-const MEMOIR_SCENE_GRAPH_TYPE = "MEMOIR_SCENE_GRAPH";
-const NARM_SCENE_GRAPH_TYPE = "NARM_SCENE_GRAPH";
-const THUMBNAIL_SCENE_GRAPH_TYPE = "THUMBNAIL_SCENE_GRAPH";
-const ROOT_NODE_TYPE = "root";
-const CITY_NODE_TYPE = "city";
-const GTHEME_NODE_TYPE = "gtheme";
-const CHAPER_NODE_TYPE = "chapter";
+var GraphTypes = require('../constants/graph-constants').GraphTypes;
+var GraphNodeTypes = require('../constants/graph-constants').GraphNodeTypes;
+var GraphVersions = require('../constants/graph-constants').GraphVersions;
 
-const GDC_GRAPH_VERSION = "1.0.0";
-const GRAPH_ALPHA_VERSION = "alpha-1";
+
 module.exports = {
-    tryLogin: function(creds) {
-    	AppDispatcher.handleViewAction({
+    tryLogin: function (creds) {
+        AppDispatcher.handleViewAction({
             type: ActionTypes.HUB_LOGIN_ATTEMPT,
             authType: 'user'
         });
@@ -30,7 +22,7 @@ module.exports = {
         HubClient.login(process.env.MEDIA_HUB, creds);
     },
 
-    tryTokenLogin: function() {
+    tryTokenLogin: function () {
         AppDispatcher.handleViewAction({
             type: ActionTypes.HUB_LOGIN_ATTEMPT,
             authType: 'token'
@@ -38,386 +30,386 @@ module.exports = {
         HubClient.login(process.env.MEDIA_HUB);
     },
 
-    getNewGDCSceneGraph: function(name) {
-        return  {
+    getNewGDCSceneGraph: function (name) {
+        return {
             'name': name,
             'sceneIds': {},
-            "type": GDC_SCENE_GRAPH_TYPE,
-            "version": GDC_GRAPH_VERSION,
+            "type": GraphTypes.GDC,
+            "version": GraphVersions.GDC_GRAPH_VERSION,
             "graphThemes": {
                 type: "document",
                 children: {
                     "city": {
-                        type: ROOT_NODE_TYPE,
+                        type: GraphNodeTypes.ROOT_NODE_TYPE,
                         children: {
                             "Entertainment": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Tradition": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Bonds": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Cuisine": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Diversity": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Landscape": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Politics": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Transportation System": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Native Performance": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Night Market": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Green Initiative": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Changes": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Technology": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Landmarks": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Signage": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Historical Events": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Nature": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Sound Of Cities": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Fusion Of Culture": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Chicago": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Manchester": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Beijing": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Dalian": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "KualaLumpur": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Seoul": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Chengdu": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "HongKong": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Shenyang": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Panjin": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "GDC Experience": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                         }
                     },
                     "people": {
-                        type: ROOT_NODE_TYPE,
+                        type: GraphNodeTypes.ROOT_NODE_TYPE,
                         children: {
                             "Conflict": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Waterway": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Sports": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Culture": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "PaceOfLife": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Art": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Migration": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Entertainment": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Tradition": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Bonds": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Cuisine": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Diversity": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Landscape": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Politics": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Students Life": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Fusion Of Language": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Workforce": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Aging Society": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Youth Trends": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Cross Culture": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Chicago": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Manchester": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Beijing": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Dalian": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "KualaLumpur": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Seoul": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Chengdu": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "HongKong": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Shenyang": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Panjin": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "GDC Experience": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                         }
                     },
                     "movement": {
-                        type: ROOT_NODE_TYPE,
+                        type: GraphNodeTypes.ROOT_NODE_TYPE,
                         children: {
                             "Conflict": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Waterway": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Sports": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Culture": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "PaceOfLife": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Art": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Migration": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Transportation System": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Native Performance": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Night Market": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Green Initiative": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Changes": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Technology": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Evolution": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Vitality": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Travel": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Performance": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Night Life": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Traffic": {
-                                type: GTHEME_NODE_TYPE,
+                                type: GraphNodeTypes.GTHEME_NODE_TYPE,
                                 children: {}
                             },
                             "Chicago": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Manchester": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Beijing": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Dalian": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "KualaLumpur": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Seoul": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Chengdu": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "HongKong": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Shenyang": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             },
                             "Panjin": {
-                                type: CITY_NODE_TYPE,
+                                type: GraphNodeTypes.CITY_NODE_TYPE,
                                 children: {}
                             }
                         }
@@ -428,21 +420,18 @@ module.exports = {
             'nodeList': []
         };
     },
-
-    getNewNarmSceneGraph: function(name) {
+    getNewNarmSceneGraph: function (name) {
         return {
             'name': name,
             'sceneIds': {},
-            'type': NARM_SCENE_GRAPH_TYPE,
-            'version': GRAPH_ALPHA_VERSION,
+            'type': GraphTypes.NARM,
+            'version': GraphVersions.GRAPH_ALPHA_VERSION,
             'graphThemes': {
                 type: "document",
                 children: {
                     "root": {
-                        type: ROOT_NODE_TYPE,
-                        children: {
-
-                        }
+                        type: GraphNodeTypes.ROOT_NODE_TYPE,
+                        children: {}
                     }
                 }
             },
@@ -450,20 +439,18 @@ module.exports = {
             'nodeList': []
         }
     },
-    getNewThumbnailSceneGraph:function(name){
+    getNewThumbnailSceneGraph: function (name) {
         return {
             'name': name,
             'sceneIds': {},
-            'type': THUMBNAIL_SCENE_GRAPH_TYPE,
-            'version': GRAPH_ALPHA_VERSION,
+            'type': GraphTypes.THUMBNAIL,
+            'version': GraphVersions.GRAPH_ALPHA_VERSION,
             'graphThemes': {
                 type: "document",
                 children: {
                     "Textiles": {
-                        type: ROOT_NODE_TYPE,
-                        children: {
-
-                        }
+                        type: GraphNodeTypes.ROOT_NODE_TYPE,
+                        children: {}
                     }
                 }
             },
@@ -471,64 +458,64 @@ module.exports = {
             'nodeList': []
         }
     },
-    getNewMemoirSceneGraph: function(name) {
-        return  {
+    getNewMemoirSceneGraph: function (name) {
+        return {
             'name': name,
             'sceneIds': {},
-            "type": MEMOIR_SCENE_GRAPH_TYPE,
-            "version": GRAPH_ALPHA_VERSION,
+            "type": GraphTypes.MEMOIR,
+            "version": GraphVersions.GRAPH_ALPHA_VERSION,
             "graphThemes": {
                 type: "document",
                 children: {
                     "root": {
-                        type: ROOT_NODE_TYPE,
+                        type: GraphNodeTypes.ROOT_NODE_TYPE,
                         children: {
                             "Chapter1": {
-                                type: CHAPER_NODE_TYPE,
+                                type: GraphNodeTypes.CHAPER_NODE_TYPE,
                                 children: {}
                             },
                             "Chapter2": {
-                                type: CHAPER_NODE_TYPE,
+                                type: GraphNodeTypes.CHAPER_NODE_TYPE,
                                 children: {}
                             },
                             "Chapter3": {
-                                type: CHAPER_NODE_TYPE,
+                                type: GraphNodeTypes.CHAPER_NODE_TYPE,
                                 children: {}
                             },
                             "Chapter4": {
-                                type: CHAPER_NODE_TYPE,
+                                type: GraphNodeTypes.CHAPER_NODE_TYPE,
                                 children: {}
                             },
                             "Chapter5": {
-                                type: CHAPER_NODE_TYPE,
+                                type: GraphNodeTypes.CHAPER_NODE_TYPE,
                                 children: {}
                             },
                             "Chapter6": {
-                                type: CHAPER_NODE_TYPE,
+                                type: GraphNodeTypes.CHAPER_NODE_TYPE,
                                 children: {}
                             },
                             "Chapter7": {
-                                type: CHAPER_NODE_TYPE,
+                                type: GraphNodeTypes.CHAPER_NODE_TYPE,
                                 children: {}
                             },
                             "Chapter8": {
-                                type: CHAPER_NODE_TYPE,
+                                type: GraphNodeTypes.CHAPER_NODE_TYPE,
                                 children: {}
                             },
                             "Chapter9": {
-                                type: CHAPER_NODE_TYPE,
+                                type: GraphNodeTypes.CHAPER_NODE_TYPE,
                                 children: {}
                             },
                             "Chapter10": {
-                                type: CHAPER_NODE_TYPE,
+                                type: GraphNodeTypes.CHAPER_NODE_TYPE,
                                 children: {}
                             },
                             "Chapter11": {
-                                type: CHAPER_NODE_TYPE,
+                                type: GraphNodeTypes.CHAPER_NODE_TYPE,
                                 children: {}
                             },
                             "Chapter12": {
-                                type: CHAPER_NODE_TYPE,
+                                type: GraphNodeTypes.CHAPER_NODE_TYPE,
                                 children: {}
                             },
                         }
@@ -539,54 +526,113 @@ module.exports = {
             'nodeList': []
         };
     },
-    getNewCeramicSceneGraph:function(){
+    getNewCeramicSceneGraph: function () {
         return {
             'name': name,
             'sceneIds': {},
-                'type': CERAMIC_SCENE_GRAPH_TYPE,
-            'version': GRAPH_ALPHA_VERSION,
-            'graphThemes': {
-                type: "document",
-                children: {
-                    "Textiles": {
-                        type: ROOT_NODE_TYPE,
-                        children: {
+            'type': GraphTypes.CERAMIC,
+            'version': GraphVersions.GRAPH_ALPHA_VERSION,
+
+            "graphThemes" : {
+                "type" : "document",
+                "children" : {
+                    "Textiles" : {
+                        "type" : GraphNodeTypes.ROOT_NODE_TYPE,
+                        "children" : {
+                            "Vase": {
+                                "type": GraphNodeTypes.GTHEME_NODE_TYPE,
+                                "children": {
+                                    "MoonVase" : {
+                                        "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                        "children" : {
+                                            "MoonVaseTexture" : {
+                                                "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                                "children" : {}
+                                            },
+                                            "MoonVaseColour" : {
+                                                "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                                "children" : {
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "TallVase" : {
+                                        "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                        "children" : {
+                                            "TallVaseTexture" : {
+                                                "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                                "children" : {}
+                                            },
+                                            "TallVaseColour" : {
+                                                "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                                "children" : {
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "Sahbal" : {
+                                "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                "children" : {
+                                    "SahbalTexture" : {
+                                        "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                        "children" : {}
+                                    },
+                                    "SahbalColour" : {
+                                        "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                        "children" : {}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "Texture": {
+                        "type": GraphNodeTypes.ROOT_NODE_TYPE,
+                        "children": {
+
+                        }
+                    },
+                    "Colour": {
+                        "type": GraphNodeTypes.ROOT_NODE_TYPE,
+                        "children": {
 
                         }
                     }
                 }
             },
+
             'excludedThemes': {},
             'nodeList': []
         }
     },
-    tryCreateSceneGraph: function(name, type, cb) {
+
+    tryCreateSceneGraph: function (name, type, cb) {
 
         var sceneGraph = {};
 
-        if(type === GDC_SCENE_GRAPH_TYPE) {
+        // TODO we need a better null case here - probably an error message to the user and no attempt to save would be best.
+        if (type === GraphTypes.GDC) {
             sceneGraph = this.getNewGDCSceneGraph(name);
-        } else if (type === MEMOIR_SCENE_GRAPH_TYPE) {
+        } else if (type === GraphTypes.MEMOIR) {
             sceneGraph = this.getNewMemoirSceneGraph(name);
-        } else  if (type=== NARM_SCENE_GRAPH_TYPE){
+        } else if (type === GraphTypes.NARM) {
             sceneGraph = this.getNewNarmSceneGraph(name);
-        } else if  (type=== THUMBNAIL_SCENE_GRAPH_TYPE){
+        } else if (type === GraphTypes.THUMBNAIL) {
             sceneGraph = this.getNewThumbnailSceneGraph(name);
-        } else{
+        } else if (type === GraphTypes.CERAMIC) {
             sceneGraph = this.getNewCeramicSceneGraph(name);
         }
 
-        HubClient.saveSceneGraph(sceneGraph, function(newSceneGraph) {
+        HubClient.saveSceneGraph(sceneGraph, function (newSceneGraph) {
             HubRecieveActions.savedSceneGraph(newSceneGraph);
             HubRecieveActions.recieveSceneGraph(newSceneGraph);
-
         });
-
     },
 
-    tryCreateScene: function(name, cb) {
-    	var scene = {
-    		'name': name,
+    tryCreateScene: function (name, cb) {
+        var scene = {
+            'name': name,
             'version': "0.1",
             'maximumOnScreen': {
                 'image': 3,
@@ -601,26 +647,28 @@ module.exports = {
             'style': {
                 'backgroundColor': 'black'
             },
-    		'scene': []
-    	};
+            'scene': []
+        };
 
-    	HubClient.save(scene, function(newScene) {
+        HubClient.save(scene, function (newScene) {
             HubRecieveActions.savedScene(newScene);
             HubRecieveActions.recieveScene(newScene);
         });
     },
     loadScene: HubClient.loadScene,
     loadSceneGraph: HubClient.loadSceneGraph,
-    getSceneGraphByID:function(id){HubClient.getSceneGraph(id)} ,
+    getSceneGraphByID: function (id) {
+        HubClient.getSceneGraph(id)
+    },
     subscribeScene: HubClient.subscribeScene,
-    deleteScene: function(sceneId) {
+    deleteScene: function (sceneId) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.DELETE_SCENE,
             sceneId: sceneId
         });
         hashHistory.push('scenes');
     },
-    deleteSceneGraph: function(sceneGraphId) {
+    deleteSceneGraph: function (sceneGraphId) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.DELETE_SCENE_GRAPH,
             sceneGraphId: sceneGraphId
