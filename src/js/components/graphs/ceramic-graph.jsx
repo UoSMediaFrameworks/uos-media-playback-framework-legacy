@@ -19,11 +19,15 @@ var CeramicGraph = React.createClass({
         return {data: null}
     },
     componentWillMount: function () {
-        this.setupNodes(this.props.data,this.props)
+        if(this.props.data.nodes){
+            this.setupNodes(this.props.data,this.props)
+        };
+         console.log(this.props)
         /*  this.setState({data:this.props.data})*/
     },
     componentWillReceiveProps: function (nextProps) {
         if(nextProps.shouldUpdateId != this.props.shouldUpdateId){
+            console.log("update",nextProps)
             this.setupNodes(nextProps.data,nextProps)
         }
 
@@ -184,6 +188,7 @@ var CeramicGraph = React.createClass({
         })
     },
     setupSceneNodes: function (data,p) {
+        var self= this;
         var sceneNodes = _.filter(data.nodes, function (node) {
             return node.type == 'scene';
         });
@@ -194,6 +199,7 @@ var CeramicGraph = React.createClass({
         })
     },
     setupThemeNodes:function (data,p){
+        var self= this;
         var themeNodes = _.filter(data.nodes, function (node) {
             return node.type == 'theme';
         });
@@ -204,8 +210,9 @@ var CeramicGraph = React.createClass({
         })
     },
     setupSThemeNodes:function(data,p){
+        var self= this;
         var sthemeNodes = _.filter(data.nodes, function (node) {
-            return node.type == 'subtheme';
+            return node.type == 'subgraphtheme';
         });
         _.each(sthemeNodes, function (node, i) {
             node.cx = Math.random() * self.props.innerWidth;
@@ -257,14 +264,13 @@ var CeramicGraph = React.createClass({
         self.setState({data:data});
     },
     render(){
+        console.log("ceramic", this)
         var windowW = this.props.innerWidth * 0.1;
         var windowH = this.props.innerHeight * 0.2;
         var self = this;
         var nodes = this.state.data.nodes.map((node, i) => {
             return (<g key={i} >
                 <Circle data={node} eventHandler={self.tapHandler}></Circle>
-
-                <Text data={node}></Text>
             </g>)
         });
         var links = this.state.data.links.map((link, i) => {

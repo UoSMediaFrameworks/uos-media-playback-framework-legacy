@@ -562,11 +562,11 @@ var GraphContainer = React.createClass({
                     break;
                 case GraphTypes.CERAMIC:
                     return (
-                        <CeramicGraph>
+                        <CeramicGraph
                             shouldUpdateId={this.state.guid}
                             data={this.state.root}
                             innerWidth={this.state.width * 0.8}
-                            innerHeight={this.state.height * 0.6}
+                            innerHeight={this.state.height * 0.6}>
                         </CeramicGraph>
                     )
                 case undefined:
