@@ -8,6 +8,7 @@ var SceneActions = require('./scene-actions');
 var hashHistory = require('react-router').hashHistory;
 
 //ANGEL.P : these should probably be moved to the graph constants file.
+const CERAMIC_SCENE_GRAPH_TYPE = "CWERAMIC_SCENE_GRAPH";
 const GDC_SCENE_GRAPH_TYPE = "GDC_SCENE_GRAPH";
 const MEMOIR_SCENE_GRAPH_TYPE = "MEMOIR_SCENE_GRAPH";
 const NARM_SCENE_GRAPH_TYPE = "NARM_SCENE_GRAPH";
@@ -449,7 +450,7 @@ module.exports = {
             'nodeList': []
         }
     },
-    getNewThumnailSceneGraph:function(name){
+    getNewThumbnailSceneGraph:function(name){
         return {
             'name': name,
             'sceneIds': {},
@@ -538,7 +539,27 @@ module.exports = {
             'nodeList': []
         };
     },
+    getNewCeramicSceneGraph:function(){
+        return {
+            'name': name,
+            'sceneIds': {},
+                'type': CERAMIC_SCENE_GRAPH_TYPE,
+            'version': GRAPH_ALPHA_VERSION,
+            'graphThemes': {
+                type: "document",
+                children: {
+                    "Textiles": {
+                        type: ROOT_NODE_TYPE,
+                        children: {
 
+                        }
+                    }
+                }
+            },
+            'excludedThemes': {},
+            'nodeList': []
+        }
+    },
     tryCreateSceneGraph: function(name, type, cb) {
 
         var sceneGraph = {};
@@ -549,8 +570,10 @@ module.exports = {
             sceneGraph = this.getNewMemoirSceneGraph(name);
         } else  if (type=== NARM_SCENE_GRAPH_TYPE){
             sceneGraph = this.getNewNarmSceneGraph(name);
+        } else if  (type=== THUMBNAIL_SCENE_GRAPH_TYPE){
+            sceneGraph = this.getNewThumbnailSceneGraph(name);
         } else{
-            sceneGraph = this.getNewThumnailSceneGraph(name);
+            sceneGraph = this.getNewCeramicSceneGraph(name);
         }
 
         HubClient.saveSceneGraph(sceneGraph, function(newSceneGraph) {
