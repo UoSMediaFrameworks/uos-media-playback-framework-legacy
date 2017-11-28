@@ -4,6 +4,8 @@
 
 var React = require('react');
 var _ = require('lodash');
+var Panel = require('react-bootstrap').Panel;
+var Button = require('react-bootstrap').Button;
 var HubSendActions = require('../../actions/hub-send-actions');
 var SceneGraphActions = require('../../actions/scene-graph-actions');
 var SceneGraphStore = require('../../stores/scene-graph-store.jsx');
@@ -11,8 +13,6 @@ var SceneGraphListStore = require('../../stores/scene-graph-list-store.jsx');
 var SceneListStore = require('../../stores/scene-list-store'); //scene-list-store does not return the full scene objects - I need the themes
 var SceneStore = require('../../stores/scene-store');
 var DragDropContainer = require('../basic-draggable/drag-drop-container.jsx');
-var Router = require('react-router'),
-    Link = Router.Link;
 
 var mediaHubGraphURL = process.env.MEDIA_HUB_GRAPH_URL || "";
 
@@ -160,6 +160,7 @@ var SceneGraph = React.createClass({
             selectedSceneThemeList: generateThemeListForSelectedScene(selectedScene),
             selectSceneTags: generateTagListFromThemeList(selectedScene),
             themeUnionForScenesInGraph: {},
+            open: false
         };
 
         var sceneIds = state.sceneGraph && state.sceneGraph.sceneIds ? Object.keys(state.sceneGraph.sceneIds) : [];
@@ -204,8 +205,8 @@ var SceneGraph = React.createClass({
         SceneStore.addChangeListener(this._onChange);
         HubSendActions.loadSceneGraph(sceneGraphId);
     },
-    componentWillReceiveProps:function(nextProps){
-        if( !_.isEqual(this.props._id,nextProps._id)){
+    componentWillReceiveProps: function (nextProps) {
+        if (!_.isEqual(this.props._id, nextProps._id)) {
             HubSendActions.loadSceneGraph(nextProps._id);
         }
     },
@@ -255,7 +256,7 @@ var SceneGraph = React.createClass({
     },
 
     render: function () {
-        console.log("scene graph",this)
+        console.log("scene graph", this)
         var sceneGraphId = null;
         if (this.props.params) {
             sceneGraphId = this.props.params.id;
@@ -273,16 +274,13 @@ var SceneGraph = React.createClass({
             );
         }
         return (
-            <div className="container scene-graph">
-
-                <div className="row">
-                    <div className="col-md-12" style={{"paddingTop": "12px"}}>
-                     {/*   <Link className='btn btn-dark' to='scenegraphs'>&lt; Back to Scene Graph List</Link>*/}
+            <div className="scene-graph">
+                <div>
+                    <div className="col-md-12">
                         <button className='btn btn-danger' style={{"float": "right"}}
                                 onClick={this.deleteSceneGraphHandler}>Delete Scene Graph
                         </button>
                         <h3 className="scene-graph-title">SceneGraph:{this.state.name}</h3>
-                        {/*<a className='btn btn-dark' href={viewerUrl}>Open Graph</a>*/}
                     </div>
                     <div className="col-md-12 scene-graph-scene-list-container">
                         <h4 style={{float: "left"}}>Add a scene to the graph</h4>
@@ -294,43 +292,54 @@ var SceneGraph = React.createClass({
                         </select>
                     </div>
 
+
+
                     <div className="col-md-12">
-                        <div className="no-side-padding col-md-4">
-                            <button className="btn btn-info add-scene-button" onClick={this.addSelectedScene}>Add
-                                Scene
-                            </button>
-                            <div className="panel panel-default scenes-themes-tags no-margin-bottom">
-                                <div className="panel-heading">Scenes</div>
-                                <div className="panel-body">
-                                    {Object.keys(this.state.storedFullScenes).map(function (sceneIdKey) {
-                                        var sc = this.state.storedFullScenes[sceneIdKey];
-                                        return <SceneItemForList scene={sc} key={sc._id}
-                                                                 sceneGraphId={this.state.sceneGraph._id}
-                                                                 handleSceneItemForSelection={this.changeSceneSelection}/>;
-                                    }, this)}
+
+                        <Button onClick={() => this.setState({ open: !this.state.open })}>
+                            Add, remove and view scenes for the scene graph
+                        </Button>
+
+                        <Panel collapsible expanded={this.state.open}>
+
+                            <div className="no-side-padding col-md-4">
+                                <button className="btn btn-info add-scene-button" onClick={this.addSelectedScene}>Add
+                                    Scene
+                                </button>
+                                <div className="panel panel-default scenes-themes-tags no-margin-bottom">
+                                    <div className="panel-heading">Scenes</div>
+                                    <div className="panel-body">
+                                        {Object.keys(this.state.storedFullScenes).map(function (sceneIdKey) {
+                                            var sc = this.state.storedFullScenes[sceneIdKey];
+                                            return <SceneItemForList scene={sc} key={sc._id}
+                                                                     sceneGraphId={this.state.sceneGraph._id}
+                                                                     handleSceneItemForSelection={this.changeSceneSelection}/>;
+                                        }, this)}
+                                    </div>
+                                </div>
+                                <button className="btn btn-warning remove-scene-button"
+                                        onClick={this.removeSelectedSceneFromSceneGraphSceneList}>Remove Scene
+                                </button>
+                            </div>
+                            <div className="col-md-4">
+                                <div className="panel panel-default scenes-themes-tags">
+                                    <div className="panel-heading">Themes</div>
+                                    <div className="panel-body">
+                                        <SceneTheme scene={this.state.selectedScene}
+                                                    themes={this.state.selectedSceneThemeList}/>
+                                    </div>
                                 </div>
                             </div>
-                            <button className="btn btn-warning remove-scene-button"
-                                    onClick={this.removeSelectedSceneFromSceneGraphSceneList}>Remove Scene
-                            </button>
-                        </div>
-                        <div className="col-md-4">
-                            <div className="panel panel-default scenes-themes-tags margin-top-34">
-                                <div className="panel-heading">Themes</div>
-                                <div className="panel-body">
-                                    <SceneTheme scene={this.state.selectedScene}
-                                                themes={this.state.selectedSceneThemeList}/>
+                            <div className="col-md-4 no-side-padding">
+                                <div className="panel panel-default scenes-themes-tags">
+                                    <div className="panel-heading">Tags</div>
+                                    <div className="panel-body">
+                                        <ThemesList tagList={this.state.selectSceneTags}/>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="col-md-4 no-side-padding">
-                            <div className="panel panel-default scenes-themes-tags margin-top-34">
-                                <div className="panel-heading">Tags</div>
-                                <div className="panel-body">
-                                    <ThemesList tagList={this.state.selectSceneTags}/>
-                                </div>
-                            </div>
-                        </div>
+                        </Panel>
+
                     </div>
 
                     <div className="col-md-12">
