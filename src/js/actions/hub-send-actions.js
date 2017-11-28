@@ -536,7 +536,7 @@ module.exports = {
             "graphThemes" : {
                 "type" : "document",
                 "children" : {
-                    "Textiles" : {
+                    "Ceramics" : {
                         "type" : GraphNodeTypes.ROOT_NODE_TYPE,
                         "children" : {
                             "Vase": {
