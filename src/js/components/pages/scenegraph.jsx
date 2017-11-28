@@ -149,6 +149,8 @@ var SceneGraph = React.createClass({
 
         var selectedScene = this.state && this.state.selectedSceneId ? SceneStore.getScene(this.state.selectedSceneId) : null;
 
+        var panelOpen = this.state && this.state.hasOwnProperty("open") ? this.state.open : false;
+
         var state = {
             sceneGraph: sceneGraph,
             graphThemes: sceneGraph && sceneGraph.graphThemes ? sceneGraph.graphThemes : {},
@@ -160,7 +162,7 @@ var SceneGraph = React.createClass({
             selectedSceneThemeList: generateThemeListForSelectedScene(selectedScene),
             selectSceneTags: generateTagListFromThemeList(selectedScene),
             themeUnionForScenesInGraph: {},
-            open: false
+            open: panelOpen
         };
 
         var sceneIds = state.sceneGraph && state.sceneGraph.sceneIds ? Object.keys(state.sceneGraph.sceneIds) : [];
@@ -293,10 +295,9 @@ var SceneGraph = React.createClass({
                     </div>
 
 
-
                     <div className="col-md-12">
 
-                        <Button onClick={() => this.setState({ open: !this.state.open })}>
+                        <Button onClick={() => this.setState({open: !this.state.open})}>
                             Add, remove and view scenes for the scene graph
                         </Button>
 
