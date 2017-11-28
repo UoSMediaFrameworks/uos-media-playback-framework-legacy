@@ -2,6 +2,7 @@ var React = require("react");
 var d3 = require("d3");
 var TransitionGroup = require('react-transition-group/TransitionGroup');
 var Circle = require("./narm-components/circle.jsx");
+var Rectangle = require("./thumbnail-components/rectangle.jsx");
 var Text = require("./narm-components/text.jsx");
 var Path = require("./narm-components/path.jsx");
 var _ = require("lodash");
@@ -23,12 +24,10 @@ var CeramicGraph = React.createClass({
         if(this.props.data.nodes){
             this.setupNodes(this.props.data,this.props)
         };
-         console.log(this.props)
         /*  this.setState({data:this.props.data})*/
     },
     componentWillReceiveProps: function (nextProps) {
         if(nextProps.shouldUpdateId != this.props.shouldUpdateId){
-            console.log("update",nextProps)
             this.setupNodes(nextProps.data,nextProps)
         }
 
@@ -144,7 +143,7 @@ var CeramicGraph = React.createClass({
         if(recording){
             GraphBreadcrumbActions.addCrumb("tap",t.name)
         }
-        this.highlight(t)
+        this.highlight(t);
         var list = [];
         if (t.type === "root") {
             //FOR ROOT NODES ONLY SEARCH GTHEMES FOR STHEME + SCENES
@@ -177,16 +176,23 @@ var CeramicGraph = React.createClass({
             HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID())
         }
     },
+
     setupRootNodes: function (data,p) {
         var rootNodes = _.filter(data.nodes, function (node) {
             return node.type == 'root';
         });
-        _.each(rootNodes, function (node) {
+        var a = rootNodes[1];
+        rootNodes[1] = rootNodes[0];
+        rootNodes[0]  = a;
+        _.each(rootNodes, function (node,i) {
             node.cx =  p.innerWidth / 2;
-            node.cy = p.innerHeight / 2;
-            node.r = 50;
-            node.color = "black"
+            node.cy = (p.innerHeight / rootNodes.length)  * i  + (p.innerHeight / rootNodes.length/2);
+            node.color = "white";
+            if(node.name != "Ceramics"){
+                node.visible=false;
+            }
         })
+
     },
     setupSceneNodes: function (data,p) {
         var self= this;
@@ -197,6 +203,7 @@ var CeramicGraph = React.createClass({
             node.cx = Math.random() * self.props.innerWidth;
             node.cy = Math.random() * self.props.innerHeight;
             node.color = "blue";
+            node.visible = false;
         })
     },
     setupThemeNodes:function (data,p){
@@ -204,21 +211,67 @@ var CeramicGraph = React.createClass({
         var themeNodes = _.filter(data.nodes, function (node) {
             return node.type == 'theme';
         });
+        var textureNodes =_.filter(data.nodes,function(node){
+            return node.parentRelationshipIds == "Texture";
+        });
+        var colorNodes =_.filter(data.nodes,function(node){
+            return node.parentRelationshipIds == "Colour";
+        });
+        var par1 = _.find(data.nodes,function(parent){
+            return parent.name == "Texture";
+        });
+        var par2 = _.find(data.nodes,function(parent){
+            return parent.name == "Colour";
+        })
+        var middleRange = [par1.cy, par2.cy];
         _.each(themeNodes, function (node, i) {
             node.cx = Math.random() * self.props.innerWidth;
-            node.cy = Math.random() * self.props.innerHeight;
+            node.cy = Math.random() *middleRange[1] + middleRange[0];
             node.color = "red";
         })
+        _.each(textureNodes,function(node,i){
+           var par = _.find(node.parents,function(parent){
+                return parent.name == "Texture";
+            });
+            node.cy = par.cy;
+            node.cx =  self.props.innerWidth / textureNodes.length * i + (self.props.innerWidth / textureNodes.length/2) ;
+        });
+        _.each(colorNodes,function(node,i){
+            var par = _.find(node.parents,function(parent){
+                return parent.name == "Colour";
+            });
+            node.color = "purple";
+            node.cy = par.cy;
+            node.cx =  self.props.innerWidth / colorNodes.length * i  +  (self.props.innerWidth / colorNodes.length/2 );
+        });
+
     },
     setupSThemeNodes:function(data,p){
         var self= this;
         var sthemeNodes = _.filter(data.nodes, function (node) {
             return node.type == 'subgraphtheme';
         });
+        var par1 = _.find(data.nodes,function(parent){
+            return parent.name == "Texture";
+        });
+        var par2 = _.find(data.nodes,function(parent){
+            return parent.name == "Colour";
+        });
+        var middleRange = [par1.cy , par2.cy];
         _.each(sthemeNodes, function (node, i) {
             node.cx = Math.random() * self.props.innerWidth;
-            node.cy = Math.random() * self.props.innerHeight;
+            node.cy = Math.random() *middleRange[1] + middleRange[0];
             node.color = "yellow";
+        })
+    },
+    setupImageNodes:function(data,p){
+        var self=this;
+        var imageNodes = _.filter(data.nodes,function(node){
+            return node.type == "image";
+        });
+        _.each(imageNodes,function(node){
+            node.color = "green";
+           node.visible=false;
         })
     },
     _nodes: function (list, sceneList) {
@@ -248,6 +301,38 @@ var CeramicGraph = React.createClass({
         }
         return dedupeList;
     },
+    setupLinkRules:function(data){
+        var self =this;
+        var filteredLinks = _.filter(data.links,function(link){
+            return link.source.type == 'root' || link.target.type == 'root';
+        });
+        var secondStageFilter = _.filter(filteredLinks,function(item){
+            console.log(item.source._id  != 'Textiles' , item.target._id  != 'Textiles' );
+            return item.source._id != 'Ceramics'  && item.target._id !='Ceramics';
+        });
+        var secondStageFilter = _.filter(filteredLinks,function(item){
+            console.log(item.source._id  != 'Textiles' , item.target._id  != 'Textiles' );
+            return item.source._id != 'Ceramics'  && item.target._id !='Ceramics';
+        });
+        _.each(secondStageFilter,function(link){
+            link.visible= false;
+        });
+        var sceneEdges = _.filter(data.links,function(link){
+            return link.source.type == 'scene' || link.target.type == 'scene';
+        })
+        _.each(sceneEdges,function(link){
+            link.visible = false;
+        })
+       var filterVisible = _.filter(data.links,function(link){
+            return !link.source.visible || !link.target.visible;
+        });
+
+        _.each(filterVisible,function(link){
+            link.visible = false;
+        })
+
+
+    },
     setupOtherNodes: function (data,p) {
         var self = this;
 
@@ -258,34 +343,42 @@ var CeramicGraph = React.createClass({
     setupNodes: function (data, properties) {
         var self = this;
         self.setupRootNodes(data, properties);
+        self.setupLinkRules(data,properties);
         self.setupSceneNodes(data, properties);
         self.setupSThemeNodes(data,properties);
+        self.setupImageNodes(data,properties);
         self.setupThemeNodes(data,properties);
         self.setupOtherNodes(data,properties);
+
         self.setState({data:data});
     },
     render(){
-        console.log("ceramic", this)
-        var windowW = this.props.innerWidth * 0.1;
-        var windowH = this.props.innerHeight * 0.2;
         var self = this;
         var nodes = this.state.data.nodes.map((node, i) => {
-            return (<g key={i} >
-                <Circle data={node} eventHandler={self.tapHandler}></Circle>
+            if(node.type == 'theme'){ return (
+                <g  key={i}>
+                    <Rectangle data={node} eventHandler={self.tapHandler} clip={"clipC"+i}></Rectangle>
+                </g>
+            )}
+            else{
+                return (<g key={i} >
+                    <Circle data={node} eventHandler={self.tapHandler}></Circle>
+                    <Text data={node}></Text>
+                </g>)
+            }
 
-                <Text data={node}></Text>
-            </g>)
         });
         var links = this.state.data.links.map((link, i) => {
             return (<Path data={link} key={i} innerW={self.props.innerWidth} innerH={self.props.innerHeight}></Path>);
         });
 
-        var translate = 'translate(' + windowW + ',' + windowH + ')';
+     /*   var translate = 'translate(' + windowW + ',' + windowH + ')';
+        transform={translate}*/
         return (
 
             <TransitionGroup ref="backgroundContainer" id="backgroundContainer" component="g">
                 {/*transform="translate("{this.props.innerWidth * 0.1}","{this.props.innerHeight* 0.2}")"*/}
-                <g id="nodeContainer" className="node-container" transform={translate}>
+                <g id="nodeContainer" className="node-container" >
 
                     <g id="edgeContainer" className="path-container" >
                         {/* link objects*/}

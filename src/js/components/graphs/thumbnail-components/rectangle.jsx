@@ -6,12 +6,13 @@ var ReactDOM = require("react-dom");
 var Rectangle = React.createClass({
 
     componentWillMount:function(){
+
         var self = this;
         self.setState({
-            x: self.props.data.x -50,
-            y: self.props.data.y -50,
-            width:100,
-            height:100,
+            x: self.props.data.cx -15,
+            y: self.props.data.cy -15,
+            width:30,
+            height:30,
             color: self.props.data.color
         });
     },
@@ -19,13 +20,13 @@ var Rectangle = React.createClass({
         var node = d3.select(ReactDOM.findDOMNode(this));
         var self = this;
         node.transition().ease(d3.easeCubicInOut).duration(5000)
-            .attr("x", nextProps.data.x -50)
-            .attr("y", nextProps.data.y -50)
+            .attr("x", nextProps.data.cx -15)
+            .attr("y", nextProps.data.cy -15)
             .attr("fill", nextProps.data.color)
             .on('end', function () {
                 self.setState({
-                    x: nextProps.data.x -50,
-                    y: nextProps.data.y -50,
+                    x: nextProps.data.cx -15,
+                    y: nextProps.data.cy -15,
                     color:nextProps.data.color
                 })
             });
@@ -40,7 +41,7 @@ var Rectangle = React.createClass({
             _.each(this.props.data.children,function(child){
                 if(child.type == "image"){
                     var doesExist =    child.tags.split(',').indexOf("thumbnail");
-                    if(doesExist === 1){
+                    if(doesExist !== -1){
                         thumbnail = child.url;
                     }
                 }
@@ -58,15 +59,15 @@ var Rectangle = React.createClass({
             'highlight2': this.props.data.highlighted
 
         });
-
+        var clipVal = this.props.clip != undefined ? "url(#"+this.props.clip+")": null;
         var test = this.checkForThumbnails();
         return test != null ? (
             <image
                 className={classes}
-                x={this.state.x}  width={100}
-                y={this.state.y}        height={100}
+                x={this.state.x }  width={30}
+                y={this.state.y }        height={30}
                 href={test}
-                clipPath={"url(#"+this.props.clip+")"}
+                clipPath={clipVal}
                 onClick={this.props.eventHandler.bind(null, this.props.data)}
             >
             </image>
@@ -76,10 +77,10 @@ var Rectangle = React.createClass({
                 className={classes}
                 x={this.state.x }
                 y={this.state.y }
-                width={100}
-                height={100}
+                width={30}
+                height={30}
                 fill={this.state.color}
-                clipPath={"url(#"+this.props.clip+")"}
+                clipPath={clipVal}
              onClick={this.props.eventHandler.bind(null, this.props.data)}
             >
             </rect>

@@ -42,6 +42,9 @@ var Circle = React.createClass({
         node.transition()
     },
     render(){
+        if(!this.props.data.visible){
+            return null;
+        }
         var classes = classNames({
             'shown-circle': this.props.data.visible,
             'highlight2': this.props.data.highlighted

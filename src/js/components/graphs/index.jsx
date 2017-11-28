@@ -386,11 +386,8 @@ var GraphContainer = React.createClass({
         var sceneList = SceneGraphListStore.getSceneGraphByID(this.state.graphId);
 
         if (sceneList.type == "THUMBNAIL_SCENE_GRAPH") {
-            /*     _.each(sceneList.nodeList,function(node){
-                     console.log(JSON.stringify(node));
-                 });*/
             sceneList.nodeList = hardcodedThumbnail;
-            debugger;
+
             try {
                 this._initialize(sceneList);
             } catch (ex) {
@@ -565,10 +562,11 @@ var GraphContainer = React.createClass({
                         <CeramicGraph
                             shouldUpdateId={this.state.guid}
                             data={this.state.root}
-                            innerWidth={this.state.width * 0.8}
-                            innerHeight={this.state.height * 0.6}>
+                            innerWidth={this.state.width}
+                            innerHeight={this.state.height}>
                         </CeramicGraph>
-                    )
+                    );
+                    break;
                 case undefined:
                     return (
                         <GDCGraph

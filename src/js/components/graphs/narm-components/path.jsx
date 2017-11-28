@@ -40,6 +40,9 @@ var Path = React.createClass({
         link.transition()
     },
     render(){
+        if(!this.props.data.visible){
+            return null;
+        }
        /* console.log(this.props.data)*/
         var classes = classNames({
             'opaque': false,

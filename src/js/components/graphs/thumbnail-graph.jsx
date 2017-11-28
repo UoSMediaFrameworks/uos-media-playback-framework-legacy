@@ -201,8 +201,8 @@ var ThumbGraph = React.createClass({
             return node.type == 'root';
         });
         _.each(rootNodes, function (node) {
-            node.x =  p.innerWidth / 2 - node.width/2;
-            node.y = p.innerHeight / 2 - node.height/2;
+            node.cx =  p.innerWidth / 2 - node.width/2;
+            node.cy = p.innerHeight / 2 - node.height/2;
             node.color = self.randomColor();
             node.visible = false;
         })
@@ -211,8 +211,6 @@ var ThumbGraph = React.createClass({
             return node.type == 'scene';
         });
         _.each(rootNodes, function (node) {
-
-
             node.visible = false;
         })
     },
@@ -226,10 +224,10 @@ var ThumbGraph = React.createClass({
             return node.type != 'root';
         });
         _.each(sceneNodes, function (node, i) {
-            node.x = (Math.random() * p.innerWidth);
-            node.y = (Math.random() * p.innerHeight);
-            node._x = node.x;
-            node._y = node.y;
+            node.cx = (Math.random() * p.innerWidth);
+            node.cy = (Math.random() * p.innerHeight);
+            node._x = node.cx;
+            node._y = node.cy;
             node.color = self.randomColor();
         })
     },
@@ -241,9 +239,9 @@ var ThumbGraph = React.createClass({
         _.each(imageNodes, function (node,i) {
             var radian = ((2 * Math.PI) * i / imageNodes.length) - 1.5708;
 
-            node.x = (Math.cos(radian) * p.innerHeight / 2) + p.innerWidth / 2;
+            node.cx = (Math.cos(radian) * p.innerHeight / 2) + p.innerWidth / 2;
 
-            node.y = (Math.sin(radian) * p.innerHeight / 2) + p.innerHeight / 2;
+            node.cy = (Math.sin(radian) * p.innerHeight / 2) + p.innerHeight / 2;
         });
     },
 
@@ -311,9 +309,9 @@ var ThumbGraph = React.createClass({
                 });
                 return (<g key={i} className={classes} >
                     <clipPath id={"clipC"+i}>
-                        <circle r="50" cx={node.x} cy={node.y}/>
+                        <circle r="50" cx={node.cx} cy={node.cy}/>
                     </clipPath>
-                    <Rectangle data={node} eventHandler={self.tapHandler} clip={"clipC"+i}></Rectangle>
+                    <Rectangle data={node}  eventHandler={self.tapHandler} clip={"clipC"+i}></Rectangle>
                 </g>)
             });
             var links = this.state.data.links.map((link, i) => {

@@ -43,6 +43,9 @@ var Text = React.createClass({
 
     },
     render(){
+        if(!this.props.data.visible){
+            return null;
+        }
         return (
             <text x={this.state.cx} y={this.state.cy} dy=".3em" textAnchor="middle" fontSize={this.state.fontSize}>
                 {this.state.name}
