@@ -51,10 +51,10 @@ var Path = React.createClass({
     render() {
         var self = this;
         /*console.log(this.state)*/
-        /*    if (!this.state.visible) {
+            if (!this.props.data.visible) {
 
                 return null;
-            }*/
+            }
 
         var classes = classNames({
             'opaque': false,

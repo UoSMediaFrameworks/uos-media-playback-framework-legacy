@@ -145,7 +145,7 @@ var CeramicGraph = React.createClass({
         if(recording){
             GraphBreadcrumbActions.addCrumb("tap",t.name)
         }
-        this.highlight(t);
+            this.highlight(t);
 
         // APEP Search and create a list of scenes by searching children
         var list = [];
@@ -383,28 +383,13 @@ var CeramicGraph = React.createClass({
     },
     setupLinkRules:function(data){
         var self =this;
-        var filteredLinks = _.filter(data.links,function(link){
-            return link.source.type == 'root' || link.target.type == 'root';
-        });
-        var secondStageFilter = _.filter(filteredLinks,function(item){
-            return item.source._id != 'Ceramics'  && item.target._id !='Ceramics';
-        });
-        _.each(secondStageFilter,function(link){
-            link.visible= false;
-        });
-        var sceneEdges = _.filter(data.links,function(link){
-            return link.source.type == 'scene' || link.target.type == 'scene';
-        })
-        _.each(sceneEdges,function(link){
-            link.visible = false;
-        })
-  /*     var filterVisible = _.filter(data.links,function(link){
+       var filterVisible = _.filter(data.links,function(link){
             return !link.source.visible || !link.target.visible;
         });
 
         _.each(filterVisible,function(link){
             link.visible = false;
-        })*/
+        })
     },
     setupOtherNodes: function (data,p) {
         var self = this;
