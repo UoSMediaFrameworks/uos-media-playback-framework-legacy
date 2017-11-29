@@ -282,11 +282,26 @@ var CeramicGraph = React.createClass({
         });
         var par2 = _.find(data.nodes,function(parent){
             return parent.name == "Colour";
-        })
-        var middleRange = [par1.cy, par2.cy- par1.cy];
+        });
+
+        var themeNodeXGenerator = d3.randomBates(1);
+        var themeNodeYGenerator = d3.randomBates(1);
+
+        var xAxisMultipliers = this.getAxisValues(themeNodeXGenerator, themeNodes.length -1);
+        var yAxisMultipliers = this.getAxisValues(themeNodeYGenerator, themeNodes.length -1);
+
+        var xScale = d3.scaleLinear().domain([xAxisMultipliers.min,xAxisMultipliers.max]).range([p.innerWidth / 10, p.innerWidth - (p.innerWidth / 10)]);
+        xScale.clamp(true);
+        // APEP +- r gives us an additional margin of the size of the rects
+        var middleRange = [par1.cy + (1 * par2.r), par2.cy - (1 * par1.r)];
+        var yScale = d3.scaleLinear().domain([yAxisMultipliers.min,yAxisMultipliers.max]).range(middleRange);
+        yScale.clamp(true);
+
         _.each(themeNodes, function (node, i) {
-            node.cx = Math.floor(Math.random() * p.innerWidth);
-            node.cy = Math.floor(Math.random() *middleRange[1] + middleRange[0]);
+            var randomXPosition =  xScale(xAxisMultipliers.values[i]);
+            var randomYPosition = yScale(yAxisMultipliers.values[i]);
+            node.cx = randomXPosition;
+            node.cy = randomYPosition;
             node.color = "red";
         });
         _.each(textureNodes,function(node,i){
@@ -305,6 +320,30 @@ var CeramicGraph = React.createClass({
             node.cx = p.innerWidth / colorNodes.length * i  +  (p.innerWidth / colorNodes.length/2 );
         });
     },
+
+    getAxisValues: function(nodeAxisMultiplierGenerator, count) {
+        var min = 0;
+        var max = 0;
+        var values = [];
+
+        _.times(count - 1, function(i){
+            var axisMultiplier = nodeAxisMultiplierGenerator();
+            if(axisMultiplier < min) {
+                min = axisMultiplier;
+            }
+            if(axisMultiplier > max) {
+                max = axisMultiplier;
+            }
+            values.push(axisMultiplier);
+        });
+
+        return {
+            min: min,
+            max: max,
+            values: values
+        }
+    },
+
     setupSThemeNodes:function(data,p){
         var self= this;
         var sthemeNodes = _.filter(data.nodes, function (node) {
@@ -316,10 +355,25 @@ var CeramicGraph = React.createClass({
         var par2 = _.find(data.nodes,function(parent){
             return parent.name == "Colour";
         });
-        var middleRange = [par1.cy, par2.cy- par1.cy];
+
+        // APEP cerate some random distribution number generators.
+        var themeNodeXGenerator = d3.randomNormal();
+        var themeNodeYGenerator = d3.randomBates(10);
+
+        // APEP generate some random values and min, max ready to scale to screen size.
+        var xAxisMultipliers = this.getAxisValues(themeNodeXGenerator, sthemeNodes.length -1);
+        var yAxisMultipliers = this.getAxisValues(themeNodeYGenerator, sthemeNodes.length -1);
+
+        var xScale = d3.scaleLinear().domain([xAxisMultipliers.min,xAxisMultipliers.max]).range([p.innerWidth / 10, p.innerWidth - (p.innerWidth / 10)]);
+        xScale.clamp(true);
+        // APEP +- r gives us an additional margin of the size of the rects
+        var middleRange = [par1.cy + (1 * par2.r), par2.cy - (1 * par1.r)];
+        var yScale = d3.scaleLinear().domain([yAxisMultipliers.min,yAxisMultipliers.max]).range(middleRange);
+        yScale.clamp(true);
+
         _.each(sthemeNodes, function (node, i) {
-            node.cx = Math.floor(Math.random() * p.innerWidth);
-            node.cy = Math.floor(Math.random() *middleRange[1] + middleRange[0]);
+            node.cx = xScale(xAxisMultipliers.values[i]);
+            node.cy = yScale(yAxisMultipliers.values[i]);
             node.color = "yellow";
         })
     },
