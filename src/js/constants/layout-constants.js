@@ -27,5 +27,13 @@ module.exports = {
     ColumnTypes: {
         "RHS": "RightHandSide",
         "LHS": "LeftHandSide"
+    },
+    ComponentTypesForPopout: {
+        "Graph": "Graph",
+        "Graph-Viewer": "Graph-Viewer"
+    },
+    ComponentTypesForPresentation: {
+        "Graph": "Graph",
+        "Graph-Viewer": "Graph-Viewer"
     }
 };

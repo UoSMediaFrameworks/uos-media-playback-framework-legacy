@@ -1,12 +1,10 @@
 'use strict';
 var React = require('react');
 var ClientStore = require('../stores/client-store');
-var Loader = require('./loader.jsx');
+var Loader = require('../components/loader.jsx');
 var StatusMessageStore = require('../stores/status-message-store');
-var StatusAlert = require('./status-alert.jsx');
+var StatusAlert = require('../components/status-alert.jsx');
 var appVersion = require('../utils/app-version');
-
-var NavBar = require('../components/navigation-bar.jsx');
 
 function _getState() {
     return {
@@ -18,7 +16,7 @@ function _getState() {
 }
 var production = process.env.NODE_ENV === 'production';
 
-var LayoutApp = React.createClass({
+var PresentationLayoutApp = React.createClass({
     getInitialState: function () {
         return _getState();
     },
@@ -43,8 +41,8 @@ var LayoutApp = React.createClass({
         var statusAlerts = Object.keys(messages).map(function (name) {
             return <StatusAlert key={name} name={name} state={messages[name]}/>;
         });
+
         return (<div className='app'>
-            <NavBar/>
             <div className="status-messages">
                 {statusAlerts}
             </div>
@@ -52,11 +50,9 @@ var LayoutApp = React.createClass({
             <Loader message='Logging in...' loaded={!this.state.attemptingLogin}>
                 {this.props.children}
             </Loader>
-
-
         </div>);
 
     }
 });
 
-module.exports = LayoutApp;
+module.exports = PresentationLayoutApp;

@@ -7,14 +7,10 @@ var Router = require('react-router').Router;
 var Route = require('react-router').Route;
 var IndexRoute = require('react-router').IndexRoute;
 var hashHistory = require('react-router').hashHistory;
-
-
 var HubSendActions = require('./actions/hub-send-actions');
-
 var GridLayoutApp = require('./components/grid-layout-app.jsx');
-
+var PresentationLayoutApp = require('./pages/presentation-layout-app.jsx');
 var LoginPage = require('./pages/login-page.jsx');
-
 var ClientStore = require('./stores/client-store');
 var appVersion = require('./utils/app-version');
 var AdjustableGrid = require('./components/pages/adjustable-grid.jsx');
@@ -36,6 +32,9 @@ ReactDOM.render(
             <IndexRoute component={AdjustableGrid} onEnter={requireAuth}/>
             <Route name="login" path="login" component={LoginPage}></Route>
             <Route name="pop-out-component" path="pop-out-component" component={PopOutComponent} onEnter={requireAuth}/>
+        </Route>
+        <Route path="/presentation" component={PresentationLayoutApp}>
+            <IndexRoute component={PopOutComponent} onEnter={requireAuth}/>
         </Route>
     </Router> ), document.getElementById('main')
    );

@@ -3,6 +3,7 @@ var GridStore = require('../stores/grid-store');
 var connectionCache = require('../utils/connection-cache');
 var SceneActions = require('../actions/scene-actions');
 var ClientStore = require('../stores/client-store');
+
 var DropdownButton = require('react-bootstrap').DropdownButton;
 var MenuItem = require('react-bootstrap').MenuItem;
 var FormHelper = require('../mixins/form-helper');
@@ -17,7 +18,6 @@ function _getState() {
     return {
         loggedIn: ClientStore.loggedIn(),
         focusedLayoutItem: GridStore.getFocusedComponent(),
-        isPoppedOut: GridStore.getPoppedOut(),
         value: GraphTypes.GDC,
         focusedSceneID: "",
         focusedSceneGraphID: ""
@@ -36,7 +36,8 @@ var NavigationBar = React.createClass({
         this.setState({
             focusedLayoutItem: GridStore.getFocusedComponent(),
             focusedSceneID: GridStore.getFocusedSceneID(),
-            focusedSceneGraphID: GridStore.getFocusedSceneGraphID()
+            focusedSceneGraphID: GridStore.getFocusedSceneGraphID(),
+            doesHaveMaximisedComponent: GridStore.hasMaximisedView()
         });
     },
     _onOptionValueChange: function (e) {
@@ -183,13 +184,24 @@ var NavigationBar = React.createClass({
             );
         }
 
-        if (this.state.loggedIn && !this.state.isPoppedOut)
+
+        var navbarParentClassname = 'navbar navbar-inverse ';
+
+        // APEP Allows the grid layout to state if we have a component that has request to be maximised.
+        // In this case, we might wish to hide the nav bar
+        // APEP TODO 29/11/17 this needs to be behind a user toggle from settings.
+        if(this.state.doesHaveMaximisedComponent) {
+            // navbarParentClassname += 'hidden';
+        }
+
+        if (this.state.loggedIn)
+        // APEP TODO Tech Debt
         // APEP TODO We should add browser tool tips to the dropdown button menu to show that key bindings can be used.
         // APEP TODO we need to add an on select handler for the event keys
         // APEP TODO Look at why we have a hard coded Version: 0
         // APEP TODO A lot of these can be React classes
             return (
-                <nav className='navbar navbar-inverse'>
+                <nav className={navbarParentClassname}>
                     <div className="container-fluid">
                         <div className="navbar-header">
                             <button type="button" className="navbar-toggle collapsed" data-toggle="collapse"

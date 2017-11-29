@@ -98,13 +98,16 @@ var SceneActions = {
             maxHeight:maxHeight
         });
     },
-    popoutComp:function(index,item,width,height){
+
+    // APEP isForPresentation allows a popout for presentation mode, no nav bar and better support for full page
+    popoutComp:function(index,item,width,height, isForPresentation){
         AppDispatcher.handleViewAction({
             type: ActionTypes.COMP_POPOUT,
             index: index,
             item: item,
             width: width,
-            height: height
+            height: height,
+            isForPresentation: isForPresentation
         });
     },
     restoreComp: function (index, item) {
@@ -119,7 +122,6 @@ var SceneActions = {
             type: ActionTypes.COMP_SWITCH_MODE
         });
     },
-
     updateScene: function (scene) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.SCENE_SAVING,
