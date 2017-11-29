@@ -8,53 +8,64 @@ var transition = d3.transition()
 
 var Path = React.createClass({
 
-    componentWillMount:function(){
-
-            var diagonal = [
-                "M", this.props.data.source.cx, this.props.data.source.cy,
-                "A", 0, 0, 0, 0, 1, this.props.data.target.cx, this.props.data.target.cy
-            ].join(" ");
-
-        this.setState({diagonal:diagonal})
-    },
-    componentWillReceiveProps:function(nextProps){
-        var link = d3.select(ReactDOM.findDOMNode(this));
+    componentWillMount: function () {
         var self =this;
+        var diagonal = [
+            "M", this.props.data.source.cx, this.props.data.source.cy,
+            "A", 0, 0, 0, 0, 1, this.props.data.target.cx, this.props.data.target.cy
+        ].join(" ");
 
-            var diagonal = [
-                "M", nextProps.data.source.cx,nextProps.data.source.cy,
-                "A", 0, 0, 0, 0, 1, nextProps.data.target.cx, nextProps.data.target.cy
-            ].join(" ");
+        this.setState({
+            diagonal: diagonal,
+            visible: self.props.data.visible,
+            highlighted: self.props.data.highlighted,
+            stroke:this.props.data.highlighted ? this.props.data.source.color : "black"
+        })
+    },
+    componentWillReceiveProps: function (nextProps) {
+        var link = d3.select(ReactDOM.findDOMNode(this));
+        var self = this;
+
+        var diagonal = [
+            "M", nextProps.data.source.cx, nextProps.data.source.cy,
+            "A", 0, 0, 0, 0, 1, nextProps.data.target.cx, nextProps.data.target.cy
+        ].join(" ");
 
         link.transition().ease(d3.easeCubicInOut).duration(5000)
-            .attr("d",diagonal)
-            .on('end',function(){
-                self.setState({
-                        diagonal:diagonal
+            .attr("d", diagonal)
+            .attr('stroke', nextProps.data.highlighted ? nextProps.data.source.color : "black")
+            .on('end', function () {
+                    self.setState({
+                        diagonal: diagonal,
+                        visible: nextProps.data.visible,
+                        highlighted: nextProps.data.highlighted,
+                        stroke:nextProps.data.highlighted ? nextProps.data.source.color : "black"
                     });
                 }
             )
     },
-    componentWillUnmount:function(){
+    componentWillUnmount: function () {
         var link = d3.select(ReactDOM.findDOMNode(this));
         link.transition()
     },
-    render(){
-        if(!this.props.data.visible){
-            return null;
-        }
-       /* console.log(this.props.data)*/
+    render() {
+        var self = this;
+        /*console.log(this.state)*/
+        /*    if (!this.state.visible) {
+
+                return null;
+            }*/
+
         var classes = classNames({
             'opaque': false,
-            'visible-path2': this.props.data.visible,
-            'highlightedLink2':this.props.data.highlighted
+            'visible-path2': self.props.data.visible,
+            'highlightedLink2': self.props.data.highlighted
         });
 
 
+        return (<path d={self.state.diagonal} className={classes} stroke={self.state.stroke}>
 
-        return (<path d={this.state.diagonal} className={classes}>
-
-            </path>);
+        </path>);
 
     }
 });

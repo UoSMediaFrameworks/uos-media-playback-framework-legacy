@@ -27,9 +27,9 @@ var CeramicGraph = React.createClass({
         /*  this.setState({data:this.props.data})*/
     },
     componentWillReceiveProps: function (nextProps) {
-        if(nextProps.shouldUpdateId != this.props.shouldUpdateId){
+      /*  if(nextProps.shouldUpdateId != this.props.shouldUpdateId){*/
             this.setupNodes(nextProps.data,nextProps)
-        }
+       /* }*/
 
     },
     componentDidMount: function () {
@@ -113,7 +113,7 @@ var CeramicGraph = React.createClass({
         _.each(self.state.data.links, function (link) {
             link.highlighted = false;
         });
-        if (data.type == 'root') {
+     /*   if (data.type == 'root') {
             filteredEdges = _.filter(self.state.data.links, function (item) {
                 return item.source.type == 'city' || item.target.type == 'city';
             })
@@ -121,16 +121,16 @@ var CeramicGraph = React.createClass({
             filteredEdges = _.filter(self.state.data.links, function (item) {
                 return item.source.type != 'root';
             })
-        } else {
+        } else {*/
             filteredEdges = self.state.data.links;
-        }
+      /*  }*/
         var node = _.filter(self.state.data.nodes, function (node) {
             return node._id == data._id;
         });
 
         _.each(node, function (node) {
             node.highlighted = true;
-            node.r = node.r*2;
+            node.r = node.r*4;
         });
         var links = _.filter(filteredEdges, function (item) {
             return item.source == data || item.target == data;
@@ -219,8 +219,8 @@ var CeramicGraph = React.createClass({
             return node.type == 'scene';
         });
         _.each(sceneNodes, function (node, i) {
-            node.cx = Math.random() * self.props.innerWidth;
-            node.cy = Math.random() * self.props.innerHeight;
+            node.cx = Math.random() *p.innerWidth;
+            node.cy = Math.random() * p.innerHeight;
             node.color = "blue";
             node.visible = false;
         })
@@ -244,7 +244,7 @@ var CeramicGraph = React.createClass({
         })
         var middleRange = [par1.cy, par2.cy- par1.cy];
         _.each(themeNodes, function (node, i) {
-            node.cx = Math.floor(Math.random() * self.props.innerWidth);
+            node.cx = Math.floor(Math.random() * p.innerWidth);
             node.cy = Math.floor(Math.random() *middleRange[1] + middleRange[0]);
             node.color = "red";
         });
@@ -253,7 +253,7 @@ var CeramicGraph = React.createClass({
                 return parent.name == "Texture";
             });
             node.cy = par.cy;
-            node.cx =  self.props.innerWidth / textureNodes.length * i + (self.props.innerWidth / textureNodes.length/2) ;
+            node.cx =  p.innerWidth / textureNodes.length * i + (p.innerWidth / textureNodes.length/2) ;
         });
         _.each(colorNodes,function(node,i){
             var par = _.find(node.parents,function(parent){
@@ -261,7 +261,7 @@ var CeramicGraph = React.createClass({
             });
             node.color = "purple";
             node.cy = par.cy;
-            node.cx =  self.props.innerWidth / colorNodes.length * i  +  (self.props.innerWidth / colorNodes.length/2 );
+            node.cx = p.innerWidth / colorNodes.length * i  +  (p.innerWidth / colorNodes.length/2 );
         });
     },
     setupSThemeNodes:function(data,p){
@@ -277,7 +277,7 @@ var CeramicGraph = React.createClass({
         });
         var middleRange = [par1.cy, par2.cy- par1.cy];
         _.each(sthemeNodes, function (node, i) {
-            node.cx = Math.floor(Math.random() * self.props.innerWidth);
+            node.cx = Math.floor(Math.random() * p.innerWidth);
             node.cy = Math.floor(Math.random() *middleRange[1] + middleRange[0]);
             node.color = "yellow";
         })
@@ -288,6 +288,8 @@ var CeramicGraph = React.createClass({
             return node.type == "image";
         });
         _.each(imageNodes,function(node){
+            node.cx = Math.floor(Math.random() * p.innerWidth);
+            node.cy = Math.floor(Math.random() *p.innerHeight);
             node.color = "green";
            node.visible=false;
         })
@@ -336,13 +338,13 @@ var CeramicGraph = React.createClass({
         _.each(sceneEdges,function(link){
             link.visible = false;
         })
-       var filterVisible = _.filter(data.links,function(link){
+  /*     var filterVisible = _.filter(data.links,function(link){
             return !link.source.visible || !link.target.visible;
         });
 
         _.each(filterVisible,function(link){
             link.visible = false;
-        })
+        })*/
     },
     setupOtherNodes: function (data,p) {
         var self = this;
@@ -355,12 +357,12 @@ var CeramicGraph = React.createClass({
     setupNodes: function (data, properties) {
         var self = this;
         self.setupRootNodes(data, properties);
-        self.setupLinkRules(data,properties);
         self.setupSceneNodes(data, properties);
         self.setupSThemeNodes(data,properties);
         self.setupImageNodes(data,properties);
         self.setupThemeNodes(data,properties);
         self.setupOtherNodes(data,properties);
+        self.setupLinkRules(data,properties);
         self.setState({data:data});
     },
     render(){
@@ -378,6 +380,7 @@ var CeramicGraph = React.createClass({
                 </g>)
             }
         });
+        console.log("render")
         var links = this.state.data.links.map((link, i) => {
             return (<Path data={link} key={i} innerW={self.props.innerWidth} innerH={self.props.innerHeight}></Path>);
         });

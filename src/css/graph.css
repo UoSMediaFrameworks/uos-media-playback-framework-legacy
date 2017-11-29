@@ -86,7 +86,7 @@ line, path {
     stroke-width:0.25;
     transition:opacity 1s, stroke-width 5s;
     opacity:0.125;
-    stroke:#fff;
+/*    stroke:#fff;*/
     fill:none;
 }
 .opaque {
@@ -361,7 +361,7 @@ circle.longHL2 {
 .visible-path2 {
     stroke-width: 2;
     transition: opacity 3s, stroke-width 5s;
-    stroke: black;
+   /* stroke: black;*/
     opacity: 0.5;
     fill: none;
 }
@@ -526,7 +526,7 @@ text {
 .highlightedLink2 {
     stroke-width: 3;
     opacity: 1;
-    stroke: black;
+/*    stroke: black;*/
 }
 
 .longLinkHL {

@@ -47,7 +47,6 @@ var Rectangle = React.createClass({
                         thumbnail = child.url;
                     }
                 }
-
             })
         }
       return thumbnail;
