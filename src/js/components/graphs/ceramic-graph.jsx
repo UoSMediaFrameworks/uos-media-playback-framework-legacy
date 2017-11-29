@@ -287,8 +287,8 @@ var CeramicGraph = React.createClass({
         var themeNodeXGenerator = d3.randomBates(1);
         var themeNodeYGenerator = d3.randomBates(1);
 
-        var xAxisMultipliers = this.getAxisValues(themeNodeXGenerator, themeNodes.length -1);
-        var yAxisMultipliers = this.getAxisValues(themeNodeYGenerator, themeNodes.length -1);
+        var xAxisMultipliers = this.getAxisValues(themeNodeXGenerator, themeNodes.length);
+        var yAxisMultipliers = this.getAxisValues(themeNodeYGenerator, themeNodes.length);
 
         var xScale = d3.scaleLinear().domain([xAxisMultipliers.min,xAxisMultipliers.max]).range([p.innerWidth / 10, p.innerWidth - (p.innerWidth / 10)]);
         xScale.clamp(true);
@@ -326,7 +326,7 @@ var CeramicGraph = React.createClass({
         var max = 0;
         var values = [];
 
-        _.times(count - 1, function(i){
+        _.times(count, function(i){
             var axisMultiplier = nodeAxisMultiplierGenerator();
             if(axisMultiplier < min) {
                 min = axisMultiplier;
@@ -361,8 +361,8 @@ var CeramicGraph = React.createClass({
         var themeNodeYGenerator = d3.randomBates(10);
 
         // APEP generate some random values and min, max ready to scale to screen size.
-        var xAxisMultipliers = this.getAxisValues(themeNodeXGenerator, sthemeNodes.length -1);
-        var yAxisMultipliers = this.getAxisValues(themeNodeYGenerator, sthemeNodes.length -1);
+        var xAxisMultipliers = this.getAxisValues(themeNodeXGenerator, sthemeNodes.length);
+        var yAxisMultipliers = this.getAxisValues(themeNodeYGenerator, sthemeNodes.length);
 
         var xScale = d3.scaleLinear().domain([xAxisMultipliers.min,xAxisMultipliers.max]).range([p.innerWidth / 10, p.innerWidth - (p.innerWidth / 10)]);
         xScale.clamp(true);
