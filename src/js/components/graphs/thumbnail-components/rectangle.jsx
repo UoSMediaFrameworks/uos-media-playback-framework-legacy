@@ -9,8 +9,8 @@ var Rectangle = React.createClass({
 
         var self = this;
         self.setState({
-            x: self.props.data.cx -15,
-            y: self.props.data.cy -15,
+            x: self.props.data.cx -self.props.data.r,
+            y: self.props.data.cy -self.props.data.r,
             r:self.props.data.r,
             color: self.props.data.color
         });
@@ -19,15 +19,15 @@ var Rectangle = React.createClass({
         var node = d3.select(ReactDOM.findDOMNode(this));
         var self = this;
         node.transition().ease(d3.easeCubicInOut).duration(5000)
-            .attr("x", nextProps.data.cx -15)
-            .attr("y", nextProps.data.cy -15)
+            .attr("x", nextProps.data.cx -self.props.data.r)
+            .attr("y", nextProps.data.cy -self.props.data.r)
             .attr("width",nextProps.data.r*2)
             .attr("height",nextProps.data.r*2)
             .attr("fill", nextProps.data.color)
             .on('end', function () {
                 self.setState({
-                    x: nextProps.data.cx -15,
-                    y: nextProps.data.cy -15,
+                    x: nextProps.data.cx -self.props.data.r,
+                    y: nextProps.data.cy -self.props.data.r,
                     r:nextProps.data.r,
                     color:nextProps.data.color
                 })
@@ -61,6 +61,7 @@ var Rectangle = React.createClass({
             'highlight2': this.props.data.highlighted
 
         });
+
         var clipVal = this.props.clip != undefined ? "url(#"+this.props.clip+")": null;
         var thumb = this.checkForThumbnails();
         return thumb != null ? (

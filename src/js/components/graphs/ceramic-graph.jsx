@@ -107,7 +107,8 @@ var CeramicGraph = React.createClass({
         var self = this;
         var filteredEdges;
         _.each(self.state.data.nodes, function (node) {
-            node.highlighted = false
+            node.highlighted = false;
+            node.r = node._r;
         });
         _.each(self.state.data.links, function (link) {
             link.highlighted = false;
@@ -129,6 +130,7 @@ var CeramicGraph = React.createClass({
 
         _.each(node, function (node) {
             node.highlighted = true;
+            node.r = node.r*2;
         });
         var links = _.filter(filteredEdges, function (item) {
             return item.source == data || item.target == data;
@@ -144,6 +146,7 @@ var CeramicGraph = React.createClass({
             GraphBreadcrumbActions.addCrumb("tap",t.name)
         }
         this.highlight(t);
+
         var list = [];
         if (t.type === "root") {
             //FOR ROOT NODES ONLY SEARCH GTHEMES FOR STHEME + SCENES
@@ -169,6 +172,7 @@ var CeramicGraph = React.createClass({
                     "scenes": []
                 }
             };
+
             scoreList.play.themes.push(t.name.toString());
             _.each(list, function (scene) {
                 scoreList.play.scenes.push(scene.toString());
@@ -345,6 +349,7 @@ var CeramicGraph = React.createClass({
 
         _.each(data.nodes, function (node) {
           node.r =15;
+          node._r = node.r;
         })
     },
     setupNodes: function (data, properties) {
