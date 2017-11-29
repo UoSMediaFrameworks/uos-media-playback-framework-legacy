@@ -178,15 +178,30 @@ var CeramicGraph = React.createClass({
     },
 
     setupRootNodes: function (data,p) {
+        //getting root nodes from all nodes
         var rootNodes = _.filter(data.nodes, function (node) {
             return node.type == 'root';
         });
+        //switching index of ceramics root node(just expected
         var a = rootNodes[1];
         rootNodes[1] = rootNodes[0];
         rootNodes[0]  = a;
+        //Quarter of screen value for some design declaration image will be included to the card
+
+        //Linear scaling function that will provide a scaling based on the amount of root nodes
+
+        //application of values
+
+        var heightDistanceBetweenRootNodes = p.innerHeight/rootNodes.length;
+        var halfDistanceForMargin = heightDistanceBetweenRootNodes/2;
+        var quarterDistanceForMargin = halfDistanceForMargin/2;
+        var scale = d3.scaleLinear().domain([0,rootNodes.length-1]).range([-quarterDistanceForMargin,quarterDistanceForMargin]);
+        scale.clamp(true);
         _.each(rootNodes, function (node,i) {
             node.cx =  p.innerWidth / 2;
-            node.cy = (p.innerHeight / rootNodes.length)  * i  + (p.innerHeight / rootNodes.length/2);
+            var initialYValueFromIndex =  heightDistanceBetweenRootNodes * i;
+            var smallExtraMargin =  scale(i);
+            node.cy = (initialYValueFromIndex + halfDistanceForMargin) +smallExtraMargin;
             node.color = "white";
             if(node.name != "Ceramics"){
                 node.visible=false;
@@ -223,12 +238,12 @@ var CeramicGraph = React.createClass({
         var par2 = _.find(data.nodes,function(parent){
             return parent.name == "Colour";
         })
-        var middleRange = [par1.cy, par2.cy];
+        var middleRange = [par1.cy, par2.cy- par1.cy];
         _.each(themeNodes, function (node, i) {
-            node.cx = Math.random() * self.props.innerWidth;
-            node.cy = Math.random() *middleRange[1] + middleRange[0];
+            node.cx = Math.floor(Math.random() * self.props.innerWidth);
+            node.cy = Math.floor(Math.random() *middleRange[1] + middleRange[0]);
             node.color = "red";
-        })
+        });
         _.each(textureNodes,function(node,i){
            var par = _.find(node.parents,function(parent){
                 return parent.name == "Texture";
@@ -244,7 +259,6 @@ var CeramicGraph = React.createClass({
             node.cy = par.cy;
             node.cx =  self.props.innerWidth / colorNodes.length * i  +  (self.props.innerWidth / colorNodes.length/2 );
         });
-
     },
     setupSThemeNodes:function(data,p){
         var self= this;
@@ -257,10 +271,10 @@ var CeramicGraph = React.createClass({
         var par2 = _.find(data.nodes,function(parent){
             return parent.name == "Colour";
         });
-        var middleRange = [par1.cy , par2.cy];
+        var middleRange = [par1.cy, par2.cy- par1.cy];
         _.each(sthemeNodes, function (node, i) {
-            node.cx = Math.random() * self.props.innerWidth;
-            node.cy = Math.random() *middleRange[1] + middleRange[0];
+            node.cx = Math.floor(Math.random() * self.props.innerWidth);
+            node.cy = Math.floor(Math.random() *middleRange[1] + middleRange[0]);
             node.color = "yellow";
         })
     },
@@ -307,11 +321,6 @@ var CeramicGraph = React.createClass({
             return link.source.type == 'root' || link.target.type == 'root';
         });
         var secondStageFilter = _.filter(filteredLinks,function(item){
-            console.log(item.source._id  != 'Textiles' , item.target._id  != 'Textiles' );
-            return item.source._id != 'Ceramics'  && item.target._id !='Ceramics';
-        });
-        var secondStageFilter = _.filter(filteredLinks,function(item){
-            console.log(item.source._id  != 'Textiles' , item.target._id  != 'Textiles' );
             return item.source._id != 'Ceramics'  && item.target._id !='Ceramics';
         });
         _.each(secondStageFilter,function(link){
@@ -330,8 +339,6 @@ var CeramicGraph = React.createClass({
         _.each(filterVisible,function(link){
             link.visible = false;
         })
-
-
     },
     setupOtherNodes: function (data,p) {
         var self = this;
@@ -349,7 +356,6 @@ var CeramicGraph = React.createClass({
         self.setupImageNodes(data,properties);
         self.setupThemeNodes(data,properties);
         self.setupOtherNodes(data,properties);
-
         self.setState({data:data});
     },
     render(){
@@ -366,14 +372,11 @@ var CeramicGraph = React.createClass({
                     <Text data={node}></Text>
                 </g>)
             }
-
         });
         var links = this.state.data.links.map((link, i) => {
             return (<Path data={link} key={i} innerW={self.props.innerWidth} innerH={self.props.innerHeight}></Path>);
         });
 
-     /*   var translate = 'translate(' + windowW + ',' + windowH + ')';
-        transform={translate}*/
         return (
 
             <TransitionGroup ref="backgroundContainer" id="backgroundContainer" component="g">

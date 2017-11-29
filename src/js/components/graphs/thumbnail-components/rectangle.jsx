@@ -11,8 +11,7 @@ var Rectangle = React.createClass({
         self.setState({
             x: self.props.data.cx -15,
             y: self.props.data.cy -15,
-            width:30,
-            height:30,
+            r:self.props.data.r,
             color: self.props.data.color
         });
     },
@@ -22,11 +21,14 @@ var Rectangle = React.createClass({
         node.transition().ease(d3.easeCubicInOut).duration(5000)
             .attr("x", nextProps.data.cx -15)
             .attr("y", nextProps.data.cy -15)
+            .attr("width",nextProps.data.r*2)
+            .attr("height",nextProps.data.r*2)
             .attr("fill", nextProps.data.color)
             .on('end', function () {
                 self.setState({
                     x: nextProps.data.cx -15,
                     y: nextProps.data.cy -15,
+                    r:nextProps.data.r,
                     color:nextProps.data.color
                 })
             });
@@ -60,13 +62,13 @@ var Rectangle = React.createClass({
 
         });
         var clipVal = this.props.clip != undefined ? "url(#"+this.props.clip+")": null;
-        var test = this.checkForThumbnails();
-        return test != null ? (
+        var thumb = this.checkForThumbnails();
+        return thumb != null ? (
             <image
                 className={classes}
-                x={this.state.x }  width={30}
-                y={this.state.y }        height={30}
-                href={test}
+                x={this.state.x }  width={this.state.r*2}
+                y={this.state.y }        height={this.state.r*2}
+                href={thumb}
                 clipPath={clipVal}
                 onClick={this.props.eventHandler.bind(null, this.props.data)}
             >
@@ -77,8 +79,8 @@ var Rectangle = React.createClass({
                 className={classes}
                 x={this.state.x }
                 y={this.state.y }
-                width={30}
-                height={30}
+                width={this.state.r*2}
+                height={this.state.r*2}
                 fill={this.state.color}
                 clipPath={clipVal}
              onClick={this.props.eventHandler.bind(null, this.props.data)}
