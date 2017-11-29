@@ -147,6 +147,7 @@ var CeramicGraph = React.createClass({
         }
         this.highlight(t);
 
+        // APEP Search and create a list of scenes by searching children
         var list = [];
         if (t.type === "root") {
             //FOR ROOT NODES ONLY SEARCH GTHEMES FOR STHEME + SCENES
@@ -154,18 +155,17 @@ var CeramicGraph = React.createClass({
                 return child.type === "subgraphtheme";
             });
 
-            list = this._nodes(children, list);
+            list = this._nodes(children, list, "scene");
         } else if (t.type !== "scene") {
-            list = this._nodes(t.children, list);
+            list = this._nodes(t.children, list, "scene");
         } else {
             list.push(t._id);
         }
 
         list = this.dedupeNodeList(list);
         //To finalize this method it sends the list of scenes to the graph viewer
-        if (t.type != "theme") {
-            HubClient.publishSceneCommand(list, connectionCache.getSocketID())
-        } else {
+        if (t.type === "theme") {
+            // APEP play the scenes that contain the theme clicked
             var scoreList = {
                 "play": {
                     "themes": [],
@@ -177,7 +177,48 @@ var CeramicGraph = React.createClass({
             _.each(list, function (scene) {
                 scoreList.play.scenes.push(scene.toString());
             });
-            HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID())
+            HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID());
+        } else if (t.type === "subgraphtheme") {
+            // APEP collect themes that are direct children of mine.
+            var themeChildren = _.filter(t.children, function (child) {
+                return child.type === "theme";
+            }).map(function(child) {
+                return child._id;
+            });
+
+            // APEP recursively find any themes in any children of this node that is also a subgraphtheme
+            var mySubgraphThemeChildren = _.filter(t.children, function (child) {
+                return child.type === "subgraphtheme";
+            });
+            var mySubgraphThemeChildrenNodes = this._nodesObj(mySubgraphThemeChildren, [], "subgraphtheme");
+            _.forEach(mySubgraphThemeChildrenNodes, function(node){
+                var nestedThemeChildren = _.filter(node.children, function (child) {
+                    return child.type === "theme";
+                }).map(function(child) {
+                    return child._id;
+                });
+                // APEP concat all the recursively found child subgraphthemes themes.
+                themeChildren = themeChildren.concat(nestedThemeChildren);
+            });
+
+            // APEP TODO maybe have to dedupe list of themes,
+
+            // APEP turn the scene node list into a list of there IDs.
+            var sceneList = _.map(list, function(sceneNode) {
+                return sceneNode.toString();
+            });
+
+            var scoreList = {
+                "play": {
+                    "themes": themeChildren,
+                    "scenes": sceneList
+                }
+            };
+
+            HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID());
+        } else {
+            // APEP for any other kind of nodes, just play the scene list
+            HubClient.publishSceneCommand(list, connectionCache.getSocketID())
         }
     },
 
@@ -294,13 +335,13 @@ var CeramicGraph = React.createClass({
            node.visible=false;
         })
     },
-    _nodes: function (list, sceneList) {
+    _nodes: function (list, sceneList, childType) {
         var self = this;
         for (var listIndex in list) {
             var thisItem = list[listIndex];
 
-            if (thisItem.type !== 'scene') {
-                self._nodes(thisItem.children, sceneList);
+            if (thisItem.type != childType) {
+                self._nodes(thisItem.children, sceneList, childType);
             } else {
                 sceneList.push(thisItem._id);
             }
@@ -308,6 +349,25 @@ var CeramicGraph = React.createClass({
 
         return sceneList;
     },
+
+    // APEP TODO this should be a graph utility function - I'm 100% sure there is a lot of duplication we need to reduce
+    // function to recursively find all nodes in list for a given childType
+    _nodesObj: function (list, nodeList, childType) {
+        var self = this;
+        for (var listIndex in list) {
+            var thisItem = list[listIndex];
+
+            if (thisItem.type != childType) {
+                self._nodesObj(thisItem.children, nodeList, childType);
+            } else {
+                self._nodesObj(thisItem.children, nodeList, childType);
+                nodeList.push(thisItem);
+            }
+        }
+
+        return nodeList;
+    },
+
 //Removes duplicates from the list of nodes.
     dedupeNodeList: function (list) {
         var dedupeList = [];
