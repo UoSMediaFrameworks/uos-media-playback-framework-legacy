@@ -19,7 +19,7 @@ var Path = React.createClass({
             diagonal: diagonal,
             visible: self.props.data.visible,
             highlighted: self.props.data.highlighted,
-            stroke:this.props.data.highlighted ? this.props.data.source.color : "black"
+            stroke:this.props.data.highlighted ? "rgb(210, 247, 244)": "black"
         })
     },
     componentWillReceiveProps: function (nextProps) {
@@ -33,13 +33,13 @@ var Path = React.createClass({
 
         link.transition().ease(d3.easeCubicInOut).duration(5000)
             .attr("d", diagonal)
-            .attr('stroke', nextProps.data.highlighted ? nextProps.data.source.color : "black")
+            .attr('stroke', nextProps.data.highlighted ?  "rgb(210, 247, 244)" : "black")
             .on('end', function () {
                     self.setState({
                         diagonal: diagonal,
                         visible: nextProps.data.visible,
                         highlighted: nextProps.data.highlighted,
-                        stroke:nextProps.data.highlighted ? nextProps.data.source.color : "black"
+                        stroke:nextProps.data.highlighted ? "rgb(210, 247, 244)" : "black"
                     });
                 }
             )

@@ -69,6 +69,7 @@ var Rectangle = React.createClass({
                 x={this.state.x }  width={this.state.r*2}
                 y={this.state.y }        height={this.state.r*2}
                 href={thumb}
+                preserveAspectRatio={"xMinYMin slice"}
                 clipPath={clipVal}
                 onClick={this.props.eventHandler.bind(null, this.props.data)}
                 onMouseEnter={this.props.onMouseEnterH.bind(null,this.props.data)}

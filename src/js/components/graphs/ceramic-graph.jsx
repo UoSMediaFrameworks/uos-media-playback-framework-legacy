@@ -122,7 +122,7 @@ var CeramicGraph = React.createClass({
 
         _.each(node, function (node) {
             node.highlighted = true;
-            node.r = node.r*4;
+            node.r = node.r*3;
         });
         var links = _.filter(filteredEdges, function (item) {
             return item.source == data || item.target == data;
@@ -366,7 +366,13 @@ var CeramicGraph = React.createClass({
         _.each(sthemeNodes, function (node, i) {
             node.cx = xScale(xAxisMultipliers.values[i]);
             node.cy = yScale(yAxisMultipliers.values[i]);
-            node.color = "yellow";
+            if(node.name == "Sahbal" || node.name == "MoonVase" || node.name== "TallVase" || node.name =="Vase"){
+                node.color = "#D6F5F1";
+            }else{
+                node.color = "#E8D969";
+
+            }
+
         })
     },
     setupImageNodes:function(data,p){
@@ -441,7 +447,7 @@ var CeramicGraph = React.createClass({
         var self = this;
 
         _.each(data.nodes, function (node) {
-          node.r =15;
+          node.r =20;
           node._r = node.r;
         })
     },
