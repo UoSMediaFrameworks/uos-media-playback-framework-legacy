@@ -21,6 +21,8 @@ var Text = React.createClass({
             .attr("x", nextProps.data.cx)
             .attr("y", nextProps.data.cy - (nextProps.data.r+10))
             .attr("font-size",this.calculateTextSize(nextProps))
+            .attr("fill", "white")
+            .attr("stroke","none")
             .style("opacity",function(){
                 return nextProps.data.textVisible?1:0
             })
@@ -52,7 +54,7 @@ var Text = React.createClass({
             return null;
         }
         return (
-            <text x={this.state.cx} y={this.state.cy} dy=".3em" fill="white" opacity={this.state.opacity} textAnchor="middle" fontSize={this.state.fontSize}>
+            <text x={this.state.cx} y={this.state.cy} dy=".3em" stroke="none" fill="white" opacity={this.state.opacity} textAnchor="middle" fontSize={this.state.fontSize}>
                 {this.state.name}
             </text>
         )
