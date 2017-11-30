@@ -52,7 +52,7 @@ var Text = React.createClass({
             return null;
         }
         return (
-            <text x={this.state.cx} y={this.state.cy} dy=".3em" opacity={this.state.opacity} textAnchor="middle" fontSize={this.state.fontSize}>
+            <text x={this.state.cx} y={this.state.cy} dy=".3em" fill="white" opacity={this.state.opacity} textAnchor="middle" fontSize={this.state.fontSize}>
                 {this.state.name}
             </text>
         )
