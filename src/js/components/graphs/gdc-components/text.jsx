@@ -35,11 +35,13 @@ var Text = React.createClass({
         text.transition().ease(d3.easeCubicInOut).duration(3000)
             .attr("x", nextProps.data.cx)
             .attr("y", nextProps.data.cy + (nextProps.data.r +10))
+            .style("opacity",function(){
+                return nextProps.data.textVisible?1:0;
+            })
             .on('end', function () {
                 self.setState({
                     x: nextProps.data.cx,
                     y: nextProps.data.cy + (nextProps.data.r +10),
-                    r:nextProps.data.r
                 })
             });
     },
@@ -49,7 +51,7 @@ var Text = React.createClass({
             'invisible-text': !this.props.data.textHighlighted ,
         });
         return (
-            <text className={classes} x={this.state.x} y={this.state.y} dy=".3em" textAnchor="middle" >
+            <text className={classes} x={this.state.x} opacity={0} y={this.state.y} dy=".3em" textAnchor="middle" >
                 {this.props.data.name}
             </text>
         )

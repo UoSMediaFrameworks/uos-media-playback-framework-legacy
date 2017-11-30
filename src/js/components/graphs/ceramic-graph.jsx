@@ -4,6 +4,7 @@ var TransitionGroup = require('react-transition-group/TransitionGroup');
 var Circle = require("./narm-components/circle.jsx");
 var Rectangle = require("./thumbnail-components/rectangle.jsx");
 var Text = require("./narm-components/text.jsx");
+var RectText = require("./ceramic-components/text.jsx");
 var Path = require("./narm-components/path.jsx");
 var _ = require("lodash");
 var connectionCache = require("../../utils/connection-cache");
@@ -113,15 +114,6 @@ var CeramicGraph = React.createClass({
         _.each(self.state.data.links, function (link) {
             link.highlighted = false;
         });
-     /*   if (data.type == 'root') {
-            filteredEdges = _.filter(self.state.data.links, function (item) {
-                return item.source.type == 'city' || item.target.type == 'city';
-            })
-        } else if (data.type == 'city') {
-            filteredEdges = _.filter(self.state.data.links, function (item) {
-                return item.source.type != 'root';
-            })
-        } else {*/
             filteredEdges = self.state.data.links;
       /*  }*/
         var node = _.filter(self.state.data.nodes, function (node) {
@@ -464,12 +456,31 @@ var CeramicGraph = React.createClass({
         self.setupLinkRules(data,properties);
         self.setState({data:data});
     },
+    hoverInHandler:function(t){
+
+        if(t.parentRelationshipIds == "Texture" || t.parentRelationshipIds == "Colour")
+{
+    t.textVisible = true;
+
+    this.setState({data: this.state.data});
+}
+    },
+    hoverOutHandler:function(t){
+
+        if(t.parentRelationshipIds == "Texture" || t.parentRelationshipIds == "Colour")
+        {
+            t.textVisible = false;
+
+            this.setState({data: this.state.data});
+        }
+    },
     render(){
         var self = this;
         var nodes = this.state.data.nodes.map((node, i) => {
             if(node.type == 'theme'){ return (
                 <g  key={i}>
-                    <Rectangle data={node} eventHandler={self.tapHandler} clip={"clipC"+i}></Rectangle>
+                    <Rectangle data={node} onMouseLeaveH={self.hoverOutHandler} onMouseEnterH={self.hoverInHandler} eventHandler={self.tapHandler} clip={"clipC"+i}></Rectangle>
+                    <RectText data={node}></RectText>
                 </g>
             )}
             else{

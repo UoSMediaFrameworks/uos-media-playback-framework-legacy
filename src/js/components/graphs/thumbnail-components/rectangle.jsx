@@ -71,6 +71,8 @@ var Rectangle = React.createClass({
                 href={thumb}
                 clipPath={clipVal}
                 onClick={this.props.eventHandler.bind(null, this.props.data)}
+                onMouseEnter={this.props.onMouseEnterH.bind(null,this.props.data)}
+                onMouseLeave={this.props.onMouseLeaveH.bind(null,this.props.data)}
             >
             </image>
         ):(
@@ -83,6 +85,8 @@ var Rectangle = React.createClass({
                 height={this.state.r*2}
                 fill={this.state.color}
                 clipPath={clipVal}
+                onMouseEnter={this.props.onMouseEnterH.bind(null,this.props.data)}
+                onMouseLeave={this.props.onMouseLeaveH.bind(null,this.props.data)}
              onClick={this.props.eventHandler.bind(null, this.props.data)}
             >
             </rect>
