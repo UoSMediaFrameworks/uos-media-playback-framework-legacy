@@ -350,7 +350,7 @@ var CeramicGraph = React.createClass({
 
         // APEP cerate some random distribution number generators.
         var themeNodeXGenerator = d3.randomNormal();
-        var themeNodeYGenerator = d3.randomBates(10);
+        var themeNodeYGenerator = d3.randomBates(35);
 
         // APEP generate some random values and min, max ready to scale to screen size.
         var xAxisMultipliers = this.getAxisValues(themeNodeXGenerator, sthemeNodes.length);
@@ -359,7 +359,7 @@ var CeramicGraph = React.createClass({
         var xScale = d3.scaleLinear().domain([xAxisMultipliers.min,xAxisMultipliers.max]).range([p.innerWidth / 10, p.innerWidth - (p.innerWidth / 10)]);
         xScale.clamp(true);
         // APEP +- r gives us an additional margin of the size of the rects
-        var middleRange = [par1.cy + (1 * par2.r), par2.cy - (1 * par1.r)];
+        var middleRange = [par1.cy * 2, par2.cy / 1.5];
         var yScale = d3.scaleLinear().domain([yAxisMultipliers.min,yAxisMultipliers.max]).range(middleRange);
         yScale.clamp(true);
 
