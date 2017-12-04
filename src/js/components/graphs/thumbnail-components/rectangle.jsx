@@ -67,13 +67,13 @@ var Rectangle = React.createClass({
             <image
                 className={classes}
                 x={this.state.x }  width={this.state.r*2}
-                y={this.state.y }        height={this.state.r*2}
+                y={this.state.y }  height={this.state.r*2}
                 href={thumb}
                 preserveAspectRatio={"xMinYMin slice"}
                 clipPath={clipVal}
-                onClick={this.props.eventHandler.bind(null, this.props.data)}
-                onMouseEnter={this.props.onMouseEnterH.bind(null,this.props.data)}
-                onMouseLeave={this.props.onMouseLeaveH.bind(null,this.props.data)}
+                onClick={this.props.eventHandler?this.props.eventHandler.bind(null, this.props.data):null}
+                onMouseEnter={this.props.onMouseEnterH?this.props.onMouseEnterH.bind(null,this.props.data):null}
+                onMouseLeave={this.props.onMouseLeaveH?this.props.onMouseLeaveH.bind(null,this.props.data):null}
             >
             </image>
         ):(
@@ -86,9 +86,9 @@ var Rectangle = React.createClass({
                 height={this.state.r*2}
                 fill={this.state.color}
                 clipPath={clipVal}
-                onMouseEnter={this.props.onMouseEnterH.bind(null,this.props.data)}
-                onMouseLeave={this.props.onMouseLeaveH.bind(null,this.props.data)}
-             onClick={this.props.eventHandler.bind(null, this.props.data)}
+                onClick={this.props.eventHandler?this.props.eventHandler.bind(null, this.props.data):null}
+                onMouseEnter={this.props.onMouseEnterH?this.props.onMouseEnterH.bind(null,this.props.data):null}
+                onMouseLeave={this.props.onMouseLeaveH?this.props.onMouseLeaveH.bind(null,this.props.data):null}
             >
             </rect>
         )
