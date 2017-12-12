@@ -257,6 +257,12 @@ var ThumbGraph = React.createClass({
         });
 
     },
+    setupAllNodes:function(data,p){
+       var self =this;
+       _.each(data.nodes,function(node){
+          node.r=15;
+       });
+    },
     _nodes: function (list, sceneList) {
         var self = this;
         for (var listIndex in list) {
@@ -290,6 +296,7 @@ var ThumbGraph = React.createClass({
             self.setupRootNodes(data, properties);
             self.setupSceneNodes(data, properties);
             self.setupImageNodes(data,properties);
+            self.setupAllNodes(data,properties);
             self.setupCircularNodeFormation(data,properties)
 
             self.setState({data:data});
@@ -308,9 +315,9 @@ var ThumbGraph = React.createClass({
                     'rotate':node.highlighted,
                 });
                 return (<g key={i} className={classes} >
-                    <clipPath id={"clipC"+i}>
+              {/*      <clipPath id={"clipC"+i}>
                         <circle r="50" cx={node.cx} cy={node.cy}/>
-                    </clipPath>
+                    </clipPath>*/}
                     <Rectangle data={node}  eventHandler={self.tapHandler} clip={"clipC"+i}></Rectangle>
                 </g>)
             });
