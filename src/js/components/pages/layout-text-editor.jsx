@@ -189,7 +189,7 @@ var SceneMonacoTextEditor = React.createClass({
             var isInTags = monaco.Range.containsRange(tagRange, selectionRange);
 
             if(isInTags)
-                this.props.focusHandler(parseInt(m));
+                SceneActions.changeMediaObjectFocus(parseInt(m), true);
         }
 
     },
@@ -243,7 +243,6 @@ var SceneMonacoTextEditor = React.createClass({
     onDidMount: function(editor, monaco) {
         // console.log('MONACO - onDidMount', editor);
 
-
         editor.addAction({
             // An unique identifier of the contributed action.
             id: 'copy-command',
@@ -277,8 +276,7 @@ var SceneMonacoTextEditor = React.createClass({
         this._onChange();
 
         // this.refs.monaco.editor.onDidChangeCursorPosition(this.onChangeCursorPosition);
-        //
-        // this.refs.monaco.editor.onDidChangeCursorSelection(this.onTextSelection)
+        this.refs.monaco.editor.onDidChangeCursorSelection(this.onTextSelection)
     },
 
     shouldComponentUpdate: function(nextProps, nextState) {
@@ -322,8 +320,12 @@ var SceneMonacoTextEditor = React.createClass({
                 console.log("No selection for media object available");
                 return;
             }
-            this.refs.monaco.editor.setPosition(match.getStartPosition());
-            this.refs.monaco.editor.revealPosition(match.getStartPosition());
+
+            // APEP only set the position and focus of the text editor if the focus event has not come from the editor itself.
+            if(!this.props.focusFromMonacoEditor){
+                this.refs.monaco.editor.setPosition(match.getStartPosition());
+                this.refs.monaco.editor.revealPosition(match.getStartPosition());
+            }
         }
 
     },

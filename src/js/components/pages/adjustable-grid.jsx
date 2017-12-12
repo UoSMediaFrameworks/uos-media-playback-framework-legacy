@@ -80,7 +80,7 @@ var RespGrid = React.createClass({
                                             focusedMediaObject={this.state.data.focusedMediaObject}
                                             _id={self.state.data.scene._id}>
                     </SceneMediaBrowser>
-                )
+                );
                 break;
             case LayoutComponentTypes.SceneEditorGUI:
                 return (
@@ -99,14 +99,16 @@ var RespGrid = React.createClass({
                         focusedMediaObject={this.state.data.focusedMediaObject}
                         _id={self.state.data.scene._id}
                     />
-                )
+                );
                 break;
             case LayoutComponentTypes.SceneEditor:
-                return ( <LayoutMonacoTextEditor isLayout={true} focusedMediaObject={this.state.data.focusedMediaObject}
+                return ( <LayoutMonacoTextEditor isLayout={true}
+                                                 focusedMediaObject={this.state.data.focusedMediaObject}
+                                                 focusFromMonacoEditor={this.state.data.fromMonacoEditor}
                                                  _id={this.state.data.scene._id}
                                                  focusHandler={SceneActions.changeMediaObjectFocus}>
                     </LayoutMonacoTextEditor>
-                )
+                );
                 break;
             default:
                 return null;

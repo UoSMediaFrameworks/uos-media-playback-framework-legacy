@@ -16,10 +16,13 @@ var toastr = require('toastr');
 
 var SceneActions = {
 
-    changeMediaObjectFocus:function(index){
+    // APEP fromMonacoEditor allows the editor to set the focus has come from itself
+    // Any other component should be false
+    changeMediaObjectFocus:function(index, fromMonacoEditor = false){
         AppDispatcher.handleViewAction({
             type: ActionTypes.COMP_MEDIA_OBJECT_FOCUS_SWITCH,
-            index: index
+            index: index,
+            fromMonacoEditor: fromMonacoEditor
         });
     },
     changeFocus:function(itemType){

@@ -26,7 +26,8 @@ var gridState = {
     focusedType: null,
     poppedOutComponent: null,
     focusedMediaObject: null,
-    layoutManager: new LayoutManager()
+    layoutManager: new LayoutManager(),
+    fromMonacoEditor: false
 };
 
 changeFocus = function (type) {
@@ -34,7 +35,8 @@ changeFocus = function (type) {
     //AngelP: this is done to reset the focused media object when the scene changes
     gridState.focusedMediaObject = null;
 };
-changeMediaObjectFocus = function (index) {
+changeMediaObjectFocus = function (index, fromMonacoEditor) {
+    gridState.fromMonacoEditor = fromMonacoEditor;
     gridState.focusedMediaObject = index;
 };
 
@@ -154,7 +156,7 @@ var GridStore = assign({}, EventEmitter.prototype, {
                 GridStore.emitChange();
                 break;
             case ActionTypes.COMP_MEDIA_OBJECT_FOCUS_SWITCH:
-                changeMediaObjectFocus(action.index);
+                changeMediaObjectFocus(action.index, action.fromMonacoEditor);
                 GridStore.emitChange();
                 break;
             case ActionTypes.ADD_COMPONENT:
