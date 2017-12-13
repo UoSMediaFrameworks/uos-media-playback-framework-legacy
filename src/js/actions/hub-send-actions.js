@@ -666,14 +666,13 @@ module.exports = {
             type: ActionTypes.DELETE_SCENE,
             sceneId: sceneId
         });
-        hashHistory.push('scenes');
     },
     deleteSceneGraph: function (sceneGraphId) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.DELETE_SCENE_GRAPH,
             sceneGraphId: sceneGraphId
         });
-        hashHistory.push('scenegraphs');
+       
     },
     unsubscribeScene: HubClient.unsubscribeScene
 };
