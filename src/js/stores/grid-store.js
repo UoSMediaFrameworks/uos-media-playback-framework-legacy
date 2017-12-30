@@ -32,10 +32,6 @@ var gridState = {
 
 changeFocus = function (type) {
     gridState.focusedType = type;
-
-    //AngelP: this is done to reset the focused media object when the scene changes
-    //MK: Removed to fix on drag bug - already handled in scene focus change
-    //gridState.focusedMediaObject = null;
 };
 
 changeMediaObjectFocus = function(index){
