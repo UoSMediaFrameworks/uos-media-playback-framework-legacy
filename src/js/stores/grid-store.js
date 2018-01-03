@@ -32,9 +32,8 @@ var gridState = {
 
 changeFocus = function (type) {
     gridState.focusedType = type;
-    //AngelP: this is done to reset the focused media object when the scene changes
-    gridState.focusedMediaObject = null;
 };
+
 changeMediaObjectFocus = function (index, fromMonacoEditor) {
     gridState.fromMonacoEditor = fromMonacoEditor;
     gridState.focusedMediaObject = index;
