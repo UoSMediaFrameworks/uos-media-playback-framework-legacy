@@ -617,13 +617,13 @@ var SceneEditorGUI = React.createClass({
                     return (
                         <div className="mf-no-scroll-grid-component">
                         <Rectangle aspectRatio={[16, 9]}>
-                            <div className="mf-scene-layout-area" ref={(c) => this.SceneLayoutArea = c}>
+                            <div className="mf-scene-layout-area mf_fs_widget_padding_remove" ref={(c) => this.SceneLayoutArea = c}>
                                 By default content is placed randomly. Uncheck random placement to manualy
                                 position media.
                             </div>
                         </Rectangle>
 
-                        <div className="mf-gui-toolbar">
+                        <div className="mf-gui-toolbar mf_fs_widget_padding_remove">
                             <span>
                                 <span className="mf-gui-toolbar-text">Random Postion</span>
                                 <FontAwesome
@@ -650,7 +650,7 @@ var SceneEditorGUI = React.createClass({
                     return (
                         <div className="mf-empty-grid-component">
                             <Rectangle aspectRatio={[16, 9]}>
-                                <div className="mf-scene-layout-area" ref={(c) => this.SceneLayoutArea = c}>
+                                <div className="mf-scene-layout-area mf_fs_widget_padding_remove" ref={(c) => this.SceneLayoutArea = c}>
                                     <Rnd
                                         ref={(c) => this.SceneObject = c}
                                         bounds='parent'
@@ -678,7 +678,7 @@ var SceneEditorGUI = React.createClass({
                                     </Rnd>
                                 </div>
                             </Rectangle>
-                            <div className="mf-gui-toolbar">
+                            <div className="mf-gui-toolbar mf_fs_widget_padding_remove">
 
                                 <span>
                                     <FontAwesome
