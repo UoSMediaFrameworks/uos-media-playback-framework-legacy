@@ -2,13 +2,9 @@
 /*jshint browser: true */
 
 var React = require('react');
-var MediaButton = require('./media-button.jsx');
 var SceneActions = require('../../actions/scene-actions');
 var FormHelper = require('../../mixins/form-helper');
-var HubClient = require('../../utils/HubClient');
 var AddMediaObjectStore = require('../../stores/add-media-object-store');
-var getVimeoId = require('../../utils/get-vimeo-id');
-var Loader = require('../loader.jsx');
 var toastr = require("toastr");
 var _ = require('lodash');
 var getHostname = require('../../utils/get-hostname');
@@ -83,17 +79,23 @@ var SceneEditor = React.createClass({
         console.log("add-media-object - resumableOnFileSuccess");
         console.log(file, message);
 
-        var self = this;
-        // APEP use a callback to handle the async upload process to catch final completion for unlocking
+        // APEP after upload is complete, we can push this as a scene update.
         SceneActions.finaliseResumableUploadAsset(this.props.scene._id, file.file, file, function() {
-            self.props.uploadEnded();
+            // APEP callback was originally used to reallow users to continue uploading, however to support multiple
+            // file uploading, this has been moved.
         });
     },
 
     resumableOnFileAdded: function(file, resumable) {
         console.log("add-media-object - resumableOnFileAdded");
-        this.props.uploadStarted();
+        SceneActions.uploadingAssets();
         resumable.upload();
+    },
+
+    resumableOnCompleteUpload: function() {
+        // APEP TODO we should really replace our own overlay by using the library (resumable-js in react-resumable-js)
+        console.log("add-media-object - resumableOnCompleteUpload");
+        SceneActions.uploadingAssetsFinished();
     },
 
 	render: function() {
@@ -114,10 +116,10 @@ var SceneEditor = React.createClass({
                     generateUniqueIdentifier={function() { return hat(); }}
                     textLabel="Uploaded files"
                     previousText="Drop to upload your media:"
-                    disableDragAndDrop={true}
                     onFileSuccess={this.resumableOnFileSuccess}
                     onFileAdded={this.resumableOnFileAdded}
                     onFileAddedError={this.resumableOnFileAddedError}
+                    onCompleteUpload={this.resumableOnCompleteUpload}
                     maxFiles={20}
                     maxFileSize={1000000000}
                     showFileList={false}

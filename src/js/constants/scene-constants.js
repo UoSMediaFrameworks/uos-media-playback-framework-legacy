@@ -46,6 +46,10 @@ module.exports = {
         ADD_MEDIA_ATTEMPT: null,
         ADD_MEDIA_SUCCESS: null,
         ADD_MEDIA_FAILED: null,
+
+        UPLOAD_MEDIA_ATTEMPT: null,
+        UPLOAD_MEDIA_FINISHED: null,
+
         REMOVE_MEDIA_OBJECT: null,
         LIST_SCENES_ATTEMPT: null,
         RECIEVE_SCENE_LIST: null,

@@ -11,10 +11,16 @@ var toastr = require('toastr');
 var _loading = false;
 var _inputValue = '';
 
+var _mediaUploading = false;
+
 var AddMediaObjectStore = assign({}, EventEmitter.prototype, {
 	loading: function() {
 		return _loading;
 	},
+
+    mediaUploading: function() {
+	    return _mediaUploading;
+    },
 
     inputValue: function() {
         return _inputValue;
@@ -35,7 +41,16 @@ var AddMediaObjectStore = assign({}, EventEmitter.prototype, {
 	dispatcherIndex: AppDispatcher.register(function(payload){
         var action = payload.action; // this is our action from handleViewAction
 
-        switch(action.type){
+        switch(action.type) {
+
+            case ActionTypes.UPLOAD_MEDIA_ATTEMPT:
+                _mediaUploading = true;
+                break;
+
+            case ActionTypes.UPLOAD_MEDIA_FINISHED:
+                _mediaUploading = false;
+                break;
+
             case ActionTypes.ADD_MEDIA_ATTEMPT:
             	_inputValue = action.value;
                 _loading = true;
@@ -48,7 +63,7 @@ var AddMediaObjectStore = assign({}, EventEmitter.prototype, {
                 break;
 
             case ActionTypes.ADD_MEDIA_FAILED:
-                console.log(action)
+                console.log(action);
                 switch (action.value.status){
                     case 404:
                         toastr.warning('The media you are trying to add was not found');
