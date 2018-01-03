@@ -951,44 +951,33 @@ html, body, #main, .app {
   color: orange;
   text-align: center;
   vertical-align: middle;
-  padding: 5px;
-  margin: 5px;
+  padding: 3px;
+  margin: 3px;
 }
 
 .mf-gui-toolbar-icon:hover {
   color: white;
-  text-align: center;
-  vertical-align: middle;
-  padding: 5px;
-  margin: 5px;
 }
 
 .mf-gui-toolbar-text {
   color: #FFF;
   text-align: center;
   vertical-align: middle;
-  padding: 5px;
-  margin: 5px;
+  padding: 3px;
+  margin: 3px;
 }
 
 .mf-gui-editor-templateBar img {
   color: orange;
   text-align: center;
   vertical-align: middle;
-  padding: 5px;
-  margin: 5px;
+  padding: 1px;
+  margin: 1px;
   width: 32px;
   height: 32px;
 }
 
 .mf-gui-editor-templateBar img:hover {
-  color: orange;
-  text-align: center;
-  vertical-align: middle;
-  padding: 5px;
-  margin: 5px;
-  width: 32px;
-  height: 32px;
   border: 1px solid white;
 }
 
