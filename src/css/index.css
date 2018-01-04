@@ -1074,6 +1074,9 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
 }
 
 .ReactTags_button {
+  padding: 0;
+  border: none;
+  background: none;
   margin-left: 5px;
 }
 
