@@ -14,6 +14,8 @@ var LayoutComponentConstants = require('../constants/layout-constants').Componen
 var GraphTypes = require('../constants/graph-constants').GraphTypes;
 var GraphTitles = require('../constants/graph-constants').GraphTitles;
 
+var SceneSelector = require('./scene-selector.jsx')
+
 function _getState() {
     return {
         loggedIn: ClientStore.loggedIn(),
@@ -29,9 +31,11 @@ var NavigationBar = React.createClass({
     getInitialState: function () {
         return _getState();
     },
+
     _onLoginChange: function () {
         this.setState({loggedIn: ClientStore.loggedIn()});
     },
+
     _onLayoutChange: function () {
         this.setState({
             focusedLayoutItem: GridStore.getFocusedComponent(),
@@ -40,22 +44,28 @@ var NavigationBar = React.createClass({
             doesHaveMaximisedComponent: GridStore.hasMaximisedView()
         });
     },
+
     _onOptionValueChange: function (e) {
         this.setState({value: e.target.value})
     },
+
     handleLogout: function (event) {
         SceneActions.logout();
     },
+
     addComponent: function (type) {
         SceneActions.addLayoutComponent(type);
     },
+
     componentDidMount: function () {
 
     },
+
     componentWillMount: function () {
         ClientStore.addChangeListener(this._onLoginChange);
         GridStore.addChangeListener(this._onLayoutChange);
     },
+
     handleCreateScene: function (event) {
         event.preventDefault();
         HubSendActions.tryCreateScene(this.getRefVal('name'));
@@ -80,24 +90,12 @@ var NavigationBar = React.createClass({
     getNavComponent: function () {
         switch (this.state.focusedLayoutItem) {
             case LayoutComponentConstants.SceneGraph:
-                return <li>
+                return (<li>
                     <span className="navbar-text">Scene Graph</span>
-
-                </li>;
-                break;
-            case LayoutComponentConstants.SceneList:
-                return <li>
-                    <form className='form-inline mf-form' onSubmit={this.handleCreateScene} role='form'>
-                        <div className='form-group mf-input'>
-                            <label htmlFor="scene-input" className="mf-text">Scene List</label>
-                            <input type='text' ref='name' id="scene-input" className='form-control' placeholder='name'/>
-                        </div>
-                        <button type='submit' className='btn btn-dark'>Create</button>
-                    </form>
-                </li>;
+                </li>);
                 break;
             case LayoutComponentConstants.SceneGraphList:
-                return <li>
+                return (<li>
                     <form className='form-inline mf-form' onSubmit={this.handleCreateSceneGraph} role='form'>
                         <label htmlFor="scene-graph-input" className="mf-text">Scene Graph List</label>
                         <input type='text' ref='name' id="scene-graph-input" className='form-control'
@@ -114,30 +112,30 @@ var NavigationBar = React.createClass({
                                 </span>
                         <button type='submit' className='btn btn-dark'>Create</button>
                     </form>
-                </li>;
+                </li>);
                 break;
             case LayoutComponentConstants.GraphViewer:
-                return <li>
+                return (<li>
                     <form className='form-inline mf-form' onSubmit={this.handleGraphRoomChange} role='form'>
                         <label htmlFor="scene-graph-input" className="mf-text">Graph Viewer</label>
                         <input type='text' ref='name' id="scene-graph-input" className='form-control'
                                placeholder='Room ID'/>
                         <button type='submit' className='btn btn-dark'>set Room</button>
                     </form>
-                </li>;
+                </li>);
                 break;
             case LayoutComponentConstants.SceneViewer:
                 return <li><span className="navbar-text">Scene Viewer</span></li>;
                 break;
             case LayoutComponentConstants.Graph:
-                return <li>
+                return (<li>
                     <form className='form-inline mf-form' onSubmit={this.handleGraphRoomChange} role='form'>
                         <label htmlFor="scene-graph-input" className="mf-text">Graph</label>
                         <input type='text' ref='name' id="scene-graph-input" className='form-control'
                                placeholder='Room ID'/>
                         <button type='submit' className='btn btn-dark'>set Room</button>
                     </form>
-                </li>;
+                </li>);
                 break;
             case LayoutComponentConstants.SceneMediaBrowser:
                 return <li><span className="navbar-text">Scene Viewer</span></li>;
@@ -146,7 +144,7 @@ var NavigationBar = React.createClass({
                 return <li><span className="navbar-text">Scene Viewer</span></li>;
                 break;
             default:
-                return <li><span className="navbar-text">None of the component types have been provided</span></li>;
+                return (<li><span className="navbar-text"></span></li>); //return empty if no navbar element
                 break
         }
 
@@ -154,6 +152,7 @@ var NavigationBar = React.createClass({
     stopPropHandler: function (e) {
         e.stopPropagation();
     },
+
     render: function () {
         var self = this;
         var nc = this.getNavComponent();
@@ -202,7 +201,7 @@ var NavigationBar = React.createClass({
         // APEP TODO A lot of these can be React classes
             return (
                 <nav className={navbarParentClassname}>
-                    <div className="container-fluid">
+                    <div className="container-fluid mf-brand-position-fix">
                         <div className="navbar-header">
                             <button type="button" className="navbar-toggle collapsed" data-toggle="collapse"
                                     data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -212,10 +211,13 @@ var NavigationBar = React.createClass({
                                 <span className="icon-bar"/>
                             </button>
                         </div>
-                        <div className="collapse navbar-collapse">
+                        <div className="collapse navbar-collapse mf-brand-position-fix">
                             <ul className="nav navbar-nav navbar-left">
                                 <li><img className="mf-image-logo" src="/images/salford-logo.png"/></li>
                                 <li><img className="mf-image-logo" src="/images/MF_transparent.png"/></li>
+                                <li>
+                                <SceneSelector _sceneFocusHandler={GridStore.focusScene}></SceneSelector>
+                                </li>
                             </ul>
                             <ul className="nav navbar-nav navbar-right">
                                 <li>
@@ -229,38 +231,35 @@ var NavigationBar = React.createClass({
                                         <MenuItem divider/>
                                         <MenuItem header>Scenes</MenuItem>
                                         <MenuItem eventKey="1"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneList)}>Scene
-                                            List</MenuItem>
-                                        <MenuItem eventKey="2"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditor)}>Scene
                                             Editor</MenuItem>
-                                        <MenuItem eventKey="3"
+                                        <MenuItem eventKey="2"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneMediaBrowser)}>Scene
                                             Media Browser</MenuItem>
-                                        <MenuItem eventKey="e"
+                                        <MenuItem eventKey="3"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditorGUI)}>Visual
                                             Scene Editor</MenuItem>
-                                        <MenuItem eventKey="t"
+                                        <MenuItem eventKey="4"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.TagEditor)}>Tag
                                             Editor</MenuItem>
 
                                         <MenuItem divider/>
                                         <MenuItem header>Graphs</MenuItem>
-                                        <MenuItem eventKey="4"
+                                        <MenuItem eventKey="5"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneGraphList)}>Scene
                                             Graph List</MenuItem>
-                                        <MenuItem eventKey="5"
+                                        <MenuItem eventKey="6"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneGraph)}>Scene
                                             Graph Editor</MenuItem>
-                                        <MenuItem eventKey="6"
+                                        <MenuItem eventKey="7"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.Graph)}>Graph</MenuItem>
 
                                         <MenuItem divider/>
                                         <MenuItem header>Players</MenuItem>
-                                        <MenuItem eventKey="7"
+                                        <MenuItem eventKey="8"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneViewer)}>Scene
                                             Preview Player</MenuItem>
-                                        <MenuItem eventKey="8"
+                                        <MenuItem eventKey="9"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.GraphViewer)}>External
                                             Player</MenuItem>
                                     </DropdownButton>
