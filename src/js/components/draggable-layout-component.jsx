@@ -1,7 +1,6 @@
 var Scene = require('./pages/scene.jsx');
 var SceneGraph = require('./pages/scenegraph.jsx');
 var GraphTest = require('./graphs/index.jsx');
-var SceneChooser = require('./pages/scene-choose-or-create.jsx');
 var SceneGraphChooser = require('./pages/scene-graph-choose-or-create.jsx');
 var SceneListener = require('../pages/scene-listener.jsx');
 var GridStore = require("../stores/grid-store.js");
@@ -34,9 +33,6 @@ var DraggableLayoutComponent = React.createClass({
                 break;
             case "sceneGraph":
                 return  <SceneGraph _id={this.state.data.sceneGraph._id}/>;
-                break;
-            case "sceneList":
-                return <SceneChooser sceneFocusHandler={GridStore.focusScene}/>;
                 break;
             case "sceneGraphList":
                 return <SceneGraphChooser sceneGraphFocusHandler={GridStore.focusSceneGraph}/>;

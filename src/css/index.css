@@ -33,9 +33,6 @@ html, body, #main, .app {
     overflow:auto;
 }
 
-.scene-chooser-opl{
-    overflow:hidden;
-}
 .media-object-item-preview-player-hidden {
     flex: 1;
     border: 1px solid #5a5a5a; /*Monaco grey - should probably change to use monaco css class*/

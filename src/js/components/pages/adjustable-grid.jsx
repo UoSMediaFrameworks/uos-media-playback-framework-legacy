@@ -8,7 +8,6 @@ var SceneEditorGUI = require('./scene-editor-gui.jsx');
 var TagEditor = require('./tag-editor.jsx');
 var SceneGraph = require('./scenegraph.jsx');
 var GraphTest = require('../graphs/index.jsx');
-var SceneChooser = require('./scene-choose-or-create.jsx');
 var SceneGraphChooser = require('./scene-graph-choose-or-create.jsx');
 var SceneListener = require('../../pages/scene-listener.jsx');
 var GraphViewer = require("../../pages/viewer/graph-viewer.jsx");
@@ -59,9 +58,6 @@ var RespGrid = React.createClass({
         switch (item.type) {
             case LayoutComponentTypes.SceneGraph:
                 return <SceneGraph isLayout={true} _id={self.state.data.sceneGraph._id}/>;
-                break;
-            case LayoutComponentTypes.SceneList:
-                return <SceneChooser isLayout={true} sceneFocusHandler={GridStore.focusScene}/>;
                 break;
             case LayoutComponentTypes.SceneGraphList:
                 return <SceneGraphChooser isLayout={true} sceneGraphFocusHandler={GridStore.focusSceneGraph}/>;
