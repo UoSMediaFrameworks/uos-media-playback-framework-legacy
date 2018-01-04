@@ -5,6 +5,7 @@ var hat = require('hat');
 var ReactGridUtils = require('react-grid-layout').utils;
 var LayoutComponentColumns = require('../../constants/layout-constants').ColumnTypes;
 var LayoutComponentConstants = require('../../constants/layout-constants').ComponentTypes;
+var PresetLayouts = require('../../constants/layout-constants').PresetLayouts;
 
 class LayoutManager {
     constructor() {
@@ -21,8 +22,7 @@ class LayoutManager {
         var loadedLayout = this.getLayoutFromLocalStorage();
 
         if(loadedLayout.length === 0) {
-            this.addComponent(LayoutComponentConstants.SceneList);
-            this.addComponent(LayoutComponentConstants.SceneMediaBrowser);
+            this.layout = this.loadPreset(PresetLayouts.default)
         } else {
             this.layout = loadedLayout;
         }
@@ -201,6 +201,14 @@ class LayoutManager {
             // APEP TODO Values of Infinity get converted to nulls in local storage.  Must write test to fix
             return parsedLayout;
         }
+    }
+
+    loadPreset(presetLayout) {
+        //layouts are saved without id so we need to add one back in when loading presets.
+        presetLayout.forEach(item => {
+            item.i = hat().toString();
+        });
+        return presetLayout;
     }
 
     // APEP TODO Ask why in a save to local storage are we also applying a delta to our state.
