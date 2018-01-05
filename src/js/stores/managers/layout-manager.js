@@ -20,12 +20,30 @@ class LayoutManager {
         this.defaultComponentStartingY = Infinity;
 
         var loadedLayout = this.getLayoutFromLocalStorage();
-
-        if(loadedLayout.length === 0) {
-            this.layout = this.loadPreset(PresetLayouts.default)
+        
+        //NB: local storage will always explicity return null if key dosn't exist
+        if (loadedLayout !== null) { 
+            this.layout = this.ensureValidComponents(loadedLayout);
         } else {
-            this.layout = loadedLayout;
+            //layout not present in localstorage so load default.
+            this.layout = this.ensureValidComponents(this.loadPreset(PresetLayouts.default));
         }
+
+    }
+
+    ensureValidComponents(unsafeLayout) {
+        var safeLayout = [];
+        unsafeLayout.forEach(LayoutComponent => {
+            
+            //check component type exists in constants and add it to the safe layout
+            Object.keys(LayoutComponentConstants).forEach(function(key) {
+                if (LayoutComponentConstants[key] == LayoutComponent.type) {
+                  safeLayout.push(LayoutComponent);
+                }
+            });
+
+        });
+        return safeLayout;
     }
 
     minimize(index, component) {
