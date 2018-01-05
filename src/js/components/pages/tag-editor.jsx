@@ -13,7 +13,7 @@ var ReactTags = require('react-tag-input').WithContext;
 var saveTimeout = null;
 
 //autosave timeout length - should be ~instant here to avoid missing tags
-const saveTimeoutLength = 500;
+const saveTimeoutLength = 100;
 
 //should probably be in a config? MK
 const remoteTagsEndpoint = 'http://localhost:3000/image/tags/'
