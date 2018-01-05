@@ -164,12 +164,10 @@ var SceneListener = React.createClass({
     },
     componentWillReceiveProps:function(nextProps){
         console.log("listener will mount wiilRP",nextProps);
-        HubSendActions.subscribeScene(this._getSceneId());
         var scene = this._getScene();
         this.setState({scene:scene})
     },
     componentDidMount: function () {
-        HubSendActions.subscribeScene(this._getSceneId());
         try {
             SceneStore.addChangeListener(this._onChange);
             this._maybeUpdatePlayer();
@@ -190,7 +188,10 @@ var SceneListener = React.createClass({
           /*  console.log("state.scene changed - update player");*/
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevProps.activeScene, this.props.activeScene)) {
-           /* console.log("activeScene changed - update player");*/
+            // APEP if we switch activeScene, we should make sure we unsubscribe for updates from previous scenes
+            // And resubscribe to the new active scene
+            HubSendActions.unsubscribeScene(prevProps.activeScene._id);
+            HubSendActions.subscribeScene(this.props.activeScene._id);
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevState.activeThemes, this.state.activeThemes)) {
           /*  console.log("ActiveTheme changed - update player");*/

@@ -354,12 +354,18 @@ var SceneMonacoTextEditor = React.createClass({
 
     shouldComponentUpdate: function (nextProps, nextState) {
 
-        if (!this.state.scene) {
-            return true;
-        }
+        //APEP This needs reviewing, I've commented it out, as I don't think it's strictly necessary
+        // if (!this.state.scene) {
+        //     return true;
+        // }
+
         if (!_.isEqual(nextProps.focusedMediaObject, this.props.focusedMediaObject)) {
             return true;
         }
+
+        // APEP if we do not have a ref to the editor in the DOM.  We must force an update to mount the editor again.
+        // This is for when the editor has been dismounted.
+        // Forcing this update triggers the remounting for the editor, giving us the DOM ref again.
         if (!this.refs.monaco.editor) {
             return true;
         }
@@ -371,14 +377,16 @@ var SceneMonacoTextEditor = React.createClass({
         return compareNewPropsAndCurrentEditorCopy;
 
     },
-    componentWillReceiveProps: function (nextProps) {
-        /* HubSendActions.loadScene(nextProps._id);*/
-    },
+
     componentDidUpdate: function (previousProps, previousState) {
 
         try {
-            if (!_.isEqual(this.state.scene, previousState.scene))
+            var sceneChangeShouldUpdate = !_.isEqual(this.state.scene, previousState.scene);
+            var emptyEditorShouldUpdate = this.getMonacoEditorVersionOfScene() === null;
+            if (sceneChangeShouldUpdate || emptyEditorShouldUpdate) {
+                // APEP after updating, make sure we update the monaco editor
                 this.refs.monaco.editor.setValue(this.getSceneString());
+            }
         } catch (e) {
             console.log("Error with bad json: ", e);
         }
