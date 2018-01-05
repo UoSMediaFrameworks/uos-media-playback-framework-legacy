@@ -333,6 +333,18 @@ var SceneActions = {
         }
     },
 
+    uploadingAssets: function() {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.UPLOAD_MEDIA_ATTEMPT,
+        });
+    },
+
+    uploadingAssetsFinished: function() {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.UPLOAD_MEDIA_FINISHED,
+        });
+    },
+
     finaliseResumableUploadAsset: function (sceneId, file, resumableFile, cb) {
         var alertId = hat();
 
