@@ -21,12 +21,11 @@ class LayoutManager {
 
         var loadedLayout = this.getLayoutFromLocalStorage();
         
-        //NB: local storage will always explicity return null if key dosn't exist
-        if (loadedLayout !== null) { 
-            this.layout = this.ensureValidComponents(loadedLayout);
-        } else {
+        if (loadedLayout.length < 1) { 
             //layout not present in localstorage so load default.
             this.layout = this.ensureValidComponents(this.loadPreset(PresetLayouts.default));
+        } else {
+            this.layout = this.ensureValidComponents(loadedLayout);
         }
 
     }
