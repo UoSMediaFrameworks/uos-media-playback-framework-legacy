@@ -5,6 +5,7 @@ var SceneStore = require('../../stores/scene-store');
 var GridStore = require("../../stores/grid-store");
 var HubSendActions = require('../../actions/hub-send-actions');
 var SceneActions = require('../../actions/scene-actions');
+var AssetActions = require('../../actions/asset-actions');
 
 var FontAwesome = require('react-fontawesome');
 var ReactTags = require('react-tag-input').WithContext;
@@ -14,9 +15,6 @@ var saveTimeout = null;
 
 //autosave timeout length - should be ~instant here to avoid missing tags
 const saveTimeoutLength = 100;
-
-//should probably be in a config? MK
-const remoteTagsEndpoint = 'http://localhost:3000/image/tags/'
 
 var TagEditor = React.createClass({
 
@@ -136,7 +134,7 @@ var TagEditor = React.createClass({
             //get any suggested ReactTags_blank
             var suggestedTags = [];
             var self = this;
-            this.getRemoteTags(mediaObject, function (remoteTags) {
+            AssetActions.getSuggestedTags(mediaObject, function (remoteTags) {
               //check each suggested tag isn't already in the scene tags
               for (var i =0; i < remoteTags.length; i++) {
                 if(textOnlyTags.indexOf(remoteTags[i]) === -1) {
@@ -158,21 +156,6 @@ var TagEditor = React.createClass({
             tags2: []
         });
 
-    },
-
-    //fetch tags as text only from image processing service
-    getRemoteTags(mediaObject, callback) {
-        fetch(remoteTagsEndpoint + encodeURIComponent(mediaObject.url))
-          .then(response => {return response.json()})
-          .then(json => {
-            //console.log("Got Remote Tags: ", json);
-            var tags = [];
-            for (var i = 0; i < json[0].length; i++) {
-              tags.push(json[0][i].tag)
-            }
-            callback(tags)
-          }).catch(function (err) {console.log("Error fetching from image processing service", err)})
-          return
     },
 
     _onChange: function () {
@@ -332,7 +315,7 @@ var TagEditor = React.createClass({
       }
 
       //normal state
-      return(
+      return (
         <div>
           {output}
         </div>
