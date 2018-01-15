@@ -5,6 +5,7 @@ var hat = require('hat');
 var ReactGridUtils = require('react-grid-layout').utils;
 var LayoutComponentColumns = require('../../constants/layout-constants').ColumnTypes;
 var LayoutComponentConstants = require('../../constants/layout-constants').ComponentTypes;
+var PresetLayouts = require('../../constants/layout-constants').PresetLayouts;
 
 class LayoutManager {
     constructor() {
@@ -19,13 +20,29 @@ class LayoutManager {
         this.defaultComponentStartingY = Infinity;
 
         var loadedLayout = this.getLayoutFromLocalStorage();
-
-        if(loadedLayout.length === 0) {
-            this.addComponent(LayoutComponentConstants.SceneList);
-            this.addComponent(LayoutComponentConstants.SceneMediaBrowser);
+        
+        if (loadedLayout.length < 1) { 
+            //layout not present in localstorage so load default.
+            this.layout = this.ensureValidComponents(this.loadPreset(PresetLayouts.default));
         } else {
-            this.layout = loadedLayout;
+            this.layout = this.ensureValidComponents(loadedLayout);
         }
+
+    }
+
+    ensureValidComponents(unsafeLayout) {
+        var safeLayout = [];
+        unsafeLayout.forEach(LayoutComponent => {
+            
+            //check component type exists in constants and add it to the safe layout
+            Object.keys(LayoutComponentConstants).forEach(function(key) {
+                if (LayoutComponentConstants[key] == LayoutComponent.type) {
+                  safeLayout.push(LayoutComponent);
+                }
+            });
+
+        });
+        return safeLayout;
     }
 
     minimize(index, component) {
@@ -201,6 +218,14 @@ class LayoutManager {
             // APEP TODO Values of Infinity get converted to nulls in local storage.  Must write test to fix
             return parsedLayout;
         }
+    }
+
+    loadPreset(presetLayout) {
+        //layouts are saved without id so we need to add one back in when loading presets.
+        presetLayout.forEach(item => {
+            item.i = hat().toString();
+        });
+        return presetLayout;
     }
 
     // APEP TODO Ask why in a save to local storage are we also applying a delta to our state.

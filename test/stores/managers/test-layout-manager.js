@@ -34,14 +34,6 @@ describe('LayoutManager', function() {
 
            assert(Array.isArray(manager.layout), "We have an layout array defined");
 
-           assert(manager.layout.length === 2, "We have two components by default");
-
-           var sceneListComponent = _.filter(manager.layout, function(comp){
-               return comp.type === LayoutComponentConstants.SceneList;
-           });
-           assert(Array.isArray(sceneListComponent));
-           assert(sceneListComponent.length === 1);
-
            var mediaBrowserComponent = _.filter(manager.layout, function(comp){
                return comp.type === LayoutComponentConstants.SceneMediaBrowser;
            });

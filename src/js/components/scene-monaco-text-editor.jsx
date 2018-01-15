@@ -3,7 +3,6 @@
 var React = require('react');
 var MonacoEditor = require('react-monaco-editor').default;
 var SceneActions = require('../actions/scene-actions');
-var SceneList = require('./scene-list.jsx');
 var _ = require('lodash');
 
 var saveTimeout;  //APEP global timeout variable to allow us storage the id for clear intervals.

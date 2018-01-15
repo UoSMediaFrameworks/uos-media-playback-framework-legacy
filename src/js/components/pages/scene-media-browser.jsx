@@ -69,12 +69,6 @@ var SceneMediaBrowser = React.createClass({
             <div className='flex-container monaco-editor vs-dark'>
                 <div className={showOverlay}></div>
                 <div className='top-bar'>
-                    <div className='scene-controls'>
-                        <a className='btn btn-danger' onClick={this.deleteSceneHandler}>Delete Scene</a>
-                    </div>
-                    <Loader loaded={this.state.scene ? true : false} message='Loading Scene...'>
-                        <h4 className='scene-name'>{this.state.scene ? this.state.scene.name : ''}</h4>
-                    </Loader>
                 </div>
 
                 <AddMediaObject scene={this.state.scene}/>

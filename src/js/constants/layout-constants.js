@@ -35,5 +35,13 @@ module.exports = {
     ComponentTypesForPresentation: {
         "Graph": "Graph",
         "Graph-Viewer": "Graph-Viewer"
+    },
+    PresetLayouts: {
+        "default": [
+             {"x":0,"y":13,"w":9,"h":9,"_w":9,"_h":9,"type":"Tag-Editor","visible":true,"isResizable":true,"state":"default","moved":false,"static":false},
+             {"x":0,"y":0,"w":9,"h":13,"_w":9,"_h":13,"type":"Scene-Media-Browser","visible":true,"isResizable":true,"state":"default","moved":false,"static":false},
+             {"x":9,"y":0,"w":21,"h":17,"_w":21,"_h":17,"type":"Scene-Editor-GUI","visible":true,"isResizable":true,"state":"default","moved":false,"static":false},
+             {"x":9,"y":17,"w":21,"h":14,"_w":21,"_h":14,"type":"Scene-Editor","visible":true,"isResizable":true,"state":"default","moved":false,"static":false}
+        ]
     }
 };

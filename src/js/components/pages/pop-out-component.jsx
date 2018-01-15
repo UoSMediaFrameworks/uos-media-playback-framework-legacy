@@ -3,7 +3,6 @@ var ReactDOM = require('react-dom');
 var SceneMediaBrowser = require('./scene-media-browser.jsx');
 var SceneGraph = require('./scenegraph.jsx');
 var GraphTest = require('../graphs/index.jsx');
-var SceneChooser = require('./scene-choose-or-create.jsx');
 var SceneGraphChooser = require('./scene-graph-choose-or-create.jsx');
 var SceneListener = require('../../pages/scene-listener.jsx');
 var GraphViewer = require("../../pages/viewer/graph-viewer.jsx");
@@ -46,9 +45,6 @@ var PopOutComp = React.createClass({
         switch (item) {
             case LayoutComponentConstants.SceneGraph:
                 return <SceneGraph _id={self.state.data.sceneGraphId}/>;
-                break;
-            case LayoutComponentConstants.SceneList:
-                return <SceneChooser sceneFocusHandler={GridStore.focusScene}/>;
                 break;
             case LayoutComponentConstants.SceneGraphList:
                 return <SceneGraphChooser sceneGraphFocusHandler={GridStore.focusSceneGraph}/>;
