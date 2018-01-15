@@ -6,10 +6,10 @@ var gitRev = require('git-rev');
 var jsonfile = require('jsonfile');
 var https = require('https');
 
-var APP_VERSION_URL = 'https://api.github.com/repos/UoSMediaFrameworks/uos-media-playback-framework-legacy/commits/dev';
 var HOST_URL = 'api.github.com';
 var PATH_URL = '/repos/UoSMediaFrameworks/uos-media-playback-framework-legacy/commits/';
 var ENV_BRANCH = 'dev';
+
 //APEP: Following github api documentation, a user agent string is required with preference being project name
 //https://developer.github.com/v3/#user-agent-required
 var GITHUB_API_REQUIRED_USER_AGENT_STRING = 'UoSMediaFramework/uos-media-playback-framework-legacy';
@@ -40,7 +40,7 @@ function build() {
  * https://developer.github.com/v3/#rate-limiting
  *
  */
-function buildUsingGithubPublicAPI() {
+function buildUsingGithubPublicAPI(callback) {
     return https.get({
         host: HOST_URL,
         path: PATH_URL + ENV_BRANCH,
@@ -55,7 +55,7 @@ function buildUsingGithubPublicAPI() {
         });
         response.on('end', function() {
 
-            console.log("buildUsingGithubPublicAPI - github request - end: ", body);
+            console.log("buildUsingGithubPublicAPI - github request complete");
 
             var githubCommit = JSON.parse(body);
 
@@ -64,14 +64,17 @@ function buildUsingGithubPublicAPI() {
                 sha: githubCommit.sha
             };
 
-            jsonfile.writeFile(VERSION_LOCAL_FILE, githubCommit, function (err) {
-                console.error(err)
-            })
-
+            callback(githubCommit);
         });
     }).on('error', function(err){
         console.log("buildUsingGithubPublicAPI - github request - err", err);
+        callback(null);
     });
 }
 
-buildUsingGithubPublicAPI();
+// APEP in future, if we have a build environment with access to the git repo, we can use a different function
+// and improve on this export to export a utils class with both functions
+module.exports = {
+    buildUsingGithubPublicAPI: buildUsingGithubPublicAPI,
+    VERSION_LOCAL_FILE: VERSION_LOCAL_FILE
+};
