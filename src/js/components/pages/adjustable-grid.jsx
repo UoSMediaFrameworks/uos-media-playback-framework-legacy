@@ -8,7 +8,6 @@ var SceneEditorGUI = require('./scene-editor-gui.jsx');
 var TagEditor = require('./tag-editor.jsx');
 var SceneGraph = require('./scenegraph.jsx');
 var GraphTest = require('../graphs/index.jsx');
-var SceneChooser = require('./scene-choose-or-create.jsx');
 var SceneGraphChooser = require('./scene-graph-choose-or-create.jsx');
 var SceneListener = require('../../pages/scene-listener.jsx');
 var GraphViewer = require("../../pages/viewer/graph-viewer.jsx");
@@ -19,7 +18,9 @@ var _ = require("lodash");
 var SceneActions = require("../../actions/scene-actions");
 var LayoutConstants = require("../../constants/layout-constants"),
     LayoutComponentTypes = LayoutConstants.ComponentTypes,
-    LayoutComponentTitles = LayoutConstants.ComponentTitles;
+    LayoutComponentTitles = LayoutConstants.ComponentTitles,
+    LayoutComponentTypesForPopout = LayoutConstants.ComponentTypesForPopout,
+    LayoutComponentTypesForPresentation = LayoutConstants.ComponentTypesForPresentation;
 var GraphTitles = require("../../constants/graph-constants").GraphTitles;
 
 ReactGridLayout = WidthProvider(ReactGridLayout);
@@ -58,14 +59,11 @@ var RespGrid = React.createClass({
             case LayoutComponentTypes.SceneGraph:
                 return <SceneGraph isLayout={true} _id={self.state.data.sceneGraph._id}/>;
                 break;
-            case LayoutComponentTypes.SceneList:
-                return <SceneChooser isLayout={true} sceneFocusHandler={GridStore.focusScene}/>;
-                break;
             case LayoutComponentTypes.SceneGraphList:
                 return <SceneGraphChooser isLayout={true} sceneGraphFocusHandler={GridStore.focusSceneGraph}/>;
                 break;
             case LayoutComponentTypes.GraphViewer:
-                return <GraphViewer isLayout={true} roomId={self.state.data.roomId} />;
+                return <GraphViewer isLayout={true} roomId={self.state.data.roomId}/>;
                 break;
             case LayoutComponentTypes.SceneViewer:
                 return <SceneListener isLayout={true} sceneViewer={true} sceneId={self.state.data.scene._id}/>;
@@ -75,10 +73,10 @@ var RespGrid = React.createClass({
                 break;
             case LayoutComponentTypes.SceneMediaBrowser:
                 return ( <SceneMediaBrowser isLayout={true} scene={SceneStore.getScene(this.state.data.scene._id) || {}}
-                                          focusedMediaObject={this.state.data.focusedMediaObject}
-                                          _id={self.state.data.scene._id}>
+                                            focusedMediaObject={this.state.data.focusedMediaObject}
+                                            _id={self.state.data.scene._id}>
                     </SceneMediaBrowser>
-                  )
+                );
                 break;
             case LayoutComponentTypes.SceneEditorGUI:
                 return (
@@ -91,20 +89,22 @@ var RespGrid = React.createClass({
                 break;
             case LayoutComponentTypes.TagEditor:
                 return (
-                  <TagEditor
-                  isLayout={true}
-                  scene={SceneStore.getScene(this.state.data.scene._id) || {}}
-                  focusedMediaObject={this.state.data.focusedMediaObject}
-                  _id={self.state.data.scene._id}
-                  />
-                )
+                    <TagEditor
+                        isLayout={true}
+                        scene={SceneStore.getScene(this.state.data.scene._id) || {}}
+                        focusedMediaObject={this.state.data.focusedMediaObject}
+                        _id={self.state.data.scene._id}
+                    />
+                );
                 break;
             case LayoutComponentTypes.SceneEditor:
-                return ( <LayoutMonacoTextEditor isLayout={true} focusedMediaObject={this.state.data.focusedMediaObject}
-                                               _id={this.state.data.scene._id}
-                                               focusHandler={SceneActions.changeMediaObjectFocus}>
+                return ( <LayoutMonacoTextEditor isLayout={true}
+                                                 focusedMediaObject={this.state.data.focusedMediaObject}
+                                                 focusFromMonacoEditor={this.state.data.fromMonacoEditor}
+                                                 _id={this.state.data.scene._id}
+                                                 focusHandler={SceneActions.changeMediaObjectFocus}>
                     </LayoutMonacoTextEditor>
-                  )
+                );
                 break;
             default:
                 return null;
@@ -116,23 +116,23 @@ var RespGrid = React.createClass({
         var self = this;
         switch (item.type) {
             case LayoutComponentTypes.SceneViewer:
-                 if(self.state.data.scene._id){
-                     return LayoutComponentTitles[item.type] + " - " + self.state.data.scene.name;
-                 }else{
-                     return LayoutComponentTitles[item.type];
-                 }
+                if (self.state.data.scene._id) {
+                    return LayoutComponentTitles[item.type] + " - " + self.state.data.scene.name;
+                } else {
+                    return LayoutComponentTitles[item.type];
+                }
                 break;
             case LayoutComponentTypes.Graph:
-                if(self.state.data.sceneGraph.name){
-                    return GraphTitles[self.state.data.sceneGraph.type]+ " " + LayoutComponentTitles[item.type] + " - " + self.state.data.sceneGraph.name;
-                }else{
+                if (self.state.data.sceneGraph.name) {
+                    return GraphTitles[self.state.data.sceneGraph.type] + " " + LayoutComponentTitles[item.type] + " - " + self.state.data.sceneGraph.name;
+                } else {
                     return LayoutComponentTitles[item.type];
                 }
                 break;
             case LayoutComponentTypes.GraphViewer:
-                if(self.state.data.sceneGraph.name){
+                if (self.state.data.sceneGraph.name) {
                     return LayoutComponentTitles[item.type] + " - " + self.state.data.sceneGraph.name;
-                }else{
+                } else {
                     return LayoutComponentTitles[item.type];
                 }
                 break;
@@ -170,9 +170,9 @@ var RespGrid = React.createClass({
 
         SceneActions.maxComp(index, item, maxHeightValue);
     },
-    popout: function (index, item) {
+    popout: function (index, item, isForPresentation) {
         var popoutElementDom = this.refs[item.i];
-        SceneActions.popoutComp(index, item, popoutElementDom.offsetWidth, popoutElementDom.offsetHeight)
+        SceneActions.popoutComp(index, item, popoutElementDom.offsetWidth, popoutElementDom.offsetHeight, isForPresentation)
     },
     getLeftSideComponent: function (item) {
         if (item.state == "default") {
@@ -249,6 +249,17 @@ var RespGrid = React.createClass({
                 leftComp = rightComp = null;
             }
 
+            var componentPopoutButton = LayoutComponentTypesForPopout.hasOwnProperty(item.type)? < i
+                className={item.state === "default" ? "fa fa-share-alt-square  mf-maximize" : "hidden "}
+                onClick={self.popout.bind(self, index, item, false)
+                }>
+            </i> : <span></span>;
+
+            var componentPresentation = LayoutComponentTypesForPresentation.hasOwnProperty(item.type)? <i
+                className={item.state === "default" ? "fa fa-television  mf-maximize" : "hidden "}
+                onClick={self.popout.bind(self, index, item, true)}>
+            </i> : <span></span>;
+
             if (comp && item.visible) {
                 var compTitle = self.getComponentTitle(item);
                 return (
@@ -261,10 +272,8 @@ var RespGrid = React.createClass({
                                 <div className="grid-layout-controls">
                                     {leftComp}
                                     {rightComp}
-
-                                    <i className={item.state === "default" ? "fa fa-share-alt-square  mf-maximize" : "hidden "}
-                                       onClick={self.popout.bind(self, index, item)}>
-                                    </i>
+                                    {componentPresentation}
+                                    {componentPopoutButton}
                                     <i className={item.state !== "max" ? "hidden" : "fa fa-window-restore mf-restore"}
                                        onClick={self.restore.bind(self, index, item)}>
                                     </i>

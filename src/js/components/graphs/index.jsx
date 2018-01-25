@@ -1,13 +1,14 @@
 var React = require("react");
 var ReactDom = require("react-dom");
-var d3 = require("d3");
-var TransitionGroup = require('react-transition-group/TransitionGroup');
+
 var SceneGraphListStore = require('../../stores/scene-graph-list-store.jsx');
 var HubSendActions = require('../../actions/hub-send-actions');
 var connectionCache = require("../../utils/connection-cache");
 var NarmGraph = require('./narm-graph.jsx');
 var MemoirGraph = require('./memoir-graph.jsx');
 var GDCGraph = require('./gdc-graph.jsx');
+var ThumbGraph = require('./thumbnail-graph.jsx');
+var CeramicGraph = require('./ceramic-graph.jsx');
 var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
 var QRCODE = require('qrcode.react');
 var OptionsMenu = require('./options-menu.jsx');
@@ -18,6 +19,7 @@ var _ = require("lodash");
 var hat = require("hat");
 var GridStore = require("../../stores/grid-store");
 var GraphTypes = require("../../constants/graph-constants").GraphTypes;
+
 var GraphContainer = React.createClass({
     getInitialState: function () {
         return {
@@ -30,8 +32,8 @@ var GraphContainer = React.createClass({
             breadcrumbsList: [],
             viewerURL: window.location.hostname + '/graph-viewer.html#/?room=' + connectionCache.getSocketID(),
             QRToggle: false,
-            width:0,
-            height:0,
+            width: 0,
+            height: 0,
             autocompleteToggle: false,
             breadcrumbsToggle: false,
             autoWalkToggle: false,
@@ -43,10 +45,8 @@ var GraphContainer = React.createClass({
         }
     },
     _onChange: function () {
-
-        var sceneList = SceneGraphListStore.getSceneGraphByID(this.state.graphId);
-        this._initialize(sceneList);
-
+        var sceneGraph = SceneGraphListStore.getSceneGraphByID(this.state.graphId);
+        this._initialize(sceneGraph);
     },
     _onCrumbsChange: function () {
         this.setState({breadcrumbsList: BreadcrumbsStore.getBreadcrumbs()});
@@ -55,7 +55,9 @@ var GraphContainer = React.createClass({
         this.setState({title: title})
     },
     _initialize(sceneList) {
-        var self=this;
+
+        var self = this;
+
         var localRoot = {
             nodes: [],
             links: []
@@ -66,8 +68,10 @@ var GraphContainer = React.createClass({
 
             data.forEach(function (obj) {
                 obj.x = obj.y = 0;
-                obj.cx = self.state.width/ 2 - self.state.width* 0.1;
+                obj.cx = self.state.width / 2 - self.state.width * 0.1;
                 obj.cy = self.state.height / 2 - self.state.height * 0.2;
+                obj.width = 120;
+                obj.height = 90;
                 obj.r = 2;
                 obj.children = [];
                 obj.parents = [];
@@ -91,11 +95,21 @@ var GraphContainer = React.createClass({
                     //if there is a parent push the edge/relationship
                     if (node != parentObj) {
                         if (parentObj != undefined) {
-                            localRoot.links.push({source: parentObj, target: node, visible: true, highlighted: false,textHighlighted:true});
+                            localRoot.links.push({
+                                source: parentObj,
+                                target: node,
+                                visible: true,
+                                highlighted: false,
+                                textHighlighted: true
+                            });
                         }
                         // add the references to those object for later usage to the objects themselves.
-                        parentObj.children.push(node);
-                        node.parents.push(parentObj);
+                        if (parentObj != undefined) {
+                            parentObj.children.push(node);
+                            node.parents.push(parentObj);
+                        }
+
+
                     }
                 })
             })
@@ -137,6 +151,7 @@ var GraphContainer = React.createClass({
         processNodes(sceneList.nodeList);
         processsEdges();
         removeBadRelationships();
+
         this.setState({
             root: localRoot,
             sceneList: sceneList,
@@ -146,7 +161,9 @@ var GraphContainer = React.createClass({
         });
     },
     _getGraphTypeComponent() {
+
         if (this.state.sceneList) {
+
             switch (this.state.type) {
                 case GraphTypes.MEMOIR:
                     return (
@@ -178,6 +195,25 @@ var GraphContainer = React.createClass({
                         innerWidth={this.state.width * 0.8}
                         innerHeight={this.state.height * 0.6}
                     />);
+                    break;
+                case GraphTypes.THUMBNAIL:
+                    return (<ThumbGraph shouldUpdateId={this.state.guid}
+                                        data={this.state.root}
+                                        sceneList={this.state.sceneList}
+                                        innerWidth={this.state.width * 0.8}
+                                        innerHeight={this.state.height * 0.6}
+                                        fullWidth={this.state.width}
+                                        fullHeight={this.state.height}/>);
+                    break;
+                case GraphTypes.CERAMIC:
+                    return (
+                        <CeramicGraph
+                            shouldUpdateId={this.state.guid}
+                            data={this.state.root}
+                            innerWidth={this.state.width}
+                            innerHeight={this.state.height}>
+                        </CeramicGraph>
+                    );
                     break;
                 case undefined:
                     return (
@@ -212,7 +248,7 @@ var GraphContainer = React.createClass({
         BreadcrumbsStore.addChangeListener(this._onCrumbsChange);
         BreadcrumbsStore.setBreadcrumbs(this.state.graphId);
         GridStore.setRoomId(connectionCache.getSocketID());
-        this.setState({height:dom.parentElement.clientHeight, width:dom.parentElement.clientWidth})
+        this.setState({height: dom.parentElement.clientHeight, width: dom.parentElement.clientWidth})
     },
     componentWillReceiveProps: function (nextProps) {
         var queryId;
@@ -224,7 +260,7 @@ var GraphContainer = React.createClass({
             this.setState({graphId: queryId, guid: hat()})
         }
         var dom = ReactDom.findDOMNode(this);
-        this.setState({height:dom.parentElement.clientHeight, width:dom.parentElement.clientWidth, guid: hat()})
+        this.setState({height: dom.parentElement.clientHeight, width: dom.parentElement.clientWidth, guid: hat()})
     },
     componentWillUnmount: function () {
         document.removeEventListener('keyup', this.optionsMenuHandler, false);
@@ -300,15 +336,15 @@ var GraphContainer = React.createClass({
             extraSVGClass = this.state.type || "GDC_SCENE_GRAPH";
         }
 
-         var logos = this.state.type == GraphTypes.NARM?<div>
-             <div className={this.state.graphType + "narm-logo"}>
+        var logos = this.state.type == GraphTypes.NARM ? <div>
+            <div className={this.state.graphType + "narm-logo"}>
                 <img
-                src="/images/salford.png"/>
-                </div>
-                <div className={this.state.graphType + "narm-logo2"}>
+                    src="/images/salford.png"/>
+            </div>
+            <div className={this.state.graphType + "narm-logo2"}>
                 <img src="/images/narmc.png"/>
-                </div>
-         </div> : null;
+            </div>
+        </div> : null;
         return (
             <div ref="parent" className="flex-container">
 
@@ -320,7 +356,7 @@ var GraphContainer = React.createClass({
                 <div ref="graph">
                     <h1 className="title" dangerouslySetInnerHTML={{__html: self.cleanTitle(this.state.title)}}></h1>
                     <svg className={"svg-parent " + extraSVGClass}
-                        width={self.state.width} height={self.state.height}
+                         width={self.state.width} height={self.state.height}
                     >
                         {graph}
                     </svg>

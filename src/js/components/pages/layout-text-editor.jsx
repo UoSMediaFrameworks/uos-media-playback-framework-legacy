@@ -14,14 +14,14 @@ var SCHEMA_URL = window.location.origin + "/schemas/scene-schema.json"; // "http
 
 var SceneMonacoTextEditor = React.createClass({
 
-    componentWillMount:function(){
+    componentWillMount: function () {
         SceneStore.addChangeListener(this._onChange);
     },
-    componentWillUnmount:function(){
+    componentWillUnmount: function () {
         SceneStore.removeChangeListener(this._onChange);
         if (saveTimeout) clearTimeout(saveTimeout);
     },
-    getHumanReadableScene: function(scene) {
+    getHumanReadableScene: function (scene) {
         // APEP Strip out the IDs so they are not displayed
         var sceneVal = _.omit(scene, ['_id', '_groupID']);
         // APEP Add schema property for monaco editor
@@ -29,17 +29,17 @@ var SceneMonacoTextEditor = React.createClass({
         return sceneVal;
     },
 
-    getSceneStringForSceneObj: function(scene) {
+    getSceneStringForSceneObj: function (scene) {
         return JSON.stringify(scene, null, '\t');
     },
 
-    getSceneString: function() {
+    getSceneString: function () {
         var scene = this.getHumanReadableScene(this.state.scene);
 
         return this.getSceneStringForSceneObj(scene);
     },
 
-    basicSceneSanityChecks: function(editedSceneText) {
+    basicSceneSanityChecks: function (editedSceneText) {
         var errors = [];
         var editedScene = {};
 
@@ -55,7 +55,7 @@ var SceneMonacoTextEditor = React.createClass({
             return;
         }
 
-        if(editedScene === {} || Object.keys(editedScene).length < 1) {
+        if (editedScene === {} || Object.keys(editedScene).length < 1) {
             console.log("Cannot look for warnings as no edited scene");
             return;
         }
@@ -64,7 +64,7 @@ var SceneMonacoTextEditor = React.createClass({
 
         var themesAsArray = Object.keys(editedScene.themes);
 
-        if(themesAsArray.length === 0) {
+        if (themesAsArray.length === 0) {
             warnings.push({
                 type: "NO_THEMES",
                 title: "No Themes",
@@ -78,7 +78,7 @@ var SceneMonacoTextEditor = React.createClass({
 
         console.log("duplicateThemeNames: ", duplicateThemeNames);
 
-        if(duplicateThemeNames.length > 0) {
+        if (duplicateThemeNames.length > 0) {
             warnings.push({
                 type: "THEME_DUPLICATION",
                 title: "Duplicate themes",
@@ -90,34 +90,34 @@ var SceneMonacoTextEditor = React.createClass({
         console.log("basicSceneSanityChecks - warnings: ", warnings);
     },
 
-    getState: function() {
+    getState: function () {
         return {
             scene: null,
-            code: null ,
+            code: null,
             focusedMediaObject: null
         };
     },
 
-    getInitialState: function() {
+    getInitialState: function () {
         return this.getState();
     },
 
-    _onChange: function() {
+    _onChange: function () {
         // console.log("SceneMonacoTextEditor - _onChange [ react based update ]")
 
         var scene = SceneStore.getScene(this.props._id);
 
         var compareNewPropsAndCurrentEditorCopy = !_.isEqual(scene, this.getMonacoEditorVersionOfScene());
 
-        if(compareNewPropsAndCurrentEditorCopy) {
+        if (compareNewPropsAndCurrentEditorCopy) {
             var sceneVal = this.getHumanReadableScene(scene);
             var code = this.getSceneStringForSceneObj(sceneVal);
-            this.setState({scene:scene,code:code})
+            this.setState({scene: scene, code: code})
         }
     },
 
     // Try get a JSON copy of the scene loaded in editor for comparsion check
-    getMonacoEditorVersionOfScene: function() {
+    getMonacoEditorVersionOfScene: function () {
         try {
             var newValue = this.refs.monaco.editor.getValue();
             // parse it and see if it blows up
@@ -139,10 +139,10 @@ var SceneMonacoTextEditor = React.createClass({
 
     },
 
-    saveJSON: function() {
-        return function() {
+    saveJSON: function () {
+        return function () {
 
-            if(!this.refs.monaco.editor) {
+            if (!this.refs.monaco.editor) {
                 console.log("Nothing to save yet as component not mounted");
                 return;
             }
@@ -150,7 +150,7 @@ var SceneMonacoTextEditor = React.createClass({
 
                 var newScene = this.getMonacoEditorVersionOfScene();
 
-                var mediaWithoutTagOrType = _.filter(newScene.scene, function(sceneObj){
+                var mediaWithoutTagOrType = _.filter(newScene.scene, function (sceneObj) {
                     return !sceneObj.hasOwnProperty("tags") || !sceneObj.hasOwnProperty("type");
                 });
 
@@ -170,41 +170,43 @@ var SceneMonacoTextEditor = React.createClass({
         }.bind(this);
     },
 
-    onChange: function(newValue, e) {
+    onChange: function (newValue, e) {
         if (saveTimeout) clearTimeout(saveTimeout);
 
         saveTimeout = setTimeout(this.saveJSON(false), 1000);
     },
 
-    onTextSelection: function(e) {
+    onTextSelection: function (e) {
 
         var matches = this.refs.monaco.editor.getModel().findMatches(sceneMediaObjectRegex, false, true, false, false);
 
-        for(var m in matches) {
+        for (var m in matches) {
             var possibleMatch = matches[m];
 
             var selectionRange = new monaco.Range(e.selection.startLineNumber, e.selection.startColumn, e.selection.endLineNumber, e.selection.endColumn);
-            var tagRange = new monaco.Range(possibleMatch.startLineNumber, possibleMatch.startColumn, possibleMatch.endLineNumber, possibleMatch.endColumn );
+            var tagRange = new monaco.Range(possibleMatch.startLineNumber, possibleMatch.startColumn, possibleMatch.endLineNumber, possibleMatch.endColumn);
 
             var isInTags = monaco.Range.containsRange(tagRange, selectionRange);
 
-            if(isInTags)
-                this.props.focusHandler(parseInt(m));
+            if (isInTags)
+                SceneActions.changeMediaObjectFocus(parseInt(m), true);
         }
 
     },
 
-    onChangeCursorPosition: function(e) {
+    onChangeCursorPosition: function (e) {
         // console.log("MONACO - On Cursor Position: ", e);
     },
 
-    editorWillMount: function(m) {
+    editorWillMount: function (m) {
         try {
             m.languages.json.jsonDefaults.setDiagnosticsOptions({
-                validate:true,
+                validate: true,
                 schemas: [{
                     uri: SCHEMA_URL,
                     schema: {
+                        title: "Media Scene",
+                        description: "A document representing a collection of media assets and their tags",
                         type: "object",
                         properties: {
                             _id: {
@@ -213,7 +215,7 @@ var SceneMonacoTextEditor = React.createClass({
                             },
                             name: {
                                 type: "string",
-                                description: "Scene Name"
+                                description: "human readable name to refer to the scene by"
                             },
                             "isLinear": {
                                 "type": "string",
@@ -228,9 +230,80 @@ var SceneMonacoTextEditor = React.createClass({
                             "forceFullSequencePlayback": {
                                 "type": "Boolean",
                                 "description": "Force sequences to fully play before displaying the next",
-                                "enum": [ true, false ]
+                                "enum": [true, false]
+                            },
+                            "displayDuration": {
+                                "description": "How many seconds atemporal assets should be on the screen for",
+                                "type": "number"
+                            },
+                            "displayInterval": {
+                                "description": "How many seconds should be between the showing of assets on the screen",
+                                "type": "number"
+                            },
+                            "transitionDuration": {
+                                "description": "How many seconds it should take for an asset to appear/disappear from the screen",
+                                "type": "number"
+                            },
+                            "maximumOnScreen": {
+                                "description": "maximum counts of media types allowed on the screen at one time",
+                                "type": "object",
+                                "properties": {
+                                    "image": {
+                                        "type": "integer"
+                                    },
+                                    "text": {
+                                        "type": "integer"
+                                    },
+                                    "video": {
+                                        "type": "integer"
+                                    },
+                                    "audio": {
+                                        "type": "integer"
+                                    }
+                                }
+                            },
+                            "themes": {
+                                "description": "represents sets of tags bundled together to make a coherent theme. Each property represents a singular theme.",
+                                "type": "object",
+                                "additionalProperties": {
+                                    "description": "Comma seperated list of tags that belong to this theme.",
+                                    "type": "string"
+                                }
+                            },
+                            "scene": {
+                                "description": "a collection of objects representing the various assets of a scene",
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "_id": {
+                                            "description": "unique identifier for this scene",
+                                            "type": "string"
+                                        },
+                                        "url": {
+                                            "description": "Url pointing to media asset if neccessary. Used for images, video, and audio.",
+                                            "type": "string"
+                                        },
+                                        "text": {
+                                            "description": "Text to display for text media asset.",
+                                            "type": "string"
+                                        },
+                                        "type": {
+                                            "description": "Kind of media it is (only 'image', 'text', 'video', and 'audio' is supported)",
+                                            "type": "string"
+                                        },
+                                        "tags": {
+                                            "description": "Semantic tags for this asset, comma seperated",
+                                            "type": "string"
+                                        },
+                                        "style": {
+                                            "description": "Apply visual CSS rules",
+                                            "type": "object"
+                                        }
+                                    },
+                                    "required": ["_id", "type", "tags"]
+                                }
                             }
-
                         }
                     }
                 }]
@@ -240,9 +313,8 @@ var SceneMonacoTextEditor = React.createClass({
         }
     },
 
-    onDidMount: function(editor, monaco) {
+    onDidMount: function (editor, monaco) {
         // console.log('MONACO - onDidMount', editor);
-
 
         editor.addAction({
             // An unique identifier of the contributed action.
@@ -261,7 +333,7 @@ var SceneMonacoTextEditor = React.createClass({
             contextMenuOrder: 1.5,
 
             // Method that will be executed when the action is triggered.
-            run: function(ed) {
+            run: function (ed) {
                 var successful = document.execCommand('copy');
 
                 // APEP TODO we can give the user an error toastr if the execCommand fails
@@ -277,19 +349,24 @@ var SceneMonacoTextEditor = React.createClass({
         this._onChange();
 
         // this.refs.monaco.editor.onDidChangeCursorPosition(this.onChangeCursorPosition);
-        //
-        // this.refs.monaco.editor.onDidChangeCursorSelection(this.onTextSelection)
+        this.refs.monaco.editor.onDidChangeCursorSelection(this.onTextSelection)
     },
 
-    shouldComponentUpdate: function(nextProps, nextState) {
+    shouldComponentUpdate: function (nextProps, nextState) {
 
-        if(!this.state.scene) {
+        //APEP This needs reviewing, I've commented it out, as I don't think it's strictly necessary
+        // if (!this.state.scene) {
+        //     return true;
+        // }
+
+        if (!_.isEqual(nextProps.focusedMediaObject, this.props.focusedMediaObject)) {
             return true;
         }
-        if(! _.isEqual(nextProps.focusedMediaObject, this.props.focusedMediaObject)) {
-            return true;
-        }
-        if(!this.refs.monaco.editor) {
+
+        // APEP if we do not have a ref to the editor in the DOM.  We must force an update to mount the editor again.
+        // This is for when the editor has been dismounted.
+        // Forcing this update triggers the remounting for the editor, giving us the DOM ref again.
+        if (!this.refs.monaco.editor) {
             return true;
         }
 
@@ -300,40 +377,46 @@ var SceneMonacoTextEditor = React.createClass({
         return compareNewPropsAndCurrentEditorCopy;
 
     },
-    componentWillReceiveProps:function(nextProps){
-       /* HubSendActions.loadScene(nextProps._id);*/
-    },
-    componentDidUpdate: function(previousProps, previousState) {
+
+    componentDidUpdate: function (previousProps, previousState) {
 
         try {
-            if(! _.isEqual(this.state.scene, previousState.scene))
+            var sceneChangeShouldUpdate = !_.isEqual(this.state.scene, previousState.scene);
+            var emptyEditorShouldUpdate = this.getMonacoEditorVersionOfScene() === null;
+            if (sceneChangeShouldUpdate || emptyEditorShouldUpdate) {
+                // APEP after updating, make sure we update the monaco editor
                 this.refs.monaco.editor.setValue(this.getSceneString());
+            }
         } catch (e) {
             console.log("Error with bad json: ", e);
         }
 
 
-        if(this.props.focusedMediaObject !== previousProps.focusedMediaObject) {
+        if (this.props.focusedMediaObject !== previousProps.focusedMediaObject) {
 
             var matches = this.refs.monaco.editor.getModel().findMatches(sceneMediaObjectRegex, false, true, false, false);
             var match = matches[this.props.focusedMediaObject];
 
-            if(!match) {
+            if (!match) {
                 console.log("No selection for media object available");
                 return;
             }
-            this.refs.monaco.editor.setPosition(match.getStartPosition());
-            this.refs.monaco.editor.revealPosition(match.getStartPosition());
+
+            // APEP only set the position and focus of the text editor if the focus event has not come from the editor itself.
+            if (!this.props.focusFromMonacoEditor) {
+                this.refs.monaco.editor.setPosition(match.getStartPosition());
+                this.refs.monaco.editor.revealPosition(match.getStartPosition());
+            }
         }
 
     },
 
-    render: function() {
+    render: function () {
 
         var options = {
             selectOnLineNumbers: true,
-            automaticLayout:true,
-            scrollBeyondLastLine:false
+            automaticLayout: true,
+            scrollBeyondLastLine: false
         };
 
         var requireConfig = {

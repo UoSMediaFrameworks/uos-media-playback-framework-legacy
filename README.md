@@ -4,12 +4,14 @@ This is the currently the only front end for creating scenes and playing scenes.
 
 ## Development
 
+
 Setup your [MediaHub](https://github.com/UoSMediaFrameworks/uos-media-hub-legacy) and [AssetStore](https://github.com/UoSMediaFrameworks/uos-asset-store-legacy) first if you haven't done so already.
 
 Copy the file [env-example.sh](env-example.sh) to `env.sh`.  Set the `ASSET_STORE` and `MEDIA_HUB` exports to the url's of where those are running (if you're developing locally then just leave the defaults, as those services should default to those ports when running).  
 
 `DEBUG` - Allows console logs to be stripped out and other development build processes
 
+Node v4.4.7 and npm v2.15.8. 
 Install the needed npm packages:
 ```
 npm install

@@ -16,10 +16,13 @@ var toastr = require('toastr');
 
 var SceneActions = {
 
-    changeMediaObjectFocus:function(index){
+    // APEP fromMonacoEditor allows the editor to set the focus has come from itself
+    // Any other component should be false
+    changeMediaObjectFocus:function(index, fromMonacoEditor = false){
         AppDispatcher.handleViewAction({
             type: ActionTypes.COMP_MEDIA_OBJECT_FOCUS_SWITCH,
-            index: index
+            index: index,
+            fromMonacoEditor: fromMonacoEditor
         });
     },
     changeFocus:function(itemType){
@@ -98,13 +101,16 @@ var SceneActions = {
             maxHeight:maxHeight
         });
     },
-    popoutComp:function(index,item,width,height){
+
+    // APEP isForPresentation allows a popout for presentation mode, no nav bar and better support for full page
+    popoutComp:function(index,item,width,height, isForPresentation){
         AppDispatcher.handleViewAction({
             type: ActionTypes.COMP_POPOUT,
             index: index,
             item: item,
             width: width,
-            height: height
+            height: height,
+            isForPresentation: isForPresentation
         });
     },
     restoreComp: function (index, item) {
@@ -119,7 +125,6 @@ var SceneActions = {
             type: ActionTypes.COMP_SWITCH_MODE
         });
     },
-
     updateScene: function (scene) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.SCENE_SAVING,
@@ -326,6 +331,18 @@ var SceneActions = {
         if (cb) {
             cb();
         }
+    },
+
+    uploadingAssets: function() {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.UPLOAD_MEDIA_ATTEMPT,
+        });
+    },
+
+    uploadingAssetsFinished: function() {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.UPLOAD_MEDIA_FINISHED,
+        });
     },
 
     finaliseResumableUploadAsset: function (sceneId, file, resumableFile, cb) {

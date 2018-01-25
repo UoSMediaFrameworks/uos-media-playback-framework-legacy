@@ -24,6 +24,31 @@
     left:0;
     z-index:1;
 }
+
+@keyframes rotating
+{
+    0%
+    {
+        transform: rotate(0deg);
+    }
+    50%
+    {
+        transform: rotate(180deg);
+    }
+    100%{
+        transform: rotate(0deg);
+    }
+
+}
+
+.rotate{
+    transform-origin: 50% 50% 0;
+    -webkit-animation: rotating 2.5s 1; /* Safari 4+ */
+    -moz-animation:    rotating 2.5s 1; /* Fx 5+ */
+    -o-animation:      rotating 2.5s 1; /* Opera 12+ */
+    animation:         rotating 2.5s 1; /* IE 10+, Fx 29+ */
+}
+
 /*circle {*/
     /*fill:#fff;*/
     /*stroke:#333;*/
@@ -31,7 +56,9 @@
     /*cursor:pointer;*/
 
 /*}*/
-
+.THUMBNAIL_SCENE_GRAPH{
+  /*  background-image:url(../images/light-gray-bg.jpg);*/
+}
 .NARM_SCENE_GRAPH{
     background-image:url(../images/stripes.png);
 }
@@ -44,6 +71,7 @@
     padding-bottom:5vh;
     /*display:none;*/
 }
+
 .narm-logo2{
     bottom: 0;
     right:0;
@@ -58,7 +86,7 @@ line, path {
     stroke-width:0.25;
     transition:opacity 1s, stroke-width 5s;
     opacity:0.125;
-    stroke:#fff;
+/*    stroke:#fff;*/
     fill:none;
 }
 .opaque {
@@ -333,7 +361,7 @@ circle.longHL2 {
 .visible-path2 {
     stroke-width: 2;
     transition: opacity 3s, stroke-width 5s;
-    stroke: black;
+   /* stroke: black;*/
     opacity: 0.5;
     fill: none;
 }
@@ -498,7 +526,7 @@ text {
 .highlightedLink2 {
     stroke-width: 3;
     opacity: 1;
-    stroke: black;
+/*    stroke: black;*/
 }
 
 .longLinkHL {

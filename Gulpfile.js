@@ -28,6 +28,10 @@ var cssGlobs = ['src/css/**/*.css'];
 gracefulFs.gracefulify(realFs);
 var static_server = require('./static_server');
 
+// APEP tools for creating and writing the version json file
+var gitVersion = require('./build/app-versioning/app-version');
+var jsonfile = require('jsonfile');
+
 /*
  only uglify in production.  Since chrome inspector doesn't support source map
  variable names, debugging sucks when minified
@@ -124,8 +128,14 @@ gulp.task('bundlejs', function() {
     );
 });
 
-gulp.task('build-version-document', function() {
-    return run('node ./build/app-versioning/app-version.js').exec();
+gulp.task('build-version-document', function(cb) {
+    gitVersion.buildUsingGithubPublicAPI(function(versionJsonDoc) {
+        if(versionJsonDoc) {
+            jsonfile.writeFile(gitVersion.VERSION_LOCAL_FILE, versionJsonDoc, cb);
+        } else {
+            cb();
+        }
+    })
 });
 
 gulp.task('include-monaco-editor', function() {
