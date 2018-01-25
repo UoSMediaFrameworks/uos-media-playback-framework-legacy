@@ -6,18 +6,17 @@ var soundCloud = require('../../../utils/sound-cloud');
 var AudioMediaPreviewPlayer = React.createClass({
     getInitialState: function () {
         return {
+            previewReact:null
         };
     },
-
-    render: function () {
-        if (!this.props.mediaObject) {
+    getSoundPreviewElement:function(props){
+        if (!props.mediaObject) {
             return (
                 <span></span>
             );
         } else {
-            var self = this;
-            if (this.props.mediaObject.url.indexOf("soundcloud.com") !== -1) {
-                soundCloud.streamUrl(this.props.mediaObject.url, function (err, streamUrl) {
+            if (props.mediaObject.url.indexOf("soundcloud.com") !== -1) {
+                soundCloud.streamUrl(props.mediaObject.url, function (err, streamUrl) {
                     if (err) {
                         return (
                             <span></span>
@@ -25,7 +24,7 @@ var AudioMediaPreviewPlayer = React.createClass({
                     } else {
                         return (
                             <audio
-                                id={self.props.id}
+                                id={props.id}
                                 className="react-audio-player"
                                 src={streamUrl}
                                 controls>
@@ -36,14 +35,26 @@ var AudioMediaPreviewPlayer = React.createClass({
             } else {
                 return (
                     <audio
-                        id={this.props.id}
+                        id={props.id}
                         className="react-audio-player"
-                        src={this.props.mediaObject.url}
+                        src={props.mediaObject.url}
                         controls>
                     </audio>
                 )
             }
         }
+    },
+    componentWillReceiveProps(nextProps,nextState){
+        var element = this.getSoundPreviewElement(nextProps);
+        this.setState({previewReact:element})
+    },
+    render: function () {
+        if(this.state.previewReact){
+            return this.state.previewReact;
+        }else{
+            return null;
+        }
+
     }
 });
 
