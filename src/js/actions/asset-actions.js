@@ -14,7 +14,7 @@ var AssetActions = {
                 fetchSuggestedImageTags(mediaObject, callback); 
                 break;
             default: 
-                callback(); 
+                callback([]); 
                 break;
         };
         //todo could implement video tags through AWS and text through a NLP service? need to look at adding timecode to video tags
