@@ -47,7 +47,6 @@
     "gulp-util": "^3.0.1",
     "hat": "0.0.3",
     "inherits": "^2.0.1",
-    "jquery": "^2.1.1",
     "jsonfile": "^2.4.0",
     "keymirror": "^0.1.0",
     "lodash": "^3.6.0",
