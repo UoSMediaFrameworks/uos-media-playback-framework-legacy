@@ -15,6 +15,10 @@ module.exports = {
         COMP_FOCUS_SWITCH:null,
         COMP_POPOUT:null,
         COMP_MEDIA_OBJECT_FOCUS_SWITCH:null,
+
+        // APEP allow us to track and store some DOM related properties for the layout manager
+        GRID_CONTAINER_UPDATE: null,
+
         ADD_COMPONENT:null,
         REMOVE_COMPONENT:null,
         LAYOUT_CHANGE:null,

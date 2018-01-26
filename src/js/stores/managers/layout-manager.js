@@ -19,9 +19,14 @@ class LayoutManager {
         // APEP specified so we can adjust.
         this.defaultComponentStartingY = Infinity;
 
+        // APEP store some DOM state, we dont have an API to retrieve these values and they might change over time so we have to allow the component to update us via the grid store and a view action.
+        this.gridContainerDOMClientHeight = 0;
+        this.gridContainerDOMClientWidth = 0;
+        this.gridContainerNumberOfRows = 0;
+
         var loadedLayout = this.getLayoutFromLocalStorage();
-        
-        if (loadedLayout.length < 1) { 
+
+        if (loadedLayout.length < 1) {
             //layout not present in localstorage so load default.
             this.layout = this.ensureValidComponents(this.loadPreset(PresetLayouts.default));
         } else {
@@ -33,7 +38,7 @@ class LayoutManager {
     ensureValidComponents(unsafeLayout) {
         var safeLayout = [];
         unsafeLayout.forEach(LayoutComponent => {
-            
+
             //check component type exists in constants and add it to the safe layout
             Object.keys(LayoutComponentConstants).forEach(function(key) {
                 if (LayoutComponentConstants[key] == LayoutComponent.type) {
@@ -172,8 +177,34 @@ class LayoutManager {
         return this.layout.length * 10 % this.cols;
     }
 
+    // APEP the visual editor whats about 550px + 10px = elementHeightPlusMargin
+    calculateMinimumHeightForNewComponent(type, numberOfCols) {
+        if(this.gridContainerDOMClientHeight === 0 || this.gridContainerNumberOfRows === 0) {
+            return this.defaultComponentHeight;
+        }
+
+        if(type === LayoutComponentConstants.SceneEditorGUI) {
+            // APEP calculate the approximate width of the component
+            var gridItemContainerWidth = numberOfCols * (this.gridContainerDOMClientWidth / this.cols);
+
+            // APEP given how the component is styled, a padding of 56% is used to create the height (1 / 1.8 = 56%)
+            var widthToHeightRatio = 1.8;
+
+            // APEP using a fixed aspect ratio, we can devise the elements height using an aspect ratio and the known calculation used for the width of the component.
+            var elementHeight = gridItemContainerWidth / widthToHeightRatio;
+
+            var elementHeightPlusMargin = elementHeight + 10;
+            var rowHeightPlusMargin = this.gridContainerDOMClientHeight / this.gridContainerNumberOfRows;
+            return Math.floor(elementHeightPlusMargin / rowHeightPlusMargin);
+        }
+
+        return this.defaultComponentHeight;
+    }
+
     addComponent(type) {
-        this.layout.push({
+        var componentHeight = this.calculateMinimumHeightForNewComponent(type, this.defaultComponentWidth);
+
+        var newComponent = {
             i: hat().toString(),
             // APEP x, y grid starting position
             x: this.calculateStartingPositionXForNewComponent(),
@@ -181,17 +212,24 @@ class LayoutManager {
 
             // APEP size of component
             w: this.defaultComponentWidth,
-            h: this.defaultComponentHeight,
+            h: componentHeight,
 
             // APEP cached size of component
             _w: this.defaultComponentWidth,
-            _h: this.defaultComponentHeight,
+            _h: componentHeight,
 
             type: type,
             visible: true,
             isResizable: true,
             state: "default"
-        });
+        };
+
+        // APEP this needs more work, if we wish to set the minH, we need to hook into window events and change this value as it will be needed to be changed.
+        /*if(type === LayoutComponentConstants.SceneEditorGUI) {
+            newComponent.minH = componentHeight;
+        }*/
+
+        this.layout.push(newComponent);
     }
 
     removeComponent(id) {
@@ -273,7 +311,7 @@ class LayoutManager {
 
     }
 
-    // APEP TODO maybe remove
+    // APEP TODO maybe remove - currently only used in the testing environment
     findStackedLayoutItemsForGivenSide(leftOrRight) {
         return _.filter(this.layout, function(comp) {
             // APEP TODO using leftOrRightColumn adjust this logic

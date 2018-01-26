@@ -2,7 +2,6 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var ReactGridLayout = require('react-grid-layout');
 var WidthProvider = require('react-grid-layout').WidthProvider;
-var Scene = require('./scene.jsx');
 var SceneMediaBrowser = require('./scene-media-browser.jsx');
 var SceneEditorGUI = require('./scene-editor-gui.jsx');
 var TagEditor = require('./tag-editor.jsx');
@@ -16,6 +15,7 @@ var SceneStore = require("../../stores/scene-store");
 var LayoutMonacoTextEditor = require("./layout-text-editor.jsx");
 var _ = require("lodash");
 var SceneActions = require("../../actions/scene-actions");
+var ViewLayoutActions = require("../../actions/view-layout-actions");
 var LayoutConstants = require("../../constants/layout-constants"),
     LayoutComponentTypes = LayoutConstants.ComponentTypes,
     LayoutComponentTitles = LayoutConstants.ComponentTitles,
@@ -32,17 +32,31 @@ var RespGrid = React.createClass({
             rows: 30
         }
     },
+
     _onChange: function () {
         this.setState({data: GridStore.getGridState()})
     },
+
     componentWillMount: function () {
         GridStore.addChangeListener(this._onChange);
+        window.addEventListener("resize", this.updateDimensions);
     },
+
     componentWillUnmount: function () {
         GridStore.removeChangeListener(this._onChange);
+        window.removeEventListener("resize", this.updateDimensions);
     },
+
+    updateDimensions: function() {
+        var dom = ReactDOM.findDOMNode(this);
+        // APEP ensure we report some key state
+        ViewLayoutActions.gridDOMUpdate(dom.parentElement.clientHeight, this.state.rows, dom.parentElement.clientWidth);
+    },
+
     componentDidMount: function () {
+        this.updateDimensions();
     },
+
     onLayoutChange: function (layout) {
         var self = this;
 
@@ -51,7 +65,7 @@ var RespGrid = React.createClass({
             return _.extend(item, _.findWhere(layout, {i: item.i}));
         });
 
-        SceneActions.layoutChange(mergedList);
+        ViewLayoutActions.layoutChange(mergedList);
     },
     getComponent: function (item) {
         var self = this;
@@ -144,15 +158,15 @@ var RespGrid = React.createClass({
         var item = _.find(this.state.data.layout, function (layoutItem) {
             return layoutItem.i === u.i;
         });
-        SceneActions.changeFocus(item.type);
+        ViewLayoutActions.changeFocus(item.type);
 
     },
     // APEP this could be refactored, no real easy why i've written these to proxy the SceneAction methods.
     min: function (index, item) {
-        SceneActions.minComp(index, item);
+        ViewLayoutActions.minComp(index, item);
     },
     restore: function (index, item) {
-        SceneActions.restoreComp(index, item);
+        ViewLayoutActions.restoreComp(index, item);
     },
 
     // APEP Calculate the height each time this is called
@@ -168,11 +182,11 @@ var RespGrid = React.createClass({
         // Rearranged h = (elementHeight + marginH) / (heightPx + marginH)
         var maxHeightValue = Math.floor(elementHeightPlusMargin / rowHeightPlusMargin);
 
-        SceneActions.maxComp(index, item, maxHeightValue);
+        ViewLayoutActions.maxComp(index, item, maxHeightValue);
     },
     popout: function (index, item, isForPresentation) {
         var popoutElementDom = this.refs[item.i];
-        SceneActions.popoutComp(index, item, popoutElementDom.offsetWidth, popoutElementDom.offsetHeight, isForPresentation)
+        ViewLayoutActions.popoutComp(index, item, popoutElementDom.offsetWidth, popoutElementDom.offsetHeight, isForPresentation)
     },
     getLeftSideComponent: function (item) {
         if (item.state == "default") {
@@ -208,25 +222,25 @@ var RespGrid = React.createClass({
 
         switch (type) {
             case "left":
-                SceneActions.collapseLeft(item);
+                ViewLayoutActions.collapseLeft(item);
                 break;
             case "right":
-                SceneActions.collapseRight(item);
+                ViewLayoutActions.collapseRight(item);
                 break;
         }
     },
     expandComponent: function (item, type) {
         switch (type) {
             case "left":
-                SceneActions.expandLeft(item);
+                ViewLayoutActions.expandLeft(item);
                 break;
             case "right":
-                SceneActions.expandRight(item);
+                ViewLayoutActions.expandRight(item);
                 break;
         }
     },
     removeComponent: function (item) {
-        SceneActions.removeLayoutComponent(item.i);
+        ViewLayoutActions.removeLayoutComponent(item.i);
     },
     render: function () {
         var self = this;

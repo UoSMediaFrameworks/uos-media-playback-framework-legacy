@@ -26,6 +26,8 @@ groupNames.set(113, "Yibing");
 groupNames.set(114, "Mirroring Life");
 groupNames.set(115, "DPL");
 groupNames.set(116, "Salford Press");
+groupNames.set(117, "Textiles");
+groupNames.set(119,"BridgewaterCanal")
 
 function getCookie(name) {
     var value = "; " + document.cookie;
