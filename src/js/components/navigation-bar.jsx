@@ -14,7 +14,8 @@ var LayoutComponentConstants = require('../constants/layout-constants').Componen
 var GraphTypes = require('../constants/graph-constants').GraphTypes;
 var GraphTitles = require('../constants/graph-constants').GraphTitles;
 
-var SceneSelector = require('./scene-selector.jsx')
+var SceneSelector = require('./scene-selector.jsx');
+var ViewLayoutActions = require("../actions/view-layout-actions");
 
 function _getState() {
     return {
@@ -54,7 +55,7 @@ var NavigationBar = React.createClass({
     },
 
     addComponent: function (type) {
-        SceneActions.addLayoutComponent(type);
+        ViewLayoutActions.addLayoutComponent(type);
     },
 
     componentDidMount: function () {
