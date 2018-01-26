@@ -187,8 +187,12 @@ class LayoutManager {
             // APEP calculate the approximate width of the component
             var gridItemContainerWidth = numberOfCols * (this.gridContainerDOMClientWidth / this.cols);
 
+            // APEP given how the component is styled, a padding of 56% is used to create the height (1 / 1.8 = 56%)
+            var widthToHeightRatio = 1.8;
+
             // APEP using a fixed aspect ratio, we can devise the elements height using an aspect ratio and the known calculation used for the width of the component.
-            var elementHeight = gridItemContainerWidth / 1.82;
+            var elementHeight = gridItemContainerWidth / widthToHeightRatio;
+
             var elementHeightPlusMargin = elementHeight + 10;
             var rowHeightPlusMargin = this.gridContainerDOMClientHeight / this.gridContainerNumberOfRows;
             return Math.floor(elementHeightPlusMargin / rowHeightPlusMargin);
