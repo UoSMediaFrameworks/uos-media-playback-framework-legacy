@@ -181,10 +181,18 @@ var GridStore = assign({}, EventEmitter.prototype, {
             case ActionTypes.SAVED_SCENE_GRAPH:
                 GridStore.focusSceneGraph(action.sceneGraph);
                 break;
+
+            // APEP allow us to catch DOM size changes so we can do the minimize size calculations for some components.
+            case ActionTypes.GRID_CONTAINER_UPDATE:
+                gridState.layoutManager.gridContainerDOMClientHeight = action.clientHeight;
+                gridState.layoutManager.gridContainerDOMClientWidth = action.clientWidth;
+                gridState.layoutManager.gridContainerNumberOfRows = action.numberOfRows;
+                // APEP we do not want to emit a change and for any components to rerender for now.
+                break;
         }
 
         return true;
     })
-
 });
+
 module.exports = GridStore;

@@ -141,6 +141,38 @@ describe('LayoutManager', function() {
             assert(component.visible === true);
             assert(component.isResizable === true);
         });
+
+        it('should add the visual gui editor with a calculated h', function() {
+            var manager = new LayoutManager();
+
+            manager.layout = []; // APEP remove default added components
+
+            // APEP setup the DOM size properties so we can calculate screen size specific values
+            manager.gridContainerDOMClientWidth = 1280;
+            manager.gridContainerDOMClientHeight = 720;
+            manager.gridContainerNumberOfRows = 30;
+
+            manager.addComponent(LayoutComponentConstants.SceneEditorGUI);
+
+            assert(manager.layout.length === 1, "The layout array now stores an the newly added component");
+
+            var component = manager.layout[0];
+
+            assert(component.type === LayoutComponentConstants.SceneEditorGUI, "The components type is correct");
+            assert(component.x === 0, "The components X is correct");
+            assert(component.y === Infinity, "The components Y is correct");
+
+            assert(component.state === "default", "The components state is default");
+
+            assert(component.w === manager.defaultComponentWidth);
+            assert(component._w === manager.defaultComponentWidth);
+
+            assert(component.h !== manager.defaultComponentHeight);
+            assert(component._h !== manager.defaultComponentHeight);
+
+            assert(component.visible === true);
+            assert(component.isResizable === true);
+        });
    });
 
    describe('findNeighbours searches the layout for any component neighbouring another component', function() {
