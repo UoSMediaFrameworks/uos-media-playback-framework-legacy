@@ -15,16 +15,10 @@ module.exports = {
         COMP_FOCUS_SWITCH:null,
         COMP_POPOUT:null,
         COMP_MEDIA_OBJECT_FOCUS_SWITCH:null,
-
-        // APEP allow us to track and store some DOM related properties for the layout manager
-        GRID_CONTAINER_UPDATE: null,
-
+        GRID_CONTAINER_UPDATE: null, // APEP allow us to track and store some DOM related properties for the layout manager
         ADD_COMPONENT:null,
         REMOVE_COMPONENT:null,
         LAYOUT_CHANGE:null,
-        SAVED_SCENE:null,
-        SAVED_SCENE_GRAPH:null,
-
 
         /*Breadrumbs*/
         BREADCRUMBS_CLEAR_ALL:null,
@@ -40,9 +34,8 @@ module.exports = {
         BREADCRUMBS_RECORD_FINISH:null,
         BREADCRUMBS_RECORD_EDIT_NAME:null,
 
-
-
-
+        SAVED_SCENE:null,
+        SAVED_SCENE_GRAPH:null,
         SCENE_CHANGE: null,
         SCENE_SAVING: null,
         DELETE_SCENE: null,
@@ -66,6 +59,8 @@ module.exports = {
         UPLOAD_ASSET: null,
         UPLOAD_ASSET_RESULT: null,
         UPLOAD_ASSET_RESULT_REMOVE: null,
+
+        /* UI based notification messages for users */
         STATUS_MESSAGE: null,
         STATUS_MESSAGE_UPDATE: null,
         STATUS_MESSAGE_REMOVE: null,
@@ -83,17 +78,17 @@ module.exports = {
         SCENE_GRAPH_ADD_THEME_TO_STRUCTURE: null,
         SCENE_GRAPH_REMOVE_THEME_FROM_STRUCTURE: null,
         DELETE_SCENE_GRAPH: null,
+
         /*Angel P. Video Store events*/
         GET_TRANSCODED_STATUS_ATTEMPT:null,
         GET_TRANSCODED_STATUS_FAILURE:null,
         GET_TRANSCODED_STATUS_SUCCESS:null,
 
-        DELETE_SCENE_GRAPH: null,
-        RECEIVE_SCENE_GRAPH:null,
         /* APEP Scene Graph Viewer */
         RECEIVE_SCENES_FROM_GRAPH: null,
         RECIEVE_SCENES_AND_THEMES_FROM_SCORE: null
     }),
+
     PayloadSources: keymirror({
         VIEW_ACTION: null,
         HUB_ACTION: null
