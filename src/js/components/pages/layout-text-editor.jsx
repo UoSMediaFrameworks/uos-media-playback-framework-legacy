@@ -6,20 +6,21 @@ var SceneActions = require('../../actions/scene-actions');
 var SceneStore = require('../../stores/scene-store');
 var _ = require('lodash');
 
-var saveTimeout;  //APEP global timeout variable to allow us storage the id for clear intervals.
-
 //TODO APEP: Github issue raised about issue with regex. https://github.com/Microsoft/monaco-editor/issues/216
 var sceneMediaObjectRegex = "{[\\s\\S\\n]{1,10}tags[\\s\\S\\n]*?type[\\s\\S\\n]*?[\\s\\S\\n]}"; //APEP Full media object selection
-var SCHEMA_URL = window.location.origin + "/schemas/scene-schema.json"; // "http://mediaframework.salford.ac.uk/schemas/scene-schema.json";
+// APEP we must handle any issues that arise from the window being missing (test environment)
+var SCHEMA_URL = process.env.NODE_ENV !== "test" ? window.location.origin + "/schemas/scene-schema.json" : "/schemas/scene-schema.json"; // "http://mediaframework.salford.ac.uk/schemas/scene-schema.json";
 
 var SceneMonacoTextEditor = React.createClass({
+
+    saveTimeout: null,
 
     componentWillMount: function () {
         SceneStore.addChangeListener(this._onChange);
     },
     componentWillUnmount: function () {
         SceneStore.removeChangeListener(this._onChange);
-        if (saveTimeout) clearTimeout(saveTimeout);
+        if (this.saveTimeout) clearTimeout(this.saveTimeout);
     },
     getHumanReadableScene: function (scene) {
         // APEP Strip out the IDs so they are not displayed
@@ -171,9 +172,9 @@ var SceneMonacoTextEditor = React.createClass({
     },
 
     onChange: function (newValue, e) {
-        if (saveTimeout) clearTimeout(saveTimeout);
+        if (this.saveTimeout) clearTimeout(this.saveTimeout);
 
-        saveTimeout = setTimeout(this.saveJSON(false), 1000);
+        this.saveTimeout = setTimeout(this.saveJSON(false), 1000);
     },
 
     onTextSelection: function (e) {
@@ -381,8 +382,12 @@ var SceneMonacoTextEditor = React.createClass({
     componentDidUpdate: function (previousProps, previousState) {
 
         try {
+            // APEP see if the new state for the scene has changed
             var sceneChangeShouldUpdate = !_.isEqual(this.state.scene, previousState.scene);
-            var emptyEditorShouldUpdate = this.getMonacoEditorVersionOfScene() === null;
+            // APEP check the monaco editor to see if it already has a value set.
+            var emptyEditorShouldUpdate = this.refs.monaco.editor.getValue() === null || this.refs.monaco.editor.getValue().length === 0;
+
+            // APEP if the scene state has changed, or the editor has no string set, we should set the value in the component.
             if (sceneChangeShouldUpdate || emptyEditorShouldUpdate) {
                 // APEP after updating, make sure we update the monaco editor
                 this.refs.monaco.editor.setValue(this.getSceneString());

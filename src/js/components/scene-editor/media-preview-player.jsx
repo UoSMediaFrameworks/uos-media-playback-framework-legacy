@@ -88,7 +88,6 @@ var MediaObjectPreviewPlayer = React.createClass({
     },
     setupState: function (props) {
         this.setState(this.getInitialState());
-        console.log("componentWillReceiveProps", props)
         if (props) {
             this.previewMediaObject(props);
         }
@@ -99,7 +98,6 @@ var MediaObjectPreviewPlayer = React.createClass({
     },
 
     componentWillReceiveProps: function (nextProps) {
-
         this.setupState(nextProps);
     },
     componentWillUnmount: function () {
@@ -109,7 +107,7 @@ var MediaObjectPreviewPlayer = React.createClass({
     render: function () {
         var reactStyle = {};
 
-        if (this.props.scene != undefined) {
+        if (this.props.scene !== undefined) {
             reactStyle = this._cssToReactCSS(this.props.scene.style);
         }
 

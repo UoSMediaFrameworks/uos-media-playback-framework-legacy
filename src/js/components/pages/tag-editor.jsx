@@ -10,13 +10,13 @@ var AssetActions = require('../../actions/asset-actions');
 var FontAwesome = require('react-fontawesome');
 var ReactTags = require('react-tag-input').WithContext;
 
-//global save timeout
-var saveTimeout = null;
-
 //autosave timeout length - should be ~instant here to avoid missing tags
 const saveTimeoutLength = 100;
 
 var TagEditor = React.createClass({
+
+// instance variables
+    saveTimeout: null,
 
 //lifecycle
 
@@ -39,9 +39,9 @@ var TagEditor = React.createClass({
     },
 
     componentWillUnmount: function () {
-        if (saveTimeout) {
+        if (this.saveTimeout) {
             //this.saveToScene()
-            clearTimeout(saveTimeout);
+            clearTimeout(this.saveTimeout);
         }
         SceneStore.removeChangeListener(this._onChange);
         GridStore.removeChangeListener(this._onFocusChange)
@@ -59,10 +59,10 @@ var TagEditor = React.createClass({
 
     setSave() {
         console.log("TagEditor: Save Scheduled")
-        if (saveTimeout) {
-            clearTimeout(saveTimeout);
+        if (this.saveTimeout) {
+            clearTimeout(this.saveTimeout);
         }
-        saveTimeout = setTimeout(this.saveToScene, saveTimeoutLength);
+        this.saveTimeout = setTimeout(this.saveToScene, saveTimeoutLength);
     },
 
     saveToScene() {
