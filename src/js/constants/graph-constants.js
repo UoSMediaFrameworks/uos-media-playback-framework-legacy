@@ -4,14 +4,16 @@ module.exports = {
         "GDC": "GDC_SCENE_GRAPH",
         "MEMOIR": "MEMOIR_SCENE_GRAPH",
         "THUMBNAIL": "THUMBNAIL_SCENE_GRAPH",
-        "CERAMIC": "CERAMIC_SCENE_GRAPH"
+        "CERAMIC": "CERAMIC_SCENE_GRAPH",
+        "SOUND":"SOUND_GUI"
     },
     GraphTitles: {
         "NARM_SCENE_GRAPH": "NARM",
         "GDC_SCENE_GRAPH": "GDC",
         "MEMOIR_SCENE_GRAPH": "MEMOIR",
         "THUMBNAIL_SCENE_GRAPH": "THUMBNAIL",
-        "CERAMIC_SCENE_GRAPH": "CERAMIC"
+        "CERAMIC_SCENE_GRAPH": "CERAMIC",
+        "SOUND_GUI":"SOUND"
     },
     GraphNodeTypes: {
         "ROOT_NODE_TYPE": "root",

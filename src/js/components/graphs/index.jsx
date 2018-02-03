@@ -19,6 +19,7 @@ var _ = require("lodash");
 var hat = require("hat");
 var GridStore = require("../../stores/grid-store");
 var GraphTypes = require("../../constants/graph-constants").GraphTypes;
+var SoundGui = require('./sound-graph.jsx');
 
 var GraphContainer = React.createClass({
     getInitialState: function () {
@@ -215,6 +216,15 @@ var GraphContainer = React.createClass({
                         </CeramicGraph>
                     );
                     break;
+                case GraphTypes.SOUND:
+                    return (
+                        <SoundGui  shouldUpdateId={this.state.guid}
+                                   data={this.state.sceneList}
+                                   innerWidth={this.state.width}
+                                   innerHeight={this.state.height}/>
+
+
+                    );
                 case undefined:
                     return (
                         <GDCGraph
@@ -302,7 +312,41 @@ var GraphContainer = React.createClass({
     cleanTitle: function (title) {
         return title.replace(/([a-z])([A-Z0-9])(?=[a-z])/g, '$1 $2').replace('GUIscene', 'scene').replace(/(scene|chicago|beijing)?\s(.*)?/i, '<sup>$1</sup><span class="$1">$2</span>');
     },
-
+    _getGraphHTML:function(graph){
+        var extraSVGClass = "";
+        if (this.state.type != undefined) {
+            extraSVGClass = this.state.type || "GDC_SCENE_GRAPH";
+        }
+        if(this.state.sceneList){
+            var self =this;
+            switch(this.state.type){
+                case GraphTypes.SOUND:
+                    return (
+                        <div ref="graph">
+                            <div
+                                 width={self.state.width} height={self.state.height}
+                            >
+                                {graph}
+                            </div>
+                        </div>
+                    );
+                case GraphTypes.CERAMIC:
+                case GraphTypes.THUMBNAIL:
+                case GraphTypes.NARM:
+                case GraphTypes.MEMOIR:
+                case GraphTypes.GDC:
+                    return( <div ref="graph">
+                            <h1 className="title" dangerouslySetInnerHTML={{__html: self.cleanTitle(this.state.title)}}></h1>
+                            <svg className={"svg-parent " + extraSVGClass}
+                                 width={self.state.width} height={self.state.height}
+                            >
+                                {graph}
+                            </svg>
+                        </div>
+                    )
+            }
+        }
+    },
     componentWillMount() {
         var queryId;
 
@@ -320,6 +364,7 @@ var GraphContainer = React.createClass({
     render() {
         var self = this;
         var graph = this._getGraphTypeComponent();
+        var graphHTML = this._getGraphHTML(graph);
         var qrCodeClasses = classes({
             'qrcode': true,
             'visible': this.state.QRToggle,
@@ -331,10 +376,7 @@ var GraphContainer = React.createClass({
             'hidden': !this.state.autocompleteToggle
         });
 
-        var extraSVGClass = "";
-        if (this.state.type != undefined) {
-            extraSVGClass = this.state.type || "GDC_SCENE_GRAPH";
-        }
+
 
         var logos = this.state.type == GraphTypes.NARM ? <div>
             <div className={this.state.graphType + "narm-logo"}>
@@ -353,15 +395,8 @@ var GraphContainer = React.createClass({
                         <QRCODE value={this.state.viewerURL}></QRCODE>
                     </div>
                 </div>
-                <div ref="graph">
-                    <h1 className="title" dangerouslySetInnerHTML={{__html: self.cleanTitle(this.state.title)}}></h1>
-                    <svg className={"svg-parent " + extraSVGClass}
-                         width={self.state.width} height={self.state.height}
-                    >
-                        {graph}
-                    </svg>
-                </div>
 
+                {graphHTML}
                 {/*OPTIONS Menu Item here*/}
                 <OptionsMenu
                     optionsMenuToggle={this.state.optionsMenuToggle}
