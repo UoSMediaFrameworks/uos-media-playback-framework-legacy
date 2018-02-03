@@ -109,6 +109,7 @@ var NavigationBar = React.createClass({
                                         <option value={GraphTypes.NARM}>{GraphTitles.NARM_SCENE_GRAPH}</option>
                                         <option value={GraphTypes.THUMBNAIL}>{GraphTitles.THUMBNAIL_SCENE_GRAPH}</option>
                                         <option value={GraphTypes.CERAMIC}>{GraphTitles.CERAMIC_SCENE_GRAPH}</option>
+                                         <option value={GraphTypes.SOUND}>{GraphTitles.SOUND_GUI}</option>
                                     </select>
                                 </span>
                         <button type='submit' className='btn btn-dark'>Create</button>

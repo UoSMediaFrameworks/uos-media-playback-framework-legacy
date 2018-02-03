@@ -606,7 +606,25 @@ module.exports = {
             'nodeList': []
         }
     },
-
+    getNewSoundSceneGraph:function(name){
+        return {
+            'name': name,
+            'sceneIds': {},
+            'type': GraphTypes.SOUND,
+            'version': GraphVersions.GRAPH_ALPHA_VERSION,
+            'graphThemes': {
+                type: "document",
+                children: {
+                    "SOUNDS": {
+                        type: GraphNodeTypes.ROOT_NODE_TYPE,
+                        children: {}
+                    }
+                }
+            },
+            'excludedThemes': {},
+            'nodeList': []
+        }
+    },
     tryCreateSceneGraph: function (name, type, cb) {
 
         var sceneGraph = {};
@@ -622,6 +640,8 @@ module.exports = {
             sceneGraph = this.getNewThumbnailSceneGraph(name);
         } else if (type === GraphTypes.CERAMIC) {
             sceneGraph = this.getNewCeramicSceneGraph(name);
+        }else if (type === GraphTypes.SOUND) {
+            sceneGraph = this.getNewSoundSceneGraph(name);
         }
 
         HubClient.saveSceneGraph(sceneGraph, function (newSceneGraph) {
@@ -673,7 +693,7 @@ module.exports = {
             type: ActionTypes.DELETE_SCENE_GRAPH,
             sceneGraphId: sceneGraphId
         });
-       
+
     },
     unsubscribeScene: HubClient.unsubscribeScene
 };

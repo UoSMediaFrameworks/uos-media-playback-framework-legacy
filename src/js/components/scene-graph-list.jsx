@@ -51,7 +51,9 @@ var SceneGraphList = React.createClass({
         if (this.props.sortBy == "desc") {
             filteredSceneGraph.reverse();
         }
+   
         var links = filteredSceneGraph.map(function (sceneGraph) {
+
             return (
                 <dd key={sceneGraph._id} className="col-xs-12 mf-link">
                     <div>
