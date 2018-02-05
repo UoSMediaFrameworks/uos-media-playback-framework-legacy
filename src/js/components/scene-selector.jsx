@@ -5,7 +5,7 @@ var React = require('react');
 //stores
 var SceneListStore = require('../stores/scene-list-store');
 var HubSendActions = require('../actions/hub-send-actions');
-var SceneActions = require('../actions/scene-actions');
+var HubClient = require('../utils/HubClient');
 var ReactBootstrap = require('react-bootstrap');
 var Modal = ReactBootstrap.Modal;
 
@@ -120,9 +120,9 @@ var SceneSelector = React.createClass({
     var newName = this.sceneNameEditInput.value;
     var self = this;
     //potentialy risky (saving over scene)
-    SceneActions.getFullScene(this.state.sceneListFilter.value._id, function(scene) {
+    HubClient.loadSceneWithCb(this.state.sceneListFilter.value._id, function(scene) {
       scene.name=newName
-      SceneActions.updateScene(scene);
+      HubClient.save(scene);
       self.setState({showDetailsModal: false, sceneListFilter: {value: scene, label: scene.name}});
     });
 
