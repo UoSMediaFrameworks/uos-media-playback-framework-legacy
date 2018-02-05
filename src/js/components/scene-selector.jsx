@@ -80,7 +80,6 @@ var SceneSelector = React.createClass({
       if (confirm('Deleting a scene will remove all associated images and tags.\n\nAre you sure?')) {
         HubSendActions.deleteScene(this.state.sceneListFilter.value._id);
         this.setState({sceneListFilter: {value: "none", label: "none"}, showDetailsModal: false}) //clear selected scene
-        localStorage.setItem('scene-selector-filter', JSON.stringify({value: 'none', label: 'none'})); //save to local storage to maintain state on refresh
       }
     }
   },
@@ -88,7 +87,6 @@ var SceneSelector = React.createClass({
   _onSceneSelect: function (e) {
     this.props._sceneFocusHandler(e.value) //propergate change up to grid store
     this.setState({sceneListFilter: {value:e.value, label: e.label}}) //update filter box and focused scene
-    localStorage.setItem('scene-selector-filter', JSON.stringify(e.value)); //save to local storage to maintain state on refresh
   },
 
 //modal events
@@ -128,7 +126,11 @@ var SceneSelector = React.createClass({
       self.setState({showDetailsModal: false, sceneListFilter: {value: scene, label: scene.name}});
     });
 
-    
+  },
+
+  componentDidUpdate: function() {
+    //always save filter on change
+    localStorage.setItem('scene-selector-filter', JSON.stringify(this.state.sceneListFilter.value)); //save to local storage to maintain state on refresh
   },
 
   render: function() {
