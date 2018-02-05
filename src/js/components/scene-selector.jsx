@@ -119,11 +119,16 @@ var SceneSelector = React.createClass({
   },
 
   _completeDetailsModal: function() {
-    //potentialy risky (saving over scene, needs proper testing before enabling!!)
-    //var scene = SceneActions.getFullScene(this.state.sceneListFilter.value._id)
-    //scene.name=this.sceneNameEditInput.value
-    //SceneActions.updateScene(scene)
-    this.setState({showDetailsModal: false})
+    var newName = this.sceneNameEditInput.value;
+    var self = this;
+    //potentialy risky (saving over scene)
+    SceneActions.getFullScene(this.state.sceneListFilter.value._id, function(scene) {
+      scene.name=newName
+      SceneActions.updateScene(scene);
+      self.setState({showDetailsModal: false, sceneListFilter: {value: scene, label: scene.name}});
+    });
+
+    
   },
 
   render: function() {
@@ -179,23 +184,21 @@ var SceneSelector = React.createClass({
             <div>
                 <div className="inline-item" style={{marginBottom: "15px"}}>Scene ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
                 <input
-                  id="sceneNameInput"
+                  id="sceneIDbox"
                   className="inline-item"
                   style={{width: "60%"}}
                   value={this.state.sceneListFilter.value._id}
-                  enabled="false"
                   disabled="true"
                 />
               </div>
               <div>
                 <div className="inline-item" style={{marginBottom: "15px"}}>Scene Name:&nbsp;&nbsp;</div>
                 <input
-                  id="sceneNameInput"
+                  id="sceneNameEditInput"
                   className="inline-item"
                   style={{width: "60%"}}
-                  value={this.state.sceneListFilter.value.name}
-                  enabled="false"
-                  disabled="true"
+                  defaultValue={this.state.sceneListFilter.value.name}
+                  ref={(input) => {this.sceneNameEditInput = input;}}
                   /> 
               </div>
               <div>
