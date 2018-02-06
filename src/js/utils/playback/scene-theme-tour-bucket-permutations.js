@@ -5,6 +5,22 @@ var _ = require('lodash');
 
 function SceneThemeTourBucketPermutations() {
 
+    this.generateOnlyScenes = function(scenes) {
+
+        var permutations = [];
+
+        _.forEach(scenes, function(scene) {
+            permutations.push({
+                "scene": scene,
+                "theme": ""
+            });
+        });
+
+        // APEP TODO we can probably just replace this with a single lodash map function due to testing time, opted to leave for now.
+
+        return permutations;
+    };
+
     this.generatePermutationsGivenOnlyScenes = function(scenes) {
 
         var permutations = [];

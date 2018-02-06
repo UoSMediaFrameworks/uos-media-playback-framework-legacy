@@ -22,9 +22,7 @@ var GraphViewer = React.createClass({
     },
 
     getStateFromStores: function() {
-
         // console.log("graph-viewer - getStateFromStores");
-
         return {
             scenes: GraphViewerStore.getScenesForPlayback(),
             themes: GraphViewerStore.getThemesForPlayback(),
@@ -96,8 +94,12 @@ var GraphViewer = React.createClass({
 
             var permutations = [];
 
+            var playFullScenesOnly = GraphViewerStore.getPlayFullScenesOpt();
+
             // APEP with the full scenes loaded, we can appropriately create a tour of these values
-            if(themes.length > 0) {
+            if(playFullScenesOnly) {
+                permutations = sceneThemeTourPermutations.generateOnlyScenes(fullScenes);
+            } else if(themes.length > 0) {
                 permutations = sceneThemeTourPermutations.generatePermutationsGivenScenesAndThemes(fullScenes, themes);
             } else {
                 permutations = sceneThemeTourPermutations.generatePermutationsGivenOnlyScenes(fullScenes);
@@ -207,7 +209,7 @@ var GraphViewer = React.createClass({
         self.setTimeoutWithDelayForNextScene(delay);
 
         console.log("GraphViewer - nextScene - activeScene, activeSceneId: ", newScene, newScene._id);
-        var obj ={activeScene: newScene, activeSceneId: newScene._id, themeQuery: themeQuery}
+        var obj ={activeScene: newScene, activeSceneId: newScene._id, themeQuery: themeQuery};
         GraphViewerStore.updateLastActive(obj);
         self.setState(obj);
     },

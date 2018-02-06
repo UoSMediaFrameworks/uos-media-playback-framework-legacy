@@ -16,6 +16,7 @@ var HubRecieveActions = {
         	scenes: scenes
         });
     },
+
     recieveSceneGraphList: function(sceneGraphs) {
         AppDispatcher.handleServerAction({
             type: ActionTypes.RECEIVE_SCENE_GRAPH_LIST,
@@ -38,12 +39,14 @@ var HubRecieveActions = {
             scene: scene
         });
     },
+
     recieveSceneGraph: function(sceneGraph) {
         AppDispatcher.handleServerAction({
             type: ActionTypes.RECEIVE_SCENE_GRAPH,
             sceneGraph: sceneGraph
         });
     },
+
     recieveLoginResult: function(success, errorMessage) {
         AppDispatcher.handleServerAction({
             type: ActionTypes.HUB_LOGIN_RESULT,
@@ -74,21 +77,20 @@ var HubRecieveActions = {
             scene: scene
         });
     },
+
     savedSceneGraph: function(sceneGraph) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.SAVED_SCENE_GRAPH,
             sceneGraph: sceneGraph
         });
     },
+
     recieveSceneAndThemeListForPlayer: function(scoreCommand) {
-
-        var sceneIds = scoreCommand.play.scenes;
-        var themes = scoreCommand.play.themes;
-
         AppDispatcher.handleViewAction({
             type: ActionTypes.RECIEVE_SCENES_AND_THEMES_FROM_SCORE,
-            sceneIds: sceneIds,
-            themes: themes
+            sceneIds: scoreCommand.play.scenes,
+            themes: scoreCommand.play.themes,
+            playFullScenes: scoreCommand.play.playFullScenes
         });
     }
 };

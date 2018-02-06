@@ -7,9 +7,13 @@ var assign = require('object-assign');
 var _ = require('lodash');
 var CHANGE_EVENT = 'CHANGE_EVENT';
 
+// APEP singleton variables, this are non public
 var _scenes = [];
 var _themes = [];
 var _isScore = false;
+var _playFullScenes = false;
+var _tourThemes = false; // APEP plumbed in ready to allow multiple themes to be joined (simultaneous) rather sequential
+
 var lastActive = {
     activeScene:null,
     activeSceneId:null,
@@ -19,9 +23,7 @@ var lastActive = {
 var GraphViewerStore = assign({}, EventEmitter.prototype, {
 
     getScenesForPlayback: function() {
-
         // APEP Hack so if we from graph shuffle, if score do not
-
         if(_isScore) {
             return _.shuffle(_scenes);
         }
@@ -31,11 +33,17 @@ var GraphViewerStore = assign({}, EventEmitter.prototype, {
     updateLastActive:function(obj){
         lastActive = obj;
     },
+
     getLastActive :function () {
        return lastActive;
     },
+
     getThemesForPlayback: function() {
         return _themes;
+    },
+
+    getPlayFullScenesOpt: function() {
+        return _playFullScenes;
     },
 
     emitChange: function(){
@@ -52,26 +60,21 @@ var GraphViewerStore = assign({}, EventEmitter.prototype, {
 
     dispatcherIndex: AppDispatcher.register(function(payload) {
         var action = payload.action;
-
         switch(action.type) {
             case ActionTypes.RECEIVE_SCENES_FROM_GRAPH:
                 _isScore = false; // APEP ensure we know we are from graph so we want shuffle
                 _scenes = action.sceneIds;
                 _themes = []; // APEP currently from graph we only get scenes so ensure we override any if used by scene and themes
-/*                console.log("graphStore",_scenes,_themes,_isScore);*/
+                _playFullScenes = false; // APEP do not offer this param through this payload, as we expect a simple list
                 GraphViewerStore.emitChange();
-                // APEP we have received a new request from the graph
-
-                // APEP here we need to ensure that an change event is propagated
-
-                // APEP we may how ever not be able to full fill playback until we receive the data required
-            break;
+                break;
 
             case ActionTypes.RECIEVE_SCENES_AND_THEMES_FROM_SCORE:
                 // APEP handle errors - ie do hasOwnProperty or null checks
                 _isScore = true; // APEP ensure we know are from score so we do not wish to shuffle
                 _scenes = action.sceneIds;
                 _themes = action.themes;
+                _playFullScenes = action.hasOwnProperty("playFullScenes") ? action.playFullScenes : false; // APEP if we have received this additional param use it, otherwise it defaults to false
                 GraphViewerStore.emitChange();
                 break;
         }
