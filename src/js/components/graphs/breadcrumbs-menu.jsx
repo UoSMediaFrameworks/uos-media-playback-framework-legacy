@@ -50,7 +50,7 @@ var BreadcrumbsMenu = React.createClass({
         var files = e.target.files; // FileList object
 
         // use the 1st file from the list
-        f = files[0];
+       var f = files[0];
 
         var reader = new FileReader();
         reader.onload = function (event) {
@@ -69,7 +69,7 @@ var BreadcrumbsMenu = React.createClass({
             graphId: self.props.graphId,
             content: content
         };
-        content[0].graphId = self.props.graphId;
+        content[0].graphId = self.props.graphId ? self.props.graphId: undefined;
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(object)));
         element.setAttribute('download', self.props.type + "-id-" + self.props.graphId + "-crumbs");
         element.style.display = 'none';

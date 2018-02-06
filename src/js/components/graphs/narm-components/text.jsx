@@ -35,8 +35,8 @@ var Text = React.createClass({
     },
     calculateTextSize: function (props) {
 
-            var len = props.data.name.substring(0, props.data.r / 3).length;
-            var size =props.data.r / 3;
+            var len = props.data.name.substring(0, props.data.r / 2).length;
+            var size =props.data.r / 4;
             size *= 10 / len;
             size += 1;
             return Math.round(size) + 'px';
@@ -47,7 +47,7 @@ var Text = React.createClass({
             return null;
         }
         return (
-            <text x={this.state.cx} y={this.state.cy} dy=".3em" textAnchor="middle" fontSize={this.state.fontSize}>
+            <text x={this.state.cx} y={this.state.cy} className={"Ceramic2Text"} dy=".35em" textAnchor="middle" fontSize={this.state.fontSize}>
                 {this.state.name}
             </text>
         )

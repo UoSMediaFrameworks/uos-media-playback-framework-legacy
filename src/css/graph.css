@@ -82,7 +82,7 @@
     /*display:none;*/
 
 }
-line, path {
+path {
     stroke-width:0.25;
     transition:opacity 1s, stroke-width 5s;
     opacity:0.125;
@@ -668,4 +668,6 @@ text {
     color: red;
 }
 
-
+.Ceramic2Text{
+ font-weight: bold;
+}

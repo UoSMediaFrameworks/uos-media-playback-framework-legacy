@@ -52,6 +52,7 @@ var Rectangle = React.createClass({
       return thumbnail;
     },
     render(){
+
         if(!this.props.data.visible){
             return null;
         }
