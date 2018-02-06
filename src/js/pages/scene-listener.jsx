@@ -14,6 +14,7 @@ var ImageMediaObject = require('../utils/media-object/image-media-object');
 var VideoMediaObject = require('../utils/media-object/video-media-object');
 var AudioMediaObject = require('../utils/media-object/audio-media-object');
 var RandomVisualPlayer = require('../components/viewer/random-visual-player.jsx');
+var GraphViewerStore = require('../stores/graph-viewer-store');
 var ActiveTheme = require('../components/viewer/viewer-active-theme.jsx');
 var hat = require('hat');
 
@@ -83,7 +84,9 @@ var SceneListener = React.createClass({
         if (scene) {
             console.log("SceneListener - _maybeUpdatePlayer - setScene - scene:", scene);
 
-            this.mediaObjectQueue.setScene(scene); // TODO APEP {hardReset: true} I don't think we want to forcefully removal all
+            // TODO APEP {hardReset: true} I don't think we want to forcefully removal all
+            // APEP if we are forcing full scene playback, lets force transitions.  Only do in this case.
+            this.mediaObjectQueue.setScene(scene, {hardReset: GraphViewerStore.getPlayFullScenesOpt()});
 
             this.updateTags();
         }
