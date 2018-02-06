@@ -6,7 +6,6 @@ var ImageMediaObject = require('../../utils/media-object/image-media-object');
 var TextMediaObject = require('../../utils/media-object/text-media-object');
 var AudioMediaObject = require('../../utils/media-object/audio-media-object');
 var hat = require('hat');
-var $ = require('jquery');
 
 var RandomVisualPlayer = React.createClass({
 
@@ -19,7 +18,8 @@ var RandomVisualPlayer = React.createClass({
             arr: [],
             mediaQueue: {},
             interval: false,
-            loadMediaObjectInterval: null
+            loadMediaObjectInterval: null,
+            style: {}
         };
     },
 
@@ -93,6 +93,7 @@ var RandomVisualPlayer = React.createClass({
 
         this.setState({arr: arr});
     },
+
     shouldComponentUpdate(nextProps, nextState){
         var stateUpdate = this.state === nextState;
         var propsUpdate = this.props === nextProps;
@@ -110,27 +111,8 @@ var RandomVisualPlayer = React.createClass({
 
         return willUpdate;
     },
-    componentWillMount: function () {
-    },
-
-    setPlayerCssFromProps(props) {
-        var self = this;
-        if(props.sceneStyle){
-            $(this.refs.player).removeAttr("style");
-            _.forEach(Object.keys(props.sceneStyle), function (styleKey) {
-                var styleValue = props.sceneStyle[styleKey];
-                $(self.refs.player).css(styleKey, styleValue);
-            });
-        }
-    },
-
-    componentWillUpdate:function(nextProps) {
-        // APEP TODO should we really update the style every update? I'm sure its mostly the same
-        this.setPlayerCssFromProps(nextProps);
-    },
 
     componentDidMount: function () {
-        this.setPlayerCssFromProps(this.props);
         this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
     },
 
@@ -138,7 +120,6 @@ var RandomVisualPlayer = React.createClass({
     mediaObjectTransition: function (mediaObject) {
 
         // console.log("mediaObjectTransition - mediaObjectTransition - this.state.arr.length: ", this.state.arr.length);
-
         try {
             // APEP find the ref media object created from arr.map to queue in render function
             // This gives us the react component required to transition
@@ -206,13 +187,14 @@ var RandomVisualPlayer = React.createClass({
             this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
             if (self.props.mediaQueue.getDisplayInterval() !== undefined && !self.state.interval) {
                 self.startLoadMediaObjectsInterval();
+
                 self.setState({interval: true});
             }
         } catch (e) {
             console.log("RVP - didUpdateError - e: ", e);
         }
-
     },
+
     render: function () {
 
         var self = this;
@@ -234,11 +216,11 @@ var RandomVisualPlayer = React.createClass({
             };
 
             return (
-                <MediaObject ref={mediaObject.guid} key={mediaObject.guid} data={data}></MediaObject>
+                <MediaObject ref={mediaObject.guid} key={mediaObject.guid} data={data} />
             );
         });
 
-        var cueMediaObjects = self.props.cuePointMediaObjects.map(function(mediaObject, index){
+        var cueMediaObjects = self.props.cuePointMediaObjects.map(function(mediaObject, index) {
             var data = {
                 mediaObject: mediaObject,
                 player: self.refs.player,
@@ -251,12 +233,12 @@ var RandomVisualPlayer = React.createClass({
             };
 
             return (
-                <MediaObject ref={mediaObject.guid} key={mediaObject.guid} data={data}></MediaObject>
+                <MediaObject ref={mediaObject.guid} key={mediaObject.guid} data={data} />
             );
         });
 
         return (
-            <div className="player" ref="player">
+            <div className="player" ref="player" style={this.props.sceneStyle}>
                 {q}
                 {cueMediaObjects}
             </div>

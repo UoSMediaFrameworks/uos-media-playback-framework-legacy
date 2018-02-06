@@ -67,6 +67,8 @@ var RespGrid = React.createClass({
 
         ViewLayoutActions.layoutChange(mergedList);
     },
+
+    // APEP TODO review the isLayout property, seems like it is unused in every component but one...
     getComponent: function (item) {
         var self = this;
         switch (item.type) {

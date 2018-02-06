@@ -5,8 +5,10 @@ var React = require('react');
 //stores
 var SceneListStore = require('../stores/scene-list-store');
 var HubSendActions = require('../actions/hub-send-actions');
+var HubClient = require('../utils/HubClient');
 var ReactBootstrap = require('react-bootstrap');
 var Modal = ReactBootstrap.Modal;
+
 
 //components
 var SelectPlus = require('react-select-plus').default;
@@ -27,7 +29,8 @@ var SceneSelector = React.createClass({
 
     return _.extend(this._getState(), {
         sceneListFilter: {value: lastSelectedScene, label: lastSelectedScene.name},
-        showModal: false
+        showModal: false,
+        showDetailsModal: false
     });
   },
 
@@ -66,14 +69,17 @@ var SceneSelector = React.createClass({
 
 //scene actions
   _createSceneHandler: function(sceneName) {
-    HubSendActions.tryCreateScene(sceneName) //dosn't check for duplicates!
+    var self = this;
+    HubSendActions.tryCreateScene(sceneName, function(newScene) {
+      self.setState({sceneListFilter: {value: newScene, label: newScene.name}})
+    }) //dosn't check for duplicate names!
   },
 
   _deleteSceneHandler: function(event) {
     if (this.state.sceneListFilter != null  && this.state.sceneListFilter.value != "none") {
       if (confirm('Deleting a scene will remove all associated images and tags.\n\nAre you sure?')) {
         HubSendActions.deleteScene(this.state.sceneListFilter.value._id);
-        this.setState({sceneListFilter: {value: "none", label: "none"}}) //clear selected scene
+        this.setState({sceneListFilter: {value: "none", label: "none"}, showDetailsModal: false}) //clear selected scene
       }
     }
   },
@@ -81,7 +87,6 @@ var SceneSelector = React.createClass({
   _onSceneSelect: function (e) {
     this.props._sceneFocusHandler(e.value) //propergate change up to grid store
     this.setState({sceneListFilter: {value:e.value, label: e.label}}) //update filter box and focused scene
-    localStorage.setItem('scene-selector-filter', JSON.stringify(e.value)); //save to local storage to maintain state on refresh
   },
 
 //modal events
@@ -99,6 +104,35 @@ var SceneSelector = React.createClass({
     this.setState({showModal: false})
   },
 
+  //details modal
+
+  _showSceneDetailsModal: function() {
+    if (this.state.sceneListFilter.value != "none") {
+      this.setState({showDetailsModal: true})
+    }
+  },
+
+  _closeDetailsModal: function () {
+    this.setState({showDetailsModal: false})
+  },
+
+  _completeDetailsModal: function() {
+    var newName = this.sceneNameEditInput.value;
+    var self = this;
+    //potentialy risky (saving over scene)
+    HubClient.loadSceneWithCb(this.state.sceneListFilter.value._id, function(scene) {
+      scene.name=newName
+      HubClient.save(scene);
+      self.setState({showDetailsModal: false, sceneListFilter: {value: scene, label: scene.name}});
+    });
+
+  },
+
+  componentDidUpdate: function() {
+    //always save filter on change
+    localStorage.setItem('scene-selector-filter', JSON.stringify(this.state.sceneListFilter.value)); //save to local storage to maintain state on refresh
+  },
+
   render: function() {
     return (
       <div>
@@ -114,8 +148,8 @@ var SceneSelector = React.createClass({
               onChange={this._onSceneSelect}/>
             <button
               className="inline-item sceneSelector-button"
-              onClick={this._deleteSceneHandler}>
-              <FontAwesome name='trash-o' size='2x'/>
+              onClick={this._showSceneDetailsModal}>
+              <FontAwesome name='bars' size='2x'/>
             </button>
             <button
               className="inline-item sceneSelector-button"
@@ -140,6 +174,43 @@ var SceneSelector = React.createClass({
             <Modal.Footer>
               <button onClick={this._closeModal}className="btn btn-danger">Cancel</button>
               <button onClick={this._completeModal} className="btn btn-success">Create</button>
+            </Modal.Footer>
+        </Modal>
+
+
+        <Modal show={this.state.showDetailsModal} onHide={this._closeDetailsModal}>
+            <Modal.Header closeButton={true}>
+              <span>Scene Details</span>
+            </Modal.Header>
+            <Modal.Body>
+            <div>
+                <div className="inline-item" style={{marginBottom: "15px"}}>Scene ID:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                <input
+                  id="sceneIDbox"
+                  className="inline-item"
+                  style={{width: "60%"}}
+                  value={this.state.sceneListFilter.value._id}
+                  disabled="true"
+                />
+              </div>
+              <div>
+                <div className="inline-item" style={{marginBottom: "15px"}}>Scene Name:&nbsp;&nbsp;</div>
+                <input
+                  id="sceneNameEditInput"
+                  className="inline-item"
+                  style={{width: "60%"}}
+                  defaultValue={this.state.sceneListFilter.value.name}
+                  ref={(input) => {this.sceneNameEditInput = input;}}
+                  /> 
+              </div>
+              <div>
+                <div className="inline-item">Scene Action:&nbsp;&nbsp;</div>
+                <button onClick={this._deleteSceneHandler}className="btn btn-danger">Delete&nbsp;&nbsp;<FontAwesome name='trash-o' size='1x'/></button>
+              </div>
+            
+            </Modal.Body>
+            <Modal.Footer>
+              <button onClick={this._completeDetailsModal} className="btn btn-success">Done</button>
             </Modal.Footer>
         </Modal>
 

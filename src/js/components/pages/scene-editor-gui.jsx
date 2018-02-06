@@ -9,9 +9,9 @@ var FontAwesome = require('react-fontawesome');
 var Rectangle = require('react-rectangle');
 var ImageLoader = require('react-imageloader');
 
-var saveTimeout = null;
-
 var SceneEditorGUI = React.createClass({
+
+    saveTimeout: null,
 
     getInitialState: function () {
         return _.extend(this.getStateFromStores(), {
@@ -52,9 +52,9 @@ var SceneEditorGUI = React.createClass({
     },
 
     componentWillUnmount: function () {
-        if (saveTimeout) {
+        if (this.saveTimeout) {
             //this.saveToScene()
-            clearTimeout(saveTimeout);
+            clearTimeout(this.saveTimeout);
         }
         SceneStore.removeChangeListener(this._onChange);
         GridStore.removeChangeListener(this._onFocusChange)
@@ -248,10 +248,10 @@ var SceneEditorGUI = React.createClass({
     //schedules a save in 1 second. Avoids to many saves
     setSave() {
         console.log("SceneEditorGUI: Save Scheduled")
-        if (saveTimeout) {
-            clearTimeout(saveTimeout);
+        if (this.saveTimeout) {
+            clearTimeout(this.saveTimeout);
         }
-        saveTimeout = setTimeout(this.saveToScene, 1000);
+        this.saveTimeout = setTimeout(this.saveToScene, 1000);
     },
 
     saveToScene() {

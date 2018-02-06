@@ -653,6 +653,7 @@ module.exports = {
         HubClient.save(scene, function (newScene) {
             HubRecieveActions.savedScene(newScene);
             HubRecieveActions.recieveScene(newScene);
+            cb(newScene); //return new scene too callback
         });
     },
     loadScene: HubClient.loadScene,
