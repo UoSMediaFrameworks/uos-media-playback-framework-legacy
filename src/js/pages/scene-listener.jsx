@@ -7,7 +7,6 @@ var HubSendActions = require('../actions/hub-send-actions');
 var Authentication = require('../mixins/Authentication');
 var Loader = require('../components/loader.jsx');
 var _ = require('lodash');
-var $ = require('jquery');
 var TagMatcher = require('../utils/tag-matcher');
 var MediaObjectQueueManager = require('../utils/media-object/media-object-queue-manager');
 var TextMediaObject = require('../utils/media-object/text-media-object');
@@ -34,30 +33,11 @@ function getTypeByName(typeName) {
 
 var SceneListener = React.createClass({
 
-    statics: {
-        willTransitionFrom: function (transition, component) {
-            HubSendActions.unsubscribeScene(component.getParams().id);
-        }
-    },
-
     _getSceneId: function () {
         if (this.props.activeScene) {
             return this.props.activeScene._id;
         }
-
-        /* Better logic is required to handle the difference between a layout or standalone component*/
-        var sceneId = null;
-        if (this.props.sceneId) {
-            sceneId = this.props.sceneId;
-        }
-        else if (this.props.params) {
-            sceneId = this.props.params.id
-        }
-
-        if(!sceneId){
-            return null;
-        }
-        return sceneId
+        return this.props.sceneId || this.props.params.id;
     },
 
     _getScene: function () {
@@ -66,51 +46,34 @@ var SceneListener = React.createClass({
             if (this.props.activeScene) {
                 return this.props.activeScene;
             }
-            var sceneId = null;
-            if (this.props.sceneId) {
-                sceneId = this.props.sceneId;
-            }
-            else if (this.props.params) {
-                sceneId = this.props.params.id
-            }
 
-            if(!sceneId){
+            var sceneId = this._getSceneId();
+
+            if(sceneId === null) {
                 return null;
             }
-            var scene = SceneStore.getScene(sceneId);
-            console.log("SceneListener - _getScene - sceneId: ", sceneId,scene);
-            return scene;
+
+            console.log("SceneListener - _getScene - sceneId: ", sceneId);
+            return SceneStore.getScene(sceneId);
         } catch (e) {
-            console.log(e)
+            console.log("SceneListener - _getScene - error loading full Scene", e);
             return null;
         }
-
     },
 
     getInitialState: function () {
         return {
             scene: this._getScene(),
             activeThemes: [],
-            fromGraphViewer: this.props.activeScene ? true : false,
+            fromGraphViewer: this.props.activeScene !== null,
             triggeredActiveThemes: {},
             cuePointMediaObjects: [],
             shouldHide: false
         };
     },
 
-    getPlayerElem: function () {
-        return this.refs.player;
-    },
-
     _getSceneForUpdatingPlayerComponent: function () {
         return this.props.activeScene || this.state.scene;
-    },
-
-    _setPlayerClassCssForScene: function (style) {
-        _.forEach(Object.keys(style), function (styleKey) {
-            var styleValue = style[styleKey];
-            $('.player').css(styleKey, styleValue);
-        });
     },
 
     _maybeUpdatePlayer: function () {
@@ -118,13 +81,7 @@ var SceneListener = React.createClass({
         var scene = this._getSceneForUpdatingPlayerComponent();
 
         if (scene) {
-         /*   // APEP Remove the old style added ready for new style or fallback to css class
-            $('.player').removeAttr("style");
-            if (scene.style) {
-                this._setPlayerClassCssForScene(scene.style);
-            }*/
-
-            // console.log("SceneListenr - setScene for mediaObjectQueue - this.props.activeScene:", this.props.activeScene);
+            console.log("SceneListener - _maybeUpdatePlayer - setScene - scene:", scene);
 
             this.mediaObjectQueue.setScene(scene); // TODO APEP {hardReset: true} I don't think we want to forcefully removal all
 
@@ -189,8 +146,8 @@ var SceneListener = React.createClass({
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevProps.activeScene, this.props.activeScene)) {
             // APEP if we switch activeScene, we should make sure we unsubscribe for updates from previous scenes
-            // And resubscribe to the new active scene
             HubSendActions.unsubscribeScene(prevProps.activeScene._id);
+            // And resubscribe to the new active scene
             HubSendActions.subscribeScene(this.props.activeScene._id);
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevState.activeThemes, this.state.activeThemes)) {
@@ -297,13 +254,13 @@ var SceneListener = React.createClass({
         console.log("scene-listener - triggerMediaActiveTheme - called");
 
         // APEP using the themes given, we add the themes into the triggered mapping object
-        // We either create a new counter for the theme
-        // Or increment the counter
         var triggeredActiveThemes = this.state.triggeredActiveThemes;
         _.forEach(themes, function (theme) {
             if (!triggeredActiveThemes.hasOwnProperty(theme)) {
+                // We either create a new counter for the theme
                 triggeredActiveThemes[theme] = 1;
             } else {
+                // Or increment the counter
                 triggeredActiveThemes[theme]++;
             }
         });
@@ -357,7 +314,6 @@ var SceneListener = React.createClass({
     },
 
     render: function () {
-        var self = this;
         // APEP Display Active Theme if available, if not provide a theme selector
         var ThemeDisplay = this.state.fromGraphViewer ?
             <ActiveTheme ref="theme" themeQuery={this.props.themeQuery}/> :
@@ -371,11 +327,14 @@ var SceneListener = React.createClass({
                        className='form-control scene-listener-tag-input'/>
             </form> : <span></span>;
 
+        var self = this;
+
         if (this.state.scene) {
             return (
                 <div className={ self.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"} ref="scene_listener">
-                    <Loader loaded={this.state.scene ? true : false}></Loader>
-                    <RandomVisualPlayer sceneStyle={this.state.scene.style} mediaQueue={this.state.mediaObjectQueue}
+                    <Loader loaded={this.state.scene !== null}></Loader>
+                    <RandomVisualPlayer sceneStyle={this.state.scene.style}
+                                        mediaQueue={this.state.mediaObjectQueue}
                                         triggerMediaActiveTheme={this.triggerMediaActiveTheme}
                                         removeMediaActiveThemesAfterDone={this.removeMediaActiveThemesAfterDone}
                                         cuePointMediaObjects={this.state.cuePointMediaObjects}
