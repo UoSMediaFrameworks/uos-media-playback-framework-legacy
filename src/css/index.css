@@ -886,6 +886,7 @@ html, body, #main, .app {
 .mf-local-width{
     width: 100%;
 }
+
 .mf-pop-out-component{
     overflow-y: auto;
     -webkit-box-flex: 1;
@@ -896,6 +897,11 @@ html, body, #main, .app {
     position: relative;
     word-break: break-word;
 }
+
+.presentation-app .mf-pop-out-component {
+    overflow-y: hidden;
+}
+
 .sort-section{
     margin-bottom: 10px;
 }

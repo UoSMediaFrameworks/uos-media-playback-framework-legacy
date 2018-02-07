@@ -42,7 +42,7 @@ var PresentationLayoutApp = React.createClass({
             return <StatusAlert key={name} name={name} state={messages[name]}/>;
         });
 
-        return (<div className='app'>
+        return (<div className='app presentation-app'>
             <div className="status-messages">
                 {statusAlerts}
             </div>
