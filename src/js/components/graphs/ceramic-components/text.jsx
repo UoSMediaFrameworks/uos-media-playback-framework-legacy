@@ -10,7 +10,7 @@ var Text = React.createClass({
             cx: self.props.data.cx,
             cy: self.props.data.cy - (self.props.data.r + 5),
             name:self.props.data.name,
-            fontSize:self.calculateTextSize(self.props),
+            fontSize:self.props.data.r*0.7,
             opacity:1
         });
     },
@@ -21,7 +21,7 @@ var Text = React.createClass({
         textNode.transition().ease(d3.easeCubicInOut).duration(5000)
             .attr("x", nextProps.data.cx)
             .attr("y", nextProps.data.cy - (nextProps.data.r*1.5))
-            .attr("font-size",this.calculateTextSize(nextProps))
+            .attr("font-size",self.props.data.r*0.7)
             .attr("fill", "white")
             .attr("stroke","none")
             .style("opacity",function(){
@@ -32,7 +32,7 @@ var Text = React.createClass({
                     cx: nextProps.data.cx,
                     cy: nextProps.data.cy - (nextProps.data.r*1.5),
                     name:nextProps.data.name,
-                    fontSize: self.calculateTextSize(nextProps),
+                    fontSize:self.props.data.r*0.7,
                     opacity:nextProps.data.textVisible?1:0
                 })
             });
