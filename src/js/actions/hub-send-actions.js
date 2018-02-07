@@ -526,7 +526,7 @@ module.exports = {
             'nodeList': []
         };
     },
-    getNewCeramicSceneGraph: function () {
+    getNewCeramicSceneGraph: function (name) {
         return {
             'name': name,
             'sceneIds': {},
@@ -606,7 +606,81 @@ module.exports = {
             'nodeList': []
         }
     },
+    getNewCeramic2SceneGraph: function (name) {
+        return {
+            'name': name,
+            'sceneIds': {},
+            'type': GraphTypes.CERAMIC2,
+            'version': GraphVersions.GRAPH_ALPHA_VERSION,
 
+            "graphThemes" : {
+                "type" : "document",
+                "children" : {
+                    "Ceramics" : {
+                        "type" : GraphNodeTypes.ROOT_NODE_TYPE,
+                        "children" : {
+                            "MoonVase" : {
+                                "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                "children" : {
+                                    "MoonVaseTexture" : {
+                                        "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                        "children" : {}
+                                    },
+                                    "MoonVaseColour" : {
+                                        "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                        "children" : {
+                                        }
+                                    }
+                                }
+                            },
+                            "TallVase" : {
+                                "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                "children" : {
+                                    "TallVaseTexture" : {
+                                        "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                        "children" : {}
+                                    },
+                                    "TallVaseColour" : {
+                                        "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                        "children" : {
+                                        }
+                                    }
+                                }
+                            },
+                            "Sahbal" : {
+                                "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                "children" : {
+                                    "SahbalTexture" : {
+                                        "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                        "children" : {}
+                                    },
+                                    "SahbalColour" : {
+                                        "type" : GraphNodeTypes.GTHEME_NODE_TYPE,
+                                        "children" : {}
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "Texture": {
+                        "type": GraphNodeTypes.ROOT_NODE_TYPE,
+                        "children": {
+
+                        }
+                    },
+                    "Colour": {
+                        "type": GraphNodeTypes.ROOT_NODE_TYPE,
+                        "children": {
+
+                        }
+                    }
+                }
+            },
+
+            'excludedThemes': {},
+            'nodeList': []
+        }
+    },
     tryCreateSceneGraph: function (name, type, cb) {
 
         var sceneGraph = {};
@@ -622,6 +696,8 @@ module.exports = {
             sceneGraph = this.getNewThumbnailSceneGraph(name);
         } else if (type === GraphTypes.CERAMIC) {
             sceneGraph = this.getNewCeramicSceneGraph(name);
+        } else if (type === GraphTypes.CERAMIC2) {
+            sceneGraph = this.getNewCeramic2SceneGraph(name);
         }
 
         HubClient.saveSceneGraph(sceneGraph, function (newSceneGraph) {
@@ -673,7 +749,7 @@ module.exports = {
             type: ActionTypes.DELETE_SCENE_GRAPH,
             sceneGraphId: sceneGraphId
         });
-       
+
     },
     unsubscribeScene: HubClient.unsubscribeScene
 };

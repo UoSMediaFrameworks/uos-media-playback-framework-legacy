@@ -8,19 +8,20 @@ var Text = React.createClass({
         var self = this;
         self.setState({
             cx: self.props.data.cx,
-            cy: self.props.data.cy - (self.props.data.r + 10),
+            cy: self.props.data.cy - (self.props.data.r + 5),
             name:self.props.data.name,
-            fontSize:self.calculateTextSize(self.props),
-            opacity:0
+            fontSize:self.props.data.r*0.7,
+            opacity:1
         });
     },
     componentWillReceiveProps:function(nextProps){
         var textNode = d3.select(ReactDOM.findDOMNode(this));
         var self =this;
-        textNode.transition().ease(d3.easeCubicInOut).duration(1500)
+        console.log("angel",nextProps)
+        textNode.transition().ease(d3.easeCubicInOut).duration(5000)
             .attr("x", nextProps.data.cx)
-            .attr("y", nextProps.data.cy - (nextProps.data.r+10))
-            .attr("font-size",this.calculateTextSize(nextProps))
+            .attr("y", nextProps.data.cy - (nextProps.data.r*1.5))
+            .attr("font-size",self.props.data.r*0.7)
             .attr("fill", "white")
             .attr("stroke","none")
             .style("opacity",function(){
@@ -29,9 +30,9 @@ var Text = React.createClass({
             .on('end', function () {
                 self.setState({
                     cx: nextProps.data.cx,
-                    cy: nextProps.data.cy - (nextProps.data.r+10),
+                    cy: nextProps.data.cy - (nextProps.data.r*1.5),
                     name:nextProps.data.name,
-                    fontSize: self.calculateTextSize(nextProps),
+                    fontSize:self.props.data.r*0.7,
                     opacity:nextProps.data.textVisible?1:0
                 })
             });

@@ -14,6 +14,10 @@ var SceneListStore = require('../../stores/scene-list-store'); //scene-list-stor
 var SceneStore = require('../../stores/scene-store');
 var DragDropContainer = require('../basic-draggable/drag-drop-container.jsx');
 
+/// TEmp remove
+var HubClient = require('../../utils/HubClient');
+var HubRecieveActions = require('../../actions/hub-recieve-actions');
+
 var mediaHubGraphURL = process.env.MEDIA_HUB_GRAPH_URL || "";
 
 var SceneItem = React.createClass({
@@ -188,8 +192,6 @@ var SceneGraph = React.createClass({
             }
         }
 
-        console.log("SceneGraph - getStateFromStores: ", state);
-
         return state;
     },
 
@@ -218,7 +220,37 @@ var SceneGraph = React.createClass({
         SceneListStore.removeChangeListener(this._onChange);
         SceneStore.removeChangeListener(this._onChange);
     },
+    _exportSceneGraph:function(){
+        var element = document.createElement('a');
+        var pirateCopy =this.state.sceneGraph;
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(pirateCopy)));
+        element.setAttribute('download', this.props._id);
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+    },
+    _importSceneGraph:function(e){
+        var self = this;
+        var files = e.target.files; // FileList object
 
+        // use the 1st file from the list
+        var f = files[0];
+
+        var reader = new FileReader();
+        reader.onload = function (event) {
+            var parsedText = JSON.parse(event.target.result);
+            var sceneGraph = self.state.sceneGraph;
+            sceneGraph.sceneIds = parsedText.sceneIds;
+            sceneGraph.graphThemes = parsedText.graphThemes;
+            sceneGraph.nodeList = parsedText.nodeList;
+            HubClient.saveSceneGraph(sceneGraph, function (newSceneGraph) {
+                HubRecieveActions.savedSceneGraph(newSceneGraph);
+                HubRecieveActions.recieveSceneGraph(newSceneGraph);
+            });
+        };
+        reader.readAsText(f);
+    },
     _onChange: function () {
         this.setState(this.getStateFromStores());
     },
@@ -259,6 +291,7 @@ var SceneGraph = React.createClass({
 
     render: function () {
         console.log("scene graph", this)
+
         var sceneGraphId = null;
         if (this.props.params) {
             sceneGraphId = this.props.params.id;
@@ -300,7 +333,13 @@ var SceneGraph = React.createClass({
                         <Button onClick={() => this.setState({open: !this.state.open})}>
                             Add, remove and view scenes for the scene graph
                         </Button>
-
+                        <Button onClick={this._exportSceneGraph}>
+                           export
+                        </Button>
+                        <label id="import-input-label" className="custom-file-upload">
+                            <input id="crmbs-import" type="file" onChange={this._importSceneGraph}></input>
+                            <i className="fa fa-cloud-upload">Import</i>
+                        </label>
                         <Panel collapsible expanded={this.state.open}>
 
                             <div className="no-side-padding col-md-4">

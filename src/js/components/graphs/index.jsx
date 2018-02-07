@@ -9,6 +9,7 @@ var MemoirGraph = require('./memoir-graph.jsx');
 var GDCGraph = require('./gdc-graph.jsx');
 var ThumbGraph = require('./thumbnail-graph.jsx');
 var CeramicGraph = require('./ceramic-graph.jsx');
+var Ceramic2Graph = require('./ceramic-graph2.jsx');
 var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
 var QRCODE = require('qrcode.react');
 var OptionsMenu = require('./options-menu.jsx');
@@ -213,6 +214,16 @@ var GraphContainer = React.createClass({
                             innerWidth={this.state.width}
                             innerHeight={this.state.height}>
                         </CeramicGraph>
+                    );
+                    break;
+                case GraphTypes.CERAMIC2:
+                    return (
+                        <Ceramic2Graph
+                            shouldUpdateId={this.state.guid}
+                            data={this.state.root}
+                            innerWidth={this.state.width}
+                            innerHeight={this.state.height}>
+                        </Ceramic2Graph>
                     );
                     break;
                 case undefined:
