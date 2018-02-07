@@ -12,7 +12,7 @@ var Circle = React.createClass({
             y: self.props.data.y,
             cx: self.props.data.cx,
             cy: self.props.data.cy,
-            r: self.props.data.r*1.5,
+            r: self.props.data.r,
             color: self.props.data.color
         });
     },
@@ -24,7 +24,7 @@ var Circle = React.createClass({
             .attr("cx", nextProps.data.cx)
             .attr("x", nextProps.data.x)
             .attr("y", nextProps.data.y)
-            .attr("r", nextProps.data.r*1.5)
+            .attr("r", nextProps.data.r)
             .attr("fill", nextProps.data.color)
             .on('end', function () {
                 self.setState({
@@ -32,7 +32,7 @@ var Circle = React.createClass({
                     y: nextProps.data.y,
                     cx: nextProps.data.cx,
                     cy: nextProps.data.cy,
-                    r: nextProps.data.r*1.5,
+                    r: nextProps.data.r,
                     color: nextProps.data.color
                 })
             });

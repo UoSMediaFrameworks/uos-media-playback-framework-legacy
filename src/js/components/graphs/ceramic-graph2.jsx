@@ -247,7 +247,7 @@ var CeramicGraph2 = React.createClass({
                 _.each(node.children,function(n,i){
 
                     var radian = ((2 * Math.PI) / 4 * (i-1));
-                    n.cx = (Math.sin(radian) * p.innerWidth / 5) + node.cx;
+                    n.cx = (Math.sin(radian) *  p.innerHeight / 5) + node.cx;
                     n.cy = (Math.cos(radian) * p.innerHeight / 5) + node.cy;
                 })}
 
@@ -304,6 +304,9 @@ var CeramicGraph2 = React.createClass({
             node.cy = randomYPosition;
             node.color = "red";
             node.visible =false;
+            node.r = p.innerHeight/30;
+            node._r = node.r;
+            node.textVisible = true;
         });
         _.each(textureNodes,function(node,i){
            var par = _.find(node.parents,function(parent){
@@ -479,8 +482,9 @@ var CeramicGraph2 = React.createClass({
         self.setupSceneNodes(data, properties);
         self.setupSThemeNodes(data,properties);
         self.setupImageNodes(data,properties);
-        self.setupThemeNodes(data,properties);
         self.setupOtherNodes(data,properties);
+        self.setupThemeNodes(data,properties);
+
         self.setupLinkRules(data,properties);
         self.setState({data:data});
     },
@@ -507,7 +511,9 @@ var CeramicGraph2 = React.createClass({
         var nodes = this.state.data.nodes.map((node, i) => {
             if(node.type == 'theme'){
                 console.log("themes ANgel",node)
-
+                if(node.visible == null){
+                    return null
+                }
                 return (
 
                 <g  key={i}>
@@ -523,6 +529,9 @@ var CeramicGraph2 = React.createClass({
             }
         });
         var links = this.state.data.links.map((link, i) => {
+            if(link.visible == null){
+                return null
+            }
             return (<Path data={link} key={i} innerW={self.props.innerWidth} innerH={self.props.innerHeight}></Path>);
         });
 
@@ -536,10 +545,10 @@ var CeramicGraph2 = React.createClass({
                         {/* link objects*/}
                         {links}
                     </g>
-                    <line x1={0} x2={self.props.innerWidth} y1={self.props.innerHeight * 0.3}  y2={self.props.innerHeight * 0.3} stroke={"blue"}/>
+                  {/*  <line x1={0} x2={self.props.innerWidth} y1={self.props.innerHeight * 0.3}  y2={self.props.innerHeight * 0.3} stroke={"blue"}/>
                     <line x1={0} x2={self.props.innerWidth} y1={self.props.innerHeight * 0.3 + self.props.innerHeight * 0.4}  y2={self.props.innerHeight * 0.3 + self.props.innerHeight * 0.4}  stroke={"purple"}/>
                     <line x1={self.props.innerWidth * 0.3} x2={self.props.innerWidth * 0.3} y1={0}  y2={self.props.innerHeight} stroke={"blue"}/>
-                    <line x1={self.props.innerWidth * 0.3 + self.props.innerWidth * 0.4} x2={self.props.innerWidth * 0.3 + self.props.innerWidth * 0.4} y1={0}  y2={self.props.innerHeight}  stroke={"purple"}/>
+                    <line x1={self.props.innerWidth * 0.3 + self.props.innerWidth * 0.4} x2={self.props.innerWidth * 0.3 + self.props.innerWidth * 0.4} y1={0}  y2={self.props.innerHeight}  stroke={"purple"}/>*/}
                  {/*   <line x1={0} x2={this.props.innerWidth} y1={this.props.innerWidth * 0.3 + this.props.innerWidth * 0.3}  y2={this.props.innerWidth * 0.3}/>*/}
                     {/*node objects*/}
                     {nodes}
