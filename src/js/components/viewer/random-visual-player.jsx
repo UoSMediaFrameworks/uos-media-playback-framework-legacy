@@ -13,20 +13,21 @@ var RandomVisualPlayer = React.createClass({
     isUmounting: false,
 
     getInitialState: function () {
+        // interval - time based param for adding new media to the screen
         return {
             queue: [],
             arr: [],
             mediaQueue: {},
-            interval: false,
+            interval: null,
             loadMediaObjectInterval: null,
             style: {}
         };
     },
 
-    loadMediaObject: function (queue) {
+    loadMediaObject: function () {
         var self = this;
         try {
-            var objs = queue.mediaQueue.take([VideoMediaObject, ImageMediaObject, TextMediaObject, AudioMediaObject]);
+            var objs = self.props.mediaQueue.take([VideoMediaObject, ImageMediaObject, TextMediaObject, AudioMediaObject]);
 
             _.forEach(objs, function(obj){
                 if (obj !== undefined) {
@@ -97,12 +98,14 @@ var RandomVisualPlayer = React.createClass({
     shouldComponentUpdate(nextProps, nextState){
         var stateUpdate = this.state === nextState;
         var propsUpdate = this.props === nextProps;
+
         var intervalUpdate = this.state.interval === nextState.interval;
 
         var willUpdate;
 
+        // APEP if the interval has changed, we want to update - TODO review, state update probably catches this
         if (!intervalUpdate) {
-            willUpdate = false;
+            willUpdate = true;
         } else if (!propsUpdate) {
             willUpdate = true
         } else if (!stateUpdate) {
@@ -168,27 +171,31 @@ var RandomVisualPlayer = React.createClass({
         if(this.state.loadMediaObjectInterval)
             clearInterval(this.state.loadMediaObjectInterval);
 
-        this.loadMediaObject(this.props);
+        this.loadMediaObject();
 
         var self = this;
 
         var interval = setInterval(function () {
-            self.loadMediaObject(self.props)
+            self.loadMediaObject();
         }, self.props.mediaQueue.getDisplayInterval());
 
         this.setState({loadMediaObjectInterval: interval});
     },
 
     componentDidUpdate: function () {
-        //TODO APEP I think we may need to clean up the existing media if we update with a new scene
         var self = this;
-        // APEP if we update - transition media or get queues media that has been removed
+
         try {
+            // APEP make sure the queue has reference to the fnt that allows the queue to call transition on react class objects
             this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
-            if (self.props.mediaQueue.getDisplayInterval() !== undefined && !self.state.interval) {
+
+            // APEP make sure we update our state when the component starts for the first time - TODO investigate the need for this
+            if (self.props.mediaQueue.getDisplayInterval() !== undefined && self.state.interval !== self.props.mediaQueue.getDisplayInterval()) {
+
+                // APEP if we've updated, and not started the scene interval
                 self.startLoadMediaObjectsInterval();
 
-                self.setState({interval: true});
+                self.setState({interval: self.props.mediaQueue.getDisplayInterval()});
             }
         } catch (e) {
             console.log("RVP - didUpdateError - e: ", e);
