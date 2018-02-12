@@ -76,6 +76,21 @@ var SoundGui = React.createClass({
         console.log("score",scoreList);
         this.setState({themes:scoreList.play.themes});
     },
+    hashCode:function(str){
+        var hash = 0;
+        for (var i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return hash;
+    },
+    intRGB:function(i){
+        var c = (i & 0x00FFFFFF)
+            .toString(16)
+            .toUpperCase();
+        var value =  "00000".substring(0, 6 - c.length) + c;
+        console.log("angel",value)
+        return "00000".substring(0, 6 - c.length) + c;
+    },
     handleSwitch:function (event) {
         this.setState({switch:!this.state.switch});
     },
@@ -90,7 +105,7 @@ var SoundGui = React.createClass({
         var columnHeaders = [];
         var rowHeaders = [];
         _.each(themes,function(theme){
-               var test = theme.themeTags.split(',');
+               var test = theme.themeTags.split(/\s+(?:,|AND|OR)\s+/);
             if(!self.state.switch){
                 columnHeaders.push(test[1]);
                 rowHeaders.push(test[0]);
@@ -100,7 +115,6 @@ var SoundGui = React.createClass({
             }
 
         });
-
         columnHeaders =_.uniq(columnHeaders);
         rowHeaders =_.uniq(rowHeaders);
 
@@ -123,16 +137,20 @@ var SoundGui = React.createClass({
                                 </div>
                             </label></td>);
                     }else{
-                        cell.push(<th  width={self.props.innerWidth/(columnHeaders.length+1)}key={cellID} scope="col">{columnHeaders[idx -1]}</th>)
+                        cell.push(<th style={{"backgroundColor":"#" +self.intRGB(self.hashCode(columnHeaders[idx -1]))}} width={self.props.innerWidth/(columnHeaders.length+1)}key={cellID} scope="col">{columnHeaders[idx -1]}</th>)
                     }
                 }else{
                     if(idx == 0){
-                        cell.push(<th key={cellID} scope="row">{rowHeaders[i-1]}</th>)
+                        cell.push(<th style={{"backgroundColor":"#" +self.intRGB(self.hashCode(rowHeaders[i - 1]))}}  key={cellID} scope="row">{rowHeaders[i-1]}</th>)
                     }else{
                         var obj = _.find(themes,function(theme){
-                            return theme.name === rowHeaders[i-1] + columnHeaders[idx -1];
+                            if(!self.state.switch) {
+                                return theme.name === rowHeaders[i - 1] + columnHeaders[idx - 1];
+                            }else{
+                                return theme.name === columnHeaders[idx - 1] +  rowHeaders[i - 1];
+                            }
                         });
-
+                        console.log("angel",obj)
                         cell.push(<td key={cellID} id={cellID}>
                             <label className="switch" style={{height:self.props.innerHeight/(rowHeaders.length +1),
                                 width:self.props.innerWidth/(columnHeaders.length+1)}}>
