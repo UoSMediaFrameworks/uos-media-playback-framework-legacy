@@ -100,7 +100,8 @@ var GraphViewer = React.createClass({
             if(playFullScenesOnly) {
                 permutations = sceneThemeTourPermutations.generateOnlyScenes(fullScenes);
             } else if(themes.length > 0) {
-                permutations = sceneThemeTourPermutations.generatePermutationsGivenScenesAndThemes(fullScenes, themes);
+                // permutations = sceneThemeTourPermutations.generatePermutationsGivenScenesAndThemes(fullScenes, themes);
+                permutations = sceneThemeTourPermutations.generateMergedScenesAndThemes(fullScenes, themes);
             } else {
                 permutations = sceneThemeTourPermutations.generatePermutationsGivenOnlyScenes(fullScenes);
             }
