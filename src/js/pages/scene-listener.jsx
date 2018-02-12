@@ -191,11 +191,9 @@ var SceneListener = React.createClass({
             event.preventDefault();
         }
 
-        var scene = this._getSceneForUpdatingPlayerComponent();
-
         if (this.props.themeQuery) {
             // APEP the tag matcher will make sure all active media not related to new scene is removed
-            var themeQry = scene.themes[this.props.themeQuery];
+            var themeQry = this.props.themeQuery;
 
             if (this.state.mediaObjectQueue) {
                 this.state.mediaObjectQueue.setTagMatcher(new TagMatcher("(" + themeQry + ")"));
@@ -319,7 +317,7 @@ var SceneListener = React.createClass({
     render: function () {
         // APEP Display Active Theme if available, if not provide a theme selector
         var ThemeDisplay = this.state.fromGraphViewer ?
-            <ActiveTheme ref="theme" themeQuery={this.props.themeQuery}/> :
+            <ActiveTheme ref="theme" scene={this.state.scene} themeQuery={this.props.themeQuery}/> :
             <ThemeSelector ref="theme" shouldHide={this.state.shouldHide} themeChange={this.handleThemeChange}
                            scene={this._getSceneForUpdatingPlayerComponent()}/>;
 

@@ -31,11 +31,11 @@ describe('SceneThemeTourBucketPermutations', function () {
             "t1": "tag5, tag6"
         }
     };
-    
+
     var s4 = {
         "name": 's4',
         "themes": {
-            
+
         }
     };
 
@@ -57,7 +57,7 @@ describe('SceneThemeTourBucketPermutations', function () {
             var expectedNumberOfPermutations = 1;
             var expectedPermutation = {
                 "scene": s1,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             };
 
             assert.strictEqual(permutations.length, expectedNumberOfPermutations);
@@ -81,10 +81,10 @@ describe('SceneThemeTourBucketPermutations', function () {
             var expectedNumberOfPermutations = 2;
             var expectedPermutations = [{
                 "scene": s1,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             },{
                 "scene": s2,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             }];
 
             assert.strictEqual(permutations.length, expectedNumberOfPermutations);
@@ -108,13 +108,13 @@ describe('SceneThemeTourBucketPermutations', function () {
             var expectedNumberOfPermutations = sceneAndThemesScenarioThree.scenes.length;
             var expectedPermutations = [{
                 "scene": s1,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             },{
                 "scene": s2,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             },{
                 "scene": s3,
-                "theme": "t1"
+                "theme": "tag5, tag6"
             }];
 
             assert.strictEqual(permutations.length, expectedNumberOfPermutations);
@@ -138,7 +138,7 @@ describe('SceneThemeTourBucketPermutations', function () {
 
             var expectedPermutations = [{
                 "scene": s2,
-                "theme": "t3"
+                "theme": "tag3, tag4"
             }];
 
             assert.strictEqual(permutations.length, expectedNumberOfPermutations);
@@ -162,16 +162,16 @@ describe('SceneThemeTourBucketPermutations', function () {
 
             var expectedPermutations = [{
                 "scene": s1,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             },{
                 "scene": s2,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             },{
                 "scene": s2,
-                "theme": "t3"
+                "theme": "tag3, tag4"
             },{
                 "scene": s3,
-                "theme": "t1"
+                "theme": "tag5, tag6"
             }];
 
             assert.strictEqual(permutations.length, expectedNumberOfPermutations);
@@ -187,7 +187,7 @@ describe('SceneThemeTourBucketPermutations', function () {
                 "t1", "t2", "t3"
             ]
         };
-        
+
         it('6. should return n permutations, for n scenes that include n themes', function() {
             var permutations = sceneThemeTourBucketPermutations.generatePermutationsGivenScenesAndThemes(sceneAndThemesScenarioSix.scenes, sceneAndThemesScenarioSix.themes);
 
@@ -195,19 +195,19 @@ describe('SceneThemeTourBucketPermutations', function () {
 
             var expectedPermutations = [{
                 "scene": s1,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             },{
                 "scene": s1,
-                "theme": "t2"
+                "theme": "tag2, tag3"
             },{
                 "scene": s2,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             },{
                 "scene": s2,
-                "theme": "t3"
+                "theme": "tag3, tag4"
             },{
                 "scene": s3,
-                "theme": "t1"
+                "theme": "tag5, tag6"
             }];
 
             assert.strictEqual(permutations.length, expectedNumberOfPermutations);
@@ -223,7 +223,7 @@ describe('SceneThemeTourBucketPermutations', function () {
                 "t4", "t5", "t8"
             ]
         };
-        
+
         it('7. should return 0 permutations, where no theme given can be matched to the provided scene bucket', function() {
             var permutations = sceneThemeTourBucketPermutations.generatePermutationsGivenScenesAndThemes(sceneAndThemesScenarioSeven.scenes, sceneAndThemesScenarioSeven.themes);
 
@@ -231,12 +231,12 @@ describe('SceneThemeTourBucketPermutations', function () {
 
             assert.strictEqual(permutations.length, expectedNumberOfPermutations);
         });
-        
+
         var sceneAndThemesScenarioEight = {
             "scenes": [],
             "themes": []
         };
-        
+
         it('8. should return 0 permutations, where no theme or scenes are given', function() {
             var permutations = sceneThemeTourBucketPermutations.generatePermutationsGivenScenesAndThemes(sceneAndThemesScenarioEight.scenes, sceneAndThemesScenarioEight.themes);
 
@@ -264,10 +264,10 @@ describe('SceneThemeTourBucketPermutations', function () {
 
             var expectedPermutations = [{
                 "scene": s1,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             },{
                 "scene": s1,
-                "theme": "t2"
+                "theme": "tag2, tag3"
             }];
 
             assert.strictEqual(permutations.length, expectedNumberOfPermutations);
@@ -286,25 +286,25 @@ describe('SceneThemeTourBucketPermutations', function () {
 
         it('2. should generate N number of permutations for multiple scenes, where n is the number of themes in both scenes', function() {
             var permutations = sceneThemeTourBucketPermutations.generatePermutationsGivenOnlyScenes(onlyScenesScenarioTwo.scenes);
-            
+
             var expectedNumberOfPermutations = 4;
-            
+
             var expectedPermutations = [{
                 "scene": s1,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             },{
                 "scene": s1,
-                "theme": "t2"
+                "theme": "tag2, tag3"
             },{
                 "scene": s2,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             },{
                 "scene": s2,
-                "theme": "t3"
+                "theme": "tag3, tag4"
             }];
-            
+
             assert.strictEqual(permutations.length, expectedNumberOfPermutations);
-            
+
             assert.deepEqual(expectedPermutations, permutations);
         });
 
@@ -324,19 +324,19 @@ describe('SceneThemeTourBucketPermutations', function () {
 
             var expectedPermutations = [{
                 "scene": s1,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             },{
                 "scene": s1,
-                "theme": "t2"
+                "theme": "tag2, tag3"
             },{
                 "scene": s2,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             },{
                 "scene": s2,
-                "theme": "t3"
+                "theme": "tag3, tag4"
             },{
                 "scene": s3,
-                "theme": "t1"
+                "theme": "tag5, tag6"
             }];
 
             assert.strictEqual(permutations.length, expectedNumberOfPermutations);
@@ -360,19 +360,19 @@ describe('SceneThemeTourBucketPermutations', function () {
 
             var expectedPermutations = [{
                 "scene": s1,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             },{
                 "scene": s1,
-                "theme": "t2"
+                "theme": "tag2, tag3"
             },{
                 "scene": s2,
-                "theme": "t1"
+                "theme": "tag1, tag2"
             },{
                 "scene": s2,
-                "theme": "t3"
+                "theme": "tag3, tag4"
             },{
                 "scene": s3,
-                "theme": "t1"
+                "theme": "tag5, tag6"
             },{
                 "scene": s4,
                 "theme": ""
@@ -385,4 +385,70 @@ describe('SceneThemeTourBucketPermutations', function () {
 
     });
 
+    describe('generateMergedScenesAndThemes', function() {
+        describe('single scene and multiple themes', function() {
+            it('merges theme tag list with default merge statement with no type specified', function() {
+                var permutations = sceneThemeTourBucketPermutations.generateMergedScenesAndThemes([s1], ["t1", "t2"]);
+
+                var expectedNumberOfPermutations = 1;
+
+                var expectedPermutations = [{
+                    "scene": s1,
+                    "theme": "tag1, tag2 OR tag2, tag3"
+                }];
+
+                assert.strictEqual(permutations.length, expectedNumberOfPermutations);
+
+                assert.deepEqual(expectedPermutations, permutations);
+            });
+
+            it('merges theme tag list with the specified merge type', function() {
+                var permutations = sceneThemeTourBucketPermutations.generateMergedScenesAndThemes([s1], ["t1", "t2"], sceneThemeTourBucketPermutations.AND_MERGE);
+
+                var expectedNumberOfPermutations = 1;
+
+                var expectedPermutations = [{
+                    "scene": s1,
+                    "theme": "tag1, tag2 AND tag2, tag3"
+                }];
+
+                assert.strictEqual(permutations.length, expectedNumberOfPermutations);
+
+                assert.deepEqual(expectedPermutations, permutations);
+            });
+
+            it('ignore theme keys which are not declared in the scene', function() {
+                var permutations = sceneThemeTourBucketPermutations.generateMergedScenesAndThemes([s1], ["t1", "t3"]);
+
+                var expectedNumberOfPermutations = 1;
+
+                var expectedPermutations = [{
+                    "scene": s1,
+                    "theme": "tag1, tag2"
+                }];
+
+                assert.strictEqual(permutations.length, expectedNumberOfPermutations);
+
+                assert.deepEqual(expectedPermutations, permutations);
+            });
+        });
+
+        describe('multiple scenes and themes', function() {
+            it('for each scene, produces a single permutation with merged tag lists from theme keys when declared per scene', function() {
+                var permutations = sceneThemeTourBucketPermutations.generateMergedScenesAndThemes([s1, s2], ["t1", "t3"]);
+
+                var expectedPermutations = [{
+                    "scene": s1,
+                    "theme": "tag1, tag2"
+                }, {
+                    "scene": s2,
+                    "theme": "tag1, tag2 OR tag3, tag4"
+                }];
+
+                assert.strictEqual(permutations.length, expectedPermutations.length);
+
+                assert.deepEqual(expectedPermutations, permutations);
+            });
+        });
+    });
 });

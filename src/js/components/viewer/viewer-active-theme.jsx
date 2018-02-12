@@ -19,7 +19,7 @@ var ActiveTheme = React.createClass({
     },
 
     render: function() {
-        var theme = this.props.themeQuery || "";
+        var theme = this.props.scene && this.props.themeQuery && this.props.scene.hasOwnProperty(this.props.themeQuery) ? this.props.scene[this.props.themeQuery] : "";
         return (
             <div className='theme-viewer info-box' ref="theme-name" id="theme-name">
                 {theme}
