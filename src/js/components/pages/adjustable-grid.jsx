@@ -22,6 +22,7 @@ var LayoutConstants = require("../../constants/layout-constants"),
     LayoutComponentTypesForPopout = LayoutConstants.ComponentTypesForPopout,
     LayoutComponentTypesForPresentation = LayoutConstants.ComponentTypesForPresentation;
 var GraphTitles = require("../../constants/graph-constants").GraphTitles;
+var MojsMediaPreviewPlayer = require("../scene-editor/components/mojs-media-preview-player.jsx");
 
 ReactGridLayout = WidthProvider(ReactGridLayout);
 var RespGrid = React.createClass({
@@ -121,6 +122,9 @@ var RespGrid = React.createClass({
                                                  focusHandler={SceneActions.changeMediaObjectFocus}>
                     </LayoutMonacoTextEditor>
                 );
+                break;
+            case LayoutComponentTypes.MotionGraphicsEditor:
+                return ( <MojsMediaPreviewPlayer/> );
                 break;
             default:
                 return null;

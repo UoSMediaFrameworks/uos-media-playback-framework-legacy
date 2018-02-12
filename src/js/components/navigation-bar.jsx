@@ -228,42 +228,42 @@ var NavigationBar = React.createClass({
                                 {sessionNav}
                                 {adminDropDown}
                                 <li className="mf-dropdown">
-                                    <DropdownButton id="add-component-drop-down" title={"Components"}
-                                                    className="btn btn-dark navbar-btn">
+                                    <DropdownButton id="add-component-drop-down" title={"Components"} className="btn btn-dark navbar-btn">
                                         <MenuItem divider/>
                                         <MenuItem header>Scenes</MenuItem>
-                                        <MenuItem eventKey="1"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditor)}>Scene
-                                            Editor</MenuItem>
-                                        <MenuItem eventKey="2"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneMediaBrowser)}>Scene
-                                            Media Browser</MenuItem>
-                                        <MenuItem eventKey="3"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditorGUI)}>Visual
-                                            Scene Editor</MenuItem>
-                                        <MenuItem eventKey="4"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.TagEditor)}>Tag
-                                            Editor</MenuItem>
+                                        <MenuItem eventKey="1" onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditor)}>
+                                            Scene Editor
+                                        </MenuItem>
+                                        <MenuItem eventKey="2" onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneMediaBrowser)}>Scene
+                                            Media Browser
+                                        </MenuItem>
+                                        <MenuItem eventKey="3" onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditorGUI)}>
+                                            Visual Scene Editor
+                                        </MenuItem>
+                                        <MenuItem eventKey="4" onClick={self.addComponent.bind(this, LayoutComponentConstants.TagEditor)}>
+                                            Tag Editor
+                                        </MenuItem>
+                                        <MenuItem eventKey="10" onClick={self.addComponent.bind(this, LayoutComponentConstants.MotionGraphicsEditor)}>
+                                            Motion Graphics Editor
+                                        </MenuItem>
 
                                         <MenuItem divider/>
                                         <MenuItem header>Graphs</MenuItem>
-                                        <MenuItem eventKey="5"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneGraphList)}>Scene
-                                            Graph List</MenuItem>
-                                        <MenuItem eventKey="6"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneGraph)}>Scene
-                                            Graph Editor</MenuItem>
-                                        <MenuItem eventKey="7"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.Graph)}>Graph</MenuItem>
-
+                                        <MenuItem eventKey="5" onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneGraphList)}>
+                                            Scene Graph List
+                                        </MenuItem>
+                                        <MenuItem eventKey="6" onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneGraph)}>
+                                            Scene Graph Editor
+                                        </MenuItem>
+                                        <MenuItem eventKey="7" onClick={self.addComponent.bind(this, LayoutComponentConstants.Graph)}>Graph</MenuItem>
                                         <MenuItem divider/>
                                         <MenuItem header>Players</MenuItem>
-                                        <MenuItem eventKey="8"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneViewer)}>Scene
-                                            Preview Player</MenuItem>
-                                        <MenuItem eventKey="9"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.GraphViewer)}>External
-                                            Player</MenuItem>
+                                        <MenuItem eventKey="8" onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneViewer)}>
+                                            Scene Preview Player
+                                        </MenuItem>
+                                        <MenuItem eventKey="9" onClick={self.addComponent.bind(this, LayoutComponentConstants.GraphViewer)}>
+                                            External Player
+                                        </MenuItem>
                                     </DropdownButton>
                                 </li>
                                 <li>

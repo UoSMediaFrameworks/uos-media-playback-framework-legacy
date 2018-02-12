@@ -10,8 +10,11 @@ module.exports = {
         "SceneEditor": "Scene-Editor",
         "SceneMediaBrowser": "Scene-Media-Browser",
         "SceneEditorGUI": "Scene-Editor-GUI",
-        "TagEditor": "Tag-Editor"
+        "TagEditor": "Tag-Editor",
+
+        "MotionGraphicsEditor": "Motion-Graphics-Editor"
     },
+
     ComponentTitles:{
         "Scene-List":"Scene List",
         "Scene-Graph-List": "Scene Graph List",
@@ -22,20 +25,26 @@ module.exports = {
         "Scene-Editor":"Scene Editor",
         "Scene-Media-Browser":"Scene Media Browser",
         "Scene-Editor-GUI":"Visual Scene Editor",
-        "Tag-Editor": "Tag Editor"
+        "Tag-Editor": "Tag Editor",
+
+        "Motion-Graphics-Editor": "Motion Graphics Editor"
     },
+
     ColumnTypes: {
         "RHS": "RightHandSide",
         "LHS": "LeftHandSide"
     },
+
     ComponentTypesForPopout: {
         "Graph": "Graph",
         "Graph-Viewer": "Graph-Viewer"
     },
+
     ComponentTypesForPresentation: {
         "Graph": "Graph",
         "Graph-Viewer": "Graph-Viewer"
     },
+
     PresetLayouts: {
         "default": [
              {"x":0,"y":13,"w":9,"h":9,"_w":9,"_h":9,"type":"Tag-Editor","visible":true,"isResizable":true,"state":"default","moved":false,"static":false},
