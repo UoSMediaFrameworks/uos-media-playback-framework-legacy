@@ -49,32 +49,47 @@ var SoundGui = React.createClass({
     handleCheckboxChange: function(item,event) {
 
         var list = [];
+
+        // APEP If a theme is clicked, the only children are scenes or media objects
         list = this._nodes(item.children, list);
+
         list = this.dedupeNodeList(list);
-        var scoreList = {
+        var scoreCommand = {
             "play": {
-                "themes": [],
+                "themes": this.state.themes, // APEP this is tracking the state as of last update
                 "scenes": []
             }
         };
 
-        if( event.target.checked){
-            scoreList.play.themes.push(item.name);
-        }else{
-           var i= _.indexOf(scoreList.play.themes, item.name);
-            scoreList.play.themes.splice(i,1);
+
+        // APEP using the state themes which tracks what has been clicked and what has not been clicked
+        if(event.target.checked) {
+            // APEP if we have just selected a new item, we should append as the state is missing this new update
+            scoreCommand.play.themes.push(item.name);
+        } else {
+            // APEP if we are deselecting, we should remove
+            var i= _.indexOf(scoreCommand.play.themes, item.name);
+            scoreCommand.play.themes.splice(i,1);
         }
 
-        _.each(list, function (scene) {
-            scoreList.play.scenes.push(scene.toString());
+        list = list.filter(function(nodeItems) {
+            return nodeItems.type === "scene";
         });
-        if(scoreList.play.themes.length == 0){
-            scoreList.play.scenes = [];
+
+        _.each(list, function (scene) {
+            scoreCommand.play.scenes.push(scene.toString());
+        });
+
+        // APEP only publish a command if have at least a scene to send
+        if(scoreCommand.play.scenes.length !== 0) {
+            console.log("Sending score command from sound graph: ", scoreCommand);
+            HubClient.publishScoreCommand(scoreCommand, connectionCache.getSocketID());
         }
-        HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID());
-        console.log("score",scoreList);
-        this.setState({themes:scoreList.play.themes});
+
+        // APEP update state so we know what has been clicked and what has not been clicked
+        this.setState({themes:scoreCommand.play.themes});
     },
+
     hashCode:function(str){
         var hash = 0;
         for (var i = 0; i < str.length; i++) {
