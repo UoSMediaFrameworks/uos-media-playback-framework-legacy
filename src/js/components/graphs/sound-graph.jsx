@@ -57,7 +57,8 @@ var SoundGui = React.createClass({
         var scoreCommand = {
             "play": {
                 "themes": this.state.themes, // APEP this is tracking the state as of last update
-                "scenes": []
+                "scenes": [],
+                "tour": false // APEP we never want to tour from the soundboard graph
             }
         };
 

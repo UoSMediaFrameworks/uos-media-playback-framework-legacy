@@ -12,7 +12,7 @@ var _scenes = [];
 var _themes = [];
 var _isScore = false;
 var _playFullScenes = false;
-var _tourThemes = false; // APEP plumbed in ready to allow multiple themes to be joined (simultaneous) rather sequential
+var _tourThemes = true; // APEP plumbed in ready to allow multiple themes to be joined (simultaneous) rather sequential
 
 var lastActive = {
     activeScene:null,
@@ -46,6 +46,10 @@ var GraphViewerStore = assign({}, EventEmitter.prototype, {
         return _playFullScenes;
     },
 
+    getThemeTourOpt: function() {
+        return _tourThemes;
+    },
+
     emitChange: function(){
         this.emit(CHANGE_EVENT);
     },
@@ -65,16 +69,18 @@ var GraphViewerStore = assign({}, EventEmitter.prototype, {
                 _isScore = false; // APEP ensure we know we are from graph so we want shuffle
                 _scenes = action.sceneIds;
                 _themes = []; // APEP currently from graph we only get scenes so ensure we override any if used by scene and themes
-                _playFullScenes = false; // APEP do not offer this param through this payload, as we expect a simple list
+                _playFullScenes = false; // APEP do not offer this param through this type of command, as we expect a simple list
+                _tourThemes = false; // APEP do not offer this param through this type of command
                 GraphViewerStore.emitChange();
                 break;
 
             case ActionTypes.RECIEVE_SCENES_AND_THEMES_FROM_SCORE:
-                // APEP handle errors - ie do hasOwnProperty or null checks
+                // APEP TODO handle errors - ie do hasOwnProperty or null checks
                 _isScore = true; // APEP ensure we know are from score so we do not wish to shuffle
                 _scenes = action.sceneIds;
                 _themes = action.themes;
-                _playFullScenes = action.hasOwnProperty("playFullScenes") ? action.playFullScenes : false; // APEP if we have received this additional param use it, otherwise it defaults to false
+                _playFullScenes = action.playFullScenes; // APEP if we have received this additional param use it, otherwise it defaults to false
+                _tourThemes = action.tour; // APEP default to tour themes rather than merge
                 GraphViewerStore.emitChange();
                 break;
         }

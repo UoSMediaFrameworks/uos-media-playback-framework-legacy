@@ -90,7 +90,8 @@ var HubRecieveActions = {
             type: ActionTypes.RECIEVE_SCENES_AND_THEMES_FROM_SCORE,
             sceneIds: scoreCommand.play.scenes,
             themes: scoreCommand.play.themes,
-            playFullScenes: scoreCommand.play.playFullScenes
+            playFullScenes: scoreCommand.play.hasOwnProperty("playFullScenes") ? scoreCommand.play.playFullScenes : false,
+            tour: scoreCommand.play.hasOwnProperty("tour") ? scoreCommand.play.tour : true
         });
     }
 };

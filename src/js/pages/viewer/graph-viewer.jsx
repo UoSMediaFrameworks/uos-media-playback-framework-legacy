@@ -95,12 +95,14 @@ var GraphViewer = React.createClass({
             var permutations = [];
 
             var playFullScenesOnly = GraphViewerStore.getPlayFullScenesOpt();
+            var tourThemes = GraphViewerStore.getThemeTourOpt();
 
             // APEP with the full scenes loaded, we can appropriately create a tour of these values
             if(playFullScenesOnly) {
                 permutations = sceneThemeTourPermutations.generateOnlyScenes(fullScenes);
+            } else if(tourThemes && themes.length > 0) {
+                permutations = sceneThemeTourPermutations.generatePermutationsGivenScenesAndThemes(fullScenes, themes);
             } else if(themes.length > 0) {
-                // permutations = sceneThemeTourPermutations.generatePermutationsGivenScenesAndThemes(fullScenes, themes);
                 permutations = sceneThemeTourPermutations.generateMergedScenesAndThemes(fullScenes, themes);
             } else {
                 permutations = sceneThemeTourPermutations.generatePermutationsGivenOnlyScenes(fullScenes);
@@ -119,12 +121,13 @@ var GraphViewer = React.createClass({
             self.showScenes();
         });
     },
-    componentWillReceiveProps:function(nextProps)
-    {
-        if(this.props._id != nextProps._id){
+
+    componentWillReceiveProps:function(nextProps) {
+        if(this.props._id !== nextProps._id){
             this.setState({activeSceneId:nextProps._id})
         }
     },
+
     componentDidMount: function() {
         GraphViewerStore.addChangeListener(this._onChange);
     },
@@ -164,8 +167,6 @@ var GraphViewer = React.createClass({
 
     nextScene: function() {
 
-        var self = this;
-
         var activeScene = this.state.activeScene;
 
         var currentTour = this.state.sceneThemeTourList[currentTourIndex];
@@ -199,7 +200,7 @@ var GraphViewer = React.createClass({
         currentTourIndex++;
 
         // APEP Loop back to first permutation if we've ran out
-        if(currentTourIndex === self.state.sceneThemeTourList.length) {
+        if(currentTourIndex === this.state.sceneThemeTourList.length) {
             currentTourIndex = 0;
         }
 
@@ -207,12 +208,12 @@ var GraphViewer = React.createClass({
             clearTimeout(sceneDisplayTimeout);
         }
 
-        self.setTimeoutWithDelayForNextScene(delay);
+        this.setTimeoutWithDelayForNextScene(delay);
 
         console.log("GraphViewer - nextScene - activeScene, activeSceneId: ", newScene, newScene._id);
         var obj ={activeScene: newScene, activeSceneId: newScene._id, themeQuery: themeQuery};
         GraphViewerStore.updateLastActive(obj);
-        self.setState(obj);
+        this.setState(obj);
     },
 
     render: function() {
