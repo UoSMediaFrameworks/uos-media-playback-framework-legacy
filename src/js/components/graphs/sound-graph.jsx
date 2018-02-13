@@ -72,9 +72,9 @@ var SoundGui = React.createClass({
             scoreCommand.play.themes.splice(i,1);
         }
 
-        list = list.filter(function(nodeItems) {
-            return nodeItems.type === "scene";
-        });
+        // list = list.filter(function(nodeItems) {
+        //     return nodeItems.type === "scene";
+        // });
 
         _.each(list, function (scene) {
             scoreCommand.play.scenes.push(scene.toString());
