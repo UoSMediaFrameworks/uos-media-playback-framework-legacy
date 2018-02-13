@@ -58,7 +58,6 @@ var SoundGui = React.createClass({
             }
         };
 
-        scoreList.play.themes= this.state.themes;
         if( event.target.checked){
             scoreList.play.themes.push(item.name);
         }else{
