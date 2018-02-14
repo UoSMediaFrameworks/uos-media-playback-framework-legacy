@@ -92,6 +92,15 @@ var SceneListener = React.createClass({
         }
     },
 
+    _updatePlayersTagMatcher: function() {
+        var scene = this._getSceneForUpdatingPlayerComponent();
+
+        if (scene) {
+            console.log("SceneListener - _updatePlayersTagMatcher - setScene - scene:", scene);
+            this.updateTags();
+        }
+    },
+
     // APEP func to update after queue has made internal switch between modes
     mediaQueueManagerUpdate: function () {
         this.setState({mediaObjectQueue: this.mediaObjectQueue});
@@ -111,6 +120,7 @@ var SceneListener = React.createClass({
         }
 
     },
+
     toggleTagMatcherAndThemes: function (event) {
         if (event.altKey && event.keyCode === 72) {
             var tag_form = this.refs["tag_form"];
@@ -122,8 +132,9 @@ var SceneListener = React.createClass({
             this.setState({shouldHide: !this.state.shouldHide});
         }
     },
+
     componentWillReceiveProps:function(nextProps){
-        console.log("listener will mount wiilRP",nextProps);
+        console.log("SceneListener - componentWillReceiveProps",nextProps);
         var scene = this._getScene();
         this.setState({scene:scene})
     },
@@ -144,26 +155,24 @@ var SceneListener = React.createClass({
 
     componentDidUpdate: function (prevProps, prevState) {
 
-        if (!_.isEqual(prevState.scene, this.state.scene)) {
-          /*  console.log("state.scene changed - update player");*/
-            this._maybeUpdatePlayer();
-        } else if (!_.isEqual(prevProps.activeScene, this.props.activeScene)) {
+        if (!_.isEqual(prevState.scene, this.state.scene) || !_.isEqual(prevProps.activeScene, this.props.activeScene)) {
             // APEP if we switch activeScene, we should make sure we unsubscribe for updates from previous scenes
             HubSendActions.unsubscribeScene(prevProps.activeScene._id);
             // And resubscribe to the new active scene
             HubSendActions.subscribeScene(this.props.activeScene._id);
+
+            // APEP only fully update player if scene has actually changed.  The setting of the full scene for the queue triggers the masterList to be recreated, losing instance based properties like guid, causing the difference(active) to fail.
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevState.activeThemes, this.state.activeThemes)) {
-          /*  console.log("ActiveTheme changed - update player");*/
-            this._maybeUpdatePlayer();
+            // console.log("ActiveTheme changed - update player");
+            this._updatePlayersTagMatcher();
         } else if (!_.isEqual(prevState.triggeredActiveThemes, this.state.triggeredActiveThemes)) {
-       /*     console.log("TriggeredActiveTheme changed - update player");*/
-            this._maybeUpdatePlayer();
+            // console.log("TriggeredActiveTheme changed - update player");
+            this._updatePlayersTagMatcher();
         } else if (!_.isEqual(prevProps.themeQuery, this.props.themeQuery)) {
-            /*console.log("themeQuery changed - update player");*/
-            this._maybeUpdatePlayer();
+            // console.log("themeQuery changed - update player");
+            this._updatePlayersTagMatcher();
         }
-
     },
 
     mergeTagAndThemeFilters: function () {
@@ -181,7 +190,7 @@ var SceneListener = React.createClass({
 
         // APEP join all the individual sets of tags from themes in a bool OR statement
         var tagsJoinedForBoolStatement = filterStrings.join(' OR ');
-      /*  console.log("mergeTagAndThemeFilters: ", tagsJoinedForBoolStatement);*/
+
         return new TagMatcher(tagsJoinedForBoolStatement);
     },
 
