@@ -133,12 +133,11 @@ var SceneListener = React.createClass({
         }
     },
 
-    // componentWillReceiveProps:function(nextProps){
-    //     console.log("SceneListener - componentWillReceiveProps",nextProps);
-    //     var scene = this._getScene();
-    //     this.setState({scene:scene})
-    // },
-
+    componentWillReceiveProps:function(nextProps){
+        console.log("SceneListener - componentWillReceiveProps",nextProps);
+        var scene = this._getScene();
+        this.setState({scene:scene})
+    },
     componentDidMount: function () {
         try {
             SceneStore.addChangeListener(this._onChange);

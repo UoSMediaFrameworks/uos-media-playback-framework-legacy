@@ -248,8 +248,6 @@ var RespGrid = React.createClass({
         var self = this;
 
         var rowHeight = this.state.rows;
-
-        // APEP TODO move this find DOM node out of render to get rid of react warning
         var dom = ReactDOM.findDOMNode(this);
         if (dom && dom.parentElement) {
             rowHeight = dom.parentElement.clientHeight / this.state.rows;

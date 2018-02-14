@@ -205,9 +205,9 @@ var AudioMediaObject = React.createClass({
             this.state.player.pause();
             this.state.player.destroy();
             this.state.player.off("timeupdate", this.audioPlayerTimeUpdate);
-            this.setState({player: null});
-            this.props.data.moDoneHandler(this);
+            this.state.player = null;
         }
+        this.props.data.moDoneHandler(this);
     },
 
     transition: function() {
