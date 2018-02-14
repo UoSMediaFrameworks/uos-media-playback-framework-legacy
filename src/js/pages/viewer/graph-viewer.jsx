@@ -74,13 +74,10 @@ var GraphViewer = React.createClass({
             callback(fullScenes);
         });
     },
-
-    // APEP temp turned off last active
     componentWillMount:function(){
-        // var obj = GraphViewerStore.getLastActive();
-        // this.setState(obj);
+        var obj = GraphViewerStore.getLastActive();
+        this.setState(obj);
     },
-
     // APEP we have a new scene / theme list from the graph
     _onChange: function() {
 
@@ -175,25 +172,14 @@ var GraphViewer = React.createClass({
         var currentTour = this.state.sceneThemeTourList[currentTourIndex];
 
         if (this.state.sceneThemeTourList.length === 0) {
-            // APEP we do not need to start another timeout to next permutation as we don't have any.
             console.log("GraphViewer - nextScene - do not change - this.state.sceneThemeTourList.length === 0");
             return;
         }
 
-        var newScene = currentTour.scene;
-        var themeQuery = currentTour.theme;
-
-        // APEP I've added this to try tackle a very unusual react warning
-        // Unexpected batch number - performUpdateIfNecessary - Leading to Cannot read property getHostNode of Null
+        // APEP TODO Review if required to check to see if we are still on same tour scene + theme
         // As this function moves us a long for the next time this is called, if currentTour.scene and activeScene are the same, we have not traversed the list
-        // To further this, all permutations generated should be unique, therefore the new scene and themeQuery must always be different unless we have a list of one.
-        if((this.state.activeScene._id === newScene._id && this.state.themeQuery === themeQuery) && this.state.sceneThemeTourList.length === 1) {
-            console.log("GraphViewer - nextScene - do not change - we have the same scene and same themeQuery");
 
-            // APEP might want to review if the tour list is greater than 1, we shouldn't update but at least restart timer to go to next in tour list.
-            // for now I've opted to ignore this as a possible option
-            return;
-        }
+        var newScene = currentTour.scene;
 
         if(!newScene) {
             delay = 1000;
@@ -207,6 +193,8 @@ var GraphViewer = React.createClass({
         //     self.setState({activeScene: newScene, activeSceneId: newScene._id, themeQuery: ""});
         //     return;
         // }
+
+        var themeQuery = currentTour.theme;
 
         // APEP increment counter to next bucket
         currentTourIndex++;

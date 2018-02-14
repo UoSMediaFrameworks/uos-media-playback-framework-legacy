@@ -72,11 +72,6 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
                 // APEP pushing ended active media back to the queue is optional, this allows remaining media to be played only once
                 if(isRandomOptions === "default") {
                     console.log("media-object-queue - add from active to queue");
-
-                    // APEP ensure we record that it is done now
-                    // APEP TODO review this might be stopping solo=true media types
-                    // mediaObject._playing = false;
-
                     queue.push(mediaObject);
                 }
             }
