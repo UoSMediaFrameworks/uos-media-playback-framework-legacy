@@ -18,7 +18,7 @@ var GraphViewerStore = require('../stores/graph-viewer-store');
 var ActiveTheme = require('../components/viewer/viewer-active-theme.jsx');
 var hat = require('hat');
 
-var MINIMUM_NUMBER_OF_MEDIA_TO_BE_MATCHED_WITH_THEME_QUERY = 0;
+var MINIMUM_NUMBER_OF_MEDIA_TO_BE_MATCHED_WITH_THEME_QUERY = -2;
 
 function getTypeByName(typeName) {
     var t = _.find([TextMediaObject, ImageMediaObject, VideoMediaObject, AudioMediaObject], function (t) {
@@ -84,6 +84,8 @@ var SceneListener = React.createClass({
         if (scene) {
             console.log("SceneListener - _maybeUpdatePlayer - setScene - scene:", scene);
 
+            this.setState({scene:scene});
+
             // TODO APEP {hardReset: true} I don't think we want to forcefully removal all
             // APEP if we are forcing full scene playback, lets force transitions.  Only do in this case.
             this.mediaObjectQueue.setScene(scene, {hardReset: GraphViewerStore.getPlayFullScenesOpt()});
@@ -134,10 +136,11 @@ var SceneListener = React.createClass({
     },
 
     componentWillReceiveProps:function(nextProps){
-        console.log("SceneListener - componentWillReceiveProps",nextProps);
-        var scene = this._getScene();
-        this.setState({scene:scene})
+        console.log("SceneListener - componentWillReceiveProps", nextProps);
+
+        // APEP we should not set scene state here.  We've not checked if we actually need to
     },
+
     componentDidMount: function () {
         try {
             SceneStore.addChangeListener(this._onChange);
@@ -206,6 +209,9 @@ var SceneListener = React.createClass({
 
             if (this.state.mediaObjectQueue) {
                 this.state.mediaObjectQueue.setTagMatcher(new TagMatcher("(" + themeQry + ")"));
+
+                // APEP TODO this is an incorrect way to check, the queue might be empty given everything active.
+                // APEP we need a better check, using masterList and mo matching
                 // APEP if using the theme query provides no media, set the tag matcher with an empty rule
                 if (this.state.mediaObjectQueue.getQueue().length <= MINIMUM_NUMBER_OF_MEDIA_TO_BE_MATCHED_WITH_THEME_QUERY) {
                     this.state.mediaObjectQueue.setTagMatcher(new TagMatcher("()"));
