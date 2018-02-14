@@ -61,13 +61,13 @@ var SoundGui = React.createClass({
 
 
         // APEP using the state themes which tracks what has been clicked and what has not been clicked
-        if(event.target.checked) {
+        if (event.target.checked) {
             // APEP if we have just selected a new item, we should append as the state is missing this new update
             scoreCommand.play.themes.push(item.name);
         } else {
             // APEP if we are deselecting, we should remove
-            var i= _.indexOf(scoreCommand.play.themes, item.name);
-            scoreCommand.play.themes.splice(i,1);
+            var i = _.indexOf(scoreCommand.play.themes, item.name);
+            scoreCommand.play.themes.splice(i, 1);
         }
 
         _.each(list, function (scene) {
@@ -75,30 +75,31 @@ var SoundGui = React.createClass({
         });
 
         // APEP only publish a command if have at least a scene to send
-        if(scoreCommand.play.scenes.length !== 0) {
+        if (scoreCommand.play.scenes.length !== 0) {
             console.log("Sending score command from sound graph: ", scoreCommand);
             HubClient.publishScoreCommand(scoreCommand, connectionCache.getSocketID());
         }
 
         // APEP update state so we know what has been clicked and what has not been clicked
-        this.setState({themes:scoreCommand.play.themes});
+        this.setState({themes: scoreCommand.play.themes});
     },
 
-    hashCode:function(str){
+    hashCode: function (str) {
         var hash = 0;
         for (var i = 0; i < str.length; i++) {
             hash = str.charCodeAt(i) + ((hash << 5) - hash);
         }
         return hash;
     },
-    intRGB:function(i){
+    intRGB: function (i) {
         var c = (i & 0x00FFFFFF)
             .toString(16)
             .toUpperCase();
         return "00000".substring(0, 6 - c.length) + c;
     },
-    handleSwitch:function (event) {
-        this.setState({switch:!this.state.switch});
+
+    handleSwitch: function (event) {
+        this.setState({switch: !this.state.switch});
     },
     render() {
         if (!this.props.data) {
