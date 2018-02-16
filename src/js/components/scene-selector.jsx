@@ -13,6 +13,7 @@ var Modal = ReactBootstrap.Modal;
 //components
 var SelectPlus = require('react-select-plus').default;
 var FontAwesome = require('react-fontawesome');
+var ReactClipboard = require('react-copy-to-clipboard').CopyToClipboard;
 
 //utils
 var _ = require('lodash');
@@ -188,10 +189,13 @@ var SceneSelector = React.createClass({
                 <input
                   id="sceneIDbox"
                   className="inline-item"
-                  style={{width: "60%"}}
+                  style={{width: "50%", backgroundColor: "#F5F5F5", borderWidth: "2px"}}
                   value={this.state.sceneListFilter.value._id}
-                  disabled="true"
+                  readOnly="true"
                 />
+                <ReactClipboard text={this.state.sceneListFilter.value._id}>
+                  <button style={{width: "10%"}}>Copy</button>
+                </ReactClipboard>
               </div>
               <div>
                 <div className="inline-item" style={{marginBottom: "15px"}}>Scene Name:&nbsp;&nbsp;</div>
