@@ -60,7 +60,6 @@ var ItemGroupForThemeUnion = React.createClass({
                         </div>
                             <LandingContainer
                                 sceneGraph={this.props.sceneGraph ? this.props.sceneGraph : {excludedThemes: []}}/>
-
                     </div>
                 </div>
 

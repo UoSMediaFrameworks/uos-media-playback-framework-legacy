@@ -292,7 +292,32 @@ function _deleteThemeFromSceneGraphStructure (sceneGraphId, themeId, parentList,
     }
 
 }
+function _CreateSoundGUICategories(sceneGraphId){
+    debugger;
+    console.log("Creating Categories")
+    try{
 
+
+    var tempSG = _sceneGraphs[sceneGraphId];
+    var themes = _.filter(tempSG.nodeList, function (child) {
+        return child.type === "theme";
+    });
+    var columnHeaders = [];
+    var rowHeaders = [];
+    _.each(themes,function(theme){
+        var test = theme.themeTags.split(/\s+(?:,|AND|OR)\s+/);
+            columnHeaders.push(test[1]);
+            rowHeaders.push(test[0]);
+    });
+    columnHeaders =_.uniq(columnHeaders);
+    rowHeaders =_.uniq(rowHeaders);
+    var categories = {rowHeaders:rowHeaders,columnHeaders:columnHeaders}
+    tempSG.CategoryConfig =categories;
+    console.log(categories)
+    }catch(e){
+        console.log("BS error",e)
+    }
+}
 var SceneGraphStore = assign({}, EventEmitter.prototype, {
     getSceneGraph: function(id) {
         if (_sceneGraphs.hasOwnProperty(id)) {
@@ -344,6 +369,12 @@ var SceneGraphStore = assign({}, EventEmitter.prototype, {
                 var sceneGraph = _sceneGraphs[action.sceneGraphId];
                 HubClient.saveSceneGraph(sceneGraph);
                 SceneGraphStore.emitChange();
+                break;
+
+            case  ActionTypes.SCENE_GRAPH_INCLUDE_SOUND_GUI_CATEGORIES:
+                _CreateSoundGUICategories(action.sceneGraphId);
+                var sceneGraph = _sceneGraphs[action.sceneGraphId];
+                HubClient.saveSceneGraph(sceneGraph);
                 break;
             case ActionTypes.SCENE_GRAPH_ADD_THEME_TO_STRUCTURE:
                 _addThemeToSceneGraphStructure(action.sceneGraphId, action.themeId, action.parentList, action.parentKey, action.parentType);
