@@ -13,9 +13,9 @@ var SoundGui = React.createClass({
         /*  this.setState({data:this.props.data})*/
     },
     componentWillReceiveProps: function (nextProps) {
-        if(nextProps.shouldUpdateId != this.props.shouldUpdateId){
-          /*  this.setupNodes(nextProps.data,nextProps)*/
-          this.setState({switch:false,themes:[]})
+        if (nextProps.shouldUpdateId != this.props.shouldUpdateId) {
+            /*  this.setupNodes(nextProps.data,nextProps)*/
+            this.setState({switch: false, themes: []})
         }
 
     },
@@ -46,7 +46,7 @@ var SoundGui = React.createClass({
         }
         return dedupeList;
     },
-    handleCheckboxChange: function(item,event) {
+    handleCheckboxChange: function (item, event) {
 
         var list = [];
 
@@ -72,10 +72,6 @@ var SoundGui = React.createClass({
             var i= _.indexOf(scoreCommand.play.themes, item.name);
             scoreCommand.play.themes.splice(i,1);
         }
-
-        // list = list.filter(function(nodeItems) {
-        //     return nodeItems.type === "scene";
-        // });
 
         _.each(list, function (scene) {
             scoreCommand.play.scenes.push(scene.toString());
@@ -109,94 +105,100 @@ var SoundGui = React.createClass({
     handleSwitch:function (event) {
         this.setState({switch:!this.state.switch});
     },
-    render(){
-        try{
+    render() {
+        if (!this.props.data) {
+            return null;
+        }
+        try {
 
+            var self = this;
+            var rowHeaders, columnHeaders = [];
+            var ls = JSON.parse(localStorage.getItem(this.props.data._id));
 
-            var self =this;
-        var themes = _.filter(this.props.data.nodeList, function (child) {
-            return child.type === "theme";
-        });
-        var columnHeaders = [];
-        var rowHeaders = [];
-        _.each(themes,function(theme){
-               var test = theme.themeTags.split(/\s+(?:,|AND|OR)\s+/);
-            if(!self.state.switch){
-                columnHeaders.push(test[1]);
-                rowHeaders.push(test[0]);
-            }else{
-                columnHeaders.push(test[0]);
-                rowHeaders.push(test[1]);
-            }
-
-        });
-        columnHeaders =_.uniq(columnHeaders);
-        rowHeaders =_.uniq(rowHeaders);
-
-        var rows = [];
-        for (var i = 0; i < rowHeaders.length+1; i++){
-
-            let rowID = `row${i}`;
-            let cell = [];
-            for (var idx = 0; idx < columnHeaders.length+1; idx++){
-                let cellID = `cell${i}-${idx}`;
-                if(i == 0){
-                    if(idx==0){
-                        cell.push( <td width={self.props.innerWidth/(columnHeaders.length+1)}>
-                            <label className="switch" style={{height:self.props.innerHeight/(rowHeaders.length +1),
-                                width:self.props.innerWidth/(columnHeaders.length+1)}}>
-                                <input type="checkbox" onClick={self.handleSwitch}  />
-                                <div className="slider round">
-                                    <span className="on">Switch categories</span>
-                                    <span className="off">Switch categories</span>
-                                </div>
-                            </label></td>);
-                    }else{
-                        cell.push(<th style={{"backgroundColor":"#" +self.intRGB(self.hashCode(columnHeaders[idx -1]))}} width={self.props.innerWidth/(columnHeaders.length+1)}key={cellID} scope="col">{columnHeaders[idx -1]}</th>)
-                    }
+            if (ls) {
+                if(!this.state.switch){
+                    rowHeaders = ls.rowHeaders;
+                    columnHeaders = ls.columnHeaders;
                 }else{
-                    if(idx == 0){
-                        cell.push(<th style={{"backgroundColor":"#" +self.intRGB(self.hashCode(rowHeaders[i - 1]))}}  key={cellID} scope="row">{rowHeaders[i-1]}</th>)
-                    }else{
-                        var obj = _.find(themes,function(theme){
-                            if(!self.state.switch) {
-                                return theme.name === rowHeaders[i - 1] + columnHeaders[idx - 1];
-                            }else{
-                                return theme.name === columnHeaders[idx - 1] +  rowHeaders[i - 1];
-                            }
-                        });
-                        console.log("angel",obj)
-                        cell.push(<td key={cellID} id={cellID}>
-                            <label className="switch" style={{height:self.props.innerHeight/(rowHeaders.length +1),
-                                width:self.props.innerWidth/(columnHeaders.length+1)}}>
-                                <input type="checkbox" onClick={self.handleCheckboxChange.bind(this,obj)}  />
-                                <div className="slider round">
-                                     <span className="on">{rowHeaders[i-1] + columnHeaders[idx -1]}</span>
-                                    <span className="off">{rowHeaders[i-1] + columnHeaders[idx -1]}</span>
-                                </div>
-                            </label>
-                           </td>)
+                    rowHeaders = ls.columnHeaders;
+                    columnHeaders = ls.rowHeaders;
+                }
+
+            }
+            var rows = [];
+            for (var i = 0; i < rowHeaders.length + 1; i++) {
+
+                let rowID = `row${i}`;
+                let cell = [];
+                for (var idx = 0; idx < columnHeaders.length + 1; idx++) {
+                    let cellID = `cell${i}-${idx}`;
+                    if (i == 0) {
+                        if (idx == 0) {
+                            cell.push(<td key={cellID} width={self.props.innerWidth / (columnHeaders.length + 1)}>
+                                <label className="switch" style={{
+                                    height: self.props.innerHeight / (rowHeaders.length + 1),
+                                    width: self.props.innerWidth / (columnHeaders.length + 1)
+                                }}>
+                                    <input type="checkbox" onClick={self.handleSwitch}/>
+                                    <div className="slider round">
+                                        <span className="on">Switch categories</span>
+                                        <span className="off">Switch categories</span>
+                                    </div>
+                                </label></td>);
+                        } else {
+                            cell.push(<th
+                                style={{"backgroundColor": "#" + self.intRGB(self.hashCode(columnHeaders[idx - 1].alias || columnHeaders[idx-1].name))}}
+                                width={self.props.innerWidth / (columnHeaders.length + 1)} key={cellID}
+                                scope="col">{columnHeaders[idx - 1].alias || columnHeaders[idx - 1].name }</th>)
+                        }
+                    } else {
+                        if (idx == 0) {
+                            cell.push(<th
+                                style={{"backgroundColor": "#" + self.intRGB(self.hashCode(rowHeaders[i - 1].alias || rowHeaders[i-1].name))}}
+                                key={cellID} scope="row">{rowHeaders[i - 1].alias || rowHeaders[i - 1].name}</th>)
+                        } else {
+                            var obj = _.find(ls.themes, function (theme) {
+                                if (!self.state.switch) {
+                                    return theme.name === rowHeaders[i - 1].name + columnHeaders[idx - 1].name;
+                                } else {
+                                    return theme.name === columnHeaders[idx - 1].name + rowHeaders[i - 1].name;
+                                }
+                            });
+                            cell.push(<td key={cellID}>
+                                <label className="switch" style={{
+                                    height: self.props.innerHeight / (rowHeaders.length + 1),
+                                    width: self.props.innerWidth / (columnHeaders.length + 1)
+                                }}>
+                                    <input type="checkbox" onClick={self.handleCheckboxChange.bind(this, obj)}/>
+                                    <div className="slider round">
+                                        <span className="on">{JSON.stringify(obj.name)}</span>
+                                        <span className="off">{JSON.stringify(obj.name)}</span>
+                                    </div>
+                                </label>
+                            </td>)
+                        }
                     }
                 }
+                rows.push(<tr key={rowID} width={this.props.innerWidth}
+                              height={this.props.innerHeight / (rowHeaders.length + 1)} >{cell}</tr>)
             }
-            rows.push(<tr key={i} width={this.props.innerWidth} height={this.props.innerHeight/(rowHeaders.length +1)} id={rowID}>{cell}</tr>)
-        }
-        }catch(ex){
+        } catch (ex) {
             console.log("error Angel", ex)
         }
 
 
-    return (
-        <TransitionGroup ref="backgroundContainer" id="backgroundContainer" component="div">
-                    <div className="board">
-                        <table id="simple-board">
-                            <tbody>
-                            {rows}
-                            </tbody>
-                        </table>
-                    </div>
-        </TransitionGroup>
-    )}
+        return (
+            <TransitionGroup ref="backgroundContainer" id="backgroundContainer" component="div">
+                <div className="board">
+                    <table id="simple-board">
+                        <tbody>
+                        {rows}
+                        </tbody>
+                    </table>
+                </div>
+            </TransitionGroup>
+        )
+    }
 });
 
 

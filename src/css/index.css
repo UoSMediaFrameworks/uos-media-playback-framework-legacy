@@ -1241,3 +1241,6 @@ input:checked + .slider .off
 
 .slider.round:before {
     border-radius: 50%;}
+.scene-sound-config{
+    min-height: 200px;
+}

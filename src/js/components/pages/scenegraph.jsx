@@ -13,7 +13,7 @@ var SceneGraphListStore = require('../../stores/scene-graph-list-store.jsx');
 var SceneListStore = require('../../stores/scene-list-store'); //scene-list-store does not return the full scene objects - I need the themes
 var SceneStore = require('../../stores/scene-store');
 var DragDropContainer = require('../basic-draggable/drag-drop-container.jsx');
-
+var GraphTypes = require('../../constants/graph-constants').GraphTypes;
 var mediaHubGraphURL = process.env.MEDIA_HUB_GRAPH_URL || "";
 
 var SceneItem = React.createClass({
@@ -51,7 +51,7 @@ var SceneGraphNode = React.createClass({
             <li className={this.props.indentation}>
                 <p> {this.props.node} </p>
                 <ul>
-                    { Object.keys(this.props.graphTheme).map(function (property) {
+                    {Object.keys(this.props.graphTheme).map(function (property) {
                         return <SceneGraphNode indentation="firstLevel" graphTheme={this.props.graphTheme[property]}
                                                node={property}/>
                     }, this)}
@@ -72,7 +72,7 @@ var ThemesList = React.createClass({
     render: function () {
         return (
             <div>
-                { this.props.tagList.map(function (tag) {
+                {this.props.tagList.map(function (tag) {
                     return <ThemeForList key={tag} value={tag}/>
                 })}
             </div>
@@ -84,14 +84,113 @@ var SceneTheme = React.createClass({
     render: function () {
         return (
             <ul>
-                { this.props.themes.map(function (theme) {
+                {this.props.themes.map(function (theme) {
                     return <ThemeForList key={this.props.scene._id + "_" + theme} value={theme}/>
                 }.bind(this))}
             </ul>
         )
     }
 });
+var CategoryConfig = React.createClass({
+    handleKeyPress:function(obj,event){
+        var self =this;
+        if (event.key === 'Enter') {
+            obj.alias = event.target.value;
+            localStorage.setItem(self.props.sceneGraph._id,JSON.stringify(self.state.config));
+            self.setState({config:self.state.config})
+        }
 
+    },
+    getInitialState:function(){
+
+        return {
+            config: null
+        }
+    },
+    componentWillReceiveProps:function(nextProps){
+
+        this.buildConfig(nextProps)
+    },
+    renderConfig:function(){
+        var self =this;
+        return (
+            <div>
+                <h4>Row Categories:</h4>
+                <ul>
+                    <li><label>{"name : alias"}</label></li>
+                    {self.state.config.rowHeaders.map(function (row) {
+                        return <li><label>{row.name + ":" + row.alias || ""}</label><input type="text"
+                                                                                           onKeyPress={self.handleKeyPress.bind(this,row)}/>
+                        </li>
+                    }.bind(this))}
+                </ul>
+                <h4>Column Categories:</h4>
+                <ul>
+                    <li><label>{"name : alias"}</label></li>
+                    {self.state.config.columnHeaders.map(function (col) {
+                        return <li><label>{col.name + ":" + col.alias || ""}</label><input type="text"
+                                                                                           onKeyPress={self.handleKeyPress.bind(this,col)}/>
+                        </li>
+                    }.bind(this))}
+                </ul>
+            </div>)
+    },
+    buildConfig: function (props) {
+        var lsCOnf =JSON.parse(localStorage.getItem(props.sceneGraph._id));
+        if(lsCOnf){
+            this.setState({config:lsCOnf});
+        }else{
+            var themes = _.filter(props.sceneGraph.nodeList, function (child) {
+                return child.type === "theme";
+            });
+            var columnHeaders = [];
+            var rowHeaders = [];
+            _.each(themes, function (theme) {
+                var tags = theme.themeTags.split(/\s+(?:,|AND|OR)\s+/);
+                columnHeaders.push({name: tags[1], alias: null});
+                rowHeaders.push({name: tags[0], alias: null});
+            });
+            columnHeaders = _.uniq(columnHeaders,function(c){
+                return c.name;
+            });
+            rowHeaders = _.uniq(rowHeaders,function(c){
+                return c.name;
+            });
+            var config = {rowHeaders: rowHeaders, columnHeaders: columnHeaders, themes: themes};
+            this.setState({config: config});
+        }
+    },
+    render: function () {
+        if (!this.props.sceneGraph) {
+            return null;
+        }
+        try {
+            if (this.props.sceneGraph.type === GraphTypes.SOUND) {
+                var config = this.renderConfig();
+                return (
+                    <div className={"sound-gui-categories col-md-12"}>
+                        <div className="panel panel-default scenes-sound-config">
+                            <div className="panel-heading">Category Config</div>
+                            <div className="panel-body">
+                                {config}
+                                <button className="btn btn-info add-scene-button" onClick={this.exportCatConfig}>Export
+                                    Category
+                                    Config
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            } else {
+                return null;
+            }
+        } catch (E) {
+            console.log("catconf err", E)
+            return null
+        }
+
+    }
+});
 var generateThemeListForSelectedScene = function (selectedScene) {
     var themes = [];
 
@@ -236,7 +335,9 @@ var SceneGraph = React.createClass({
         HubSendActions.loadScene(selectedSceneId);
         this.changeSceneSelection(selectedSceneId);
     },
+    exportCatConfig: function () {
 
+    },
     addSelectedScene: function (event) {
         SceneGraphActions.addScene(this.state.sceneGraph._id, this.state.selectedSceneId);
     },
@@ -343,6 +444,7 @@ var SceneGraph = React.createClass({
 
                     </div>
 
+                    <CategoryConfig sceneGraph={this.state.sceneGraph}/>
                     <div className="col-md-12">
                         <DragDropContainer
                             themeUnion={Object.keys(this.state.themeUnionForScenesInGraph)}

@@ -53,6 +53,12 @@ var SceneGraphActions = {
             themeId: themeId
         });
     },
+    buildSoundGUICategoryConfig: function(sceneGraphId){
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.SCENE_GRAPH_INCLUDE_SOUND_GUI_CATEGORIES,
+            sceneGraphId:sceneGraphId
+        })
+    },
 
     addThemeIntoSceneGraph: function(parentList, parentKey, themeId, sceneGraphId, parentType) {
         AppDispatcher.handleViewAction({
