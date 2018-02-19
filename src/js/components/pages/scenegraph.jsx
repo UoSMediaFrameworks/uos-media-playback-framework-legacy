@@ -100,6 +100,11 @@ var CategoryConfig = React.createClass({
         }
 
     },
+    removeAlias: function (obj, event) {
+        var self = this;
+        obj.alias = null;
+        SceneGraphActions.updateSceneGraph(self.props.sceneGraph)
+    },
     renderConfig: function () {
         var self = this;
         if (!self.props.sceneGraph.categoryConfig) {
@@ -112,8 +117,10 @@ var CategoryConfig = React.createClass({
                 <ul>
                     <li><label>{"name : alias"}</label></li>
                     {self.props.sceneGraph.categoryConfig.rowHeaders.map(function (row) {
-                        return <li><label>{row.name + ":" + row.alias || ""}</label><input type="text"
-                                                                                           onKeyPress={self.handleKeyPress.bind(this, row)}/>
+                        return <li><label>{row.name + ":" + row.alias || ""}</label>
+                            <i className={'fa fa-times mf-times alias-icon'} onClick={self.removeAlias.bind(this, row)}></i><input
+                                type="text"
+                                 onKeyPress={self.handleKeyPress.bind(this, row)}/>
                         </li>
                     }.bind(this))}
                 </ul>
@@ -121,8 +128,10 @@ var CategoryConfig = React.createClass({
                 <ul>
                     <li><label>{"name : alias"}</label></li>
                     {self.props.sceneGraph.categoryConfig.columnHeaders.map(function (col) {
-                        return <li><label>{col.name + ":" + col.alias || ""}</label><input type="text"
-                                                                                           onKeyPress={self.handleKeyPress.bind(this, col)}/>
+                        return <li><label>{col.name + ":" + col.alias || ""}</label>
+                            <i className={'fa fa-times mf-times alias-icon'} onClick={self.removeAlias.bind(this, col)}></i><input
+                               type="text"
+                                onKeyPress={self.handleKeyPress.bind(this, col)}/>
                         </li>
                     }.bind(this))}
                 </ul>

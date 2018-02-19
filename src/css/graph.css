@@ -671,3 +671,7 @@ text {
 .disabled-cell{
     pointer-events: none;
 }
+.alias-icon{
+    margin-left:5px;
+    margin-right:5px;
+}
