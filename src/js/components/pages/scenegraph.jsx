@@ -197,7 +197,6 @@ var SceneGraph = React.createClass({
 
     getStateFromStores: function () {
         //TODO: Imrpove this condition statement
-        console.log(new Date())
         try {
             var sceneGraphId = null;
             if (this.props._id) {
@@ -210,14 +209,13 @@ var SceneGraph = React.createClass({
             if (sceneGraph && this.state && !this.state.sceneGraph) {
                 this.loadAllScenesForSceneGraph(sceneGraph);
             }
-
+            /*sceneGraphs: SceneGraphListStore.getAll()*/
             var selectedScene = this.state && this.state.selectedSceneId ? SceneStore.getScene(this.state.selectedSceneId) : null;
             var panelOpen = this.state && this.state.hasOwnProperty("open") ? this.state.open : false;
             var state = {
                 sceneGraph: sceneGraph,
                 graphThemes: sceneGraph && sceneGraph.graphThemes ? sceneGraph.graphThemes : {},
                 name: sceneGraph ? sceneGraph.name : "",
-                sceneGraphs: SceneGraphListStore.getAll(),
                 scenes: SceneListStore.getAll(),
                 storedFullScenes: {},
                 selectedScene: selectedScene,
