@@ -69,6 +69,7 @@ var SoundGui = React.createClass({
         if (scoreList.play.themes.length == 0) {
             scoreList.play.scenes = [];
         }
+        console.log(scoreList)
         HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID());
         this.setState({themes: scoreList.play.themes});
     },
@@ -141,21 +142,32 @@ var SoundGui = React.createClass({
                         } else {
                             //TODO: AP - this needs to be checked against a specific value rather than this random combination of string
                             var obj = _.find(ls.themes, function (theme) {
+                                var tags = theme.themeTags.split(/\s+(?:,|AND|OR)\s+/);
                                 if (!self.state.switch) {
-                                    return theme.name === rowHeaders[i - 1].name + columnHeaders[idx - 1].name;
+                                    return tags[0] === rowHeaders[i - 1].name && tags[1]===columnHeaders[idx - 1].name;
                                 } else {
-                                    return theme.name === columnHeaders[idx - 1].name + rowHeaders[i - 1].name;
+                                    return tags[0] === columnHeaders[idx - 1].name && tags[1] === rowHeaders[i - 1].name;
                                 }
                             });
-                            cell.push(<td key={cellID}>
+                            var cellValue;
+                            var cellChecked;
+                                if(obj){
+                                    cellValue = -1 !==_.indexOf(self.state.themes,obj.name)?'on':'off';
+                                    cellChecked = -1 !==_.indexOf(self.state.themes,obj.name)?true:false;
+                                }else{
+                                    cellValue = 'off';
+                                    cellChecked = false;
+                                }
+
+                            cell.push(<td key={cellID}  className={obj?'':"disabled-cell"}>
                                 <label className="switch" style={{
                                     height: self.props.innerHeight / (rowHeaders.length + 1),
                                     width: self.props.innerWidth / (columnHeaders.length + 1)
                                 }}>
-                                    <input type="checkbox" onClick={self.handleCheckboxChange.bind(this, obj)}/>
+                                    <input type="checkbox" value={cellValue} checked={cellChecked} onClick={self.handleCheckboxChange.bind(this, obj)}/>
                                     <div className="slider round">
-                                        <span className="on">{obj? JSON.stringify(obj.name): "error"}</span>
-                                        <span className="off">{obj? JSON.stringify(obj.name): "error"}</span>
+                                        <span className="on">{obj? obj.name: "No Item"}</span>
+                                        <span className="off">{obj? obj.name: "No Item"}</span>
                                     </div>
                                 </label>
                             </td>)

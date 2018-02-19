@@ -668,4 +668,6 @@ text {
     color: red;
 }
 
-
+.disabled-cell{
+    pointer-events: none;
+}
