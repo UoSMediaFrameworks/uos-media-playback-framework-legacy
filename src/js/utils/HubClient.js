@@ -7,6 +7,8 @@ var SceneActions = require('../actions/scene-actions');
 var assetStore = require('./asset-store');
 var connectionCache = require('./connection-cache');
 var NodeListGeneration = require('./scene-graph/node-list-generation');
+var GraphTypes = require('../constants/graph-constants').GraphTypes;
+var CategoryConfig = require('../utils/scene-graph/category-config-generator')
 var toastr = require('toastr');
 var socket;
 var _ = require('lodash');
@@ -91,7 +93,7 @@ var HubClient = {
             if (err || ! scene) {
                 /*HubRecieveActions.errorMessage('Couldn\'t load requested scene, reload the page and try again');*/
             } else {
-                console.log("loading requested scene")
+                ///console.log("loading requested scene")
                 HubRecieveActions.recieveScene(scene);
             }
         });
@@ -143,7 +145,14 @@ var HubClient = {
         // APEP Hack - Block the merged graph from running node list generation.
         // APEP this process was done by a script and we don't want to override its results
         if(sceneGraph._id !== "579a2186792e8b3c827d2b15") {
+
             NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
+            if(sceneGraph.type === GraphTypes.SOUND){
+                var tempConf = CategoryConfig.generateCategoryConfig(sceneGraph);
+                console.log("angel",tempConf);
+                sceneGraph.categoryConfig = tempConf;
+
+            }
         }
 
         socket.emit('saveSceneGraph', sceneGraph, function(err, newSceneGraph) {

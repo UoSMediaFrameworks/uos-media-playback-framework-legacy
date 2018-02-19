@@ -2,6 +2,7 @@ var React = require("react");
 var ReactDom = require("react-dom");
 
 var SceneGraphListStore = require('../../stores/scene-graph-list-store.jsx');
+var SceneGraphStore = require('../../stores/scene-graph-store.jsx');
 var HubSendActions = require('../../actions/hub-send-actions');
 var connectionCache = require("../../utils/connection-cache");
 var NarmGraph = require('./narm-graph.jsx');
@@ -47,6 +48,10 @@ var GraphContainer = React.createClass({
     },
     _onChange: function () {
         var sceneGraph = SceneGraphListStore.getSceneGraphByID(this.state.graphId);
+        this._initialize(sceneGraph);
+    },
+    _onSceneChange: function () {
+        var sceneGraph = SceneGraphStore.getSceneGraph(this.state.graphId);
         this._initialize(sceneGraph);
     },
     _onCrumbsChange: function () {
@@ -119,7 +124,7 @@ var GraphContainer = React.createClass({
         function removeBadRelationships() {
             _.each(localRoot.nodes, function (node) {
                 _.each(node.children, function (child) {
-                    var gat = _.include(child.children, node)
+                    var gat = _.includes(child.children, node)
                     if (gat) {
                         circularRef.push({
                             duplicate: node,
@@ -162,9 +167,7 @@ var GraphContainer = React.createClass({
         });
     },
     _getGraphTypeComponent() {
-
         if (this.state.sceneList) {
-
             switch (this.state.type) {
                 case GraphTypes.MEMOIR:
                     return (
@@ -254,7 +257,8 @@ var GraphContainer = React.createClass({
     componentDidMount: function () {
         document.addEventListener('keyup', this.optionsMenuHandler, false);
         var dom = ReactDom.findDOMNode(this);
-        SceneGraphListStore.addChangeListener(this._onChange);
+      /*  SceneGraphListStore.addChangeListener(this._onChange);*/
+        SceneGraphStore.addChangeListener(this._onSceneChange);
         BreadcrumbsStore.addChangeListener(this._onCrumbsChange);
         BreadcrumbsStore.setBreadcrumbs(this.state.graphId);
         GridStore.setRoomId(connectionCache.getSocketID());
@@ -274,7 +278,8 @@ var GraphContainer = React.createClass({
     },
     componentWillUnmount: function () {
         document.removeEventListener('keyup', this.optionsMenuHandler, false);
-        SceneGraphListStore.removeChangeListener(this._onChange);
+   /*     SceneGraphListStore.removeChangeListener(this._onChange);*/
+        SceneGraphStore.removeChangeListener(this._onSceneChange);
         BreadcrumbsStore.removeChangeListener(this._onCrumbsChange);
         GridStore.setRoomId("presentation1");
     },
@@ -345,6 +350,8 @@ var GraphContainer = React.createClass({
                         </div>
                     )
             }
+        }else{
+            return <div>Meh</div>
         }
     },
     componentWillMount() {

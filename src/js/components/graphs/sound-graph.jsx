@@ -9,15 +9,12 @@ var SoundGui = React.createClass({
         return {switch: false, themes: []}
     },
     componentWillMount: function () {
-        /*  this.setupNodes(this.props.data,this.props)*/
-        /*  this.setState({data:this.props.data})*/
+
     },
     componentWillReceiveProps: function (nextProps) {
-        if (nextProps.shouldUpdateId != this.props.shouldUpdateId) {
-            /*  this.setupNodes(nextProps.data,nextProps)*/
+        if(this.props.data._id !== nextProps.data._id){
             this.setState({switch: false, themes: []})
         }
-
     },
     _nodes: function (list, sceneList) {
         var self = this;
@@ -73,7 +70,6 @@ var SoundGui = React.createClass({
             scoreList.play.scenes = [];
         }
         HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID());
-        console.log("score", scoreList);
         this.setState({themes: scoreList.play.themes});
     },
     hashCode: function (str) {
@@ -87,8 +83,6 @@ var SoundGui = React.createClass({
         var c = (i & 0x00FFFFFF)
             .toString(16)
             .toUpperCase();
-        var value = "00000".substring(0, 6 - c.length) + c;
-        console.log("angel", value)
         return "00000".substring(0, 6 - c.length) + c;
     },
     handleSwitch: function (event) {
@@ -98,22 +92,21 @@ var SoundGui = React.createClass({
         if (!this.props.data) {
             return null;
         }
+        if (!this.props.data.categoryConfig) {
+            return (<div>Categories are not generated error</div>);
+        }
         try {
-
             var self = this;
             var rowHeaders, columnHeaders = [];
-            var ls = JSON.parse(localStorage.getItem(this.props.data._id));
-
-            if (ls) {
-                if(!this.state.switch){
-                    rowHeaders = ls.rowHeaders;
-                    columnHeaders = ls.columnHeaders;
-                }else{
-                    rowHeaders = ls.columnHeaders;
-                    columnHeaders = ls.rowHeaders;
-                }
-
+            var ls = self.props.data.categoryConfig;
+            if (!this.state.switch) {
+                rowHeaders = ls.rowHeaders;
+                columnHeaders = ls.columnHeaders;
+            } else {
+                rowHeaders = ls.columnHeaders;
+                columnHeaders = ls.rowHeaders;
             }
+
             var rows = [];
             for (var i = 0; i < rowHeaders.length + 1; i++) {
 
@@ -136,16 +129,17 @@ var SoundGui = React.createClass({
                                 </label></td>);
                         } else {
                             cell.push(<th
-                                style={{"backgroundColor": "#" + self.intRGB(self.hashCode(columnHeaders[idx - 1].alias || columnHeaders[idx-1].name))}}
+                                style={{"backgroundColor": "#" + self.intRGB(self.hashCode(columnHeaders[idx - 1].alias || columnHeaders[idx - 1].name))}}
                                 width={self.props.innerWidth / (columnHeaders.length + 1)} key={cellID}
-                                scope="col">{columnHeaders[idx - 1].alias || columnHeaders[idx - 1].name }</th>)
+                                scope="col">{columnHeaders[idx - 1].alias || columnHeaders[idx - 1].name}</th>)
                         }
                     } else {
                         if (idx == 0) {
                             cell.push(<th
-                                style={{"backgroundColor": "#" + self.intRGB(self.hashCode(rowHeaders[i - 1].alias || rowHeaders[i-1].name))}}
+                                style={{"backgroundColor": "#" + self.intRGB(self.hashCode(rowHeaders[i - 1].alias || rowHeaders[i - 1].name))}}
                                 key={cellID} scope="row">{rowHeaders[i - 1].alias || rowHeaders[i - 1].name}</th>)
                         } else {
+                            //TODO: AP - this needs to be checked against a specific value rather than this random combination of string
                             var obj = _.find(ls.themes, function (theme) {
                                 if (!self.state.switch) {
                                     return theme.name === rowHeaders[i - 1].name + columnHeaders[idx - 1].name;
@@ -160,8 +154,8 @@ var SoundGui = React.createClass({
                                 }}>
                                     <input type="checkbox" onClick={self.handleCheckboxChange.bind(this, obj)}/>
                                     <div className="slider round">
-                                        <span className="on">{JSON.stringify(obj.name)}</span>
-                                        <span className="off">{JSON.stringify(obj.name)}</span>
+                                        <span className="on">{obj? JSON.stringify(obj.name): "error"}</span>
+                                        <span className="off">{obj? JSON.stringify(obj.name): "error"}</span>
                                     </div>
                                 </label>
                             </td>)
@@ -169,13 +163,11 @@ var SoundGui = React.createClass({
                     }
                 }
                 rows.push(<tr key={rowID} width={this.props.innerWidth}
-                              height={this.props.innerHeight / (rowHeaders.length + 1)} >{cell}</tr>)
+                              height={this.props.innerHeight / (rowHeaders.length + 1)}>{cell}</tr>)
             }
         } catch (ex) {
             console.log("error Angel", ex)
         }
-
-
         return (
             <TransitionGroup ref="backgroundContainer" id="backgroundContainer" component="div">
                 <div className="board">
