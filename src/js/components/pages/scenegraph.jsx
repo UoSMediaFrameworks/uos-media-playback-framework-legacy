@@ -1,7 +1,7 @@
 'use strict';
 /* jshint browser: true */
 /* global confirm: false */
-
+var CategoryConfigGenerator = require("../../utils/scene-graph/category-config-generator");
 var React = require('react');
 var _ = require('lodash');
 var Panel = require('react-bootstrap').Panel;
@@ -92,73 +92,41 @@ var SceneTheme = React.createClass({
     }
 });
 var CategoryConfig = React.createClass({
-    handleKeyPress:function(obj,event){
-        var self =this;
+    handleKeyPress: function (obj, event) {
+        var self = this;
         if (event.key === 'Enter') {
             obj.alias = event.target.value;
-            localStorage.setItem(self.props.sceneGraph._id,JSON.stringify(self.state.config));
-            self.setState({config:self.state.config})
+            SceneGraphActions.updateSceneGraph(self.props.sceneGraph)
         }
 
     },
-    getInitialState:function(){
-
-        return {
-            config: null
+    renderConfig: function () {
+        var self = this;
+        if (!self.props.sceneGraph.categoryConfig) {
+            return null;
         }
-    },
-    componentWillReceiveProps:function(nextProps){
 
-        this.buildConfig(nextProps)
-    },
-    renderConfig:function(){
-        var self =this;
         return (
             <div>
                 <h4>Row Categories:</h4>
                 <ul>
                     <li><label>{"name : alias"}</label></li>
-                    {self.state.config.rowHeaders.map(function (row) {
+                    {self.props.sceneGraph.categoryConfig.rowHeaders.map(function (row) {
                         return <li><label>{row.name + ":" + row.alias || ""}</label><input type="text"
-                                                                                           onKeyPress={self.handleKeyPress.bind(this,row)}/>
+                                                                                           onKeyPress={self.handleKeyPress.bind(this, row)}/>
                         </li>
                     }.bind(this))}
                 </ul>
                 <h4>Column Categories:</h4>
                 <ul>
                     <li><label>{"name : alias"}</label></li>
-                    {self.state.config.columnHeaders.map(function (col) {
+                    {self.props.sceneGraph.categoryConfig.columnHeaders.map(function (col) {
                         return <li><label>{col.name + ":" + col.alias || ""}</label><input type="text"
-                                                                                           onKeyPress={self.handleKeyPress.bind(this,col)}/>
+                                                                                           onKeyPress={self.handleKeyPress.bind(this, col)}/>
                         </li>
                     }.bind(this))}
                 </ul>
             </div>)
-    },
-    buildConfig: function (props) {
-        var lsCOnf =JSON.parse(localStorage.getItem(props.sceneGraph._id));
-        if(lsCOnf){
-            this.setState({config:lsCOnf});
-        }else{
-            var themes = _.filter(props.sceneGraph.nodeList, function (child) {
-                return child.type === "theme";
-            });
-            var columnHeaders = [];
-            var rowHeaders = [];
-            _.each(themes, function (theme) {
-                var tags = theme.themeTags.split(/\s+(?:,|AND|OR)\s+/);
-                columnHeaders.push({name: tags[1], alias: null});
-                rowHeaders.push({name: tags[0], alias: null});
-            });
-            columnHeaders = _.uniq(columnHeaders,function(c){
-                return c.name;
-            });
-            rowHeaders = _.uniq(rowHeaders,function(c){
-                return c.name;
-            });
-            var config = {rowHeaders: rowHeaders, columnHeaders: columnHeaders, themes: themes};
-            this.setState({config: config});
-        }
     },
     render: function () {
         if (!this.props.sceneGraph) {
@@ -185,10 +153,9 @@ var CategoryConfig = React.createClass({
                 return null;
             }
         } catch (E) {
-            console.log("catconf err", E)
-            return null
+            console.log("conf err", E);
+            return null;
         }
-
     }
 });
 var generateThemeListForSelectedScene = function (selectedScene) {
@@ -196,11 +163,9 @@ var generateThemeListForSelectedScene = function (selectedScene) {
 
     if (!selectedScene || !selectedScene.themes)
         return themes;
-
     for (var property in selectedScene.themes) {
         themes.push(property);
     }
-
     return themes;
 };
 
@@ -232,64 +197,66 @@ var SceneGraph = React.createClass({
 
     getStateFromStores: function () {
         //TODO: Imrpove this condition statement
-        var sceneGraphId = null;
-        if (this.props._id) {
-            sceneGraphId = this.props._id;
-        }
-        if (this.props.params) {
-            sceneGraphId = this.props.params.id;
-        }
-
-        var sceneGraph = SceneGraphStore.getSceneGraph(sceneGraphId);
-
-        if (sceneGraph && this.state && !this.state.sceneGraph) {
-            this.loadAllScenesForSceneGraph(sceneGraph);
-        }
-
-        var selectedScene = this.state && this.state.selectedSceneId ? SceneStore.getScene(this.state.selectedSceneId) : null;
-
-        var panelOpen = this.state && this.state.hasOwnProperty("open") ? this.state.open : false;
-
-        var state = {
-            sceneGraph: sceneGraph,
-            graphThemes: sceneGraph && sceneGraph.graphThemes ? sceneGraph.graphThemes : {},
-            name: sceneGraph ? sceneGraph.name : "",
-            sceneGraphs: SceneGraphListStore.getAll(),
-            scenes: SceneListStore.getAll(),
-            storedFullScenes: {},
-            selectedScene: selectedScene,
-            selectedSceneThemeList: generateThemeListForSelectedScene(selectedScene),
-            selectSceneTags: generateTagListFromThemeList(selectedScene),
-            themeUnionForScenesInGraph: {},
-            open: panelOpen
-        };
-
-        var sceneIds = state.sceneGraph && state.sceneGraph.sceneIds ? Object.keys(state.sceneGraph.sceneIds) : [];
-
-        for (var sceneIdFromlist in sceneIds) {
-            var fullScene = SceneStore.getScene(sceneIds[sceneIdFromlist]);
-            if (fullScene) {
-                var storedFullScenes = state.storedFullScenes;
-                storedFullScenes[fullScene._id] = fullScene;
-                state.storedFullScenes = storedFullScenes;
+        console.log(new Date())
+        try {
+            var sceneGraphId = null;
+            if (this.props._id) {
+                sceneGraphId = this.props._id;
             }
-        }
-
-        for (var sceneKey in Object.keys(state.storedFullScenes)) {
-            var fullSceneObj = state.storedFullScenes[Object.keys(state.storedFullScenes)[sceneKey]];
-            var themeKeys = Object.keys(fullSceneObj.themes);
-
-            var excludedThemeList = Object.keys(state.sceneGraph.excludedThemes);
-
-            for (var property in themeKeys) {
-                if (excludedThemeList.indexOf(themeKeys[property]) === -1)
-                    state.themeUnionForScenesInGraph[themeKeys[property]] = {};
+            if (this.props.params) {
+                sceneGraphId = this.props.params.id;
             }
+            var sceneGraph = SceneGraphStore.getSceneGraph(sceneGraphId);
+            if (sceneGraph && this.state && !this.state.sceneGraph) {
+                this.loadAllScenesForSceneGraph(sceneGraph);
+            }
+
+            var selectedScene = this.state && this.state.selectedSceneId ? SceneStore.getScene(this.state.selectedSceneId) : null;
+            var panelOpen = this.state && this.state.hasOwnProperty("open") ? this.state.open : false;
+            var state = {
+                sceneGraph: sceneGraph,
+                graphThemes: sceneGraph && sceneGraph.graphThemes ? sceneGraph.graphThemes : {},
+                name: sceneGraph ? sceneGraph.name : "",
+                sceneGraphs: SceneGraphListStore.getAll(),
+                scenes: SceneListStore.getAll(),
+                storedFullScenes: {},
+                selectedScene: selectedScene,
+                selectedSceneThemeList: generateThemeListForSelectedScene(selectedScene),
+                selectSceneTags: generateTagListFromThemeList(selectedScene),
+                themeUnionForScenesInGraph: {},
+                open: panelOpen
+            };
+
+            var sceneIds = state.sceneGraph && state.sceneGraph.sceneIds ? Object.keys(state.sceneGraph.sceneIds) : [];
+
+            for (var sceneIdFromlist in sceneIds) {
+                var fullScene = SceneStore.getScene(sceneIds[sceneIdFromlist]);
+                if (fullScene) {
+                    var storedFullScenes = state.storedFullScenes;
+                    storedFullScenes[fullScene._id] = fullScene;
+                    state.storedFullScenes = storedFullScenes;
+                }
+            }
+
+            for (var sceneKey in Object.keys(state.storedFullScenes)) {
+                var fullSceneObj = state.storedFullScenes[Object.keys(state.storedFullScenes)[sceneKey]];
+                var themeKeys = Object.keys(fullSceneObj.themes);
+
+                var excludedThemeList = Object.keys(state.sceneGraph.excludedThemes);
+
+                for (var property in themeKeys) {
+                    if (excludedThemeList.indexOf(themeKeys[property]) === -1)
+                        state.themeUnionForScenesInGraph[themeKeys[property]] = {};
+                }
+            }
+
+            console.log("SceneGraph - getStateFromStores: ", state);
+
+            return state;
+        } catch (e) {
+            console.log("err ", state);
         }
 
-        console.log("SceneGraph - getStateFromStores: ", state);
-
-        return state;
     },
 
     componentDidMount: function () {
@@ -359,7 +326,6 @@ var SceneGraph = React.createClass({
     },
 
     render: function () {
-        console.log("scene graph", this)
         var sceneGraphId = null;
         if (this.props.params) {
             sceneGraphId = this.props.params.id;
@@ -367,9 +333,8 @@ var SceneGraph = React.createClass({
         if (this.props._id) {
             sceneGraphId = this.props._id;
         }
-
         var viewerUrl = mediaHubGraphURL + "/?id=" + sceneGraphId;
-        if (this.props._id == null) {
+        if (!this.state.sceneGraph) {
             return (
                 <div>
                     Scene graph has not been selected
