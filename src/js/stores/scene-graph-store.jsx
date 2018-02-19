@@ -308,7 +308,8 @@ function _deleteThemeFromSceneGraphStructure(sceneGraphId, themeId, parentList, 
 var SceneGraphStore = assign({}, EventEmitter.prototype, {
     getSceneGraph: function (id) {
         if (_sceneGraphs.hasOwnProperty(id)) {
-            return _.cloneDeep(_sceneGraphs[id]);
+            var temp =_.cloneDeep(_sceneGraphs[id]);
+            return temp;
         }
     },
     emitChange: function () {
@@ -335,8 +336,8 @@ var SceneGraphStore = assign({}, EventEmitter.prototype, {
             case  ActionTypes.SCENE_GRAPH_UPDATE:
                 HubClient.saveSceneGraph(action.sceneGraph,function(sg){
                     _updateSceneGraph(sg);
+                    SceneGraphStore.emitChange();
                 });
-                SceneGraphStore.emitChange();
                 break;
             case ActionTypes.SCENE_GRAPH_ADD_SCENE:
                 _addSceneToSceneGraph(action.sceneGraphId, action.sceneId);
