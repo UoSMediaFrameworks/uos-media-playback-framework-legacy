@@ -62,7 +62,7 @@ var RespGrid = React.createClass({
 
         // TODO APEP Not sure if we need to do this remapping, I think we can just send layout param straight through actions
         var mergedList = _.map(self.state.data.layout, function (item) {
-            return _.extend(item, _.findWhere(layout, {i: item.i}));
+            return _.extend(item, _.find(layout, {i: item.i}));
         });
 
         ViewLayoutActions.layoutChange(mergedList);
