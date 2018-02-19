@@ -45,17 +45,15 @@ var ThemeSelector = React.createClass({
 
 		this.setState({selected: selected});
 	},
-    componentWillUpdate:function(nextProps){
-        if(nextProps.shouldHide){
-            this.refs["theme-selector"].style.display = "none";
-        }else{
-            this.refs["theme-selector"].style.display ="block";
-        }
-    },
+
 	render: function() {
 		var scene = this.props.scene || {};
+		var classNames = 'theme-selector';
+		if(this.props.shouldHide) {
+		    classNames += ' hidden';
+        }
 		return (
-			<div className='theme-selector' ref="theme-selector">
+			<div className={classNames} ref="theme-selector">
 			{_.keys(scene.themes).map(function(key) {
 				return <ThemeButton onClick={this.handleClick} theme={key} selected={this.state.selected[key]} key={key} />;
 			}.bind(this))}

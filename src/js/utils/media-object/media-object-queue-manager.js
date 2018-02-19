@@ -13,8 +13,8 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
     this.randomMediaObjectQueue = new RandomMediaObjectQueue(types, defaultDisplayCounts, this);
     this.linearMediaObjectQueue = new LinearMediaObjectQueue(types, defaultDisplayCounts, this);
 
-    this.activeQueue = this.linearMediaObjectQueue;
-    this.isLinear = true;
+    this.activeQueue = this.randomMediaObjectQueue;
+    this.isLinear = false;
     this.afterQueueChangeFunc = afterQueueChangeFunc;
 
     this.take = function(args) {
@@ -25,9 +25,17 @@ function MediaObjectQueueManager(types, defaultDisplayCounts, afterQueueChangeFu
         }
     };
 
+    // APEP get the activeQueues - list of available media that could be added to the playback
     this.getQueue = function() {
         if (this.activeQueue) {
             return this.activeQueue.getQueue();
+        }
+    };
+
+    // APEP get the activeQueues - list of media that is currently in the playback environment
+    this.getActive = function() {
+        if (this.activeQueue) {
+            return this.activeQueue.getActive();
         }
     };
 

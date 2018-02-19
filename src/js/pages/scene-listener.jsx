@@ -66,10 +66,10 @@ var SceneListener = React.createClass({
         return {
             scene: this._getScene(),
             activeThemes: [],
-            fromGraphViewer: this.props.activeScene !== null,
+            fromGraphViewer: this.props.hasOwnProperty("activeScene") && this.props.activeScene !== null,
             triggeredActiveThemes: {},
             cuePointMediaObjects: [],
-            shouldHide: false
+            shouldHide: !this.props.sceneViewer // APEP we are given a param from our parent to let us know if we are being driven from an external source or simply to preview a scene
         };
     },
 
@@ -98,7 +98,7 @@ var SceneListener = React.createClass({
         var scene = this._getSceneForUpdatingPlayerComponent();
 
         if (scene) {
-            console.log("SceneListener - _updatePlayersTagMatcher - setScene - scene:", scene);
+            console.log("SceneListener - _updatePlayersTagMatcher");
             this.updateTags();
         }
     },
@@ -125,12 +125,6 @@ var SceneListener = React.createClass({
 
     toggleTagMatcherAndThemes: function (event) {
         if (event.altKey && event.keyCode === 72) {
-            var tag_form = this.refs["tag_form"];
-            if (!this.state.shouldHide) {
-                tag_form.style.display = "none";
-            } else {
-                tag_form.style.display = "block";
-            }
             this.setState({shouldHide: !this.state.shouldHide});
         }
     },
@@ -159,6 +153,9 @@ var SceneListener = React.createClass({
     componentDidUpdate: function (prevProps, prevState) {
 
         if (!_.isEqual(prevState.scene, this.state.scene) || !_.isEqual(prevProps.activeScene, this.props.activeScene)) {
+
+            // APEP TODO I don't think I am correctly getting the scene._id, i should use one of our implemented methods that capture the differences in state.scene or props.activeScene
+
             // APEP if we switch activeScene, we should make sure we unsubscribe for updates from previous scenes
             HubSendActions.unsubscribeScene(prevProps.activeScene._id);
             // And resubscribe to the new active scene
@@ -204,16 +201,14 @@ var SceneListener = React.createClass({
         }
 
         if (this.props.themeQuery) {
-            // APEP the tag matcher will make sure all active media not related to new scene is removed
-            var themeQry = this.props.themeQuery;
-
             if (this.state.mediaObjectQueue) {
-                this.state.mediaObjectQueue.setTagMatcher(new TagMatcher("(" + themeQry + ")"));
+                // APEP the tag matcher will make sure all active media not related to new scene is removed.njn
+                this.state.mediaObjectQueue.setTagMatcher(new TagMatcher("(" + this.props.themeQuery + ")"));
 
-                // APEP TODO this is an incorrect way to check, the queue might be empty given everything active.
-                // APEP we need a better check, using masterList and mo matching
-                // APEP if using the theme query provides no media, set the tag matcher with an empty rule
-                if (this.state.mediaObjectQueue.getQueue().length <= MINIMUM_NUMBER_OF_MEDIA_TO_BE_MATCHED_WITH_THEME_QUERY) {
+                // APEP if using the theme query provides no media, set the tag matcher with an empty rule.
+                // APEP the below check is used to allow tagMatcher changes only to still calculate the correct value.  This is an optimization to avoid have to filter the masterList in the queues
+                var currentMatchedMedia = this.state.mediaObjectQueue.getQueue().length + this.state.mediaObjectQueue.getActive().length;
+                if (currentMatchedMedia <= MINIMUM_NUMBER_OF_MEDIA_TO_BE_MATCHED_WITH_THEME_QUERY) {
                     this.state.mediaObjectQueue.setTagMatcher(new TagMatcher("()"));
                 }
             }
@@ -343,11 +338,9 @@ var SceneListener = React.createClass({
                        className='form-control scene-listener-tag-input'/>
             </form> : <span></span>;
 
-        var self = this;
-
         if (this.state.scene) {
             return (
-                <div className={ self.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"} ref="scene_listener">
+                <div className={ this.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"} ref="scene_listener">
                     <Loader loaded={this.state.scene !== null}></Loader>
                     <RandomVisualPlayer sceneStyle={this.state.scene.style}
                                         mediaQueue={this.state.mediaObjectQueue}

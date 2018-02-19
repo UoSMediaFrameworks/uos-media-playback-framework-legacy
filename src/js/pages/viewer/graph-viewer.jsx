@@ -74,10 +74,12 @@ var GraphViewer = React.createClass({
             callback(fullScenes);
         });
     },
+
     componentWillMount:function(){
         var obj = GraphViewerStore.getLastActive();
         this.setState(obj);
     },
+
     // APEP we have a new scene / theme list from the graph
     _onChange: function() {
 
@@ -120,12 +122,6 @@ var GraphViewer = React.createClass({
             self.setState(newState);
             self.showScenes();
         });
-    },
-
-    componentWillReceiveProps:function(nextProps) {
-        if(this.props._id !== nextProps._id){
-            this.setState({activeSceneId:nextProps._id})
-        }
     },
 
     componentDidMount: function() {

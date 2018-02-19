@@ -189,8 +189,11 @@ var RandomVisualPlayer = React.createClass({
             // APEP make sure the queue has reference to the fnt that allows the queue to call transition on react class objects
             this.props.mediaQueue.setTransitionHandler(this.mediaObjectTransition);
 
+            var hasDisplayIntervalNotBeenSetOrChanged = self.props.mediaQueue.getDisplayInterval() !== undefined && self.state.interval !== self.props.mediaQueue.getDisplayInterval();
+            var hasTakeMediaIntervalNotBeenSet = self.state.loadMediaObjectInterval === null;
+
             // APEP make sure we update our state when the component starts for the first time - TODO investigate the need for this
-            if (self.props.mediaQueue.getDisplayInterval() !== undefined && self.state.interval !== self.props.mediaQueue.getDisplayInterval()) {
+            if (hasDisplayIntervalNotBeenSetOrChanged || hasTakeMediaIntervalNotBeenSet) {
 
                 // APEP if we've updated, and not started the scene interval
                 self.startLoadMediaObjectsInterval();
