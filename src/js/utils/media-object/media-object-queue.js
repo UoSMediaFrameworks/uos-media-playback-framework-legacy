@@ -92,7 +92,7 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
 
     this.refreshQueueValuesForNonDefaultBehaviour = function() {
         // fill the queue with matching mediaObjects
-        queue = _(masterList)
+        queue = _.chain(masterList)
             .filter(function(mo) {
                 return tagMatcher.match(mo.tags);
             })
@@ -161,7 +161,7 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
         }.bind(this));
 
         // fill the queue with matching mediaObjects
-        queue = _(masterList)
+        queue = _.chain(masterList)
             .filter(function(mo) {
                 return tagMatcher.match(mo.tags);
             })
@@ -184,7 +184,7 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
     };
 
     this.take = function(typesArray) {
-        var activeSoloTypes = _(active)
+        var activeSoloTypes = _.chain(active)
             .filter(function(mo) {
                 return mo._obj.solo === true && mo._playing === true;
             })
@@ -192,7 +192,7 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
                 return mo.constructor;
             }).value();
 
-        var eligibleTypes = _(typesArray)
+        var eligibleTypes = _.chain(typesArray)
             .filter(function(moType) {
                 return activeCount(moType.typeName) < maximumOnScreen[moType.typeName];
             })
@@ -250,7 +250,7 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
             tagMatcher = newTagMatcher;
 
             // fill queue with all newly matching mos from masterList that aren't currently playing
-            queue = _(masterList)
+            queue = _.chain(masterList)
                 .filter(function(mo) {
                     return tagMatcher.match(mo.tags);
                 })
@@ -259,7 +259,7 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
                 .value();
 
             // transition out currently playin non-matching videos
-            _(active)
+            _.chain(active)
                 .filter(function(mo) {
                     return ! tagMatcher.match(mo.tags);
                 }).each(function(mo) {

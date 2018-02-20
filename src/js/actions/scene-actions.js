@@ -84,8 +84,8 @@ var SceneActions = {
                     type: ActionTypes.ADD_MEDIA_FAILED
                 });
             } else {
-                var tags = _(data.tags).pluck('tag').map(function (x) {
-                    return x.trim();
+                var tags = _.chain(data.tags).map(function (x) {
+                    return x.tag.trim();
                 }).value().join(', ');
 
                 SceneActions.addMediaObject(sceneId, {

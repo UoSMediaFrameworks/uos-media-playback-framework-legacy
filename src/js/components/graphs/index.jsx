@@ -222,7 +222,8 @@ var GraphContainer = React.createClass({
                 case GraphTypes.SOUND:
                     return (
                         <SoundGui  shouldUpdateId={this.state.guid}
-                                   data={this.state.sceneList}
+                                   data={this.state.root}
+                                   sceneList={this.state.sceneList}
                                    innerWidth={this.state.width}
                                    innerHeight={this.state.height}/>
 
@@ -351,7 +352,7 @@ var GraphContainer = React.createClass({
                     )
             }
         }else{
-            return <div>Meh</div>
+            return <div> Scene graph has not been selected</div>
         }
     },
     componentWillMount() {

@@ -158,7 +158,7 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
         masterBucketListIndex = _.min(Object.keys(masterBucketsList));
 
         // APEP fill the queue with the first bucket of media objects matching the tags
-        queue = _(masterBucketsList[masterBucketListIndex])
+        queue = _.chain(masterBucketsList[masterBucketListIndex])
             .filter(function(mo) {
                 return tagMatcher.match(mo.tags);
             })
@@ -194,7 +194,7 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
             }
         }
 
-        queue = _(masterBucketsList[masterBucketListIndex])
+        queue = _.chain(masterBucketsList[masterBucketListIndex])
             .filter(function(mo) {
                 return tagMatcher.match(mo.tags);
             })
@@ -287,7 +287,7 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
             tagMatcher = newTagMatcher;
 
             // fill queue with all newly matching mos from masterList that aren't currently playing
-            queue = _(masterBucketsList[masterBucketListIndex])
+            queue = _.chain(masterBucketsList[masterBucketListIndex])
                 .filter(function(mo) {
                     return tagMatcher.match(mo.tags);
                 })
@@ -295,7 +295,7 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
                 .value();
 
             // transition out currently playin non-matching videos
-            _(active)
+            _.chain(active)
                 .filter(function(mo) {
                     return ! tagMatcher.match(mo.tags);
                 }).each(function(mo) {

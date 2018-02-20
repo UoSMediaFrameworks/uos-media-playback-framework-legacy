@@ -140,6 +140,7 @@ var GraphViewer = React.createClass({
 
         if(tourList.length === 0) {
             console.log("GraphViewer - showScenes - Empty sceneThemeTourList list");
+            this.setState({activeScene:null,activeSceneId:null});
             return;
         }
 
@@ -157,7 +158,7 @@ var GraphViewer = React.createClass({
         if (! scene.themes) {
             return null;
         } else {
-            return _(scene.themes).keys().sample();
+            return _.chain(scene.themes).keys().sample();
         }
     },
 
