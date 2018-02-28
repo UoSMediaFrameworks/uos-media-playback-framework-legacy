@@ -21,9 +21,10 @@
   },
   "peerDependencies": {},
   "dependencies": {
+    "@tweenjs/tween.js": "^17.2.0",
     "@vimeo/player": "^1.0.6",
     "async": "^2.3.0",
-    "audio5": "^0.1.10",
+    "audio5": "https://github.com/aaronpcz/audio5js",
     "browserify": "^14.5.0",
     "classnames": "^2.2.5",
     "connect": "^3.2.0",
@@ -93,7 +94,6 @@
     "spin.js": "^2.0.2",
     "stripify": "^6.0.0",
     "toastr": "^2.1.2",
-    "tween.js": "^0.14.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.0.0",
     "watchify": "^2.1.1"

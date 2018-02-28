@@ -1,7 +1,7 @@
 'use strict';
 /*jshint browser:true */
 
-var TWEEN = require('tween.js');
+var TWEEN = require('@tweenjs/tween.js');
 
 module.exports = setInterval(function() {
 	TWEEN.update();
