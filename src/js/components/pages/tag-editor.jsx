@@ -1,12 +1,12 @@
 var React = require('react');
-var _ = require('lodash');
 
+//Stores
 var SceneStore = require('../../stores/scene-store');
 var GridStore = require("../../stores/grid-store");
-var HubSendActions = require('../../actions/hub-send-actions');
+//Actions
 var SceneActions = require('../../actions/scene-actions');
 var AssetActions = require('../../actions/asset-actions');
-
+//UI components
 var FontAwesome = require('react-fontawesome');
 var ReactTags = require('react-tag-input').WithContext;
 
