@@ -97,6 +97,16 @@ var GridStore = assign({}, EventEmitter.prototype, {
     getFocusedMediaObject: function () {
         return gridState.focusedMediaObject;
     },
+
+    getFullFocusedMediaObject: function() {
+        //try catch needed because of possible out of range error
+        try {
+            return scene.scene[gridState.focusedMediaObject]
+        } catch (err) {
+            return null;
+        }
+    },
+
     hasMaximisedView: function () {
         // APEP allow components to see if we have any maximised components.
         return _.filter(gridState.layoutManager.layout, function (item) {
