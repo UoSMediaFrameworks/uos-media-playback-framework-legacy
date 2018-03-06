@@ -949,6 +949,7 @@ html, body, #main, .app {
 /* Example Styles for React Tags*/
 div.ReactTags__tags {
     position: relative;
+    height: fit-content;
 }
 
 /* Styles for the input */
@@ -958,14 +959,18 @@ div.ReactTags__tagInput {
     display: inline-block;
     color: black;
     background: white;
-    margin: 5px;
+    margin: 2px;
 }
+
+
 div.ReactTags__tagInput input.ReactTags__tagInputField,
+
 div.ReactTags__tagInput input.ReactTags__tagInputField:focus {
-    height: 31px;
+    height: 12px;
     margin: 0;
     font-size: 12px;
     width: 100%;
+    border: none;
     border: 1px solid #eee;
 }
 
@@ -976,11 +981,12 @@ div.ReactTags__selected span.ReactTags__tag {
     background: #eee;
     font-size: 12px;
     display: inline-block;
-    padding: 5px;
-    margin: 5px 5px;
-    cursor: move;
+    padding: 1px;
+    margin: 2px 2px;
+    cursor: pointer;
     border-radius: 2px;
 }
+
 div.ReactTags__selected a.ReactTags__remove {
     color: #aaa;
     margin-left: 5px;
@@ -1014,6 +1020,7 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
 
 .ReactTags_blank {
   visibility: hidden;
+  display: none;
 }
 
 .ReactTags_button {
