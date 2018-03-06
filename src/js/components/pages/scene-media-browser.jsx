@@ -105,15 +105,15 @@ var SceneMediaBrowser = React.createClass({
 
     getLastSplit: function() {
         if (localStorage.getItem("splitPos") === null) {
-            //default 1/4 split.
-            return "25%"
+            //default split
+            return 150;
         } else { 
             return parseInt(localStorage.getItem('splitPos'), 10)
         }
     },
 
     onMeasure: function(dimensions) {
-        var topPaneHeight=parseInt(localStorage.getItem('splitPos'), 10)
+        var topPaneHeight=this.getLastSplit();
         var totalHeight = dimensions.height;
         var lowerPaneHeight=totalHeight-topPaneHeight-10;
         this.setState({dimensions: dimensions, lowerPaneHeight: lowerPaneHeight})
