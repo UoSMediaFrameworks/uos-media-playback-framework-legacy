@@ -121,7 +121,7 @@ var NavigationBar = React.createClass({
                         <label htmlFor="scene-graph-input" className="mf-text">Graph Viewer</label>
                         <input type='text' ref='name' id="scene-graph-input" className='form-control'
                                placeholder='Room ID'/>
-                        <button type='submit' className='btn btn-dark'>set Room</button>
+                        <button type='submit' className='btn btn-dark'>Set Room</button>
                     </form>
                 </li>);
                 break;
@@ -134,7 +134,7 @@ var NavigationBar = React.createClass({
                         <label htmlFor="scene-graph-input" className="mf-text">Graph</label>
                         <input type='text' ref='name' id="scene-graph-input" className='form-control'
                                placeholder='Room ID'/>
-                        <button type='submit' className='btn btn-dark'>set Room</button>
+                        <button type='submit' className='btn btn-dark'>Set Room</button>
                     </form>
                 </li>);
                 break;
