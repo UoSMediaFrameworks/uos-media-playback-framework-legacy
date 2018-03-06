@@ -91,7 +91,7 @@ var getSceneNodeListForSTheme = function(sceneGraph, sthemeId) {
 
 //TODO can offer non recursive function for large scene graphs
 var getChildrenNodes = function(node, nodeObj, sceneGraph) {
-
+    console.log("NODE",node,nodeObj,sceneGraph);
     var nodeChildren = Object.keys(node.children);
 
     // APEP (recursive function exit condition) if we have no children to process, map will not run and getChildrenNodes is not called for this branch of recursion.
@@ -99,23 +99,24 @@ var getChildrenNodes = function(node, nodeObj, sceneGraph) {
     _.map(nodeChildren, function(childProp) {
 
         var child = node.children[childProp];
-
         var childObj = createNode(childProp, childProp, [], [], getChildTypeFromNodeType(child));
 
         // APEP process each childs children (recursive function)
         getChildrenNodes(child, childObj, sceneGraph);
 
         childObj.parentRelationshipIds.push(nodeObj._id);
-
-        //if stheme attach all duplicate scene leaf nodes - dedupe process will prune these - as scenes are not provided in the document data structure
+         //if stheme attach all duplicate scene leaf nodes - dedupe process will prune these - as scenes are not provided in the document data structure
         if(child.type === "stheme") {
+
             var sceneNodeData = getSceneNodeListForSTheme(sceneGraph, childProp);
             _.forEach(sceneNodeData, function(sceneNode) {
+
                 var sceneNodeObj = createNode(sceneNode._id, sceneNode.name, [childProp], [], "scene");
                 nodeList.push(sceneNodeObj);
 
                 // for all scenes getting added, we can add media objects
                 var themeTagMatcher = new TagMatcher(sceneNode.themes[childProp]);
+                childObj.themeTags = sceneNode.themes[childProp];
                 var matchingMos = _.filter(sceneNode.media, function(mo) {
                     return themeTagMatcher.match(mo.tags);
                 });

@@ -234,6 +234,7 @@ var MemoirGraph = React.createClass({
                     "scenes": []
                 }
             };
+
             scoreList.play.themes.push(t.name.toString());
             _.each(list, function (scene) {
                 scoreList.play.scenes.push(scene.toString());

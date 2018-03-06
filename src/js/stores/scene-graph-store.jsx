@@ -1,5 +1,7 @@
 'use strict';
 
+var CategoryConfigGenerator = require("../utils/scene-graph/category-config-generator");
+
 var AppDispatcher = require('../dispatchers/app-dispatcher');
 var assign = require('object-assign');
 var _ = require('lodash');
@@ -17,7 +19,7 @@ var _sceneGraphs = {};
  * @param sceneGraph
  * @private
  */
-function _updateSceneGraph (sceneGraph) {
+function _updateSceneGraph(sceneGraph) {
     _sceneGraphs[sceneGraph._id] = sceneGraph;
 }
 
@@ -29,7 +31,7 @@ function _updateSceneGraph (sceneGraph) {
  * @param sceneId
  * @private
  */
-function _addSceneToSceneGraph (sceneGraphId, sceneId) {
+function _addSceneToSceneGraph(sceneGraphId, sceneId) {
     console.log("_addSceneToSceneGraph: [sceneGraphId: " + sceneGraphId + ", sceneId: " + sceneId + "]");
 
     var newScene = SceneStore.getScene(sceneId);
@@ -38,15 +40,15 @@ function _addSceneToSceneGraph (sceneGraphId, sceneId) {
     var currentlyExcludedThemes = Object.keys(_sceneGraphs[sceneGraphId].excludedThemes);
 
     var sceneThemesToAdd = [];  //get theme list by removing an excluded themes from the new scenes themelist
-    for(var themeIndex in newSceneThemeList) {
+    for (var themeIndex in newSceneThemeList) {
         var proposedThemeId = newSceneThemeList[themeIndex];
 
-        if(currentlyExcludedThemes.indexOf(proposedThemeId) === -1) {
+        if (currentlyExcludedThemes.indexOf(proposedThemeId) === -1) {
             sceneThemesToAdd.push(proposedThemeId);
         }
     }
 
-    if(_sceneGraphs[sceneGraphId].type === "GDC_SCENE_GRAPH") { //APEP: Memoir graphs do not wish to use this functionality
+    if (_sceneGraphs[sceneGraphId].type === "GDC_SCENE_GRAPH") { //APEP: Memoir graphs do not wish to use this functionality
 
         console.log("Appending sthemes into graph - GDC Scene Graph - scene addition action");
 
@@ -57,12 +59,12 @@ function _addSceneToSceneGraph (sceneGraphId, sceneId) {
         console.log("The scene city found: ", sceneCity);
 
         //APEP: For each root node, find the city node then add each new theme as child :: GDC 2016
-        _.forEach(Object.keys(_sceneGraphs[sceneGraphId].graphThemes.children), function(rootNodeProperty){
-            var rootNode =  _sceneGraphs[sceneGraphId].graphThemes.children[rootNodeProperty];
+        _.forEach(Object.keys(_sceneGraphs[sceneGraphId].graphThemes.children), function (rootNodeProperty) {
+            var rootNode = _sceneGraphs[sceneGraphId].graphThemes.children[rootNodeProperty];
 
             var cityNode = rootNode.children[sceneCity];
 
-            _.forEach(sceneThemesToAdd, function(themeId) {
+            _.forEach(sceneThemesToAdd, function (themeId) {
                 cityNode.children[themeId] = {
                     type: "stheme",
                     children: {}
@@ -84,16 +86,16 @@ function _addSceneToSceneGraph (sceneGraphId, sceneId) {
  * @param themeIdsToRemove
  * @private
  */
-function _removeThemesForNode (currentNode, themeIdsToRemove) {
+function _removeThemesForNode(currentNode, themeIdsToRemove) {
 
     console.log("ThemeIdsToRemove: ", themeIdsToRemove);
 
-    _.forEach(Object.keys(currentNode.children), function(nodePropertyKey){
+    _.forEach(Object.keys(currentNode.children), function (nodePropertyKey) {
 
-        if(themeIdsToRemove.indexOf(nodePropertyKey) === -1 && currentNode.type !== 'stheme') {
+        if (themeIdsToRemove.indexOf(nodePropertyKey) === -1 && currentNode.type !== 'stheme') {
             _removeThemesForNode(currentNode.children[nodePropertyKey], themeIdsToRemove);
         } else {
-            if(currentNode.children[nodePropertyKey].type === 'stheme') {
+            if (currentNode.children[nodePropertyKey].type === 'stheme') {
                 delete currentNode.children[nodePropertyKey];
             } else {
                 _removeThemesForNode(currentNode.children[nodePropertyKey], themeIdsToRemove);
@@ -103,7 +105,7 @@ function _removeThemesForNode (currentNode, themeIdsToRemove) {
 
 }
 
-function _removeThemesFromStructureForSceneRemoval (sceneGraph, themeIdsToRemove) {
+function _removeThemesFromStructureForSceneRemoval(sceneGraph, themeIdsToRemove) {
 
     _removeThemesForNode(sceneGraph.graphThemes, themeIdsToRemove);
 
@@ -119,34 +121,34 @@ function _removeThemesFromStructureForSceneRemoval (sceneGraph, themeIdsToRemove
  * @param sceneId
  * @private
  */
-function _removeSceneFromSceneGraph (sceneGraphId, sceneId) {
+function _removeSceneFromSceneGraph(sceneGraphId, sceneId) {
     var sceneGraph = _.cloneDeep(_sceneGraphs[sceneGraphId]);
 
     var sceneGraphSceneIds = Object.keys(sceneGraph.sceneIds);
 
-    var allSceneGraphScenes = _.map(sceneGraphSceneIds, function(sgSceneId){
+    var allSceneGraphScenes = _.map(sceneGraphSceneIds, function (sgSceneId) {
         return SceneStore.getScene(sgSceneId);
     });
 
-    var remainingSceneGraphScenes = _.filter(allSceneGraphScenes, function(scene){
+    var remainingSceneGraphScenes = _.filter(allSceneGraphScenes, function (scene) {
         return scene._id !== sceneId;
     }); //All the scenes that are to remain are left
 
-    var sceneThemeLists = _.map(remainingSceneGraphScenes, function(scene){
+    var sceneThemeLists = _.map(remainingSceneGraphScenes, function (scene) {
         return Object.keys(scene.themes);
     });
 
     var remainingThemeList = [];
 
-    _.forEach(sceneThemeLists, function(themeList){
-        _.forEach(themeList, function(themeId) {
+    _.forEach(sceneThemeLists, function (themeList) {
+        _.forEach(themeList, function (themeId) {
             remainingThemeList.push(themeId);
         });
     });
 
     var themeIdsForSceneBeingRemoved = Object.keys(SceneStore.getScene(sceneId).themes);
 
-    var themeIdsToRemove = _.filter(themeIdsForSceneBeingRemoved, function(themeIdForRemoval){
+    var themeIdsToRemove = _.filter(themeIdsForSceneBeingRemoved, function (themeIdForRemoval) {
         return remainingThemeList.indexOf(themeIdForRemoval) === -1;
     });
 
@@ -163,8 +165,8 @@ function _removeSceneFromSceneGraph (sceneGraphId, sceneId) {
  * @param themeId
  * @private
  */
-function _addThemeExclusion (sceneGraphId, themeId) {
-    console.log("_addThemeExclusion: ", { sceneGraphId: sceneGraphId, themeId: themeId});
+function _addThemeExclusion(sceneGraphId, themeId) {
+    console.log("_addThemeExclusion: ", {sceneGraphId: sceneGraphId, themeId: themeId});
 
     _sceneGraphs[sceneGraphId].excludedThemes[themeId] = {};
 
@@ -184,8 +186,8 @@ function _addThemeExclusion (sceneGraphId, themeId) {
  * @param themeId
  * @private
  */
-function _deleteThemeExclusion (sceneGraphId, themeId) {
-    console.log("_deleteThemeExclusion: ", { sceneGraphId: sceneGraphId, themeId: themeId});
+function _deleteThemeExclusion(sceneGraphId, themeId) {
+    console.log("_deleteThemeExclusion: ", {sceneGraphId: sceneGraphId, themeId: themeId});
 
     //Hack to get the city node name from login session
     var sceneCity = ConnectionCache.getShortGroupName(ConnectionCache.getGroupID());
@@ -193,10 +195,10 @@ function _deleteThemeExclusion (sceneGraphId, themeId) {
 
     console.log("The scene city found: ", sceneCity);
 
-    if(_sceneGraphs[sceneGraphId].type === "GDC_SCENE_GRAPH") { //APEP: Memoir graphs do not wish to use this functionality
+    if (_sceneGraphs[sceneGraphId].type === "GDC_SCENE_GRAPH") { //APEP: Memoir graphs do not wish to use this functionality
         //For each root node, find the city node then add each theme as child
-        _.forEach(Object.keys(_sceneGraphs[sceneGraphId].graphThemes.children), function(rootNodeProperty){
-            var rootNode =  _sceneGraphs[sceneGraphId].graphThemes.children[rootNodeProperty];
+        _.forEach(Object.keys(_sceneGraphs[sceneGraphId].graphThemes.children), function (rootNodeProperty) {
+            var rootNode = _sceneGraphs[sceneGraphId].graphThemes.children[rootNodeProperty];
 
             var cityNode = rootNode.children[sceneCity];
 
@@ -221,11 +223,11 @@ function _deleteThemeExclusion (sceneGraphId, themeId) {
  */
 function _addChildForEachGTheme(node, gThemeId, newThemeId, parentType) {
 
-    _.forEach(Object.keys(node.children), function(childProperty){
+    _.forEach(Object.keys(node.children), function (childProperty) {
 
         var child = node.children[childProperty];
 
-        if(childProperty === gThemeId && child.type === parentType) { //TODO this if constraints addition to ONLY GThemes, the parentList needs to be refactored to give parent type to include instead of hardcoded "gtheme"
+        if (childProperty === gThemeId && child.type === parentType) { //TODO this if constraints addition to ONLY GThemes, the parentList needs to be refactored to give parent type to include instead of hardcoded "gtheme"
             child.children[newThemeId] = {
                 type: 'stheme',
                 children: {}
@@ -236,15 +238,20 @@ function _addChildForEachGTheme(node, gThemeId, newThemeId, parentType) {
     });
 }
 
-function _addThemeToSceneGraphStructure (sceneGraphId, themeId, parentList, parentKey, parentType) {
-    console.log("_addThemeToSceneGraphStructure", { sceneGraphId: sceneGraphId, themeId: themeId, parentList:parentList, parentKey: parentKey});
+function _addThemeToSceneGraphStructure(sceneGraphId, themeId, parentList, parentKey, parentType) {
+    console.log("_addThemeToSceneGraphStructure", {
+        sceneGraphId: sceneGraphId,
+        themeId: themeId,
+        parentList: parentList,
+        parentKey: parentKey
+    });
 
     var graphThemes = _sceneGraphs[sceneGraphId]['graphThemes'];
 
-    if(parentType === "gtheme") { //recursively ensure all gthemes have the new themeId
+    if (parentType === "gtheme") { //recursively ensure all gthemes have the new themeId
         _addChildForEachGTheme(graphThemes, parentList.pop(), themeId, parentType)
     } else { //add the single theme element into the structure
-        for(var parentIndex in parentList) {
+        for (var parentIndex in parentList) {
             var parentKey = parentList[parentIndex];
             graphThemes = graphThemes.children[parentKey];
         }
@@ -257,12 +264,12 @@ function _addThemeToSceneGraphStructure (sceneGraphId, themeId, parentList, pare
 
 function _deleteChildForEachGTheme(node, gThemeId, oldThemeId) {
 
-    _.forEach(Object.keys(node.children), function(childProperty){
+    _.forEach(Object.keys(node.children), function (childProperty) {
 
         var child = node.children[childProperty];
 
-        if(child.type === "gtheme" && childProperty === gThemeId) {
-            if(child.children.hasOwnProperty(oldThemeId)) {
+        if (child.type === "gtheme" && childProperty === gThemeId) {
+            if (child.children.hasOwnProperty(oldThemeId)) {
                 delete child.children[oldThemeId];
             }
         }
@@ -271,19 +278,24 @@ function _deleteChildForEachGTheme(node, gThemeId, oldThemeId) {
     });
 }
 
-function _deleteThemeFromSceneGraphStructure (sceneGraphId, themeId, parentList, parentKey) {
-    console.log("_deleteThemeFromSceneGraphStructure", { sceneGraphId: sceneGraphId, themeId: themeId, parent:parent, parentKey: parentKey});
+function _deleteThemeFromSceneGraphStructure(sceneGraphId, themeId, parentList, parentKey) {
+    console.log("_deleteThemeFromSceneGraphStructure", {
+        sceneGraphId: sceneGraphId,
+        themeId: themeId,
+        parent: parent,
+        parentKey: parentKey
+    });
 
     var graphThemes = _sceneGraphs[sceneGraphId]['graphThemes'];
 
-    for(var i = 0; i < parentList.length - 1 ; i++) {
+    for (var i = 0; i < parentList.length - 1; i++) {
         var parentKey = parentList[i];
         graphThemes = graphThemes.children[parentKey];
     }
 
     var parentOfThemeType = graphThemes.type;
 
-    if(parentOfThemeType === "gtheme") { //recursively ensure all gthemes have themeId removed
+    if (parentOfThemeType === "gtheme") { //recursively ensure all gthemes have themeId removed
         graphThemes = _sceneGraphs[sceneGraphId]['graphThemes'];
         parentList.pop(); //Hack to parent key for the key being removed as we need to delete from the parent property children
         _deleteChildForEachGTheme(graphThemes, parentList.pop(), themeId);
@@ -294,30 +306,38 @@ function _deleteThemeFromSceneGraphStructure (sceneGraphId, themeId, parentList,
 }
 
 var SceneGraphStore = assign({}, EventEmitter.prototype, {
-    getSceneGraph: function(id) {
+    getSceneGraph: function (id) {
         if (_sceneGraphs.hasOwnProperty(id)) {
-            return _.cloneDeep(_sceneGraphs[id]);
+            var temp =_.cloneDeep(_sceneGraphs[id]);
+            return temp;
         }
     },
-    emitChange: function(){
+    emitChange: function () {
+
         this.emit(CHANGE_EVENT);
     },
 
-    addChangeListener: function(callback){
+    addChangeListener: function (callback) {
         this.on(CHANGE_EVENT, callback);
     },
 
-    removeChangeListener: function(callback){
+    removeChangeListener: function (callback) {
         this.removeListener(CHANGE_EVENT, callback);
     },
 
-    dispatcherIndex: AppDispatcher.register(function(payload){
+    dispatcherIndex: AppDispatcher.register(function (payload) {
         var action = payload.action; // this is our action from handleViewAction
-        switch(action.type){
+        switch (action.type) {
             // should only be triggered when server sends data back, so no need to save
             case ActionTypes.RECEIVE_SCENE_GRAPH:
                 _updateSceneGraph(action.sceneGraph);
                 SceneGraphStore.emitChange();
+                break;
+            case  ActionTypes.SCENE_GRAPH_UPDATE:
+                HubClient.saveSceneGraph(action.sceneGraph,function(sg){
+                    _updateSceneGraph(sg);
+                    SceneGraphStore.emitChange();
+                });
                 break;
             case ActionTypes.SCENE_GRAPH_ADD_SCENE:
                 _addSceneToSceneGraph(action.sceneGraphId, action.sceneId);
@@ -349,6 +369,7 @@ var SceneGraphStore = assign({}, EventEmitter.prototype, {
                 _addThemeToSceneGraphStructure(action.sceneGraphId, action.themeId, action.parentList, action.parentKey, action.parentType);
                 var sceneGraph = _sceneGraphs[action.sceneGraphId];
                 HubClient.saveSceneGraph(sceneGraph);
+                SceneGraphStore.emitChange();
                 break;
             case ActionTypes.SCENE_GRAPH_REMOVE_THEME_FROM_STRUCTURE:
                 _deleteThemeFromSceneGraphStructure(action.sceneGraphId, action.themeId, action.parentList, action.parentKey);
@@ -358,6 +379,7 @@ var SceneGraphStore = assign({}, EventEmitter.prototype, {
             case ActionTypes.DELETE_SCENE_GRAPH:
                 delete _sceneGraphs[action.sceneGraphId];
                 HubClient.deleteSceneGraph(action.sceneGraphId);
+                SceneGraphStore.emitChange();
                 break;
         }
 

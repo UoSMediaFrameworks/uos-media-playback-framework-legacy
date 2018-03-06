@@ -2,6 +2,7 @@ var React = require("react");
 var ReactDom = require("react-dom");
 
 var SceneGraphListStore = require('../../stores/scene-graph-list-store.jsx');
+var SceneGraphStore = require('../../stores/scene-graph-store.jsx');
 var HubSendActions = require('../../actions/hub-send-actions');
 var connectionCache = require("../../utils/connection-cache");
 var NarmGraph = require('./narm-graph.jsx');
@@ -19,6 +20,7 @@ var _ = require("lodash");
 var hat = require("hat");
 var GridStore = require("../../stores/grid-store");
 var GraphTypes = require("../../constants/graph-constants").GraphTypes;
+var SoundGui = require('./sound-graph.jsx');
 
 var GraphContainer = React.createClass({
     getInitialState: function () {
@@ -46,6 +48,10 @@ var GraphContainer = React.createClass({
     },
     _onChange: function () {
         var sceneGraph = SceneGraphListStore.getSceneGraphByID(this.state.graphId);
+        this._initialize(sceneGraph);
+    },
+    _onSceneChange: function () {
+        var sceneGraph = SceneGraphStore.getSceneGraph(this.state.graphId);
         this._initialize(sceneGraph);
     },
     _onCrumbsChange: function () {
@@ -118,7 +124,7 @@ var GraphContainer = React.createClass({
         function removeBadRelationships() {
             _.each(localRoot.nodes, function (node) {
                 _.each(node.children, function (child) {
-                    var gat = _.include(child.children, node)
+                    var gat = _.includes(child.children, node)
                     if (gat) {
                         circularRef.push({
                             duplicate: node,
@@ -161,9 +167,7 @@ var GraphContainer = React.createClass({
         });
     },
     _getGraphTypeComponent() {
-
         if (this.state.sceneList) {
-
             switch (this.state.type) {
                 case GraphTypes.MEMOIR:
                     return (
@@ -215,6 +219,15 @@ var GraphContainer = React.createClass({
                         </CeramicGraph>
                     );
                     break;
+                case GraphTypes.SOUND:
+                    return (
+                        <SoundGui  shouldUpdateId={this.state.guid}
+                                   data={this.state.sceneList}
+                                   innerWidth={this.state.width}
+                                   innerHeight={this.state.height}/>
+
+
+                    );
                 case undefined:
                     return (
                         <GDCGraph
@@ -244,7 +257,8 @@ var GraphContainer = React.createClass({
     componentDidMount: function () {
         document.addEventListener('keyup', this.optionsMenuHandler, false);
         var dom = ReactDom.findDOMNode(this);
-        SceneGraphListStore.addChangeListener(this._onChange);
+      /*  SceneGraphListStore.addChangeListener(this._onChange);*/
+        SceneGraphStore.addChangeListener(this._onSceneChange);
         BreadcrumbsStore.addChangeListener(this._onCrumbsChange);
         BreadcrumbsStore.setBreadcrumbs(this.state.graphId);
         GridStore.setRoomId(connectionCache.getSocketID());
@@ -264,7 +278,8 @@ var GraphContainer = React.createClass({
     },
     componentWillUnmount: function () {
         document.removeEventListener('keyup', this.optionsMenuHandler, false);
-        SceneGraphListStore.removeChangeListener(this._onChange);
+   /*     SceneGraphListStore.removeChangeListener(this._onChange);*/
+        SceneGraphStore.removeChangeListener(this._onSceneChange);
         BreadcrumbsStore.removeChangeListener(this._onCrumbsChange);
         GridStore.setRoomId("presentation1");
     },
@@ -302,7 +317,43 @@ var GraphContainer = React.createClass({
     cleanTitle: function (title) {
         return title.replace(/([a-z])([A-Z0-9])(?=[a-z])/g, '$1 $2').replace('GUIscene', 'scene').replace(/(scene|chicago|beijing)?\s(.*)?/i, '<sup>$1</sup><span class="$1">$2</span>');
     },
-
+    _getGraphHTML:function(graph){
+        var extraSVGClass = "";
+        if (this.state.type != undefined) {
+            extraSVGClass = this.state.type || "GDC_SCENE_GRAPH";
+        }
+        if(this.state.sceneList){
+            var self =this;
+            switch(this.state.type){
+                case GraphTypes.SOUND:
+                    return (
+                        <div ref="graph">
+                            <div
+                                 width={self.state.width} height={self.state.height}
+                            >
+                                {graph}
+                            </div>
+                        </div>
+                    );
+                case GraphTypes.CERAMIC:
+                case GraphTypes.THUMBNAIL:
+                case GraphTypes.NARM:
+                case GraphTypes.MEMOIR:
+                case GraphTypes.GDC:
+                    return( <div ref="graph">
+                            <h1 className="title" dangerouslySetInnerHTML={{__html: self.cleanTitle(this.state.title)}}></h1>
+                            <svg className={"svg-parent " + extraSVGClass}
+                                 width={self.state.width} height={self.state.height}
+                            >
+                                {graph}
+                            </svg>
+                        </div>
+                    )
+            }
+        }else{
+            return <div>Meh</div>
+        }
+    },
     componentWillMount() {
         var queryId;
 
@@ -320,6 +371,7 @@ var GraphContainer = React.createClass({
     render() {
         var self = this;
         var graph = this._getGraphTypeComponent();
+        var graphHTML = this._getGraphHTML(graph);
         var qrCodeClasses = classes({
             'qrcode': true,
             'visible': this.state.QRToggle,
@@ -331,10 +383,7 @@ var GraphContainer = React.createClass({
             'hidden': !this.state.autocompleteToggle
         });
 
-        var extraSVGClass = "";
-        if (this.state.type != undefined) {
-            extraSVGClass = this.state.type || "GDC_SCENE_GRAPH";
-        }
+
 
         var logos = this.state.type == GraphTypes.NARM ? <div>
             <div className={this.state.graphType + "narm-logo"}>
@@ -359,15 +408,8 @@ var GraphContainer = React.createClass({
                         <QRCODE value={this.state.viewerURL}></QRCODE>
                     </div>
                 </div>
-                <div ref="graph">
-                    <h1 className="title" dangerouslySetInnerHTML={{__html: self.cleanTitle(this.state.title)}}></h1>
-                    <svg className={"svg-parent " + extraSVGClass}
-                         width={self.state.width} height={self.state.height}
-                    >
-                        {graph}
-                    </svg>
-                </div>
 
+                {graphHTML}
                 {/*OPTIONS Menu Item here*/}
                 <OptionsMenu
                     optionsMenuToggle={this.state.optionsMenuToggle}
