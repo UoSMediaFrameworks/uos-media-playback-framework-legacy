@@ -742,8 +742,6 @@ html, body, #main, .app {
     flex: 1 1 auto;
     position: relative;
     word-break: break-word;
-    overflow-y: auto;
-    overflow-x: hidden;
 }
 
 .widget-container{

@@ -328,7 +328,7 @@ var TagEditor = React.createClass({
 
     //normal state
     return (
-        <div stlye={{height: "100%"}}>
+        <div style={{height: "auto", overflowY: "auto", marginBottom: "10px"}}>
           {output}
         </div>
     )
