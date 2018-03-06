@@ -8,25 +8,6 @@ html, body, #main, .app {
 .layout-button i{
  color:white;
 }
-.layout-border::-webkit-scrollbar-track
-{
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    border-radius: 10px;
-    background-color: #F5F5F5;
-}
-
-.layout-border::-webkit-scrollbar
-{
-    width: 12px;
-    background-color: #F5F5F5;
-}
-
-.layout-border::-webkit-scrollbar-thumb
-{
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-    background-color: #555;
-}
 
 .layout-border{
     border:white solid 1px;
@@ -694,23 +675,7 @@ html, body, #main, .app {
     -ms-flex-direction: column;
     flex-direction: column;
 }
-.widget::-webkit-scrollbar{
-    width: 7px;
-    height: 7px;
-}
-.widget::-webkit-scrollbar-corner{
-    background: rgba(0,0,0,0.2);
-    border-color: rgba(0,0,0,0.2);
-}
-.widget::-webkit-scrollbar-thumb{
-    min-height: 35px;
-    border-radius: 4px;
-    background: rgba(0,0,0,0.2);
-}
-.widget::-webkit-scrollbar-track{
-    background: rgba(77,76,76,0.2);
-    border-radius: 4px;
-}
+
 .widget>header{
     height: 30px;
     line-height: 30px;
@@ -777,40 +742,6 @@ html, body, #main, .app {
     flex: 1 1 auto;
     position: relative;
     word-break: break-word;
-}
-.grid-layout-body::-webkit-scrollbar-corner{
-    background: rgba(0,0,0,0.2);
-    border-color: rgba(0,0,0,0.2);
-}
-.grid-layout-body::-webkit-scrollbar-thumb{
-    min-height: 35px;
-    border-radius: 4px;
-    background: rgba(0,0,0,0.69);
-}
-.grid-layout-body::-webkit-scrollbar-track{
-    background: rgba(77,76,76,0.2);
-    border-radius: 4px;
-}
-.grid-layout-body::-webkit-scrollbar{
-    width: 7px;
-    height: 7px;
-}
-.widget-container::-webkit-scrollbar-corner{
-    background: rgba(0,0,0,0.2);
-    border-color: rgba(0,0,0,0.2);
-}
-.widget-container::-webkit-scrollbar-thumb{
-    min-height: 35px;
-    border-radius: 4px;
-    background: rgba(0,0,0,0.2);
-}
-.widget-container::-webkit-scrollbar-track{
-    background: rgba(77,76,76,0.2);
-    border-radius: 4px;
-}
-.widget-container::-webkit-scrollbar{
-    width: 7px;
-    height: 7px;
 }
 .widget-container{
     overflow:overlay;
@@ -1178,24 +1109,20 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     }
 
 /*Scrollbars */
-
-/* width */
-::-webkit-scrollbar {
-    width: 10px;
+::-webkit-scrollbar-corner{
+    background: rgba(0,0,0,0.2);
+    border-color: rgba(0,0,0,0.2);
 }
-
-/* Track */
-::-webkit-scrollbar-track {
-    background: #f1f1f1; 
+::-webkit-scrollbar-thumb{
+    min-height: 35px;
+    border-radius: 4px;
+    background: rgba(146, 146, 146, 0.69);
 }
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background: #888; 
+::-webkit-scrollbar-track{
+    background: rgba(77,76,76,0.2);
+    border-radius: 4px;
 }
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-    background: #555; 
+::-webkit-scrollbar{
+    width: 7px;
+    height: 7px;
 }
-
