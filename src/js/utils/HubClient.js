@@ -8,7 +8,8 @@ var assetStore = require('./asset-store');
 var connectionCache = require('./connection-cache');
 var NodeListGeneration = require('./scene-graph/node-list-generation');
 var GraphTypes = require('../constants/graph-constants').GraphTypes;
-var CategoryConfig = require('../utils/scene-graph/category-config-generator')
+var CategoryConfig = require('../utils/scene-graph/category-config-generator');
+var GraphThemeGenerator = require('../utils/scene-graph/graphTheme-generator');
 var toastr = require('toastr');
 var socket;
 var _ = require('lodash');
@@ -144,16 +145,23 @@ var HubClient = {
 
         // APEP Hack - Block the merged graph from running node list generation.
         // APEP this process was done by a script and we don't want to override its results
-        if(sceneGraph._id !== "579a2186792e8b3c827d2b15") {
+        try{
+            if(sceneGraph._id !== "579a2186792e8b3c827d2b15") {
+                if(sceneGraph.type === GraphTypes.SOUND){
+                    GraphThemeGenerator.generateGraphThemes(sceneGraph);
+                    NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
+                    var tempConf = CategoryConfig.generateCategoryConfig(sceneGraph);
+                    console.log("tempConf",tempConf);
+                    sceneGraph.categoryConfig = tempConf;
 
-            NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
-            if(sceneGraph.type === GraphTypes.SOUND){
-                var tempConf = CategoryConfig.generateCategoryConfig(sceneGraph);
-                console.log("angel",tempConf);
-                sceneGraph.categoryConfig = tempConf;
-
+                }else{
+                    NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
+                }
             }
+        }catch(e){
+            console.log("doctoring for an error",e)
         }
+
 
         socket.emit('saveSceneGraph', sceneGraph, function(err, newSceneGraph) {
             if(err) {

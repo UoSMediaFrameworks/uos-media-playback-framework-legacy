@@ -15,10 +15,14 @@ var ItemGroupForThemeUnion = React.createClass({
             if (parent[property].type === 'city') {
                 classNames += property;
             }
-
-            if (parentList.length < 2) {
-                classNames += " col-lg-4"; //If root nodes add into bootstrap column system.
+            if(parent[property].type === 'root'){
+                classNames += "dol-lg-" + 12/parentList.length;
+            }else{
+                if (parentList.length < 2) {
+                    classNames += " col-lg-4" ; //If root nodes add into bootstrap column system.
+                }
             }
+
 
             //city is added to the class name to allow css hiding.  This is to ensure city logins do not have direct access to city nodes in the drag drop structure :: GDC 2016
 
