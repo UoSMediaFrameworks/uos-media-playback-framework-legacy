@@ -263,6 +263,9 @@ var NavigationBar = React.createClass({
                                         <MenuItem eventKey="9"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.GraphViewer)}>External
                                             Player</MenuItem>
+                                        <MenuItem eventKey="9"
+                                                onClick={self.addComponent.bind(this, LayoutComponentConstants.MediaUpload)}>Media Uploader
+                                        </MenuItem>
                                     </DropdownButton>
                                 </li>
                                 <li>

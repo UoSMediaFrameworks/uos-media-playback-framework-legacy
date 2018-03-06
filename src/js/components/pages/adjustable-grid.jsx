@@ -5,6 +5,7 @@ var WidthProvider = require('react-grid-layout').WidthProvider;
 var SceneMediaBrowser = require('./scene-media-browser.jsx');
 var SceneEditorGUI = require('./scene-editor-gui.jsx');
 var TagEditor = require('./tag-editor.jsx');
+var MediaUpload = require('./media-upload.jsx');
 var SceneGraph = require('./scenegraph.jsx');
 var GraphTest = require('../graphs/index.jsx');
 var SceneGraphChooser = require('./scene-graph-choose-or-create.jsx');
@@ -121,6 +122,15 @@ var RespGrid = React.createClass({
                                                  focusHandler={SceneActions.changeMediaObjectFocus}>
                     </LayoutMonacoTextEditor>
                 );
+                break;
+            case LayoutComponentTypes.MediaUpload:
+                return (
+                    <MediaUpload 
+                        isLayout={true}
+                         _id = {this.state.data.scene._id}
+                    >
+                    </MediaUpload>
+                )
                 break;
             default:
                 return null;

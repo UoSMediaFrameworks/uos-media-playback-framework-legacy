@@ -10,7 +10,8 @@ module.exports = {
         "SceneEditor": "Scene-Editor",
         "SceneMediaBrowser": "Scene-Media-Browser",
         "SceneEditorGUI": "Scene-Editor-GUI",
-        "TagEditor": "Tag-Editor"
+        "TagEditor": "Tag-Editor",
+        "MediaUpload": "Media-Upload"
     },
     ComponentTitles:{
         "Scene-List":"Scene List",
@@ -22,7 +23,8 @@ module.exports = {
         "Scene-Editor":"Scene Editor",
         "Scene-Media-Browser":"Scene Media Browser",
         "Scene-Editor-GUI":"Visual Scene Editor",
-        "Tag-Editor": "Tag Editor"
+        "Tag-Editor": "Tag Editor",
+        "Media-Upload":"Media Upload"
     },
     ColumnTypes: {
         "RHS": "RightHandSide",

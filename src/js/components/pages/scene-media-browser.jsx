@@ -71,8 +71,6 @@ var SceneMediaBrowser = React.createClass({
                 <div className='top-bar'>
                 </div>
 
-                <AddMediaObject scene={this.state.scene}/>
-
                 <div className="thumbs-and-json">
                     <div className="flex-container">
                         <MediaObjectList focusedMediaObject={this.props.focusedMediaObject}
