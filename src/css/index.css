@@ -46,15 +46,20 @@ html, body, #main, .app {
 }
 .media-object-item-preview-player {
     border: 1px solid #5a5a5a; /*Monaco grey - should probably change to use monaco css class*/
-    overflow-y: auto;
+    overflow-y: none;
     position: relative;
     flex: 1;
     text-align: center;
+    width: 100%;
 }
-.media-object-item-preview-player img{
+.media-object-item-preview-player *{
     height:100%;
-    width:auto;
+    width: 100%;
     max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    -webkit-user-drag: none;
+    overflow: hidden;
 }
 
 .react-audio-player {
@@ -165,8 +170,9 @@ html, body, #main, .app {
 }
 
 .media-object-list {
-    overflow-y: auto;
+    overflow-y: scroll;
     position: relative;
+    height: calc(100% - 46px);
 }
 
 .media-object-list-instructions {
@@ -185,12 +191,16 @@ html, body, #main, .app {
     margin: 0;
 }
 
-.media-object-list-grid ul {
+.media-object-list-Grid ul {
     line-height: 0;
 }
 
-.media-object-list-grid li {
+.media-object-list-Grid li {
     list-style: none;
+}
+
+.media-object-list-Grid  {
+    height: 100%;
 }
 
 .empty-media-object-item {
@@ -210,7 +220,7 @@ html, body, #main, .app {
     background-color: #ccc !important;
 }
 
-.media-object-list-grid .media-object-item {
+.media-object-list-Grid .media-object-item {
     height: 70px;
     display: inline-block;
     width: 70px;
@@ -219,27 +229,27 @@ html, body, #main, .app {
     padding: 5px;
 }
 
-.media-object-list-list .media-object-item {
+.media-object-list-List .media-object-item {
     height: 30px;
     margin: 4px 0;
+    background-color: #5a5a5a;
+    margin-left: 2px;
+    margin-right: 2px;
 }
 
-.media-object-list-list .media-object-item:nth-of-type(odd) {
-    background: #f3f3f3;
-}
 
 .media-object-list .media-object-item-preview {
     overflow: hidden;
 }
 
-.media-object-list-grid .media-object-item-preview {
+.media-object-list-Grid .media-object-item-preview {
     width: 60px;
     height: 60px;
     font-size: 60px;
     position: relative;
 }
 
-.media-object-list-list .media-object-item-preview {
+.media-object-list-List .media-object-item-preview {
     height: 100%;
 }
 
@@ -247,12 +257,12 @@ html, body, #main, .app {
     height: 100%;
 }
 
-.media-object-list-grid .media-object-item-preview img {
+.media-object-list-Grid .media-object-item-preview img {
     display: inline-block;
     position: absolute;
 }
 
-.media-object-list-list .media-object-item-preview img {
+.media-object-list-List .media-object-item-preview img {
     width: 30px;
 }
 
@@ -260,11 +270,11 @@ html, body, #main, .app {
     position: relative;
 }
 
-.media-object-list-list .icon-wrapper {
+.media-object-list-List .icon-wrapper {
     display: inline-block;
 }
 
-.media-object-list-list .icon {
+.media-object-list-List .icon {
     width: 30px;
     text-align: center;
 }
@@ -273,20 +283,20 @@ html, body, #main, .app {
     color: white;
 }
 
-.media-object-list-grid .icon-wrapper .icon {
+.media-object-list-Grid .icon-wrapper .icon {
     opacity: 0.5;
 }
 
-.media-object-list-list .icon-wrapper .icon {
+.media-object-list-List .icon-wrapper .icon {
     position: absolute;
     left: 0px;
 }
 
-.media-object-list-list .icon-wrapper .img {
+.media-object-list-List .icon-wrapper .img {
     height: 30px;
 }
 
-.media-object-list-grid .media-object-item-preview button {
+.media-object-list-Grid .media-object-item-preview button {
     display: none;
     position: absolute;
     top: 0px;
@@ -295,11 +305,11 @@ html, body, #main, .app {
     padding: 0;
 }
 
-.media-object-list-grid .preview-title {
+.media-object-list-Grid .preview-title {
     display: none;
 }
 
-.media-object-list-list .preview-title {
+.media-object-list-List .preview-title {
     padding-left: 5px;
 }
 
@@ -311,11 +321,11 @@ html, body, #main, .app {
     color: #cc0000;
 }
 
-.media-object-list-grid .media-object-item-preview:hover button {
+.media-object-list-Grid .media-object-item-preview:hover button {
     display: inherit;
 }
 
-.media-object-list-list .media-object-item-preview button {
+.media-object-list-List .media-object-item-preview button {
     float: right;
 }
 
@@ -367,6 +377,7 @@ html, body, #main, .app {
 .media-object-list {
     /* APEP colour taken from Monaco Vs-dark, we should probably reference the class so we don't have to keep updated */
     border: 1px solid #5a5a5a;
+    height: calc(100% - 46px);
 }
 
 .CodeMirror-activeline-background {
@@ -1114,7 +1125,7 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
 
 .Resizer {
         background: #fff;
-        opacity: .1;
+        opacity: .3;
         z-index: 1;
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
@@ -1130,9 +1141,9 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     }
 
      .Resizer.horizontal {
-        height: 11px;
-        margin: -3px 0;
-        border-top: 5px solid rgba(255, 255, 255, 1);
+        height: 9px;
+        margin: -1px 0;
+        border-top: 0px solid rgba(255, 255, 255, 1);
         border-bottom: 5px solid rgba(255, 255, 255, 1);
         cursor: row-resize;
         width: 100%;
