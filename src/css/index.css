@@ -659,7 +659,7 @@ html, body, #main, .app {
     contain: strict;
     height: 100%;
     overflow: hidden;
-    background:rgba(82, 82, 82, 0.4);
+    background:rgba(51, 51, 51, 0.4);
     position: relative;
     display: -webkit-box;
     display: -webkit-flex;
