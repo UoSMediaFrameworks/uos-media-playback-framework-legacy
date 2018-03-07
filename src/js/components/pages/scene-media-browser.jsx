@@ -67,31 +67,26 @@ var SceneMediaBrowser = React.createClass({
         }
 
         return (
-            <div className='flex-container monaco-editor vs-dark'>
+            <div className='RemoveWidgetPadding'>
                 <div className={showOverlay}></div>
-                <div className='top-bar'>
-                </div>
-
-                <div className="thumbs-and-json">
-                    <Measure onMeasure={this.onMeasure}>
-                        <SplitPane split="horizontal" minSize={0} defaultSize={this.getLastSplit()} onChange={size => this.splitChanged(size)}>
-                            <div style={{height: "100%", width: "100%"}}>
-                                <MediaPreviewComponent 
-                                    style={{height: "100%", width: "100%"}} 
-                                    focusedMediaObject={this.props.focusedMediaObject}
-                                    scene={this.state.scene}
-                                />
-                            </div>
-                            <div style={{height: (""+this.state.lowerPaneHeight+"px"), width: "100%"}}>
-                                <MediaObjectList 
-                                    focusedMediaObject={this.props.focusedMediaObject}
-                                    focusHandler={SceneActions.changeMediaObjectFocus}
-                                    scene={this.state.scene}
-                                />
-                            </div>
-                        </SplitPane>
-                    </Measure>
-                </div>
+                <Measure onMeasure={this.onMeasure}>
+                    <SplitPane id="splitPane" split="horizontal" minSize={0} defaultSize={this.getLastSplit()} onChange={size => this.splitChanged(size)}>
+                        <div style={{height: "100%", width: "100%"}}>
+                            <MediaPreviewComponent 
+                                style={{height: "100%", width: "100%"}} 
+                                focusedMediaObject={this.props.focusedMediaObject}
+                                scene={this.state.scene}
+                            />
+                        </div>
+                        <div style={{height: (""+this.state.lowerPaneHeight+"px"), width: "100%"}}>
+                            <MediaObjectList 
+                                focusedMediaObject={this.props.focusedMediaObject}
+                                focusHandler={SceneActions.changeMediaObjectFocus}
+                                scene={this.state.scene}
+                            />
+                        </div>
+                    </SplitPane>
+                </Measure>
             </div>
         )
     },
@@ -99,7 +94,7 @@ var SceneMediaBrowser = React.createClass({
     splitChanged: function(size) {
         //store size in local store
         localStorage.setItem('splitPos', size)
-        var lowerPaneHeight = this.state.dimensions.height-size
+        var lowerPaneHeight = this.state.dimensions.height-size-15
         this.setState({lowerPaneHeight: lowerPaneHeight})
     },
 
@@ -115,7 +110,7 @@ var SceneMediaBrowser = React.createClass({
     onMeasure: function(dimensions) {
         var topPaneHeight=this.getLastSplit();
         var totalHeight = dimensions.height;
-        var lowerPaneHeight=totalHeight-topPaneHeight-10;
+        var lowerPaneHeight=totalHeight-topPaneHeight-15;
         this.setState({dimensions: dimensions, lowerPaneHeight: lowerPaneHeight})
     },
 
