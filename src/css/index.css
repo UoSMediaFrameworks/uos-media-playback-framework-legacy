@@ -16,7 +16,6 @@ html, body, #main, .app {
 
 .media-object-item-preview-player-hidden {
     flex: 1;
-    border: 1px solid #5a5a5a; /*Monaco grey - should probably change to use monaco css class*/
     overflow-y: auto;
     position: relative;
     display: none;
@@ -26,7 +25,6 @@ html, body, #main, .app {
     align-items: center;
 }
 .media-object-item-preview-player {
-    border: 1px solid #5a5a5a; /*Monaco grey - should probably change to use monaco css class*/
     overflow-y: none;
     position: relative;
     flex: 1;
@@ -356,8 +354,6 @@ html, body, #main, .app {
 }
 
 .media-object-list {
-    /* APEP colour taken from Monaco Vs-dark, we should probably reference the class so we don't have to keep updated */
-    border: 1px solid #5a5a5a;
     height: calc(100% - 46px);
 }
 
@@ -1085,7 +1081,7 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
         border-top: 0px solid rgba(255, 255, 255, 1);
         border-bottom: 5px solid rgba(255, 255, 255, 1);
         cursor: row-resize;
-        width: 100%;
+        width: calc(100% + 10px);
     }
 
     .Resizer.horizontal:hover {
@@ -1114,6 +1110,19 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
 
     .noPadding {
       padding: 0px;
+    }
+
+    .RemoveWidgetPadding {
+     position: absolute;
+     left: -5px;
+     right: -5px;
+     top: 0px;
+     bottom: 0px;
+     width: calc(100% + 10px);
+    }
+
+    .plus10px {
+        width: calc(100% + 10px);
     }
 
 /*Scrollbars */
