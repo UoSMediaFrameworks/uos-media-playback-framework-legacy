@@ -8,8 +8,8 @@ var assetStore = require('./asset-store');
 var connectionCache = require('./connection-cache');
 var NodeListGeneration = require('./scene-graph/node-list-generation');
 var GraphTypes = require('../constants/graph-constants').GraphTypes;
-var CategoryConfig = require('../utils/scene-graph/category-config-generator');
-var GraphThemeGenerator = require('../utils/scene-graph/graphTheme-generator');
+var CategoryConfigGenerator = require('../utils/scene-graph/category-config-generator');
+var GraphThemeGenerator = require('../utils/scene-graph/graph-theme-generator');
 var toastr = require('toastr');
 var socket;
 var _ = require('lodash');
@@ -148,9 +148,10 @@ var HubClient = {
         try{
             if(sceneGraph._id !== "579a2186792e8b3c827d2b15") {
                 if(sceneGraph.type === GraphTypes.SOUND){
+                    console.log(JSON.stringify(sceneGraph));
                     GraphThemeGenerator.generateGraphThemes(sceneGraph);
                     NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
-                    var tempConf = CategoryConfig.generateCategoryConfig(sceneGraph);
+                    var tempConf = CategoryConfigGenerator.generateCategoryConfig(sceneGraph);
                     console.log("tempConf",tempConf);
                     sceneGraph.categoryConfig = tempConf;
 
