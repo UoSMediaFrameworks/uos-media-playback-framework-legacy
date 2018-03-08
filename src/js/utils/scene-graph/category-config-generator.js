@@ -8,8 +8,6 @@ function transferPastGenerationAliases(pastArray, currentGenArray) {
         });
         if (index != -1) {
             object.alias = pastArray[index].alias;
-        }else{
-            console.log("trGen","no match")
         }
 
     });

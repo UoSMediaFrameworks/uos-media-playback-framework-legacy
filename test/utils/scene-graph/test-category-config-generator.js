@@ -131,7 +131,7 @@ describe('CategoryConfigGenerator', function() {
         describe('The category config is generated', function () {
             beforeEach(function () {
                 //Using the graph theme generator to generate some themes
-                GraphThemeGenerator.generateGraphThemes(sceneGraph,SceneStore);
+                GraphThemeGenerator.generateGraphThemesForTest(sceneGraph,SceneStore);
                 //THe current category config bases its data generation on the node list
                 NodeListGenerator.generateNodeListForSceneGraph(sceneGraph,SceneStore);
                 CategoryConfigGenerator.generateCategoryConfig(sceneGraph);
