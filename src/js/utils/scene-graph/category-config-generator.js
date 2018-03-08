@@ -49,7 +49,7 @@ module.exports = {
                     config = {rowHeaders: rowHeaders, columnHeaders: columnHeaders, themes: themes};
                 }
             }
-            return config;
+           sceneGraph.categoryConfig = config;
         } catch (e) {
             console.log("generation error", e)
         }

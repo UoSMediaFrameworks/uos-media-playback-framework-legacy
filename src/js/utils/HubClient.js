@@ -151,10 +151,7 @@ var HubClient = {
                     console.log(JSON.stringify(sceneGraph));
                     GraphThemeGenerator.generateGraphThemes(sceneGraph);
                     NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
-                    var tempConf = CategoryConfigGenerator.generateCategoryConfig(sceneGraph);
-                    console.log("tempConf",tempConf);
-                    sceneGraph.categoryConfig = tempConf;
-
+                    CategoryConfigGenerator.generateCategoryConfig(sceneGraph);
                 }else{
                     NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
                 }
