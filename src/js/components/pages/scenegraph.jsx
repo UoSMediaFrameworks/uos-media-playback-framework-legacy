@@ -85,7 +85,11 @@ var SceneTheme = React.createClass({
         return (
             <ul>
                 {this.props.themes.map(function (theme) {
-                    return <ThemeForList key={this.props.scene._id + "_" + theme} value={theme}/>
+                    if(this.props.scene){
+                        return <ThemeForList key={this.props.scene._id + "_" + theme} value={theme}/>
+                    }else{
+                        return <ThemeForList key={"error_" + theme} value={theme}/>
+                    }
                 }.bind(this))}
             </ul>
         )

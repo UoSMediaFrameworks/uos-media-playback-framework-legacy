@@ -36,18 +36,19 @@ module.exports = {
                 rowHeaders.push({name: tags[0], alias: null});
                 columnHeaders.push({name: tags[1], alias: null});
             });
-            var rowHeaders = getUniqArrByName(rowHeaders);
-            var columnHeaders = getUniqArrByName(columnHeaders);
-            if (prevConfig) {
-                var rowGen = transferPastGenerationAliases(prevConfig.rowHeaders, rowHeaders);
-                rowGen= getUniqArrByName(rowGen);
-                var columnGen = transferPastGenerationAliases(prevConfig.columnHeaders, columnHeaders);
-                columnGen= getUniqArrByName(columnGen);
-                config = {rowHeaders: rowGen, columnHeaders: columnGen, themes: themes};
-            } else {
-                config = {rowHeaders: rowHeaders, columnHeaders: columnHeaders, themes: themes};
+            if(rowHeaders !== [] && columnHeaders !==[]) {
+                rowHeaders = getUniqArrByName(rowHeaders);
+                columnHeaders = getUniqArrByName(columnHeaders);
+                if (prevConfig) {
+                    var rowGen = transferPastGenerationAliases(prevConfig.rowHeaders, rowHeaders);
+                    rowGen = getUniqArrByName(rowGen);
+                    var columnGen = transferPastGenerationAliases(prevConfig.columnHeaders, columnHeaders);
+                    columnGen = getUniqArrByName(columnGen);
+                    config = {rowHeaders: rowGen, columnHeaders: columnGen, themes: themes};
+                } else {
+                    config = {rowHeaders: rowHeaders, columnHeaders: columnHeaders, themes: themes};
+                }
             }
-
             return config;
         } catch (e) {
             console.log("generation error", e)
