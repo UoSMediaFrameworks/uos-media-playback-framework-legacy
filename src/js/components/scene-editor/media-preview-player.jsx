@@ -112,7 +112,7 @@ var MediaObjectPreviewPlayer = React.createClass({
         }
 
 
-        return <div ref="preview" className={this.state.previewClass} style={reactStyle}>
+        return <div ref="preview" className={this.state.previewClass} style={Object.assign({},{height: "100%", width: "100%"},reactStyle)}>
             {this.state.preview}
         </div>;
     }
