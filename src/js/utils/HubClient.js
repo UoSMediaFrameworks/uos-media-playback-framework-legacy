@@ -148,7 +148,6 @@ var HubClient = {
         try{
             if(sceneGraph._id !== "579a2186792e8b3c827d2b15") {
                 if(sceneGraph.type === GraphTypes.SOUND){
-                    console.log(JSON.stringify(sceneGraph));
                     GraphThemeGenerator.generateGraphThemes(sceneGraph);
                     NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
                     CategoryConfigGenerator.generateCategoryConfig(sceneGraph);

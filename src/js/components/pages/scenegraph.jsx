@@ -1,7 +1,7 @@
 'use strict';
 /* jshint browser: true */
 /* global confirm: false */
-var CategoryConfigGenerator = require("../../utils/scene-graph/category-config-generator");
+var ConnectionCache = require('../../utils/connection-cache');
 var React = require('react');
 var _ = require('lodash');
 var Panel = require('react-bootstrap').Panel;
@@ -85,9 +85,9 @@ var SceneTheme = React.createClass({
         return (
             <ul>
                 {this.props.themes.map(function (theme) {
-                    if(this.props.scene){
+                    if (this.props.scene) {
                         return <ThemeForList key={this.props.scene._id + "_" + theme} value={theme}/>
-                    }else{
+                    } else {
                         return <ThemeForList key={"error_" + theme} value={theme}/>
                     }
                 }.bind(this))}
@@ -122,9 +122,10 @@ var CategoryConfig = React.createClass({
                     <li><label>{"name : alias"}</label></li>
                     {self.props.sceneGraph.categoryConfig.rowHeaders.map(function (row) {
                         return <li><label>{row.name + ":" + row.alias || ""}</label>
-                            <i className={'fa fa-times mf-times alias-icon'} onClick={self.removeAlias.bind(this, row)}></i><input
+                            <i className={'fa fa-times mf-times alias-icon'}
+                               onClick={self.removeAlias.bind(this, row)}></i><input
                                 type="text"
-                                 onKeyPress={self.handleKeyPress.bind(this, row)}/>
+                                onKeyPress={self.handleKeyPress.bind(this, row)}/>
                         </li>
                     }.bind(this))}
                 </ul>
@@ -133,8 +134,9 @@ var CategoryConfig = React.createClass({
                     <li><label>{"name : alias"}</label></li>
                     {self.props.sceneGraph.categoryConfig.columnHeaders.map(function (col) {
                         return <li><label>{col.name + ":" + col.alias || ""}</label>
-                            <i className={'fa fa-times mf-times alias-icon'} onClick={self.removeAlias.bind(this, col)}></i><input
-                               type="text"
+                            <i className={'fa fa-times mf-times alias-icon'}
+                               onClick={self.removeAlias.bind(this, col)}></i><input
+                                type="text"
                                 onKeyPress={self.handleKeyPress.bind(this, col)}/>
                         </li>
                     }.bind(this))}
@@ -335,7 +337,9 @@ var SceneGraph = React.createClass({
             HubSendActions.deleteSceneGraph(this.state.sceneGraph._id);
         }
     },
-
+    regenerateSceneGraphHandler:function(){
+        SceneGraphActions.updateSceneGraph(this.state.sceneGraph)
+    },
     render: function () {
         var sceneGraphId = null;
         if (this.props.params) {
@@ -352,13 +356,25 @@ var SceneGraph = React.createClass({
                 </div>
             );
         }
+        try{
+            var isAdmin = ConnectionCache.getGroupID() === "0";
+
+            var regenerateButton = isAdmin?(<Button className="btn btn-info"
+                                                   onClick={this.regenerateSceneGraphHandler}>
+                Regenerate scene graph
+            </Button>):null;
+        }catch(e){
+            console.log(e)
+        }
+
         return (
             <div className="scene-graph">
                 <div>
                     <div className="col-md-12">
-                        <button className='btn btn-danger' style={{"float": "right"}}
+                        <Button className='btn btn-danger' style={{"float": "right"}}
                                 onClick={this.deleteSceneGraphHandler}>Delete Scene Graph
-                        </button>
+                        </Button>
+
                         <h3 className="scene-graph-title">SceneGraph:{this.state.name}</h3>
                     </div>
                     <div className="col-md-12 scene-graph-scene-list-container">
@@ -369,6 +385,7 @@ var SceneGraph = React.createClass({
                                 return <SceneItem key={sc._id} scene={sc}/>;
                             })}
                         </select>
+                        {regenerateButton}
                     </div>
 
 

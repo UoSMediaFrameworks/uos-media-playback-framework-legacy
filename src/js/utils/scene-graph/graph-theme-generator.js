@@ -24,7 +24,7 @@ module.exports = {
         return sceneGraph;
     },
 
-    generateGraphThemes: function (sceneGraph,sceneStore) {
+    generateGraphThemesForTest: function (sceneGraph,sceneStore) {
         //AP: this is for units tests, giving a refference to the scene store used
         var sceneKeys = Object.keys(sceneGraph.sceneIds);
         var scene = sceneStore.getScene(sceneKeys[0]);
