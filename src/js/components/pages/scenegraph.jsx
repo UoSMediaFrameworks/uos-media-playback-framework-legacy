@@ -143,6 +143,14 @@ var CategoryConfig = React.createClass({
                 </ul>
             </div>)
     },
+    setDimensions: function (maxRows, maxColumns,event) {
+        if(!this.props.sceneGraph.categoryConfig.dimensionConfig){
+            this.props.sceneGraph.categoryConfig.dimensionConfig = {maxRows: null, maxColumns: null}
+        }
+        this.props.sceneGraph.categoryConfig.dimensionConfig.maxRows = parseInt(maxRows.value);
+        this.props.sceneGraph.categoryConfig.dimensionConfig.maxColumns = parseInt(maxColumns.value);
+        SceneGraphActions.updateSceneGraph(this.props.sceneGraph)
+    },
     render: function () {
         if (!this.props.sceneGraph) {
             return null;
@@ -150,16 +158,28 @@ var CategoryConfig = React.createClass({
         try {
             if (this.props.sceneGraph.type === GraphTypes.SOUND) {
                 var config = this.renderConfig();
+                var self = this;
                 return (
                     <div className={"sound-gui-categories col-md-12"}>
                         <div className="panel panel-default scenes-sound-config">
+                            <div className="panel-heading">Dimension Settings</div>
+                            <div className="panel-body">
+                                <ul>
+                                    <li>
+                                        <label>Max Rows</label>
+                                        <input ref="maxR" defaultValue={self.props.sceneGraph.categoryConfig.rowHeaders.length}></input>
+                                    </li>
+                                    <li>
+                                        <label>Max Columns</label>
+                                        <input ref="maxC"
+                                            defaultValue={self.props.sceneGraph.categoryConfig.columnHeaders.length}></input>
+                                    </li>
+                                </ul>
+                                <button className="btn btn-info" onClick={self.setDimensions.bind(this,self.refs.maxR,self.refs.maxC)}>Set Dimensions</button>
+                            </div>
                             <div className="panel-heading">Category Config</div>
                             <div className="panel-body">
                                 {config}
-                                <button className="btn btn-info add-scene-button" onClick={this.exportCatConfig}>Export
-                                    Category
-                                    Config
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -337,7 +357,7 @@ var SceneGraph = React.createClass({
             HubSendActions.deleteSceneGraph(this.state.sceneGraph._id);
         }
     },
-    regenerateSceneGraphHandler:function(){
+    regenerateSceneGraphHandler: function () {
         SceneGraphActions.updateSceneGraph(this.state.sceneGraph)
     },
     render: function () {
@@ -356,14 +376,14 @@ var SceneGraph = React.createClass({
                 </div>
             );
         }
-        try{
+        try {
             var isAdmin = ConnectionCache.getGroupID() === "0";
 
-            var regenerateButton = isAdmin?(<Button className="btn btn-info"
-                                                   onClick={this.regenerateSceneGraphHandler}>
+            var regenerateButton = isAdmin ? (<Button className="btn btn-info"
+                                                      onClick={this.regenerateSceneGraphHandler}>
                 Regenerate scene graph
-            </Button>):null;
-        }catch(e){
+            </Button>) : null;
+        } catch (e) {
             console.log(e)
         }
 

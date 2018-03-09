@@ -13,12 +13,14 @@ function transferPastGenerationAliases(pastArray, currentGenArray) {
     });
     return combinedArray;
 }
-function getUniqArrByName(arr){
-    var temp = _.uniqBy(arr,function (i) {
+
+function getUniqArrByName(arr) {
+    var temp = _.uniqBy(arr, function (i) {
         return i.name
     });
     return temp;
 }
+
 module.exports = {
     generateCategoryConfig: function (sceneGraph) {
         try {
@@ -29,12 +31,16 @@ module.exports = {
             });
             var columnHeaders = [];
             var rowHeaders = [];
-            _.each(themes, function (theme) {
+            _.each(themes, function (theme, index) {
                 var tags = theme.themeTags.split(/\s+(?:,|AND|OR)\s+/);
-                rowHeaders.push({name: tags[0], alias: null});
-                columnHeaders.push({name: tags[1], alias: null});
+                if (index <= prevConfig.dimensionConfig.maxRows) {
+                    rowHeaders.push({name: tags[0], alias: null});
+                }
+                if (index <= prevConfig.dimensionConfig.maxColumns) {
+                    columnHeaders.push({name: tags[1], alias: null});
+                }
             });
-            if(rowHeaders !== [] && columnHeaders !==[]) {
+            if (rowHeaders !== [] && columnHeaders !== []) {
                 rowHeaders = getUniqArrByName(rowHeaders);
                 columnHeaders = getUniqArrByName(columnHeaders);
                 if (prevConfig) {
@@ -42,12 +48,14 @@ module.exports = {
                     rowGen = getUniqArrByName(rowGen);
                     var columnGen = transferPastGenerationAliases(prevConfig.columnHeaders, columnHeaders);
                     columnGen = getUniqArrByName(columnGen);
-                    config = {rowHeaders: rowGen, columnHeaders: columnGen, themes: themes};
+                    prevConfig.dimensionConfig.maxRows?_.slice(rowGen,0,prevConfig.dimensionConfig.maxRows+1):null;
+                    prevConfig.dimensionConfig.maxColumns?_.slice(columnGen,0,prevConfig.dimensionConfig.maxColumns+1):null;
+                    config = {rowHeaders: rowGen, columnHeaders: columnGen, dimensionConfig: prevConfig.dimensionConfig};
                 } else {
-                    config = {rowHeaders: rowHeaders, columnHeaders: columnHeaders, themes: themes};
+                    config = {rowHeaders: rowHeaders, columnHeaders: columnHeaders, dimensionConfig: {maxRows:null,maxColumns:null}};
                 }
             }
-           sceneGraph.categoryConfig = config;
+            sceneGraph.categoryConfig = config;
         } catch (e) {
             console.log("generation error", e)
         }

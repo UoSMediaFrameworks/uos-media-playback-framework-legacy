@@ -608,7 +608,7 @@ module.exports = {
     },
     getNewSoundSceneGraph:function(name){
         return {
-            'categoryConfig':{rowHeaders:[],columnHeaders:[],themes:[]},
+            'categoryConfig':{rowHeaders:[],columnHeaders:[],dimensionConfig:{maxRows:null,maxColumns:null}},
             'name': name,
             'sceneIds': {},
             'type': GraphTypes.SOUND,

@@ -91,7 +91,7 @@ var getSceneNodeListForSTheme = function(sceneGraph, sthemeId) {
 
 //TODO can offer non recursive function for large scene graphs
 var getChildrenNodes = function(node, nodeObj, sceneGraph) {
-    console.log("NODE",node,nodeObj,sceneGraph);
+    //console.log("NODE",node,nodeObj,sceneGraph);
     var nodeChildren = Object.keys(node.children);
 
     // APEP (recursive function exit condition) if we have no children to process, map will not run and getChildrenNodes is not called for this branch of recursion.
