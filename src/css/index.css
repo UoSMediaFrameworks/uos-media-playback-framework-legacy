@@ -8,25 +8,6 @@ html, body, #main, .app {
 .layout-button i{
  color:white;
 }
-.layout-border::-webkit-scrollbar-track
-{
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    border-radius: 10px;
-    background-color: #F5F5F5;
-}
-
-.layout-border::-webkit-scrollbar
-{
-    width: 12px;
-    background-color: #F5F5F5;
-}
-
-.layout-border::-webkit-scrollbar-thumb
-{
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-    background-color: #555;
-}
 
 .layout-border{
     border:white solid 1px;
@@ -35,7 +16,6 @@ html, body, #main, .app {
 
 .media-object-item-preview-player-hidden {
     flex: 1;
-    border: 1px solid #5a5a5a; /*Monaco grey - should probably change to use monaco css class*/
     overflow-y: auto;
     position: relative;
     display: none;
@@ -45,16 +25,20 @@ html, body, #main, .app {
     align-items: center;
 }
 .media-object-item-preview-player {
-    border: 1px solid #5a5a5a; /*Monaco grey - should probably change to use monaco css class*/
-    overflow-y: auto;
+    overflow-y: none;
     position: relative;
     flex: 1;
     text-align: center;
+    width: 100%;
 }
-.media-object-item-preview-player img{
+.media-object-item-preview-player *{
     height:100%;
-    width:auto;
+    width: 100%;
     max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    -webkit-user-drag: none;
+    overflow: hidden;
 }
 
 .react-audio-player {
@@ -165,8 +149,9 @@ html, body, #main, .app {
 }
 
 .media-object-list {
-    overflow-y: auto;
+    overflow-y: scroll;
     position: relative;
+    height: calc(100% - 46px);
 }
 
 .media-object-list-instructions {
@@ -185,12 +170,16 @@ html, body, #main, .app {
     margin: 0;
 }
 
-.media-object-list-grid ul {
+.media-object-list-Grid ul {
     line-height: 0;
 }
 
-.media-object-list-grid li {
+.media-object-list-Grid li {
     list-style: none;
+}
+
+.media-object-list-Grid  {
+    height: 100%;
 }
 
 .empty-media-object-item {
@@ -210,7 +199,7 @@ html, body, #main, .app {
     background-color: #ccc !important;
 }
 
-.media-object-list-grid .media-object-item {
+.media-object-list-Grid .media-object-item {
     height: 70px;
     display: inline-block;
     width: 70px;
@@ -219,27 +208,27 @@ html, body, #main, .app {
     padding: 5px;
 }
 
-.media-object-list-list .media-object-item {
+.media-object-list-List .media-object-item {
     height: 30px;
     margin: 4px 0;
+    background-color: #5a5a5a;
+    margin-left: 2px;
+    margin-right: 2px;
 }
 
-.media-object-list-list .media-object-item:nth-of-type(odd) {
-    background: #f3f3f3;
-}
 
 .media-object-list .media-object-item-preview {
     overflow: hidden;
 }
 
-.media-object-list-grid .media-object-item-preview {
+.media-object-list-Grid .media-object-item-preview {
     width: 60px;
     height: 60px;
     font-size: 60px;
     position: relative;
 }
 
-.media-object-list-list .media-object-item-preview {
+.media-object-list-List .media-object-item-preview {
     height: 100%;
 }
 
@@ -247,12 +236,12 @@ html, body, #main, .app {
     height: 100%;
 }
 
-.media-object-list-grid .media-object-item-preview img {
+.media-object-list-Grid .media-object-item-preview img {
     display: inline-block;
     position: absolute;
 }
 
-.media-object-list-list .media-object-item-preview img {
+.media-object-list-List .media-object-item-preview img {
     width: 30px;
 }
 
@@ -260,11 +249,11 @@ html, body, #main, .app {
     position: relative;
 }
 
-.media-object-list-list .icon-wrapper {
+.media-object-list-List .icon-wrapper {
     display: inline-block;
 }
 
-.media-object-list-list .icon {
+.media-object-list-List .icon {
     width: 30px;
     text-align: center;
 }
@@ -273,20 +262,20 @@ html, body, #main, .app {
     color: white;
 }
 
-.media-object-list-grid .icon-wrapper .icon {
+.media-object-list-Grid .icon-wrapper .icon {
     opacity: 0.5;
 }
 
-.media-object-list-list .icon-wrapper .icon {
+.media-object-list-List .icon-wrapper .icon {
     position: absolute;
     left: 0px;
 }
 
-.media-object-list-list .icon-wrapper .img {
+.media-object-list-List .icon-wrapper .img {
     height: 30px;
 }
 
-.media-object-list-grid .media-object-item-preview button {
+.media-object-list-Grid .media-object-item-preview button {
     display: none;
     position: absolute;
     top: 0px;
@@ -295,11 +284,11 @@ html, body, #main, .app {
     padding: 0;
 }
 
-.media-object-list-grid .preview-title {
+.media-object-list-Grid .preview-title {
     display: none;
 }
 
-.media-object-list-list .preview-title {
+.media-object-list-List .preview-title {
     padding-left: 5px;
 }
 
@@ -311,11 +300,11 @@ html, body, #main, .app {
     color: #cc0000;
 }
 
-.media-object-list-grid .media-object-item-preview:hover button {
+.media-object-list-Grid .media-object-item-preview:hover button {
     display: inherit;
 }
 
-.media-object-list-list .media-object-item-preview button {
+.media-object-list-List .media-object-item-preview button {
     float: right;
 }
 
@@ -365,8 +354,7 @@ html, body, #main, .app {
 }
 
 .media-object-list {
-    /* APEP colour taken from Monaco Vs-dark, we should probably reference the class so we don't have to keep updated */
-    border: 1px solid #5a5a5a;
+    height: calc(100% - 46px);
 }
 
 .CodeMirror-activeline-background {
@@ -671,7 +659,7 @@ html, body, #main, .app {
     contain: strict;
     height: 100%;
     overflow: hidden;
-    background:rgba(51,51,51,0.4);
+    background:rgba(51, 51, 51, 0.4);
     position: relative;
     display: -webkit-box;
     display: -webkit-flex;
@@ -683,23 +671,7 @@ html, body, #main, .app {
     -ms-flex-direction: column;
     flex-direction: column;
 }
-.widget::-webkit-scrollbar{
-    width: 7px;
-    height: 7px;
-}
-.widget::-webkit-scrollbar-corner{
-    background: rgba(0,0,0,0.2);
-    border-color: rgba(0,0,0,0.2);
-}
-.widget::-webkit-scrollbar-thumb{
-    min-height: 35px;
-    border-radius: 4px;
-    background: rgba(0,0,0,0.2);
-}
-.widget::-webkit-scrollbar-track{
-    background: rgba(77,76,76,0.2);
-    border-radius: 4px;
-}
+
 .widget>header{
     height: 30px;
     line-height: 30px;
@@ -767,40 +739,7 @@ html, body, #main, .app {
     position: relative;
     word-break: break-word;
 }
-.grid-layout-body::-webkit-scrollbar-corner{
-    background: rgba(0,0,0,0.2);
-    border-color: rgba(0,0,0,0.2);
-}
-.grid-layout-body::-webkit-scrollbar-thumb{
-    min-height: 35px;
-    border-radius: 4px;
-    background: rgba(0,0,0,0.69);
-}
-.grid-layout-body::-webkit-scrollbar-track{
-    background: rgba(77,76,76,0.2);
-    border-radius: 4px;
-}
-.grid-layout-body::-webkit-scrollbar{
-    width: 7px;
-    height: 7px;
-}
-.widget-container::-webkit-scrollbar-corner{
-    background: rgba(0,0,0,0.2);
-    border-color: rgba(0,0,0,0.2);
-}
-.widget-container::-webkit-scrollbar-thumb{
-    min-height: 35px;
-    border-radius: 4px;
-    background: rgba(0,0,0,0.2);
-}
-.widget-container::-webkit-scrollbar-track{
-    background: rgba(77,76,76,0.2);
-    border-radius: 4px;
-}
-.widget-container::-webkit-scrollbar{
-    width: 7px;
-    height: 7px;
-}
+
 .widget-container{
     overflow:overlay;
 }
@@ -1004,6 +943,7 @@ html, body, #main, .app {
 /* Example Styles for React Tags*/
 div.ReactTags__tags {
     position: relative;
+    height: fit-content;
 }
 
 /* Styles for the input */
@@ -1013,14 +953,18 @@ div.ReactTags__tagInput {
     display: inline-block;
     color: black;
     background: white;
-    margin: 5px;
+    margin: 2px;
 }
+
+
 div.ReactTags__tagInput input.ReactTags__tagInputField,
+
 div.ReactTags__tagInput input.ReactTags__tagInputField:focus {
-    height: 31px;
+    height: 12px;
     margin: 0;
     font-size: 12px;
     width: 100%;
+    border: none;
     border: 1px solid #eee;
 }
 
@@ -1031,11 +975,12 @@ div.ReactTags__selected span.ReactTags__tag {
     background: #eee;
     font-size: 12px;
     display: inline-block;
-    padding: 5px;
-    margin: 5px 5px;
-    cursor: move;
+    padding: 1px;
+    margin: 2px 2px;
+    cursor: pointer;
     border-radius: 2px;
 }
+
 div.ReactTags__selected a.ReactTags__remove {
     color: #aaa;
     margin-left: 5px;
@@ -1069,6 +1014,7 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
 
 .ReactTags_blank {
   visibility: hidden;
+  display: none;
 }
 
 .ReactTags_button {
@@ -1114,7 +1060,7 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
 
 .Resizer {
         background: #fff;
-        opacity: .1;
+        opacity: .3;
         z-index: 1;
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
@@ -1130,12 +1076,12 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     }
 
      .Resizer.horizontal {
-        height: 11px;
-        margin: -3px 0;
-        border-top: 5px solid rgba(255, 255, 255, 1);
+        height: 9px;
+        margin: -1px 0;
+        border-top: 0px solid rgba(255, 255, 255, 1);
         border-bottom: 5px solid rgba(255, 255, 255, 1);
         cursor: row-resize;
-        width: 100%;
+        width: calc(100% + 10px);
     }
 
     .Resizer.horizontal:hover {
@@ -1165,3 +1111,35 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     .noPadding {
       padding: 0px;
     }
+
+    .RemoveWidgetPadding {
+     position: absolute;
+     left: -5px;
+     right: -5px;
+     top: 0px;
+     bottom: 0px;
+     width: calc(100% + 10px);
+    }
+
+    .plus10px {
+        width: calc(100% + 10px);
+    }
+
+/*Scrollbars */
+::-webkit-scrollbar-corner{
+    background: rgba(0,0,0,0.2);
+    border-color: rgba(0,0,0,0.2);
+}
+::-webkit-scrollbar-thumb{
+    min-height: 35px;
+    border-radius: 4px;
+    background: rgba(146, 146, 146, 0.69);
+}
+::-webkit-scrollbar-track{
+    background: rgba(77,76,76,0.2);
+    border-radius: 4px;
+}
+::-webkit-scrollbar{
+    width: 7px;
+    height: 7px;
+}
