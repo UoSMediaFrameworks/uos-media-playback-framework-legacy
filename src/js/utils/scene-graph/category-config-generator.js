@@ -33,9 +33,11 @@ module.exports = {
             var rowHeaders = [];
             _.each(themes, function (theme, index) {
                 var tags = theme.themeTags.split(/\s+(?:,|AND|OR)\s+/);
+                // APEP Suspect index should be changed to rowHeaders
                 if (index <= prevConfig.dimensionConfig.maxRows) {
                     rowHeaders.push({name: tags[0], alias: null});
                 }
+                // APEP Suspect index should be columnHeaders
                 if (index <= prevConfig.dimensionConfig.maxColumns) {
                     columnHeaders.push({name: tags[1], alias: null});
                 }
@@ -43,11 +45,14 @@ module.exports = {
             if (rowHeaders !== [] && columnHeaders !== []) {
                 rowHeaders = getUniqArrByName(rowHeaders);
                 columnHeaders = getUniqArrByName(columnHeaders);
+
+                // APEP TODO please add some comments as to why prevConfig is being processed
                 if (prevConfig) {
                     var rowGen = transferPastGenerationAliases(prevConfig.rowHeaders, rowHeaders);
                     rowGen = getUniqArrByName(rowGen);
                     var columnGen = transferPastGenerationAliases(prevConfig.columnHeaders, columnHeaders);
                     columnGen = getUniqArrByName(columnGen);
+                    // APEP TODO please add some comments, this is very hard to read why we are doing this
                     prevConfig.dimensionConfig.maxRows?_.slice(rowGen,0,prevConfig.dimensionConfig.maxRows+1):null;
                     prevConfig.dimensionConfig.maxColumns?_.slice(columnGen,0,prevConfig.dimensionConfig.maxColumns+1):null;
                     config = {rowHeaders: rowGen, columnHeaders: columnGen, dimensionConfig: prevConfig.dimensionConfig};

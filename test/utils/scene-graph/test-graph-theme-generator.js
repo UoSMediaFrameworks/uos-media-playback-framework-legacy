@@ -144,5 +144,7 @@ describe('GraphThemeGenerator', function () {
                 })
             })
         });
+
+        // APEP TODO test to use a sceneGraph with incorrect type and make sure it doesn't do this auto mapping rule
     })
 });

@@ -1,4 +1,5 @@
 'use strict';
+
 var CategoryConfigGenerator = require('../../../src/js/utils/scene-graph/category-config-generator');
 var NodeListGenerator = require('../../../src/js/utils/scene-graph/node-list-generation');
 var GraphThemeGenerator = require('../../../src/js/utils/scene-graph/graph-theme-generator');
@@ -91,6 +92,42 @@ var sceneDocument = {
     ],
     "$schema": "http://sound-board-gui-demo-uos-sceneeditor.eu-west-1.elasticbeanstalk.com/schemas/scene-schema.json"
 };
+
+// APEP theme template for fnt getSceneDocumentForThemeTests:
+var sceneDocumentForThemeDefinitionTests = {
+    "_id": "5a9fc09c0aea86140900d31",
+    "name": "APEP_Theme_Definition_Tests",
+    "version": "0.1",
+    "maximumOnScreen": {
+        "image": 3,
+        "text": 1,
+        "video": 1,
+        "audio": 20
+    },
+    "displayDuration": 10,
+    "displayInterval": 1,
+    "transitionDuration": 1.4,
+    "themes": {
+
+    },
+    "style": {
+        "backgroundColor": "black"
+    },
+    "scene": [
+    ],
+};
+
+// APEP fnt to allow us to generate scene documents for specific tests
+// - append a character to the ID based on test
+// - override themes with specific use cases
+function getSceneDocumentForThemeTests(themes, testNo) {
+    var scene = _.cloneDeep(sceneDocumentForThemeDefinitionTests);
+    scene._id = scene._id + testNo.toString();
+    scene.themes = themes;
+    return scene;
+}
+
+// APEP TODO MUST update to use the constants file.  All the type strings should not be manually set in the tests
 var sceneGraph = {
     "_id": "5a9fc0dc0aea86140900d320",
     "categoryConfig": {"rowHeaders": [], "columnHeaders": [], "dimensionConfig": {"maxRows": null, "maxColumns": null}},
@@ -108,6 +145,16 @@ var sceneGraph = {
         "childrenRelationshipIds": []
     }]
 };
+
+// APEP we need a function to get a sceneGraph allowing the sceneIds to be overridden
+function getSceneGraphDocumentForSpecificTest(scene) {
+    var sceneGraphDoc = _.cloneDeep(sceneGraph);
+    sceneGraphDoc.sceneIds = {};
+    sceneGraphDoc.sceneIds[scene._id] = scene._id;
+    return sceneGraphDoc;
+}
+
+
 describe('CategoryConfigGenerator', function () {
     describe('generateNodeListForSceneGraph', function () {
 
@@ -128,6 +175,7 @@ describe('CategoryConfigGenerator', function () {
             assert(sceneGraph.categoryConfig.rowHeaders = [], "the category config has no row headers");
             assert(sceneGraph.categoryConfig.columnHeaders = [], "the category config has no column headers");
         });
+
         describe('The category config is generated', function () {
             beforeEach(function () {
                 //Using the graph theme generator to generate some themes
@@ -159,10 +207,8 @@ describe('CategoryConfigGenerator', function () {
                 assert(!sceneGraph.categoryConfig.dimensionConfig.maxRows, "max rows does not exist");
                 assert(!sceneGraph.categoryConfig.dimensionConfig.maxColumns, "max columns does not exist")
             });
-
-
-
         });
+
         describe('testing generated data with dimension data', function () {
 
             beforeEach(function () {
@@ -188,9 +234,55 @@ describe('CategoryConfigGenerator', function () {
                 assert(sceneGraph.categoryConfig.rowHeaders.length <= sceneGraph.categoryConfig.dimensionConfig.maxRows, "row headers generated are withing bounds");
                 assert(sceneGraph.categoryConfig.columnHeaders.length <= sceneGraph.categoryConfig.dimensionConfig.maxColumns, " column headers generated within bounds");
             });
-
-
         });
+
+        describe.only('testing maxRows and maxColumns with varied theme definitions', function() {
+
+            describe('X definition themes', function() {
+                before(function () {
+                    // APEP first tag goes as column and second as row
+                    // APEP while processing with a maxRows and maxColumns, we should be able to look at every theme.
+                    // (nature and ground) should be rows and (fire, water and seabed) should be columns
+                    // because a foreach index is used to see if we are over the maxNumber, we miss combinations
+                    var themes = {
+                        "NatureFire": "nature AND fire",
+                        "GroundWater": "ground AND water",
+                        "GroundFire": "ground AND fire",
+                        "NatureWater": "nature AND water",
+                        "GroundSeabed": "ground AND seabed",
+                    };
+
+                    this.scene = getSceneDocumentForThemeTests(themes, 1);
+
+                    this.sceneGraph = getSceneGraphDocumentForSpecificTest(this.scene);
+
+                    AppDispatcher.handleViewAction({
+                        type: ActionTypes.SCENE_CHANGE,
+                        scene: this.scene
+                    });
+
+                    //Using the graph theme generator to generate some themes
+                    this.sceneGraph.categoryConfig.dimensionConfig = {maxRows: 2, maxColumns: 3};
+
+                    GraphThemeGenerator.generateGraphThemesForTest(this.sceneGraph, SceneStore);
+                    //The current category config bases its data generation on the node list
+                    NodeListGenerator.generateNodeListForSceneGraph(this.sceneGraph, SceneStore);
+
+                    CategoryConfigGenerator.generateCategoryConfig(this.sceneGraph);
+                });
+
+                it("should have the correct rows and columns", function() {
+
+                    console.log("ROWS output below");
+                    console.log(this.sceneGraph.categoryConfig.rowHeaders.length, this.sceneGraph.categoryConfig.dimensionConfig.maxRows);
+                    console.log("COLUMNS output below");
+                    console.log(this.sceneGraph.categoryConfig.columnHeaders.length, this.sceneGraph.categoryConfig.dimensionConfig.maxColumns);
+
+                    assert(this.sceneGraph.categoryConfig.rowHeaders.length === this.sceneGraph.categoryConfig.dimensionConfig.maxRows);
+                    assert(this.sceneGraph.categoryConfig.columnHeaders.length === this.sceneGraph.categoryConfig.dimensionConfig.maxColumns);
+                })
+            });
+        });
+
     })
-})
-;
+});
