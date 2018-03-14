@@ -97,6 +97,7 @@ var GridStore = assign({}, EventEmitter.prototype, {
     getFocusedMediaObject: function () {
         return gridState.focusedMediaObject;
     },
+
     hasMaximisedView: function () {
         // APEP allow components to see if we have any maximised components.
         return _.filter(gridState.layoutManager.layout, function (item) {

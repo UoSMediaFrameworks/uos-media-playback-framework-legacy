@@ -9,9 +9,9 @@ var MediaObjectList = React.createClass({
     getInitialState: function () {
         return {
             selectedIndex: this.props.focusedMediaObject,
-            listLayout: 'grid',
+            listLayout: 'Grid',
             tagSearch: "",
-            highlightType: 'border'
+            highlightType: 'Filter'
         };
     },
 
@@ -51,7 +51,7 @@ var MediaObjectList = React.createClass({
     },
 
     handleHighlightType: function () {
-        if (this.state.highlightType === 'border') {
+        if (this.state.highlightType === 'Highlight') {
             return 'highlighted-media-object';
         } else {
             return 'display-none'
@@ -98,10 +98,10 @@ var MediaObjectList = React.createClass({
                     if (this.state.tagSearch.length > 0) {
                         if (mediaObject.tags.indexOf(this.state.tagSearch) !== -1) {
                             //Highlights media objects that match the tag search.
-                            if (this.state.highlightType === "border")
+                            if (this.state.highlightType === "Highlight")
                                 klass += ' ' + this.handleHighlightType();
                         } else {
-                            if (this.state.highlightType !== "border")
+                            if (this.state.highlightType !== "Highlight")
                                 klass += ' ' + this.handleHighlightType();
                         }
                     }
@@ -129,26 +129,24 @@ var MediaObjectList = React.createClass({
         var wrapperClass = 'media-object-list media-object-list-' + this.state.listLayout;
 
         return (
-            <div className={wrapperClass}>
+            <div style={{overflowY: "none", height: 'calc(100% - 10px)'}}>
                 <div className='btn-group btn-group-xs' role='group'>
-                    <button type='button' onClick={this.handleListChange} className={this.listSelectedClass("grid")}>
-                        grid
+                    <button type='button' onClick={this.handleListChange} className={this.listSelectedClass("Grid")}>
+                        Grid
                     </button>
-                    <button type='button' onClick={this.handleListChange} className={this.listSelectedClass("list")}>
-                        list
+                    <button type='button' onClick={this.handleListChange} className={this.listSelectedClass("List")}>
+                        List
                     </button>
                 </div>
 
                 <div className='btn-group btn-group-xs' role='group'>
                     <button type='button' onClick={this.handleHighlightChange}
-                            className={this.highlightSelectedClass("border")}>border
+                            className={this.highlightSelectedClass("Highlights")}>Highlight
                     </button>
                     <button type='button' onClick={this.handleHighlightChange}
-                            className={this.highlightSelectedClass("hidden")}>hidden
+                            className={this.highlightSelectedClass("Filter")}>Filter
                     </button>
                 </div>
-
-                <div className={this.props.saveFlagKlass}> Saved Status</div>
 
                 <form >
                     <input ref="tag-search"
@@ -158,7 +156,9 @@ var MediaObjectList = React.createClass({
                            placeholder="Search for media by tag"/>
                 </form>
 
-                <ul className=''>{items}</ul>
+                <div className={wrapperClass}>
+                <   ul className=''>{items}</ul>
+                </div>
             </div>
         );
     }
