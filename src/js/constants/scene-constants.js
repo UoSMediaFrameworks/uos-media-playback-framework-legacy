@@ -19,6 +19,7 @@ module.exports = {
         ADD_COMPONENT:null,
         REMOVE_COMPONENT:null,
         LAYOUT_CHANGE:null,
+        LAYOUT_PRESET_SELECTED: null,
 
         /*Breadrumbs*/
         BREADCRUMBS_CLEAR_ALL:null,

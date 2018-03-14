@@ -98,6 +98,11 @@ var GridStore = assign({}, EventEmitter.prototype, {
         return gridState.focusedMediaObject;
     },
 
+    setLayoutFromPreset: function(presetLayout) {
+        gridState.layoutManager.setLayoutFromPreset(presetLayout);
+        GridStore.emitChange();
+    },
+
     hasMaximisedView: function () {
         // APEP allow components to see if we have any maximised components.
         return _.filter(gridState.layoutManager.layout, function (item) {
@@ -182,7 +187,9 @@ var GridStore = assign({}, EventEmitter.prototype, {
             case ActionTypes.SAVED_SCENE_GRAPH:
                 GridStore.focusSceneGraph(action.sceneGraph);
                 break;
-
+            case ActionTypes.LAYOUT_PRESET_SELECTED:
+                GridStore.setLayoutFromPreset(action.preset);
+                break;
             // APEP allow us to catch DOM size changes so we can do the minimize size calculations for some components.
             case ActionTypes.GRID_CONTAINER_UPDATE:
                 gridState.layoutManager.gridContainerDOMClientHeight = action.clientHeight;

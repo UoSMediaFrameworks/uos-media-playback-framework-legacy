@@ -43,7 +43,7 @@ var TagEditor = React.createClass({
             clearTimeout(this.saveTimeout);
         }
         SceneStore.removeChangeListener(this._onChange);
-        GridStore.removeChangeListener(this._onFocusChange)
+        GridStore.removeChangeListener(this._onChange)
     },
 
     componentDidUpdate: function () {
@@ -116,7 +116,7 @@ var TagEditor = React.createClass({
                      suggestedTags.push({id: i, text: remoteTags[i]})
                   }
                 }
-                
+
                 self.setState({visionTags: suggestedTags})
                 self.forceUpdate() //don't know why but dosn't work without this.
               })
@@ -151,9 +151,9 @@ var TagEditor = React.createClass({
     },
 
     getSceneTags: function (scene) {
-        
+
         sceneTags = [];
-        
+
         if (scene != null) {
 
             //rename to avoid confusion
@@ -161,12 +161,12 @@ var TagEditor = React.createClass({
 
             //iterate media objects
             sceneMediaObjects.forEach(mediaObject => {
-               
+
                 //split and itterate object tags
                 objectTags = mediaObject.tags.split(",");
                 objectTags.forEach(rawTag => {
                     cleanTag = rawTag.trim() //remove spaces
-                    
+
                     //add to scene tags if not already added.
                     if (sceneTags.indexOf(cleanTag) === -1) {
                         if (cleanTag != "") {
@@ -175,7 +175,7 @@ var TagEditor = React.createClass({
                     }
                 })
             });
-        } 
+        }
         sceneTags.sort((a, b) => a.localeCompare(b)) //alphabetical order
         return sceneTags;
     },
@@ -191,7 +191,7 @@ var TagEditor = React.createClass({
                     tags.push(cleanTag);
                 }
             });
-        } 
+        }
         return tags;
     },
 
@@ -274,7 +274,7 @@ var TagEditor = React.createClass({
 
     //used to build a stack of tag editors
     var output = [];
-     
+
     //show object tags if object is selected
     if(this.state.focusedMediaObject != null) {
         output.push(
@@ -322,7 +322,7 @@ var TagEditor = React.createClass({
                     tagInput: 'ReactTags_blank',
                     tagInputField: 'ReactTags_blank',
                 }}
-            /> 
+            />
         </div>)
     )
 
