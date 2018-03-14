@@ -22,7 +22,10 @@ var LayoutConstants = require("../../constants/layout-constants"),
     LayoutComponentTitles = LayoutConstants.ComponentTitles,
     LayoutComponentTypesForPopout = LayoutConstants.ComponentTypesForPopout,
     LayoutComponentTypesForPresentation = LayoutConstants.ComponentTypesForPresentation;
+    DefaultLayout=LayoutConstants.PresetLayouts.default;
 var GraphTitles = require("../../constants/graph-constants").GraphTitles;
+var ReactTabs = require('react-tabs');
+var hat = require('hat');
 
 ReactGridLayout = WidthProvider(ReactGridLayout);
 var RespGrid = React.createClass({
@@ -30,7 +33,8 @@ var RespGrid = React.createClass({
         return {
             data: GridStore.getGridState(),
             cols: 30,
-            rows: 30
+            rows: 30,
+            tabIndex: 0,
         }
     },
 
@@ -324,9 +328,18 @@ var RespGrid = React.createClass({
 
         components = _.filter(components, function (c) {
             return c !== null;
-        });
+        })
 
         return (
+            <div>
+
+            <ReactTabs.Tabs selectedIndex={this.state.tabIndex} onSelect={tabIndex => this.selectedTabChanged(tabIndex)}>
+                <ReactTabs.TabList>
+                    <ReactTabs.Tab>Workspace 1</ReactTabs.Tab>
+                    <ReactTabs.Tab>Workspace 2</ReactTabs.Tab>
+                </ReactTabs.TabList>
+            </ReactTabs.Tabs>
+            <p>Tab {this.state.tabIndex}</p>
             <ReactGridLayout onDragStart={this.onDragStopHandler}
                              className="layout"
                              autoSize={true}
@@ -338,8 +351,42 @@ var RespGrid = React.createClass({
                              rowHeight={rowHeight}>
                 {components}
             </ReactGridLayout>
+            </div>
         )
+    },
+
+    selectedTabChanged: function(tabIndex) {
+    // much of this should probably live in layout manager
+
+        //get layout object
+        var layouts = JSON.parse(localStorage.getItem('layouts'))
+        if (!layouts) {
+            layouts = new []
+            layouts.push({i: 0})
+            layouts.push({i: 1})  //hackish test
+            console.log("Layout")
+        }
+        console.log(layouts);
+
+        //save current tab
+        layouts[this.state.tabIndex] = this.state.data.layout 
+        localStorage.setItem("layouts", JSON.stringify(layouts))
+        
+        //load correct tab
+        if (layouts.length < tabIndex+1) {
+            var myLayout = []
+        } else {
+            var myLayout = layouts[tabIndex];
+        }
+        var layoutWithID = [];
+            myLayout.forEach(component => {
+            component.i = hat().toString()
+            layoutWithID.push(component);
+        });
+        ViewLayoutActions.layoutChange(layoutWithID);
+        this.setState({tabIndex: tabIndex})
     }
+
 });
 
 module.exports = RespGrid;
