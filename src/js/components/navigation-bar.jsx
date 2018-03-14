@@ -10,6 +10,7 @@ var FormHelper = require('../mixins/form-helper');
 var HubSendActions = require('../actions/hub-send-actions');
 var HubClient = require('../utils/HubClient');
 var LayoutComponentConstants = require('../constants/layout-constants').ComponentTypes;
+var LayoutComponentPresets = require('../constants/layout-constants').PresetLayouts;
 
 var GraphTypes = require('../constants/graph-constants').GraphTypes;
 var GraphTitles = require('../constants/graph-constants').GraphTitles;
@@ -226,6 +227,13 @@ var NavigationBar = React.createClass({
                                 </li>
                                 {sessionNav}
                                 {adminDropDown}
+                                <li className="mf-dropdown">
+                                    <DropdownButton id="set-layout-to-preset" title={"Workflows"} className="btn btn-dark navbar-btn">
+                                        <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.default)}>Default</MenuItem>
+                                        <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.authoring.scene)}>Scene Editing</MenuItem>
+                                        <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.authoring.graph)}>Graph Editing</MenuItem>
+                                    </DropdownButton>
+                                </li>
                                 <li className="mf-dropdown">
                                     <DropdownButton id="add-component-drop-down" title={"Components"}
                                                     className="btn btn-dark navbar-btn">
