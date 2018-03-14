@@ -5,6 +5,8 @@ var Glyphicon = require('../glyphicon.jsx');
 var soundCloud = require('../../utils/sound-cloud');
 var vimeoApi = require('../../utils/vimeo-api');
 var getVimeoId = require('../../utils/get-vimeo-id');
+var ImgLoader = require('react-image').default;
+var FontAwesome = require('react-fontawesome');
 
 var getImageMediaObjectThumbnailUrl = function(mediaObjectUrl) {
     if(!mediaObjectUrl || mediaObjectUrl.length === 0) {
@@ -87,10 +89,11 @@ var MediaObjectPreview = React.createClass({
                 });
 				break;
 
-            case 'image':
+			case 'image':
+			var fullImage = mediaObject.url
+			var thumbImage = getImageMediaObjectThumbnailUrl(mediaObject.url)
                 this.setState({
-                    img: mediaObject,
-                    thumbImage: getImageMediaObjectThumbnailUrl(mediaObject.url)
+					imgUrlWithFallback: [thumbImage, fullImage]
                 });
                 break;
 		}
@@ -116,7 +119,18 @@ var MediaObjectPreview = React.createClass({
 
 		switch(type) {
 		 	case 'image':
-                extra = <img src={this.state.thumbImage}/>;
+				extra = <ImgLoader 
+							src={this.state.imgUrlWithFallback}
+							loader={<FontAwesome
+								className="mf-media-loader-spinner"
+								name='spinner'
+								size='1x'
+								spin
+								style={{
+									textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)'
+								}}
+							/>}
+						/>; 
 		 		break;
 		 	case 'video':
 		 		if (this.state.thumbImage) {
