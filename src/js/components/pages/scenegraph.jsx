@@ -361,6 +361,7 @@ var SceneGraph = React.createClass({
         SceneGraphActions.updateSceneGraph(this.state.sceneGraph)
     },
     render: function () {
+        var self = this;
         var sceneGraphId = null;
         if (this.props.params) {
             sceneGraphId = this.props.params.id;
@@ -380,7 +381,7 @@ var SceneGraph = React.createClass({
             var isAdmin = ConnectionCache.getGroupID() === "0";
 
             var regenerateButton = isAdmin ? (<Button className="btn btn-info"
-                                                      onClick={this.regenerateSceneGraphHandler}>
+                                                      onClick={self.regenerateSceneGraphHandler}>
                 Regenerate scene graph
             </Button>) : null;
         } catch (e) {
