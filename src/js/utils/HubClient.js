@@ -148,8 +148,11 @@ var HubClient = {
         try{
             if(sceneGraph._id !== "579a2186792e8b3c827d2b15") {
                 if(sceneGraph.type === GraphTypes.SOUND){
+                    //AP: this is needed for the automatic generation
                     GraphThemeGenerator.generateGraphThemes(sceneGraph);
+                    //AP: the node list generation is necessary to be proper in order for the category config generator to work
                     NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
+                    //This will not provide the correct results if the node list is not correctly generated
                     CategoryConfigGenerator.generateCategoryConfig(sceneGraph);
                 }else{
                     NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
