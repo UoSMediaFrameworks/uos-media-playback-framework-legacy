@@ -30,16 +30,16 @@ var gridState = {
     fromMonacoEditor: false
 };
 
-changeFocus = function (type) {
+var changeFocus = function (type) {
     gridState.focusedType = type;
 };
 
-changeMediaObjectFocus = function (index, fromMonacoEditor) {
+var changeMediaObjectFocus = function (index, fromMonacoEditor) {
     gridState.fromMonacoEditor = fromMonacoEditor;
     gridState.focusedMediaObject = index;
 };
 
-popoutComponent = function (item, width, height, isForPresentation) {
+var popoutComponent = function (item, width, height, isForPresentation) {
 
     gridState.poppedOutComponent = item.type;
 

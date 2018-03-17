@@ -2,7 +2,7 @@ var React = require("react");
 var classNames = require('classnames');
 var d3 = require("d3");
 var ReactDOM = require("react-dom");
- _ = require("lodash");
+var _ = require("lodash");
 var Rectangle = React.createClass({
 
     componentWillMount:function(){
