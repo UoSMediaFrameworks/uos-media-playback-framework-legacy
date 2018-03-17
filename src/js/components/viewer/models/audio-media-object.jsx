@@ -1,6 +1,7 @@
 var React = require('react');
 var soundCloud = require('../../../utils/sound-cloud');
 var TWEEN = require('@tweenjs/tween.js');
+var Audio5 = require('audio5');
 
 var AudioMediaObject = React.createClass({
 
@@ -13,7 +14,8 @@ var AudioMediaObject = React.createClass({
             currentLoop: 0,
             player: null,
             firstPlayAudioTween: null,
-            transitionToDoneAudioTween: null
+            transitionToDoneAudioTween: null,
+            disposed: false
         };
     },
 
@@ -29,7 +31,15 @@ var AudioMediaObject = React.createClass({
     // APEP if the component is unmounted we must clean up.
     componentWillUnmount: function() {
         this.setState({"playing": false});
-        this.destoryAudioPlayer();
+
+        if(!this.state.disposed) {
+            this.destoryAudioPlayer();
+        }
+    },
+
+    shouldComponentUpdate(nextProps, nextState) {
+        // APEP we never need to re-render for an audio component
+        return false;
     },
 
     // tween the audio for this audio player between a start and end volume value and for a duration
@@ -43,7 +53,7 @@ var AudioMediaObject = React.createClass({
                 try {
                     player.volume(obj.vol);
                 } catch (e) {
-                    console.log("ERROR for onUpdate");
+                    console.log("audio-media-object - ERROR for onUpdate");
                 }
             })
             .start();
@@ -152,10 +162,8 @@ var AudioMediaObject = React.createClass({
         }
         volume = volume / 100;
 
-        var Audio5 = require('audio5');
-
         self.state.player = new Audio5({
-            throw_errors: true,
+            throw_errors: false,
             format_time: false,
             ready: function() {
                 if(!self.state.playing) {
@@ -177,8 +185,9 @@ var AudioMediaObject = React.createClass({
                 this.on("timeupdate", self.audioPlayerTimeUpdate, self);
 
                 this.on('error', function(err) {
+                    console.log("audio-media-object - error: ", err);
                     self.destoryAudioPlayer();
-                });
+                }, this);
 
                 // APEP Play the audio clips
                 this.play();
@@ -229,6 +238,8 @@ var AudioMediaObject = React.createClass({
             this.state.player.off("timeupdate", this.audioPlayerTimeUpdate);
             this.state.player.off("timeupdate", this.audioPlayerTimeUpdateForAnim);
         }
+
+        this.setState({disposed: true});
 
         this.props.data.moDoneHandler(this);
     },
