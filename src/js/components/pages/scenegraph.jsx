@@ -13,9 +13,6 @@ var SceneGraphListStore = require('../../stores/scene-graph-list-store.jsx');
 var SceneListStore = require('../../stores/scene-list-store'); //scene-list-store does not return the full scene objects - I need the themes
 var SceneStore = require('../../stores/scene-store');
 var DragDropContainer = require('../basic-draggable/drag-drop-container.jsx');
-
-/// TEmp remove
-var HubClient = require('../../utils/HubClient');
 var HubRecieveActions = require('../../actions/hub-recieve-actions');
 
 var mediaHubGraphURL = process.env.MEDIA_HUB_GRAPH_URL || "";
@@ -219,37 +216,6 @@ var SceneGraph = React.createClass({
         SceneGraphStore.removeChangeListener(this._onChange);
         SceneListStore.removeChangeListener(this._onChange);
         SceneStore.removeChangeListener(this._onChange);
-    },
-    _exportSceneGraph:function(){
-        var element = document.createElement('a');
-        var pirateCopy =this.state.sceneGraph;
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(JSON.stringify(pirateCopy)));
-        element.setAttribute('download', this.props._id);
-        element.style.display = 'none';
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element);
-    },
-    _importSceneGraph:function(e){
-        var self = this;
-        var files = e.target.files; // FileList object
-
-        // use the 1st file from the list
-        var f = files[0];
-
-        var reader = new FileReader();
-        reader.onload = function (event) {
-            var parsedText = JSON.parse(event.target.result);
-            var sceneGraph = self.state.sceneGraph;
-            sceneGraph.sceneIds = parsedText.sceneIds;
-            sceneGraph.graphThemes = parsedText.graphThemes;
-            sceneGraph.nodeList = parsedText.nodeList;
-            HubClient.saveSceneGraph(sceneGraph, function (newSceneGraph) {
-                HubRecieveActions.savedSceneGraph(newSceneGraph);
-                HubRecieveActions.recieveSceneGraph(newSceneGraph);
-            });
-        };
-        reader.readAsText(f);
     },
     _onChange: function () {
         this.setState(this.getStateFromStores());
