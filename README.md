@@ -45,6 +45,16 @@ env.sh gulp build-dist
 
 The copy the contents of `dist/` to whereever you'd like to host the files.
 
+## TESTS
+
+Integration tests for the HubClient testing out socket listeners
+
+--require mock-local-storage allows us avoid the global and window variables such as localStorage from blowing up tests
+
+```bash
+./dev-env.sh mocha --require mock-local-storage test/integration/test-hub-client.js
+```
+
 
 ## Cross Browser Testing
 
