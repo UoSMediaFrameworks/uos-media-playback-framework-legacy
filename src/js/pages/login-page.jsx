@@ -59,7 +59,7 @@ var LoginPage = React.createClass({
 
 	handleSubmit: function(e) {
 		e.preventDefault();
-		HubSendActions.tryLogin({password: this.getRefVal('password')});
+		HubSendActions.tryLogin({username: this.getRefVal('username'), password: this.getRefVal('password')});
 	},
 
 	render: function() {

@@ -38,7 +38,7 @@ var HubClient = {
         socket.on('connect',function() {
             console.log("connect")
             socket.emit('auth', creds, function(err, token, socketID/*AJF: doesn't get used here*/, groupID) {/*AJF: callback extended to accept the groupID of the user*/
-                console.log("auth")
+                console.log("auth - err: ", err);
                 if (err) {
                     socket.disconnect();
                     HubRecieveActions.recieveLoginResult(false, err.toString());
