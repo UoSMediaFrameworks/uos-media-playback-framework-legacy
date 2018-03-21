@@ -6,6 +6,7 @@ var chance = require('chance').Chance();
 var LayoutManager = require('../../../src/js/stores/managers/layout-manager');
 var LayoutComponentConstants = require('../../../src/js/constants/layout-constants').ComponentTypes;
 var LayoutComponentColumns = require('../../../src/js/constants/layout-constants').ColumnTypes;
+var LayoutComponentPresets = require('../../../src/js/constants/layout-constants').PresetLayouts;
 var ls = require('mock-local-storage');
 
 describe('LayoutManager', function() {
@@ -548,6 +549,63 @@ describe('LayoutManager', function() {
            this.manager.removeComponent(comp.i);
 
            assert(otherComp.visible === true);
+       });
+   });
+
+   function cleanManagerLayoutOfIds(layout) {
+       var cleanLayout = _.cloneDeep(layout);
+       return _.map(cleanLayout, function(l){
+           delete l.i;
+           return l;
+       });
+   }
+
+   describe('setLayoutFromPreset', function() {
+       beforeEach(function() {
+           this.manager = new LayoutManager();
+           this.manager.defaultComponentStartingY = 0;
+           this.manager.layout = []; // APEP remove default added components
+       });
+
+       it('should add a fixed layout from the constants file', function() {
+           this.manager.setLayoutFromPreset(LayoutComponentPresets.authoring.scene);
+           assert(this.manager.layout.length === LayoutComponentPresets.authoring.scene.length);
+           assert(_.isEqual(cleanManagerLayoutOfIds(this.manager.layout), LayoutComponentPresets.authoring.scene));
+       });
+
+       it('should ensure all the components in the layout given are valid', function() {
+           var layoutWithOldComponent = _.cloneDeep(LayoutComponentPresets.authoring.scene);
+
+           var fakeOldComponent = {"x":15,"y":0,"w":15,"h":17,"_w":15,"_h":17,"type":"Graph-OLD","visible":true,"isResizable":true,"state":"default","moved":false,"static":false};
+
+            layoutWithOldComponent.push(fakeOldComponent);
+
+           this.manager.setLayoutFromPreset(layoutWithOldComponent);
+           assert(this.manager.layout.length === LayoutComponentPresets.authoring.scene.length);
+           assert(_.isEqual(cleanManagerLayoutOfIds(this.manager.layout), LayoutComponentPresets.authoring.scene));
+       });
+
+       it('should cloneDeep and assign new ids for the new components', function() {
+
+           this.manager.setLayoutFromPreset(LayoutComponentPresets.authoring.scene);
+
+           assert(this.manager.layout.length === LayoutComponentPresets.authoring.scene.length);
+           assert(_.isEqual(cleanManagerLayoutOfIds(this.manager.layout), LayoutComponentPresets.authoring.scene));
+
+           _.forEach(this.manager.layout, function(layoutItem) {
+               // APEP ensure we have an ID for each layout item
+               assert(layoutItem.hasOwnProperty("i"));
+
+               // APEP ensure they are unique (potential collision but the hat library reduces this chance)
+               assert(this.manager.layout.filter(function(layoutItemForDuplicateICheck) {
+                   return layoutItem.i === layoutItemForDuplicateICheck.i;
+               }).length === 1);
+           }.bind(this));
+
+           _.forEach(LayoutComponentPresets.authoring.scene, function(layoutItem) {
+               // APEP ensure we have not changed the preset constants
+               assert(!layoutItem.hasOwnProperty("i"));
+           })
        });
    });
 

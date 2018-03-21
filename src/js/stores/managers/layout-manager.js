@@ -35,6 +35,17 @@ class LayoutManager {
 
     }
 
+    setLayoutFromPreset(layout) {
+        // APEP clone and validate so we have a fresh copy of a preset layout
+        var newLayout = this.ensureValidComponents(_.cloneDeep(layout));
+
+        // APEP we must assign layout component ids to render (react requirement)
+        this.layout = _.map(newLayout, function(layoutComponent) {
+            layoutComponent["i"] = hat().toString();
+            return layoutComponent;
+        });
+    }
+
     ensureValidComponents(unsafeLayout) {
         var safeLayout = [];
         unsafeLayout.forEach(LayoutComponent => {

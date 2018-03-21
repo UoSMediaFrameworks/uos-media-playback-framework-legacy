@@ -43,7 +43,7 @@ var TagEditor = React.createClass({
             clearTimeout(this.saveTimeout);
         }
         SceneStore.removeChangeListener(this._onChange);
-        GridStore.removeChangeListener(this._onFocusChange)
+        GridStore.removeChangeListener(this._onChange)
     },
 
     componentDidUpdate: function () {
@@ -87,6 +87,7 @@ var TagEditor = React.createClass({
     getNewState: function () {
         var scene = SceneStore.getScene(this.props._id)
         var focusedMediaObject = GridStore.getFocusedMediaObject();
+        var mediaObject;
 
         if (focusedMediaObject != null) {
             try {
@@ -116,7 +117,7 @@ var TagEditor = React.createClass({
                      suggestedTags.push({id: i, text: remoteTags[i]})
                   }
                 }
-                
+
                 self.setState({visionTags: suggestedTags})
                 self.forceUpdate() //don't know why but dosn't work without this.
               })
@@ -151,22 +152,22 @@ var TagEditor = React.createClass({
     },
 
     getSceneTags: function (scene) {
-        
-        sceneTags = [];
-        
+
+        var sceneTags = [];
+
         if (scene != null) {
 
             //rename to avoid confusion
-            sceneMediaObjects = scene.scene;
+            var sceneMediaObjects = scene.scene;
 
             //iterate media objects
             sceneMediaObjects.forEach(mediaObject => {
-               
+
                 //split and itterate object tags
-                objectTags = mediaObject.tags.split(",");
+               var  objectTags = mediaObject.tags.split(",");
                 objectTags.forEach(rawTag => {
-                    cleanTag = rawTag.trim() //remove spaces
-                    
+                    var cleanTag = rawTag.trim() //remove spaces
+
                     //add to scene tags if not already added.
                     if (sceneTags.indexOf(cleanTag) === -1) {
                         if (cleanTag != "") {
@@ -175,7 +176,7 @@ var TagEditor = React.createClass({
                     }
                 })
             });
-        } 
+        }
         sceneTags.sort((a, b) => a.localeCompare(b)) //alphabetical order
         return sceneTags;
     },
@@ -191,7 +192,7 @@ var TagEditor = React.createClass({
                     tags.push(cleanTag);
                 }
             });
-        } 
+        }
         return tags;
     },
 
@@ -199,7 +200,7 @@ var TagEditor = React.createClass({
 
     handleDelete: function (i) {
         let tags = this.state.objectTags;
-        tags.splice(i, 1);
+        tag = tags.splice(i, 1);
         this.setState({objectTags: tags, shouldSave: true});
     },
 
@@ -233,8 +234,8 @@ var TagEditor = React.createClass({
 //suggested tag editor handlers
 
     visionTagClick: function(index) {
-        visionTags = this.state.visionTags
-        clickedTag = visionTags[index];
+        var visionTags = this.state.visionTags
+        var clickedTag = visionTags[index];
         this.handleAddition(clickedTag.text) //add to scene tags
         visionTags.splice(index, 1); //remove from this list
         this.setState({visionTags: tags}); //update state
@@ -242,8 +243,8 @@ var TagEditor = React.createClass({
 
     sceneTagClicked: function(index) {
         if (this.state.focusedMediaObject != null) {
-            clickedTag = this.state.sceneTags[index]
-            objectTags = this.state.objectTags
+            var clickedTag = this.state.sceneTags[index]
+            var objectTags = this.state.objectTags
             this.pushIfUnique(clickedTag, objectTags)
             this.setState({objectTags: objectTags, shouldSave: true})
         }
@@ -274,7 +275,7 @@ var TagEditor = React.createClass({
 
     //used to build a stack of tag editors
     var output = [];
-     
+
     //show object tags if object is selected
     if(this.state.focusedMediaObject != null) {
         output.push(
@@ -322,7 +323,7 @@ var TagEditor = React.createClass({
                     tagInput: 'ReactTags_blank',
                     tagInputField: 'ReactTags_blank',
                 }}
-            /> 
+            />
         </div>)
     )
 

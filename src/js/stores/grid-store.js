@@ -30,16 +30,16 @@ var gridState = {
     fromMonacoEditor: false
 };
 
-changeFocus = function (type) {
+var changeFocus = function (type) {
     gridState.focusedType = type;
 };
 
-changeMediaObjectFocus = function (index, fromMonacoEditor) {
+var changeMediaObjectFocus = function (index, fromMonacoEditor) {
     gridState.fromMonacoEditor = fromMonacoEditor;
     gridState.focusedMediaObject = index;
 };
 
-popoutComponent = function (item, width, height, isForPresentation) {
+var popoutComponent = function (item, width, height, isForPresentation) {
 
     gridState.poppedOutComponent = item.type;
 
@@ -96,6 +96,11 @@ var GridStore = assign({}, EventEmitter.prototype, {
     },
     getFocusedMediaObject: function () {
         return gridState.focusedMediaObject;
+    },
+
+    setLayoutFromPreset: function(presetLayout) {
+        gridState.layoutManager.setLayoutFromPreset(presetLayout);
+        GridStore.emitChange();
     },
 
     hasMaximisedView: function () {
@@ -182,7 +187,9 @@ var GridStore = assign({}, EventEmitter.prototype, {
             case ActionTypes.SAVED_SCENE_GRAPH:
                 GridStore.focusSceneGraph(action.sceneGraph);
                 break;
-
+            case ActionTypes.LAYOUT_PRESET_SELECTED:
+                GridStore.setLayoutFromPreset(action.preset);
+                break;
             // APEP allow us to catch DOM size changes so we can do the minimize size calculations for some components.
             case ActionTypes.GRID_CONTAINER_UPDATE:
                 gridState.layoutManager.gridContainerDOMClientHeight = action.clientHeight;
