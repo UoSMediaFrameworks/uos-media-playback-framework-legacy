@@ -129,7 +129,10 @@ var SceneMonacoTextEditor = React.createClass({
 
     saveJSON: function() {
         return function() {
-
+            if(!this.refs.monaco){
+                console.log("no reference loaded");
+                return;
+            }
             if(!this.refs.monaco.editor) {
                 console.log("Nothing to save yet as component not mounted");
                 return;
@@ -286,7 +289,9 @@ var SceneMonacoTextEditor = React.createClass({
         if(! _.isEqual(nextProps.focusedMediaObject, this.props.focusedMediaObject)) {
             return true;
         }
-
+        if(!this.refs.monaco){
+            return true;
+        }
         if(!this.refs.monaco.editor) {
             return true;
         }
