@@ -142,7 +142,6 @@ var SceneMonacoTextEditor = React.createClass({
 
     saveJSON: function () {
         return function () {
-
             if (!this.refs.monaco.editor) {
                 console.log("Nothing to save yet as component not mounted");
                 return;

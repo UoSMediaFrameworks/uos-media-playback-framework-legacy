@@ -21,6 +21,8 @@ module.exports = {
         LAYOUT_CHANGE:null,
         LAYOUT_PRESET_SELECTED: null,
 
+        /*Graph*/
+        AUTOCOMPLETE_SELECTED_UPDATE:null,
         /*Breadrumbs*/
         BREADCRUMBS_CLEAR_ALL:null,
         BREADCRUMBS_PLAY:null,
