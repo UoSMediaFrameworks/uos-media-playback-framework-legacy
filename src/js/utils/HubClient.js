@@ -33,12 +33,18 @@ var HubClient = {
                 throw 'url and creds must be provided for login to function';
         }
 
+        // APEP if we had a socket open already, we should force disconnect
+        // this also removes any previous on listeners we added
+        if(socket) {
+            socket.disconnect();
+        }
+
         socket = io(url, {forceNew: true});
 
         socket.on('connect',function() {
             console.log("connect")
             socket.emit('auth', creds, function(err, token, socketID/*AJF: doesn't get used here*/, groupID) {/*AJF: callback extended to accept the groupID of the user*/
-                console.log("auth")
+                console.log("auth - err: ", err);
                 if (err) {
                     socket.disconnect();
                     HubRecieveActions.recieveLoginResult(false, err.toString());
@@ -77,6 +83,19 @@ var HubClient = {
         });
 
         socket.on('sceneUpdate', HubRecieveActions.recieveScene);
+
+        // APEP we only want to add these listeners once per socket, since login tears down old socket connect this is valid now
+        socket.on('command', function(data) {
+            console.log("HubClient - on command - data: ", data);
+            if (data.name === 'showScenes') {
+                // APEP publish scene ID list
+                HubRecieveActions.recieveSceneListForPlayer(data.value);
+            } else if (data.name === 'showScenesAndThemes') {
+                HubRecieveActions.recieveSceneAndThemeListForPlayer(data.value);
+            } else {
+                HubRecieveActions.errorMessage("Failed to receive scene list for playback");
+            }
+        });
 
     },
 
@@ -213,24 +232,13 @@ var HubClient = {
 
         console.log("HubClient - registerToGraphPlayerRoom - roomId: " + roomId);
 
-        // APEP TODO we need to unregister the old room.
+        // APEP TODO we need to add some logic to handle any cases we need to unregister the old room.
 
         // APEP register for updates.
         socket.emit('register', "/#" + roomId);
 
         connectionCache.setSocketID(roomId);
 
-        socket.on('command', function(data) {
-            console.log("HubClient - on command - data: ", data);
-            if (data.name === 'showScenes') {
-                // APEP publish scene ID list
-                HubRecieveActions.recieveSceneListForPlayer(data.value);
-            } else if (data.name === 'showScenesAndThemes') {
-                HubRecieveActions.recieveSceneAndThemeListForPlayer(data.value);
-            } else {
-                HubRecieveActions.errorMessage("Failed to receive scene list for playback");
-            }
-        });
     }
 };
 

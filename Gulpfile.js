@@ -17,6 +17,7 @@ var reactify = require('reactify');
 var envify = require('envify');
 var stripify = require('stripify');
 var uglify = require('gulp-uglify');
+var gulpBabel = require('gulp-babel');
 var concat = require('gulp-concat'),
     livereload = require('gulp-livereload'),
     dest = 'dist',
@@ -76,10 +77,11 @@ function bundlerBuilder (startPath, finishName, useReactify) {
         return bundler.bundle()
             .on('error', gutil.log.bind(gutil, 'Browserify Error'))
             .pipe(source(finishName))
-            // .pipe(gulpif(production, buffer()))
-            // .pipe(gulpif(production, sourcemaps.init({loadMaps: true})))
-            // .pipe(gulpif(production, uglify()))
-            // .pipe(gulpif(production, sourcemaps.write('./')))
+            .pipe(gulpif(production, buffer()))
+            .pipe(gulpif(production, sourcemaps.init({loadMaps: true})))
+            .pipe(gulpif(production, gulpBabel({presets:['@babel/env']})))
+            .pipe(gulpif(production, uglify()))
+            .pipe(gulpif(production, sourcemaps.write('./')))
             .pipe(gulp.dest(dest + '/js'));
     };
 

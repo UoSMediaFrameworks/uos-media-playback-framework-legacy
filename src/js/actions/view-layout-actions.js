@@ -5,6 +5,13 @@ var AppDispatcher = require('../dispatchers/app-dispatcher');
 
 var ViewLayoutActions = {
 
+    setPreset: function(layoutPreset) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.LAYOUT_PRESET_SELECTED,
+            preset: layoutPreset
+        });
+    },
+
     changeFocus:function(itemType){
         AppDispatcher.handleViewAction({
             type: ActionTypes.COMP_FOCUS_SWITCH,

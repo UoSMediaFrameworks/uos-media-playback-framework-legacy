@@ -345,8 +345,14 @@ var GraphContainer = React.createClass({
                 <img src="/images/narmc.png"/>
             </div>
         </div> : null;
+
+        // APEP default inline style - not ideal but the way we are going for now.
+        var style = {
+            'overflowY': 'hidden'
+        };
+
         return (
-            <div ref="parent" className="flex-container">
+            <div ref="parent" className="flex-container" style={style}>
 
                 <div className="button-wrapper btn-group-vertical">
                     <div id="qrcode" className={qrCodeClasses}>
