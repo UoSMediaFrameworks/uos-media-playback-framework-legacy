@@ -142,10 +142,6 @@ var SceneMonacoTextEditor = React.createClass({
 
     saveJSON: function () {
         return function () {
-            if (!this.refs.monaco) {
-                console.log("Nothing to save yet as component not mounted");
-                return;
-            }
             if (!this.refs.monaco.editor) {
                 console.log("Nothing to save yet as component not mounted");
                 return;
@@ -370,9 +366,6 @@ var SceneMonacoTextEditor = React.createClass({
         // APEP if we do not have a ref to the editor in the DOM.  We must force an update to mount the editor again.
         // This is for when the editor has been dismounted.
         // Forcing this update triggers the remounting for the editor, giving us the DOM ref again.
-        if (!this.refs.monaco) {
-            return true;
-        }
         if (!this.refs.monaco.editor) {
             return true;
         }
