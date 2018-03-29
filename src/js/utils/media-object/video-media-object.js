@@ -4,7 +4,6 @@
 var MediaObject = require('./media-object');
 
 var getVimeoId = require('../get-vimeo-id');
-var TweenloopInterval = require('../tween-loop-interval');
 var EmbeddedVimeoPlayer = require('../embedded-vimeo-player');
 var SceneActions = require('../../actions/scene-actions');
 var TWEEN = require('@tweenjs/tween.js');
