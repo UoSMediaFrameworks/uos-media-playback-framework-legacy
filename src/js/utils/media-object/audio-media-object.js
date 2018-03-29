@@ -1,7 +1,6 @@
 'use strict';
 /*jshint browser:true */
 
-var TweenloopInterval = require('../tween-loop-interval');
 var soundCloud = require('../sound-cloud');
 var MediaObject = require('./media-object');
 var inherits = require('inherits');
