@@ -120,7 +120,7 @@ var SceneEditor = React.createClass({
                     onFileAdded={this.resumableOnFileAdded}
                     onFileAddedError={this.resumableOnFileAddedError}
                     onCompleteUpload={this.resumableOnCompleteUpload}
-                    maxFiles={20}
+                    maxFiles={100}
                     maxFileSize={2000000000}
                     showFileList={false}
                 > </ReactResumableJs>
