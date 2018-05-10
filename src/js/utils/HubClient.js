@@ -1,15 +1,18 @@
 'use strict';
 /*jshint browser:true */
 
-var HubRecieveActions = require('../actions/hub-recieve-actions');
+var _ = require('lodash');
+var toastr = require('toastr');
 var io = require('socket.io-client');
+
+var HubRecieveActions = require('../actions/hub-recieve-actions');
 var SceneActions = require('../actions/scene-actions');
 var assetStore = require('./asset-store');
 var connectionCache = require('./connection-cache');
 var NodeListGeneration = require('./scene-graph/node-list-generation');
-var toastr = require('toastr');
+var MediaEngineConnection = require('./media-engine/connection');
+
 var socket;
-var _ = require('lodash');
 
 var HubClient = {
     login: function(url, creds) {
@@ -39,13 +42,18 @@ var HubClient = {
             socket.disconnect();
         }
 
+        // APEP TODO needs to be relocated..
+        MediaEngineConnection.login(process.env.CONTROLLER, creds);
+
         socket = io(url, {forceNew: true});
 
         socket.on('connect',function() {
-            console.log("connect")
+
+            console.log("HubClient - connect");
+
             socket.emit('auth', creds, function(err, token, socketID/*AJF: doesn't get used here*/, groupID) {/*AJF: callback extended to accept the groupID of the user*/
-                console.log("auth - err: ", err);
                 if (err) {
+                    console.log("HubClient - auth - err: ", err);
                     socket.disconnect();
                     HubRecieveActions.recieveLoginResult(false, err.toString());
                 } else {

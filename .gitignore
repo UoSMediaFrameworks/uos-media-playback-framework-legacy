@@ -11,3 +11,4 @@ dist
 /prod-env.sh
 /env-azure.sh
 run.sh
+/local-env.sh

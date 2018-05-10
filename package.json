@@ -15,9 +15,11 @@
     "chai": "^2.1.2",
     "chance": "^0.7.3",
     "lodash-deep": "^1.6.0",
+    "machina": "^2.0.2",
     "mocha": "^2.1.0",
     "mock-local-storage": "^1.0.5",
-    "react-try-catch-render": "^1.0.0"
+    "react-try-catch-render": "^1.0.0",
+    "sinon": "^5.0.7"
   },
   "peerDependencies": {},
   "dependencies": {
