@@ -91,15 +91,17 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
                             instance.state.transition(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED);
 
-                            // APEP 030518 is deleting from the pool is not the right thing to do
-                            mediaInstancePool.delete(instance._id);
-
                             // APEP 250418 to be replaced with an API call... /playback/media/done
                             SendActions.updateMediaInstance(SendActions.DONE_MEDIA_COMMAND, connection, instance);
 
                             MediaEngineStore.emitChange();
 
                         }, instance._stopTime * 1000);
+                    } else if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED) {
+                        // APEP 030518 is deleting from the pool is not the right thing to do
+                        mediaInstancePool.delete(instance._id);
+
+                        MediaEngineStore.emitChange();
                     }
                 } catch (e) {
                     console.log(`error ${e.message}`);
