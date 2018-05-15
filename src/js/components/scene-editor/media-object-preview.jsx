@@ -34,6 +34,8 @@ var MediaObjectPreview = React.createClass({
 		};
 	},
 
+
+
     loadSoundcloudThumbnailAndTitle: function(mediaObject) {
         soundCloud.waveformUrl(mediaObject.url, function(err,url) {
             if(!err){
@@ -48,6 +50,7 @@ var MediaObjectPreview = React.createClass({
     },
 
     loadAudioTitle: function(mediaObject) {
+
 	    this.setState({title: getFilenameFromUrl(mediaObject.url)});
     },
 
@@ -56,7 +59,7 @@ var MediaObjectPreview = React.createClass({
         if(!mediaObject || !mediaObject.type) {
             return;
         }
-
+        console.log(mediaObject.type)
 		switch(mediaObject.type) {
 			case 'audio':
 			    if(mediaObject.url.indexOf('soundcloud.com') !== -1) {
@@ -80,7 +83,9 @@ var MediaObjectPreview = React.createClass({
                             title: data.name
                         });
                     }.bind(this));
-                }
+                }else{
+                    this.setState({title:this.loadAudioTitle(mediaObject)});
+                };
 				break;
 
 			case 'text':
@@ -116,10 +121,10 @@ var MediaObjectPreview = React.createClass({
 	render: function() {
 		var type = this.props.mediaObject.type,
 			extra;
-
+        var self =this;
 		switch(type) {
 		 	case 'image':
-				extra = <ImgLoader 
+				extra = <ImgLoader
 							src={this.state.imgUrlWithFallback}
 							loader={<FontAwesome
 								className="mf-media-loader-spinner"
@@ -130,7 +135,7 @@ var MediaObjectPreview = React.createClass({
 									textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)'
 								}}
 							/>}
-						/>; 
+						/>;
 		 		break;
 		 	case 'video':
 		 		if (this.state.thumbImage) {
@@ -154,8 +159,7 @@ var MediaObjectPreview = React.createClass({
 		 		extra = <Glyphicon className='icon' icon='font' />;
 		 		break;
 		 }
-
-		 var title = <span className='preview-title'>{this.state.title}</span>;
+		 var title = <span className='preview-title'>{getFilenameFromUrl(self.props.mediaObject.url)}</span>;
 
 		return <div className='media-object-item-preview'>
 			{extra}
