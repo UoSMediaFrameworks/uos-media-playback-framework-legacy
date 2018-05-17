@@ -164,7 +164,8 @@ var MediaObjectPreview = React.createClass({
             case 'image':
             case 'audio':
             case 'video':
-                title = <span className='preview-title'>{getFilenameFromUrl(self.props.mediaObject.url)}</span>;
+                var decoded = decodeURIComponent(self.props.mediaObject.url);
+                title = <span className='preview-title'>{getFilenameFromUrl(decoded)}</span>;
                 break;
             case 'text':
                 title = <span className='preview-title'>{self.props.mediaObject.text}</span>;
