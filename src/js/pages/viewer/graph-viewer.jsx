@@ -32,7 +32,7 @@ class InstanceStateToReact {
     static convertInstanceVisualLayer(mo) {
         return {
             style: {
-                "z-index": mo.visualLayer
+                "zIndex": mo.visualLayer + 10
             }
         }
     }
