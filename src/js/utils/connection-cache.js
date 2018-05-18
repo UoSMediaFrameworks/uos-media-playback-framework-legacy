@@ -27,6 +27,7 @@ groupNames.set(114, "Mirroring Life");
 groupNames.set(115, "DPL");
 groupNames.set(116, "Salford Press");
 groupNames.set(117, "Textiles");
+groupNames.set(118, "Ceramics");
 groupNames.set(119,"BridgewaterCanal");
 groupNames.set(120,"BridgewaterA");
 groupNames.set(121,"BridgewaterB");

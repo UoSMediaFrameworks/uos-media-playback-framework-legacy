@@ -11,14 +11,13 @@ var ActionTypes = require('../constants/media-engine-constants').ActionTypes;
 
 var CHANGE_EVENT = "change";
 
-const MediaObjectState = require('../private-dependencies/media-object-state')
-const InternalEventConstants = require('../private-dependencies/internal-event-constants')
+const MediaObjectState = require('../private-dependencies/media-object-state');
+const InternalEventConstants = require('../private-dependencies/internal-event-constants');
 
 const SendActions = require('../actions/media-engine/send-actions');
 
-
-
 let mediaInstancePool = new Map();
+let controllerConnection = null;
 
 var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
@@ -42,6 +41,10 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
         return Array.from(mediaInstancePool.values());
     },
 
+    getConnection: function() {
+        return controllerConnection;
+    },
+
     dispatcherIndex: AppDispatcher.register(function (payload) {
         var action = payload.action;
 
@@ -59,52 +62,44 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
                 instance.state = new MediaObjectState({initialState: instance.state.state});
 
+                controllerConnection = connection;
+
                 console.log(`state from DTO - ie Controller reported state: ${instance.state.compositeState()}`);
 
                 try {
+
+                    // APEP for any media object instance message - store the server copy in the instance pool
                     mediaInstancePool.set(instance._id, instance);
 
                     console.log(`${instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.LOADED}`);
 
-                    if(instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.LOADED) {
+                    if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING) {
 
-                        mediaInstancePool.set(instance._id, instance);
-
-                        // APEP 090518 we may not want to update our local copy and allow Controller update to provide the update
-                        // Would most likely require an obj copy
-                        instance.state.transition(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING);
-
-                        // APEP 090518 do a server action, for now we just immediately play, without regard.
-                        // Ideally a view ACTION would fire allowing us to preload the object.
-                        SendActions.updateMediaInstance(SendActions.PLAY_MEDIA_COMMAND, connection, instance)
-
-                        MediaEngineStore.emitChange();
-
-                    } else if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING) {
-
-
-                        console.log(`MediaEngineStore - setting timeout to stopped in ${instance._stopTime * 1000}`)
+                        console.log(`MediaEngineStore - setting timeout to stopped in ${instance._stopTime * 1000}`);
 
                         setTimeout(() => {
 
                             console.log(`MediaEngineStore - playing - done firing`);
 
-                            instance.state.transition(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED);
+                            let instanceForUpdate = _.cloneDeep(instance);
+                            instanceForUpdate.state = new MediaObjectState({initialState: instance.state.state});
+
+                            instanceForUpdate.state.transition(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED);
 
                             // APEP 250418 to be replaced with an API call... /playback/media/done
-                            SendActions.updateMediaInstance(SendActions.DONE_MEDIA_COMMAND, connection, instance);
-
-                            MediaEngineStore.emitChange();
-
+                            SendActions.updateMediaInstance(SendActions.DONE_MEDIA_COMMAND, connection, instanceForUpdate);
                         }, instance._stopTime * 1000);
+
                     } else if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED) {
                         // APEP 030518 is deleting from the pool is not the right thing to do
                         mediaInstancePool.delete(instance._id);
-
-                        MediaEngineStore.emitChange();
                     }
+
+                    MediaEngineStore.emitChange();
+
                 } catch (e) {
                     console.log(`error ${e.message}`);
+                    console.log(e);
                     throw e
                 }
                 break;

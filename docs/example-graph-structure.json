@@ -1,0 +1,201 @@
+{
+    "type": "document",
+    "children": {
+        "FIRE_ROOT": {
+            "type": "GraphNodeTypes.ROOT_NODE_TYPE",
+            "children": {
+                "SCREEN_1": {
+                    "type": "GraphNodeTypes.SCREEN_NODE_TYPE",
+                    "children": {
+                        "FIRE_WORLD_THEME": {
+                            "type": "GraphNodeTypes.WORLD_THEME_NODE_TYPE",
+                            "api": {
+                                "endpoint": "/playback/scenes/show",
+                                "payload": {
+                                    "scenes": [
+                                        "fire scene 1"
+                                    ]
+                                }
+                            }
+                        },
+                        "COMBUSTION_WORLD_THEME": {
+                            "type": "GraphNodeTypes.WORLD_THEME_NODE_TYPE",
+                            "api": {
+                                "endpoint": "/playback/scenes/show",
+                                "payload": {
+                                    "scenes": [
+                                        "combustion scene 1"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "SCREEN_2": {
+                    "type": "GraphNodeTypes.SCREEN_NODE_TYPE",
+                    "children": {
+                        "FIRE_AND_COMBUSTION_WORLD_THEME": {
+                            "type": "GraphNodeTypes.WORLD_THEME_NODE_TYPE",
+                            "api": {
+                                "endpoint": "/playback/scenes/show",
+                                "payload": {
+                                    "scenes": [
+                                        "fire and combustion scene 1"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "EARTH_ROOT": {
+            "type": "GraphNodeTypes.ROOT_NODE_TYPE",
+            "children": {
+                "SCREEN_1": {
+                    "type": "GraphNodeTypes.SCREEN_NODE_TYPE",
+                    "children": {
+                        "EARTH_1_WORLD_THEME": {
+                            "type": "GraphNodeTypes.WORLD_THEME_NODE_TYPE",
+                            "api": {
+                                "endpoint": "/playback/scenes/show",
+                                "payload": {
+                                    "scenes": [
+                                        "earth scene 1", "earth scene 2"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "SCREEN_2": {
+                    "type": "GraphNodeTypes.SCREEN_NODE_TYPE",
+                    "children": {
+                        "EARTH_2_WORLD_THEME": {
+                            "type": "GraphNodeTypes.WORLD_THEME_NODE_TYPE",
+                            "api": {
+                                "endpoint": "/playback/scenes/show",
+                                "payload": {
+                                    "scenes": [
+                                        "earth scene 3", "earth scene 4"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "WATER_ROOT": {
+            "type": "GraphNodeTypes.ROOT_NODE_TYPE",
+            "children": {
+                "SCREEN_1": {
+                    "type": "GraphNodeTypes.SCREEN_NODE_TYPE",
+                    "children": {
+                        "WATER_1_WORLD_THEME": {
+                            "type": "GraphNodeTypes.WORLD_THEME_NODE_TYPE",
+                            "api": {
+                                "endpoint": "/playback/scenes/show",
+                                "payload": {
+                                    "scenes": [
+                                        "water scene 1", "water scene 2"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "SCREEN_2": {
+                    "type": "GraphNodeTypes.SCREEN_NODE_TYPE",
+                    "children": {
+                        "WATER_2_WORLD_THEME": {
+                            "type": "GraphNodeTypes.WORLD_THEME_NODE_TYPE",
+                            "api": {
+                                "endpoint": "/playback/scenes/show",
+                                "payload": {
+                                    "scenes": [
+                                        "water scene 1", "water scene 3"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "METAL_ROOT": {
+            "type": "GraphNodeTypes.ROOT_NODE_TYPE",
+            "children": {
+                "SCREEN_1": {
+                    "type": "GraphNodeTypes.SCREEN_NODE_TYPE",
+                    "children": {
+                        "METAL_1_WORLD_THEME": {
+                            "type": "GraphNodeTypes.WORLD_THEME_NODE_TYPE",
+                            "api": {
+                                "endpoint": "/playback/scenes/show",
+                                "payload": {
+                                    "scenes": [
+                                        "metal scene 1"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "SCREEN_2": {
+                    "type": "GraphNodeTypes.SCREEN_NODE_TYPE",
+                    "children": {
+                        "METAL_2_WORLD_THEME": {
+                            "type": "GraphNodeTypes.WORLD_THEME_NODE_TYPE",
+                            "api": {
+                                "endpoint": "/playback/scenes/show",
+                                "payload": {
+                                    "scenes": [
+                                        "metal scene 2"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "WOOD_ROOT": {
+            "type": "GraphNodeTypes.ROOT_NODE_TYPE",
+            "children": {
+                "SCREEN_1": {
+                    "type": "GraphNodeTypes.SCREEN_NODE_TYPE",
+                    "children": {
+                        "WOOD_1_WORLD_THEME": {
+                            "type": "GraphNodeTypes.WORLD_THEME_NODE_TYPE",
+                            "api": {
+                                "endpoint": "/playback/scenes/show",
+                                "payload": {
+                                    "scenes": [
+                                        "wood scene 1"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "SCREEN_2": {
+                    "type": "GraphNodeTypes.SCREEN_NODE_TYPE",
+                    "children": {
+                        "WOOD_2_WORLD_THEME": {
+                            "type": "GraphNodeTypes.WORLD_THEME_NODE_TYPE",
+                            "api": {
+                                "endpoint": "/playback/scenes/show",
+                                "payload": {
+                                    "scenes": [
+                                        "wood scene 2"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
