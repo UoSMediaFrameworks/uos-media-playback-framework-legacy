@@ -113,7 +113,7 @@ var DashVideoMediaObjectInstance = React.createClass({
 
         return (
             <ReactPlayer
-                url={this.props.mo.url}
+                url={this.props.mo._content}
                 config={{
                     file: {forceDASH: true}
                 }}
