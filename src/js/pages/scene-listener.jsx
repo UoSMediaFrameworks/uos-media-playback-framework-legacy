@@ -50,7 +50,7 @@ var SceneListener = React.createClass({
 
             var sceneId = this._getSceneId();
 
-            if(sceneId === null) {
+            if (sceneId === null) {
                 return null;
             }
 
@@ -109,7 +109,7 @@ var SceneListener = React.createClass({
     },
 
     componentWillMount: function () {
-        console.log("listener will mount",this);
+        console.log("listener will mount", this);
         try {
             this.mediaObjectQueue = new MediaObjectQueueManager(
                 [TextMediaObject, AudioMediaObject, VideoMediaObject, ImageMediaObject],
@@ -125,6 +125,8 @@ var SceneListener = React.createClass({
 
     toggleTagMatcherAndThemes: function (event) {
         if (event.altKey && event.keyCode === 72) {
+            console.log("I hit htat")
+
             this.setState({shouldHide: !this.state.shouldHide});
         }
     },
@@ -326,21 +328,24 @@ var SceneListener = React.createClass({
 
     render: function () {
         // APEP Display Active Theme if available, if not provide a theme selector
-        var ThemeDisplay = this.state.fromGraphViewer ?
-            <ActiveTheme ref="theme" scene={this.state.scene} themeQuery={this.props.themeQuery}/> :
+        var ThemeDisplay = !this.props.sceneViewer ?
+            <ActiveTheme ref="theme" scene={this.state.scene} shouldHide={this.state.shouldHide} themeQuery={this.props.themeQuery}/> :
             <ThemeSelector ref="theme" shouldHide={this.state.shouldHide} themeChange={this.handleThemeChange}
                            scene={this._getSceneForUpdatingPlayerComponent()}/>;
 
         // APEP Only display the tag form when this component is not used within the graph viewer
-        var TagForm = !this.state.fromGraphViewer ?
-            <form className='tag-filter' ref="tag_form" onSubmit={this.updateTags}>
+        var TagForm = this.props.sceneViewer ?
+            <form className='tag-filter' ref="tag_form" hidden={this.state.shouldHide} onSubmit={this.updateTags}>
                 <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...'
                        className='form-control scene-listener-tag-input'/>
             </form> : <span></span>;
 
+        var self = this;
+
         if (this.state.scene) {
             return (
-                <div className={ this.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"} ref="scene_listener">
+                <div className={self.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"}
+                     ref="scene_listener">
                     <Loader loaded={this.state.scene !== null}></Loader>
                     <RandomVisualPlayer sceneStyle={this.state.scene.style}
                                         mediaQueue={this.state.mediaObjectQueue}
