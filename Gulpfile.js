@@ -142,7 +142,7 @@ gulp.task('build-version-document', function(cb) {
 
 gulp.task('include-monaco-editor', function() {
     //APEP - Small hack to include this full dependency within th dist folder - typically this should be hosted on a CDN. Or build into the bundle
-    return gulp.src(['node_modules/react-monaco-editor/node_modules/monaco-editor/**']).pipe(gulp.dest('dist/monaco-editor'));
+    return gulp.src(['node_modules/monaco-editor/**']).pipe(gulp.dest('dist/monaco-editor'));
 });
 
 gulp.task('external-deps-for-china', function() {
