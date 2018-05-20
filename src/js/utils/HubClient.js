@@ -205,6 +205,7 @@ var HubClient = {
 
     unsubscribeScene: function(id) {
         // no confirmation handler as of yet
+        console.log("UN subscribeSceneid",id)
         socket.emit('unsubScene', id);
     },
     publishSceneCommand: function(sceneList, roomId) {

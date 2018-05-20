@@ -34,11 +34,17 @@ function getTypeByName(typeName) {
 
 var SceneListener = React.createClass({
 
-    _getSceneId: function () {
-        if (this.props.activeScene) {
-            return this.props.activeScene._id;
+    _getSceneId: function (props, state) {
+        if (props.activeScene) {
+            return props.activeScene._id;
         }
-        return this.props.sceneId || this.props.params.id;
+        if (props.sceneId) {
+            return props.sceneId;
+        }
+        if (state.scene) {
+            return state.scene._id;
+        }
+        return props.sceneId || props.params.id;
     },
 
     _getScene: function () {
@@ -48,7 +54,7 @@ var SceneListener = React.createClass({
                 return this.props.activeScene;
             }
 
-            var sceneId = this._getSceneId();
+            var sceneId = this._getSceneId(this.props, this.state);
 
             if (sceneId === null) {
                 return null;
@@ -74,7 +80,7 @@ var SceneListener = React.createClass({
     },
 
     _getSceneForUpdatingPlayerComponent: function () {
-        return this.props.activeScene || this.state.scene;
+        return this.props.sceneId ? this._getScene() : this.props.activeScene || this.state.scene;
     },
 
     _maybeUpdatePlayer: function () {
@@ -125,8 +131,6 @@ var SceneListener = React.createClass({
 
     toggleTagMatcherAndThemes: function (event) {
         if (event.altKey && event.keyCode === 72) {
-            console.log("I hit htat")
-
             this.setState({shouldHide: !this.state.shouldHide});
         }
     },
@@ -154,17 +158,18 @@ var SceneListener = React.createClass({
 
     componentDidUpdate: function (prevProps, prevState) {
 
-        if (!_.isEqual(prevState.scene, this.state.scene) || !_.isEqual(prevProps.activeScene, this.props.activeScene)) {
+        console.log("SceneListener - componentDidUpdate", prevProps);
 
-            // APEP TODO I don't think I am correctly getting the scene._id, i should use one of our implemented methods that capture the differences in state.scene or props.activeScene
+        if ( (!_.isEqual(prevState.scene, this.state.scene) || !_.isEqual(prevProps.activeScene, this.props.activeScene)) || !_.isEqual(prevProps.sceneId, this.props.sceneId)) {
 
             // APEP if we switch activeScene, we should make sure we unsubscribe for updates from previous scenes
-            HubSendActions.unsubscribeScene(prevProps.activeScene._id);
+            HubSendActions.unsubscribeScene(this._getSceneId(prevProps, prevState));
             // And resubscribe to the new active scene
-            HubSendActions.subscribeScene(this.props.activeScene._id);
+            HubSendActions.subscribeScene(this._getSceneId(this.props, this.state));
 
             // APEP only fully update player if scene has actually changed.  The setting of the full scene for the queue triggers the masterList to be recreated, losing instance based properties like guid, causing the difference(active) to fail.
             this._maybeUpdatePlayer();
+
         } else if (!_.isEqual(prevState.activeThemes, this.state.activeThemes)) {
             // console.log("ActiveTheme changed - update player");
             this._updatePlayersTagMatcher();
@@ -340,12 +345,9 @@ var SceneListener = React.createClass({
                        className='form-control scene-listener-tag-input'/>
             </form> : <span></span>;
 
-        var self = this;
-
         if (this.state.scene) {
             return (
-                <div className={self.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"}
-                     ref="scene_listener">
+                <div className={this.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"} ref="scene_listener">
                     <Loader loaded={this.state.scene !== null}></Loader>
                     <RandomVisualPlayer sceneStyle={this.state.scene.style}
                                         mediaQueue={this.state.mediaObjectQueue}
