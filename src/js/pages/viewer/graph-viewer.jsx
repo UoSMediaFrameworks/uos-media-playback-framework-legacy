@@ -105,7 +105,7 @@ var DashVideoMediaObjectInstance = React.createClass({
 
     render: function () {
 
-        var VIDEO_CLASSES = classNames({
+        let VIDEO_CLASSES = classNames({
             "video-media-object": true,
             "media-object": true,
             "show-media-object": this.props.mo.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING
@@ -119,6 +119,7 @@ var DashVideoMediaObjectInstance = React.createClass({
                 }}
                 className={VIDEO_CLASSES}
                 style={this.state.style}
+                onReady={this.onReady}
                 playing
             />
         )
@@ -128,7 +129,7 @@ var DashVideoMediaObjectInstance = React.createClass({
 var VideoMediaObjectInstance = React.createClass({
     render: function () {
         return (
-            <DashVideoMediaObjectInstance mo={this.props.mo}/>
+            <DashVideoMediaObjectInstance mo={this.props.mo} connection={this.props.connection}/>
         )
     }
 });
