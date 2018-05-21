@@ -20,8 +20,6 @@ class InstanceStateToReact {
     static convertInstanceTransitionProperties(mo) {
         // APEP MF convention (using classnames) defines opacity to be 0 until show-media-object is applied
         // Therefore the transition for visual media objects is implemented by producing a CSS transition
-
-        //                 "transition": `opacity ${mo._transitionTime / 1000}s ${mo._transitionType}`,
         return {
             style: {
                 "transition": `opacity ${mo._transitionTime}s ${mo._transitionType}`,
@@ -36,6 +34,26 @@ class InstanceStateToReact {
             }
         }
     }
+
+    static _convertNormalisedPositionValueToPercentage(val) {
+        return `${val * 100}%`
+    }
+
+    static convertInstanceVisualPosition(mo) {
+        let width = InstanceStateToReact._convertNormalisedPositionValueToPercentage(mo.visualPosition.width);
+        let height = InstanceStateToReact._convertNormalisedPositionValueToPercentage(mo.visualPosition.height);
+
+        return {
+            style: {
+                "left": InstanceStateToReact._convertNormalisedPositionValueToPercentage(mo.visualPosition.x),
+                "top": InstanceStateToReact._convertNormalisedPositionValueToPercentage(mo.visualPosition.y),
+                "width": width,
+                "maxWidth": width,
+                "height": height,
+                "maxHeight": height,
+            }
+        }
+    }
 }
 
 var ImageMediaObjectInstance = React.createClass({
@@ -43,14 +61,12 @@ var ImageMediaObjectInstance = React.createClass({
     getInitialState: function () {
         let state = {
             style: {
-                // APEP TEMPORARY IMPLEMENTATION
-                width: '100px',
-                height: '100px',
             }
         };
 
         state.style = _.merge(state.style, InstanceStateToReact.convertInstanceTransitionProperties(this.props.mo).style);
         state.style = _.merge(state.style, InstanceStateToReact.convertInstanceVisualLayer(this.props.mo).style);
+        state.style = _.merge(state.style, InstanceStateToReact.convertInstanceVisualPosition(this.props.mo).style);
 
         return state
     },
@@ -92,6 +108,7 @@ var DashVideoMediaObjectInstance = React.createClass({
 
         state = _.extend(state, InstanceStateToReact.convertInstanceTransitionProperties(this.props.mo));
         state = _.extend(state, InstanceStateToReact.convertInstanceVisualLayer(this.props.mo));
+        state = _.extend(state, InstanceStateToReact.convertInstanceVisualPosition(this.props.mo));
 
         return state;
     },
@@ -167,6 +184,7 @@ var TextMediaObjectInstance = React.createClass({
 
         state = _.extend(state, InstanceStateToReact.convertInstanceTransitionProperties(this.props.mo));
         state = _.extend(state, InstanceStateToReact.convertInstanceVisualLayer(this.props.mo));
+        state = _.extend(state, InstanceStateToReact.convertInstanceVisualPosition(this.props.mo));
 
         return state;
     },
