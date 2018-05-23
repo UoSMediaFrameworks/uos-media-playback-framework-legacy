@@ -215,10 +215,20 @@ var AudioMediaObjectInstance = React.createClass({
     // APEP TODO add transition _transitionType for _transitionTime
     // volume tween using transition properties?
 
+    onCanPlay: function() {
+        MediaEngineSendActions.mediaObjectInstanceReady(this.props.connection, this.props.mo);
+    },
+
+    getVolume: function() {
+        return this.props.mo._volume / 100
+    },
+
     render: function () {
         return (
             <ReactAudioPlayer
                 src={this.props.mo._content}
+                onCanPlay={this.onCanPlay}
+                volume={this.getVolume()}
                 autoPlay
             />
         )

@@ -55,48 +55,50 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
             case ActionTypes.RECEIVE_MEDIA_OBJECT_INSTANCE:
 
-                console.log("MediaEngineStore - RECEIVE_MEDIA_OBJECT_INSTANCE");
-
                 let connection = action.connection;
                 let instance = action.instance;
+
+                console.log(`MediaEngineStore - RECEIVE_MEDIA_OBJECT_INSTANCE - ${JSON.stringify(instance)}`);
 
                 instance.state = new MediaObjectState({initialState: instance.state.state});
 
                 controllerConnection = connection;
 
-                console.log(`state from DTO - ie Controller reported state: ${instance.state.compositeState()}`);
-
                 try {
+
+                    // APEP TODO should rename isStateTransition
+                    let isStateDirty = mediaInstancePool.has(instance._id) ? mediaInstancePool.get(instance._id).state.compositeState() !== instance.state.compositeState() : true;
 
                     // APEP for any media object instance message - store the server copy in the instance pool
                     mediaInstancePool.set(instance._id, instance);
 
-                    console.log(`${instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.LOADED}`);
+                    // APEP is the state property has specifically changed - we need to handle state transition logic
+                    if(isStateDirty) {
 
-                    if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING) {
+                        console.log(`state from DTO - isStateDirty ${isStateDirty} - ie Controller reported state: ${instance.state.compositeState()}`);
 
-                        console.log(`MediaEngineStore - setting timeout to stopped in ${instance._stopTime * 1000}`);
+                        if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING) {
+                            console.log(`MediaEngineStore - setting timeout to stopped in ${instance._stopTime * 1000}`);
+                            setTimeout(() => {
+                                console.log(`MediaEngineStore - playing - done firing`);
 
-                        setTimeout(() => {
+                                let instanceForUpdate = _.cloneDeep(instance);
+                                instanceForUpdate.state = new MediaObjectState({initialState: instance.state.state});
 
-                            console.log(`MediaEngineStore - playing - done firing`);
+                                instanceForUpdate.state.transition(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED);
 
-                            let instanceForUpdate = _.cloneDeep(instance);
-                            instanceForUpdate.state = new MediaObjectState({initialState: instance.state.state});
-
-                            instanceForUpdate.state.transition(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED);
-
-                            // APEP 250418 to be replaced with an API call... /playback/media/done
-                            SendActions.updateMediaInstance(SendActions.DONE_MEDIA_COMMAND, connection, instanceForUpdate);
-                        }, instance._stopTime * 1000);
-
-                    } else if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED) {
-                        // APEP 030518 is deleting from the pool is not the right thing to do
-                        mediaInstancePool.delete(instance._id);
+                                // APEP 250418 to be replaced with an API call... /playback/media/done
+                                SendActions.updateMediaInstance(SendActions.DONE_MEDIA_COMMAND, connection, instanceForUpdate);
+                            }, instance._stopTime * 1000);
+                        } else if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED) {
+                            // APEP 030518 is deleting from the pool is not the right thing to do
+                            mediaInstancePool.delete(instance._id);
+                        }
+                    } else {
+                        console.log(`state from DTO - must be property change`)
                     }
 
                     MediaEngineStore.emitChange();
-
                 } catch (e) {
                     console.log(`error ${e.message}`);
                     console.log(e);

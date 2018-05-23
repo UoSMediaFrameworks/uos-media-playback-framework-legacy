@@ -52,6 +52,7 @@ var WebsocketHTMLRandomControllerConnection = {
         // APEP 090518 turn into constants and / or even better pull the constants from the controller project
         const ACTIVE_SCENE__STATE_CHANGE = "scene_state_change";
         const MEDIA_OBJECT_INSTANCE__EVENTS__STATE_CHANGE = "moi_state_change";
+        const MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE = "moi_property_change";
 
         // APEP we only want to add these listeners once per socket, since login tears down old socket connect this is valid now
         this.socket.on(ACTIVE_SCENE__STATE_CHANGE, function() {
@@ -59,6 +60,10 @@ var WebsocketHTMLRandomControllerConnection = {
         });
 
         this.socket.on(MEDIA_OBJECT_INSTANCE__EVENTS__STATE_CHANGE, function(connection, instance) {
+            MediaEngineReceiveActions.receiveMediaObjectInstance(connection, instance)
+        });
+
+        this.socket.on(MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE, function(connection, instance) {
             MediaEngineReceiveActions.receiveMediaObjectInstance(connection, instance)
         });
     },
