@@ -10,6 +10,21 @@ var _ = require('lodash');
 var MediaEngineReceiveActions = require('../../actions/media-engine/receive-actions');
 var MediaEngineSendActions = require('../../actions/media-engine/send-actions');
 
+// APEP 090518 turn into constants and / or even better pull the constants from the controller project
+const BASE_TOPIC = "mediaframework.html.random.1.0.0.";
+
+const ACTIVE_SCENE__STATE_CHANGE = "event.playback.scene.active"
+const ACTIVE_SCENE__STATE_CHANGE_TOPIC = BASE_TOPIC + ACTIVE_SCENE__STATE_CHANGE;
+
+const DEACTIVE_SCENE__STATE_CHANGE_TOPIC = BASE_TOPIC + "event.playback.scenes.deactive";
+
+
+const MEDIA_OBJECT_INSTANCE__EVENTS__STATE_CHANGE = "event.playback.media.state.change";
+const MEDIA_OBJECT_INSTANCE__EVENTS__STATE_CHANGE_TOPIC = BASE_TOPIC + MEDIA_OBJECT_INSTANCE__EVENTS__STATE_CHANGE;
+
+const MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE = "event.playback.media.property.change";
+const MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE_TOPIC = BASE_TOPIC + MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE;
+
 var WebsocketHTMLRandomControllerConnection = {
 
     socket: null,
@@ -49,13 +64,8 @@ var WebsocketHTMLRandomControllerConnection = {
         });
 
 
-        // APEP 090518 turn into constants and / or even better pull the constants from the controller project
-        const ACTIVE_SCENE__STATE_CHANGE = "scene_state_change";
-        const MEDIA_OBJECT_INSTANCE__EVENTS__STATE_CHANGE = "moi_state_change";
-        const MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE = "moi_property_change";
-
         // APEP we only want to add these listeners once per socket, since login tears down old socket connect this is valid now
-        this.socket.on(ACTIVE_SCENE__STATE_CHANGE, function() {
+        this.socket.on(ACTIVE_SCENE__STATE_CHANGE_TOPIC, function() {
             MediaEngineReceiveActions.receiveActiveScene(null);
         });
 
