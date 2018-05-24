@@ -54,7 +54,6 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
                 break;
 
             case ActionTypes.RECEIVE_MEDIA_OBJECT_INSTANCE:
-
                 let connection = action.connection;
                 let instance = action.instance;
 
@@ -66,36 +65,39 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
                 try {
 
-                    // APEP TODO should rename isStateTransition
-                    let isStateDirty = mediaInstancePool.has(instance._id) ? mediaInstancePool.get(instance._id).state.compositeState() !== instance.state.compositeState() : true;
+                    if (!mediaInstancePool.has(instance._id)) {
+                        // APEP if this is the first time we are seeing the instance, we only accept instances at LOAD
+                        let isInstanceAtBeginningState = instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.LOADED;
+
+                        if(!isInstanceAtBeginningState) {
+                            break;
+                        }
+                    }
+
+                    let isStateTransition = mediaInstancePool.has(instance._id) ? mediaInstancePool.get(instance._id).state.compositeState() !== instance.state.compositeState() : true;
 
                     // APEP for any media object instance message - store the server copy in the instance pool
                     mediaInstancePool.set(instance._id, instance);
 
                     // APEP is the state property has specifically changed - we need to handle state transition logic
-                    if(isStateDirty) {
-
-                        console.log(`state from DTO - isStateDirty ${isStateDirty} - ie Controller reported state: ${instance.state.compositeState()}`);
+                    if(isStateTransition) {
+                        console.log(`state from DTO - isStateDirty ${isStateTransition} - ie Controller reported state: ${instance.state.compositeState()}`);
 
                         if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING) {
                             console.log(`MediaEngineStore - setting timeout to stopped in ${instance._stopTime * 1000}`);
                             setTimeout(() => {
                                 console.log(`MediaEngineStore - playing - done firing`);
-
                                 let instanceForUpdate = _.cloneDeep(instance);
                                 instanceForUpdate.state = new MediaObjectState({initialState: instance.state.state});
-
                                 instanceForUpdate.state.transition(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED);
 
-                                // APEP 250418 to be replaced with an API call... /playback/media/done
+                                // APEP 250418 TODO to be replaced with an API call... /playback/media/done
                                 SendActions.updateMediaInstance(SendActions.DONE_MEDIA_COMMAND, connection, instanceForUpdate);
                             }, instance._stopTime * 1000);
                         } else if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED) {
                             // APEP 030518 is deleting from the pool is not the right thing to do
                             mediaInstancePool.delete(instance._id);
                         }
-                    } else {
-                        console.log(`state from DTO - must be property change`)
                     }
 
                     MediaEngineStore.emitChange();
