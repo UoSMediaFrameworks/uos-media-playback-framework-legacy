@@ -220,7 +220,8 @@ var AudioMediaObjectInstance = React.createClass({
     },
 
     getVolume: function() {
-        return this.props.mo._volume / 100
+        // APEP protect against missing _volume property
+        return (this.props.mo._volume || 100) / 100
     },
 
     render: function () {
