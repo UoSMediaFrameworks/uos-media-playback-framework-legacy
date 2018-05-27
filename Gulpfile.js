@@ -91,7 +91,12 @@ function bundlerBuilder (startPath, finishName, useReactify) {
 gulp.task('watch', function () {
     // trigger livereload on any change to dest
     livereload.listen(lvPort);
+
+    // application source code changes
     gulp.watch('src/**').on('change', livereload.changed);
+
+    // service worker changes
+    gulp.watch('src/sw-toolbox.js', ['service-workers']);
 
     // html changes
     gulp.watch('src/*.html', ['html']);
@@ -148,11 +153,16 @@ gulp.task('include-monaco-editor', function() {
 gulp.task('external-deps-for-china', function() {
     return gulp.src(['external-client-side-deps/**']).pipe(gulp.dest('dist/external'));
 });
+
 gulp.task('include-schemas',function(){
     return gulp.src(['src/schemas/**']).pipe(gulp.dest('dist/schemas'));
 });
 
-gulp.task('build-dist', ['bundlejs', 'html', 'css', 'icon', 'images', 'external-deps-for-china',  'include-monaco-editor', 'include-schemas', 'build-version-document']);
+gulp.task('service-workers',function(){
+    return gulp.src(['src/sw-toolbox.js']).pipe(gulp.dest('dist'));
+});
+
+gulp.task('build-dist', ['service-workers', 'bundlejs', 'html', 'css', 'icon', 'images', 'external-deps-for-china',  'include-monaco-editor', 'include-schemas', 'build-version-document']);
 
 ///// BEGIN CLI TASKS ////////////////////////////////
 

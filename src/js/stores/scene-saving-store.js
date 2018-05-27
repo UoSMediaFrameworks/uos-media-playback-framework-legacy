@@ -12,7 +12,7 @@ var _sceneSaved = true;
 var SceneSavingStore = assign({}, EventEmitter.prototype, {
 
     getSceneSaved: function() {
-        console.log("getSceneSaved: ", _sceneSaved);
+        // console.log("getSceneSaved: ", _sceneSaved);
         return _sceneSaved;
     },
 

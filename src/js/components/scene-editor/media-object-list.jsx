@@ -6,6 +6,7 @@ var SceneActions = require('../../actions/scene-actions');
 var MediaObjectPreview = require('./media-object-preview.jsx');
 var TagMatcher = require('../../utils/tag-matcher');
 var _ = require("lodash");
+
 var MediaObjectList = React.createClass({
     getInitialState: function () {
         return {
@@ -82,10 +83,19 @@ var MediaObjectList = React.createClass({
     componentWillUnmount: function () {
         console.log("media-object-list unmounting")
     },
+
+    componentDidMount: function() {
+        addSceneMediaToCache(this.props.scene)
+    },
+
     componentWillUpdate: function (nextProps, nextState) {
         //Only update selectedIndex state if changed
         if (this.props.focusedMediaObject !== nextProps.focusedMediaObject)
             this.setState({selectedIndex: nextProps.focusedMediaObject});
+
+        if (!_.isEqual(this.props.scene, nextProps.scene)) {
+            addSceneMediaToCache(this.props.scene)
+        }
     },
 
     render: function () {

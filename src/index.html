@@ -26,6 +26,23 @@
 <div id="main"></div>
 <script src="external/polyfill.js"></script>
 <script src="external/dash.all.min.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/dashjs/2.6.8/dash.all.min.js"></script>-->
 <script src='js/index.js'></script>
+
+<script>
+    if ('serviceWorker' in navigator) {
+
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw-toolbox.js', {scope: '/'}) // {scope: '/sw-test/'}
+                .then(function(reg) {
+                    // registration worked
+                    console.log('Registration succeeded. Scope is ' + reg.scope);
+                }).catch(function(error) {
+                // registration failed
+                console.log('Registration failed with ' + error);
+            });
+        });
+    }
+</script>
 </body>
 </html>
