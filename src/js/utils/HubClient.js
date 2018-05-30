@@ -92,19 +92,6 @@ var HubClient = {
 
         socket.on('sceneUpdate', HubRecieveActions.recieveScene);
 
-        // APEP we only want to add these listeners once per socket, since login tears down old socket connect this is valid now
-        socket.on('command', function(data) {
-            console.log("HubClient - on command - data: ", data);
-            if (data.name === 'showScenes') {
-                // APEP publish scene ID list
-                HubRecieveActions.recieveSceneListForPlayer(data.value);
-            } else if (data.name === 'showScenesAndThemes') {
-                HubRecieveActions.recieveSceneAndThemeListForPlayer(data.value);
-            } else {
-                HubRecieveActions.errorMessage("Failed to receive scene list for playback");
-            }
-        });
-
     },
 
     logout: function() {
