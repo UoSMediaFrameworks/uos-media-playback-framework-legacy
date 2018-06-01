@@ -4,7 +4,8 @@ var React = require('react');
 var Glyphicon = require('../glyphicon.jsx');
 var SceneActions = require('../../actions/scene-actions');
 var MediaObjectPreview = require('./media-object-preview.jsx');
-
+var TagMatcher = require('../../utils/tag-matcher');
+var _ = require("lodash");
 var MediaObjectList = React.createClass({
     getInitialState: function () {
         return {
@@ -89,21 +90,45 @@ var MediaObjectList = React.createClass({
 
     render: function () {
         var items = null;
+        var self =this;
+        var mediaArray = null;
         try {
             if (this.props.scene && this.props.scene.scene && this.props.scene.scene.length !== 0) {
+
+                //AP: attaching tag matcher to the media objects array and plugging in the tagSearch value.
+                var match = _(self.props.scene.scene)
+                    .filter(function(mo) {
+                        return  new TagMatcher("(" + self.state.tagSearch + ")").match(mo.tags);
+                    })
+                    .value();
                 items = this.props.scene.scene.map(function (mediaObject, index) {
 
                     var klass = 'media-object-item' + (this.state.selectedIndex === index ? ' selected' : '');
 
                     if (this.state.tagSearch.length > 0) {
-                        if (mediaObject.tags.indexOf(this.state.tagSearch) !== -1) {
+
+                        if (mediaObject.tags.indexOf(self.state.tagSearch) !== -1) {
                             //Highlights media objects that match the tag search.
-                            if (this.state.highlightType === "Highlight")
+                            if (self.state.highlightType === "Highlight")
                                 klass += ' ' + this.handleHighlightType();
                         } else {
-                            if (this.state.highlightType !== "Highlight")
+                            if (self.state.highlightType !== "Highlight")
                                 klass += ' ' + this.handleHighlightType();
                         }
+                        _.each(match,function(mo){
+                            if(_.isEqual(mo, mediaObject)){
+                                //AP : making sure that the objects that answer to the tag matcher are highlighted
+                                if (self.state.highlightType === "Highlight"){
+                                    klass += ' ' + self.handleHighlightType();
+                                }else if( self.state.highlightType === "Filter"){
+
+                                    klass = "media-object-item" + (self.state.selectedIndex === index ? ' selected' : '');
+                                }
+
+                            }
+                        });
+
+
                     }
 
                     return (
