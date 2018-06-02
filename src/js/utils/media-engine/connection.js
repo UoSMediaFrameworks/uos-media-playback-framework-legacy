@@ -9,6 +9,7 @@ var _ = require('lodash');
 
 var MediaEngineReceiveActions = require('../../actions/media-engine/receive-actions');
 var MediaEngineSendActions = require('../../actions/media-engine/send-actions');
+var HubRecieveActions = require('../../actions/hub-recieve-actions');
 
 // APEP 090518 turn into constants and / or even better pull the constants from the controller project
 const BASE_TOPIC = "mediaframework.html.random.1.0.0.";
@@ -52,6 +53,8 @@ var WebsocketHTMLRandomControllerConnection = {
 
             console.log(`MediaEngineConnection - received socket connection event`);
 
+            HubRecieveActions.statusMessage("html random connection connection made");
+
             self.socket.emit('auth', creds, function(err, token) {
 
                 if (err) {
@@ -63,6 +66,11 @@ var WebsocketHTMLRandomControllerConnection = {
             });
         });
 
+        // APEP 010618 when we disconnect, for now lets reset the player
+        this.socket.on('disconnect', function() {
+            HubRecieveActions.errorMessage("html random controller connection lost - resetting playback state - if the controller was restart due to a load content call, await connection message");
+            MediaEngineReceiveActions.receiveControllerReset();
+        });
 
         // APEP we only want to add these listeners once per socket, since login tears down old socket connect this is valid now
         this.socket.on(ACTIVE_SCENE__STATE_CHANGE_TOPIC, function() {

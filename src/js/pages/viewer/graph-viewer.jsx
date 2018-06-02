@@ -286,9 +286,22 @@ var GraphViewer = React.createClass({
         MediaEngineStore.removeChangeListener(this._onChange);
     },
 
+    reloadController: function () {
+        console.log("USE API TO RELOAD CONTROLLER");
+        MediaEngineSendActions.restartController();
+    },
+
     render: function () {
+
+        let restartController = <button
+            className='btn btn-dark'
+            onClick={this.reloadController}
+            style={{position: 'absolute', opacity: 0.2}}>reload controller data</button>;
+
         return (
             <div>
+                {restartController}
+
                 {_.map(this.state.media, (mo) => {
                     return <MediaObjectInstance key={mo._id} mo={mo} connection={this.state.connection}/>
                 })}

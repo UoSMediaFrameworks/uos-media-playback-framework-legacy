@@ -52,6 +52,14 @@ var HubRecieveActions = {
         });
     },
 
+    statusMessage: function (message) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.STATUS_MESSAGE,
+            message: message,
+            status: 'success'
+        });
+    },
+
     errorMessage: function(message) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.STATUS_MESSAGE,

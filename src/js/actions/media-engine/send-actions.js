@@ -6,6 +6,9 @@ const AppDispatcher = require('../../dispatchers/app-dispatcher');
 const MediaObjectState = require('../../private-dependencies/media-object-state');
 const InternalEventConstants = require('../../private-dependencies/internal-event-constants');
 
+const MediaframeworkApi = require('../../utils/mf-api');
+const HubReceiveActions = require('../../actions/hub-recieve-actions');
+
 module.exports = {
 
     // APEP publish to websocket listeners
@@ -33,4 +36,18 @@ module.exports = {
         MediaEngineConnection.publishMediaInstanceStateChange(path, connection, instance);
     },
 
+    restartController() {
+
+        HubReceiveActions.statusMessage(`requesting html random controller to restart to refresh data`);
+
+        MediaframeworkApi.restartController()
+            .then(succ => {
+                let message = `html random controller restart request successful \n ${JSON.stringify(succ, null, 2)}`;
+                HubReceiveActions.statusMessage(message)
+            })
+            .catch(err => {
+                let message = `html random controller restart request error \n ${JSON.stringify(err, null, 2)}`;
+                HubReceiveActions.errorMessage(message)
+            })
+    }
 };

@@ -18,6 +18,7 @@ const SendActions = require('../actions/media-engine/send-actions');
 
 let mediaInstancePool = new Map();
 let controllerConnection = null;
+let timeouts = new Set();
 
 var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
@@ -49,6 +50,18 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
         var action = payload.action;
 
         switch (action.type) {
+
+            case ActionTypes.RECEIVE_CONTROLLER_RESET:
+                console.log("MediaEngineStore - Disconnection");
+                timeouts.forEach(timeout => {
+                    clearTimeout(timeout);
+                });
+                timeouts.clear();
+                mediaInstancePool.clear();
+                controllerConnection = null;
+                MediaEngineStore.emitChange();
+                break;
+
             case ActionTypes.RECEIVE_ACTIVE_SCENE:
                 console.log("MediaEngineStore - The new store has received a message");
                 break;
@@ -85,8 +98,11 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
                         if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING) {
                             console.log(`MediaEngineStore - setting timeout to stopped in ${instance._stopTime * 1000}`);
-                            setTimeout(() => {
+                            let timeout = setTimeout(() => {
                                 console.log(`MediaEngineStore - playing - done firing`);
+
+                                timeouts.delete(timeout);
+
                                 let instanceForUpdate = _.cloneDeep(instance);
                                 instanceForUpdate.state = new MediaObjectState({initialState: instance.state.state});
                                 instanceForUpdate.state.transition(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED);
@@ -94,6 +110,7 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
                                 // APEP 250418 TODO to be replaced with an API call... /playback/media/done
                                 SendActions.updateMediaInstance(SendActions.DONE_MEDIA_COMMAND, connection, instanceForUpdate);
                             }, instance._stopTime * 1000);
+                            timeouts.add(timeout);
                         } else if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED) {
                             // APEP 030518 is deleting from the pool is not the right thing to do
                             mediaInstancePool.delete(instance._id);

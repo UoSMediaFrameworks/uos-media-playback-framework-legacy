@@ -20,6 +20,12 @@ var MediaEngineReceiveActions = {
             connection: connection,
             instance: instance
         });
+    },
+
+    receiveControllerReset: function() {
+        AppDispatcher.handleServerAction({
+            type: ActionTypes.RECEIVE_CONTROLLER_RESET
+        });
     }
 };
 
