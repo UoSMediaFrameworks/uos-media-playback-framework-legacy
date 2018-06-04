@@ -3,7 +3,7 @@
 
 var StaticMediaObject = require('./static-media-object');
 var inherits = require('inherits');
-var TWEEN = require('@tweenjs/tween.js');
+var TWEEN = require('tween.js');
 
 module.exports = ImageMediaObject;
 inherits(ImageMediaObject, StaticMediaObject);

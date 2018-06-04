@@ -1,10 +1,11 @@
 'use strict';
 /*jshint browser:true */
 
+var TweenloopInterval = require('../tween-loop-interval');
 var soundCloud = require('../sound-cloud');
 var MediaObject = require('./media-object');
 var inherits = require('inherits');
-var TWEEN = require('@tweenjs/tween.js');
+var TWEEN = require('tween.js');
 var toastr = require('toastr');
 inherits(AudioMediaObject, MediaObject);
 module.exports = AudioMediaObject;
