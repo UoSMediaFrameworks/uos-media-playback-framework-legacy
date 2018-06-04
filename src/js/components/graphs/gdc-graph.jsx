@@ -35,18 +35,16 @@ var GDCGraph = React.createClass({
         return {data: null, title: ""}
     },
 
-
     componentWillMount: function () {
         this.setupNodes(this.props.data, this.props)
     },
-    componentWillReceiveProps: function (nextProps) {
 
-        if (nextProps.shouldUpdateId !== this.props.shouldUpdateId)
-        {
+    componentWillReceiveProps: function (nextProps) {
+        if (nextProps.shouldUpdateId !== this.props.shouldUpdateId) {
             this.setupNodes(nextProps.data, nextProps)
         }
-
     },
+
     componentDidMount: function () {
         document.addEventListener('keyup', this.optionsMenuHandler, false);
         BreadcrumbsStore.addPlayListener(this._playBreadcrumbs);
