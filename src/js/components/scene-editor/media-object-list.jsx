@@ -4,7 +4,8 @@ var React = require('react');
 var Glyphicon = require('../glyphicon.jsx');
 var SceneActions = require('../../actions/scene-actions');
 var MediaObjectPreview = require('./media-object-preview.jsx');
-
+var TagMatcher = require('../../utils/tag-matcher');
+var _ = require("lodash");
 var MediaObjectList = React.createClass({
     getInitialState: function () {
         return {
@@ -89,19 +90,28 @@ var MediaObjectList = React.createClass({
 
     render: function () {
         var items = null;
+        var self =this;
         try {
             if (this.props.scene && this.props.scene.scene && this.props.scene.scene.length !== 0) {
+
+                let tagMatcher = new TagMatcher("(" + self.state.tagSearch + ")");
+
                 items = this.props.scene.scene.map(function (mediaObject, index) {
 
                     var klass = 'media-object-item' + (this.state.selectedIndex === index ? ' selected' : '');
 
                     if (this.state.tagSearch.length > 0) {
-                        if (mediaObject.tags.indexOf(this.state.tagSearch) !== -1) {
-                            //Highlights media objects that match the tag search.
-                            if (this.state.highlightType === "Highlight")
+
+                        let isMatchedByTagMatcher = tagMatcher.match(mediaObject.tags);
+
+                        //AP : making sure that the objects that answer to the tag matcher are highlighted
+                        if (isMatchedByTagMatcher) {
+                            // APEP if its a match and we are highlighting apply the class, if its filter the unmatched will have style applied
+                            if (self.state.highlightType === "Highlight")
                                 klass += ' ' + this.handleHighlightType();
                         } else {
-                            if (this.state.highlightType !== "Highlight")
+                            // APEP if it is not a match, and we are on type filter, we should append the class
+                            if (self.state.highlightType !== "Highlight")
                                 klass += ' ' + this.handleHighlightType();
                         }
                     }
