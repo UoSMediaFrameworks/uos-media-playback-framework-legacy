@@ -283,7 +283,7 @@ var MediaObjectList = React.createClass({
                            className='form-control'
                            value={this.state.tagSearch}
                            onChange={this.handleSearchChange}
-                           placeholder="Search for media by tag"/>
+                           placeholder="Search by tag statements"/>
                 </form>
 
                 <div className='btn-group btn-group-xs' role='group'>
