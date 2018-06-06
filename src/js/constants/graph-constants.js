@@ -1,4 +1,3 @@
-//AP: adding some future proofing if we have some old graphs that have unhandled node or graph type.
 module.exports = {
     GraphTypes: {
         "NARM": "NARM_SCENE_GRAPH",
@@ -12,15 +11,13 @@ module.exports = {
         "GDC_SCENE_GRAPH": "GDC",
         "MEMOIR_SCENE_GRAPH": "MEMOIR",
         "THUMBNAIL_SCENE_GRAPH": "THUMBNAIL",
-        "CERAMIC_SCENE_GRAPH": "CERAMIC",
-        "undefined":""
+        "CERAMIC_SCENE_GRAPH": "CERAMIC"
     },
     GraphNodeTypes: {
         "ROOT_NODE_TYPE": "root",
         "CITY_NODE_TYPE": "city",
         "GTHEME_NODE_TYPE": "gtheme",
-        "CHAPER_NODE_TYPE": "chapter",
-        "undefined":"error"
+        "CHAPER_NODE_TYPE": "chapter"
     },
     GraphVersions: {
         "GDC_GRAPH_VERSION": "1.0.0",
