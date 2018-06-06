@@ -8,6 +8,7 @@ var Text = require("./gdc-components/text.jsx")
 var _ = require("lodash");
 var connectionCache = require("../../utils/connection-cache");
 var HubClient = require("../../utils/HubClient");
+var AutocompleteStore = require('../../stores/autocomplete-store');
 var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
 var GraphBreadcrumbActions = require("../../actions/graph-breadcrumb-actions");
 var AutowalkStore = require('../../stores/autowalk-store.js');
@@ -49,14 +50,26 @@ var GDCGraph = React.createClass({
         BreadcrumbsStore.addPlayListener(this._playBreadcrumbs);
         BreadcrumbsStore.addTraceListener(this._traceBreadcrumbs);
         AutowalkStore.addChangeListener(this._autowalkHandler);
-
+        AutocompleteStore.addChangeListener(this._playAutocompleteNode);
     },
-
+    _playAutocompleteNode:function(value){
+        var self =this;
+        console.log(value)
+        if(value && value!== "none"){
+            var data = _.find(self.state.data.nodes, function (obj) {
+                return obj._id === value;
+            });
+            if(data){
+                self.contextualizeHandler(data)
+            }
+        }
+    },
     componentWillUnmount: function () {
         document.removeEventListener('keyup', this.optionsMenuHandler, false)
         BreadcrumbsStore.removePlayListener(this._playBreadcrumbs);
         BreadcrumbsStore.removeTraceListener(this._traceBreadcrumbs);
         AutowalkStore.removeChangeListener(this._autowalkHandler);
+        AutocompleteStore.removeChangeListener(this._playAutocompleteNode);
     },
     _autowalkHandler: function (props) {
         var self = this;
@@ -410,7 +423,7 @@ var GDCGraph = React.createClass({
             return node.type == 'subgraphtheme';
         });
         _.each(gThemeNodes, function (node) {
-            node._r = node.r = self.getRandomInt(4, 6);
+            node._r = node.r = self.getRandomInt(6, 7);
             node.color = d3.rgb(111, 115, 125);
         })
     },
@@ -428,7 +441,7 @@ var GDCGraph = React.createClass({
             } else {
                 node.color = "white";
             }
-            node._r = node.r = self.getRandomInt(3, 5);
+            node._r = node.r = self.getRandomInt(5, 6);
         });
     },
     setupSceneNodes: function (data) {
@@ -439,7 +452,7 @@ var GDCGraph = React.createClass({
 
         _.each(sceneNodes, function (node, i) {
             node.color = "yellow";
-            node._r = node.r = self.getRandomInt(2, 4);
+            node._r = node.r = self.getRandomInt(4, 5);
         })
     },
     setupOtherNodes: function (data, w, h,p) {

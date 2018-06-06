@@ -32,7 +32,9 @@ var SceneGraphChooser = React.createClass({
         this.refs["filter"].value = this.state.filterText;
     },
     componentDidUpdate: function () {
-        this.refs["filter"].value = this.state.filterText;
+        if(this.refs["filter"]){
+            this.refs["filter"].value = this.state.filterText;
+        }
     },
     _onSort(event) {
         this.setState({sortBy: event.target.value});

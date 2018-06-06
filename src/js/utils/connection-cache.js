@@ -32,7 +32,7 @@ groupNames.set(120,"BridgewaterA");
 groupNames.set(121,"BridgewaterB");
 groupNames.set(122,"BridgewaterC");
 groupNames.set(123,"BridgewaterD");
-
+groupNames.set(124,"Industry 4.0");
 function getCookie(name) {
     var value = "; " + document.cookie;
     var parts = value.split("; " + name + "=");

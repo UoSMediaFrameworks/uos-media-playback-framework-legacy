@@ -1,6 +1,6 @@
 'use strict';
 var Dispatcher = require('./dispatcher.js');
-var assign = require('object-assign'); 
+var assign = require('object-assign');
 
 
 var PayloadSources = require('../constants/scene-constants').PayloadSources;

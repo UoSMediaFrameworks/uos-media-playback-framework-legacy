@@ -49,7 +49,7 @@ var SceneListener = React.createClass({
 
             var sceneId = this._getSceneId();
 
-            if(sceneId === null) {
+            if (sceneId === null) {
                 return null;
             }
 
@@ -95,7 +95,7 @@ var SceneListener = React.createClass({
     },
 
     componentWillMount: function () {
-        console.log("listener will mount",this);
+        console.log("listener will mount", this);
         try {
             this.mediaObjectQueue = new MediaObjectQueueManager(
                 [TextMediaObject, AudioMediaObject, VideoMediaObject, ImageMediaObject],
@@ -110,19 +110,15 @@ var SceneListener = React.createClass({
     },
     toggleTagMatcherAndThemes: function (event) {
         if (event.altKey && event.keyCode === 72) {
-            var tag_form = this.refs["tag_form"];
-            if (!this.state.shouldHide) {
-                tag_form.style.display = "none";
-            } else {
-                tag_form.style.display = "block";
-            }
+            console.log("I hit htat")
+
             this.setState({shouldHide: !this.state.shouldHide});
         }
     },
-    componentWillReceiveProps:function(nextProps){
-        console.log("listener will mount wiilRP",nextProps);
+    componentWillReceiveProps: function (nextProps) {
+
         var scene = this._getScene();
-        this.setState({scene:scene})
+        this.setState({scene: scene})
     },
     componentDidMount: function () {
         try {
@@ -142,7 +138,7 @@ var SceneListener = React.createClass({
     componentDidUpdate: function (prevProps, prevState) {
 
         if (!_.isEqual(prevState.scene, this.state.scene)) {
-          /*  console.log("state.scene changed - update player");*/
+            /*  console.log("state.scene changed - update player");*/
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevProps.activeScene, this.props.activeScene)) {
             // APEP if we switch activeScene, we should make sure we unsubscribe for updates from previous scenes
@@ -151,10 +147,10 @@ var SceneListener = React.createClass({
             HubSendActions.subscribeScene(this.props.activeScene._id);
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevState.activeThemes, this.state.activeThemes)) {
-          /*  console.log("ActiveTheme changed - update player");*/
+            /*  console.log("ActiveTheme changed - update player");*/
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevState.triggeredActiveThemes, this.state.triggeredActiveThemes)) {
-       /*     console.log("TriggeredActiveTheme changed - update player");*/
+            /*     console.log("TriggeredActiveTheme changed - update player");*/
             this._maybeUpdatePlayer();
         } else if (!_.isEqual(prevProps.themeQuery, this.props.themeQuery)) {
             /*console.log("themeQuery changed - update player");*/
@@ -178,7 +174,7 @@ var SceneListener = React.createClass({
 
         // APEP join all the individual sets of tags from themes in a bool OR statement
         var tagsJoinedForBoolStatement = filterStrings.join(' OR ');
-      /*  console.log("mergeTagAndThemeFilters: ", tagsJoinedForBoolStatement);*/
+        /*  console.log("mergeTagAndThemeFilters: ", tagsJoinedForBoolStatement);*/
         return new TagMatcher(tagsJoinedForBoolStatement);
     },
 
@@ -315,14 +311,14 @@ var SceneListener = React.createClass({
 
     render: function () {
         // APEP Display Active Theme if available, if not provide a theme selector
-        var ThemeDisplay = this.state.fromGraphViewer ?
-            <ActiveTheme ref="theme" themeQuery={this.props.themeQuery}/> :
+        var ThemeDisplay = !this.props.sceneViewer ?
+            <ActiveTheme ref="theme" shouldHide={this.state.shouldHide} themeQuery={this.props.themeQuery}/> :
             <ThemeSelector ref="theme" shouldHide={this.state.shouldHide} themeChange={this.handleThemeChange}
                            scene={this._getSceneForUpdatingPlayerComponent()}/>;
 
         // APEP Only display the tag form when this component is not used within the graph viewer
-        var TagForm = !this.state.fromGraphViewer ?
-            <form className='tag-filter' ref="tag_form" onSubmit={this.updateTags}>
+        var TagForm = this.props.sceneViewer ?
+            <form className='tag-filter' ref="tag_form" hidden={this.state.shouldHide} onSubmit={this.updateTags}>
                 <input ref='tags' onBlur={this.handleBlur} type='text' placeholder='tag, tag, ...'
                        className='form-control scene-listener-tag-input'/>
             </form> : <span></span>;
@@ -331,7 +327,8 @@ var SceneListener = React.createClass({
 
         if (this.state.scene) {
             return (
-                <div className={ self.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"} ref="scene_listener">
+                <div className={self.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"}
+                     ref="scene_listener">
                     <Loader loaded={this.state.scene !== null}></Loader>
                     <RandomVisualPlayer sceneStyle={this.state.scene.style}
                                         mediaQueue={this.state.mediaObjectQueue}
