@@ -2,8 +2,6 @@
 
 var gulp = require('gulp');
 var gutil = require('gulp-util');
-var path = require('path');
-var run = require('gulp-run');
 var gulpif = require('gulp-if');
 var template = require('gulp-template');
 var source = require('vinyl-source-stream');
@@ -21,6 +19,7 @@ var gulpBabel = require('gulp-babel');
 var concat = require('gulp-concat'),
     livereload = require('gulp-livereload'),
     dest = 'dist',
+    src = 'src',
     lvPort = 35729;
 var realFs = require('fs');
 var gracefulFs = require('graceful-fs');
@@ -32,6 +31,9 @@ var static_server = require('./static_server');
 // APEP tools for creating and writing the version json file
 var gitVersion = require('./build/app-versioning/app-version');
 var jsonfile = require('jsonfile');
+
+var rev = require("gulp-rev");
+var revReplace = require("gulp-rev-replace");
 
 /*
  only uglify in production.  Since chrome inspector doesn't support source map
@@ -170,6 +172,26 @@ gulp.task('build', ['build-dist'], function() {
     // watchify watch handles must be closed, otherwise gulp task will hang,
     // thus the .on('end', ...)
     indexBundler.bundler.close();
+});
+
+gulp.task("revision-js", ["build"], function () {
+    return gulp.src(["dist/js/*.js"])
+        .pipe(rev())
+        .pipe(gulp.dest(dest + '/js')) // pipe the revision dist js into the js folder
+        .pipe(rev.manifest())
+        .pipe(gulp.dest(dest)) // pipe the revision map into root directory for html filename replace
+});
+
+gulp.task("revreplace", ["revision-js"], function(){
+    var manifest = gulp.src("./" + dest + "/rev-manifest.json");
+
+    return gulp.src(src + "/index.html")
+        .pipe(revReplace({manifest: manifest}))
+        .pipe(gulp.dest(dest));
+});
+
+gulp.task('build-revision', ['revreplace'], function () {
+
 });
 
 gulp.task('serve', function(next) {
