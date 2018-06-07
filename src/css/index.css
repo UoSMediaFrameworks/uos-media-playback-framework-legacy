@@ -1157,3 +1157,16 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     padding-left: 2px;
     padding-right: 2px;
 }
+
+.media-scene-mo-highlight-json-text {
+    color: red !important;
+    cursor: pointer;
+    text-decoration: underline;
+    font-weight: bold;
+    font-style: oblique;
+}
+.media-scene-mo-highlight-linenumber-bar {
+    background: lightblue;
+    width: 5px !important;
+    left: 3px;
+}

@@ -7,13 +7,18 @@ var SceneStore = require('../../stores/scene-store');
 var _ = require('lodash');
 
 //TODO APEP: Github issue raised about issue with regex. https://github.com/Microsoft/monaco-editor/issues/216
+// APEP this regex is a timesink - it is not perfect - it is a potential hour count problem - 2 hrs spent
 var sceneMediaObjectRegex = "{[\\s\\S\\n]{1,10}tags[\\s\\S\\n]*?type[\\s\\S\\n]*?[\\s\\S\\n]}"; //APEP Full media object selection
+// var sceneMediaObjectRegex = "{[\\s\\S\\n]{1,10}tags[\\s\\S\\n]*?type[\\s\\S\\n]*?[\\s\\S\\n]}.*[\\s\\S\\n]{1,4}.*[\\s\\S\\n]{3}}"; //APEP Full media object selection
 // APEP we must handle any issues that arise from the window being missing (test environment)
 var SCHEMA_URL = process.env.NODE_ENV !== "test" ? window.location.origin + "/schemas/scene-schema.json" : "/schemas/scene-schema.json"; // "http://mediaframework.salford.ac.uk/schemas/scene-schema.json";
 
 var SceneMonacoTextEditor = React.createClass({
 
     saveTimeout: null,
+
+    // APEP we must store decorations to allow monaco deltas to remove decorators
+    decorations: [],
 
     componentWillMount: function () {
         SceneStore.addChangeListener(this._onChange);
@@ -408,8 +413,14 @@ var SceneMonacoTextEditor = React.createClass({
 
             // APEP only set the position and focus of the text editor if the focus event has not come from the editor itself.
             if (!this.props.focusFromMonacoEditor) {
-                this.refs.monaco.editor.setPosition(match.range.getStartPosition());
+
                 this.refs.monaco.editor.revealPosition(match.range.getStartPosition());
+                this.refs.monaco.editor.revealPosition(match.range.getEndPosition());
+
+                this.decorations = this.refs.monaco.editor.deltaDecorations(this.decorations, [
+                    { range: match.range, options: { linesDecorationsClassName: 'media-scene-mo-highlight-linenumber-bar' }},
+                    { range: match.range, options: { inlineClassName: 'media-scene-mo-highlight-json-text' }},
+                ]);
             }
         }
 
