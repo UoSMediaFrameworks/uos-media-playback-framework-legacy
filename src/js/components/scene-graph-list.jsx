@@ -52,6 +52,10 @@ var SceneGraphList = React.createClass({
             filteredSceneGraph.reverse();
         }
         var links = filteredSceneGraph.map(function (sceneGraph) {
+            if(sceneGraph.name ==""){
+                //AP: temp hiding the sceneGraphs without names
+                return null;
+            }
             return (
                 <dd key={sceneGraph._id} className="col-xs-12 mf-link">
                     <div>
@@ -62,8 +66,7 @@ var SceneGraphList = React.createClass({
                         */}
                         <label  onClick={self.props._sceneGraphFocusHandler.bind(self,sceneGraph)}
                                 onTouchEndCapture={self.props._sceneGraphFocusHandler.bind(self,sceneGraph)}
-                        >{ sceneGraph.name}</label>
-                      {/*  <Link className="link" to={'/scenegraph/' + sceneGraph._id}>{sceneGraph.name}</Link>*/}
+                        >{sceneGraph.name}</label>
                     </div>
                 </dd>
             );
