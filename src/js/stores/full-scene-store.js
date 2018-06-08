@@ -44,8 +44,6 @@ var FullSceneStore = assign({}, EventEmitter.prototype, {
                 break;
         }
 
-        FullSceneStore.emitChange();
-
         return true;
     })
 });
