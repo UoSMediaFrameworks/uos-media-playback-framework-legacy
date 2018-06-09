@@ -18,7 +18,9 @@ const SendActions = require('../actions/media-engine/send-actions');
 
 let mediaInstancePool = new Map();
 let controllerConnection = null;
-let timeouts = new Set();
+
+let playingToTransitionTimers = new Map();
+let transitionToStoppedTimers = new Map();
 
 var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
@@ -46,18 +48,95 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
         return controllerConnection;
     },
 
+    _removeInstanceTimer: function(timerMap, instance) {
+        // APEP 080618 if the timeout map is still recording the instance id, we should delete
+        if(timerMap.has(instance._id)){
+            timerMap.delete(instance._id);
+        }
+    },
+
+    _mediaInstanceStateChange: function(connection, instance) {
+
+        if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING) {
+            let time = (instance._stopTime * 1000) - (instance._transitionTime * 1000);
+
+            console.log(`MediaEngineStore - setting timeout to transition in ${time}`);
+
+            let transitionTimer = setTimeout(() => {
+                console.log(`MediaEngineStore - playing - transition firing`);
+
+                let instanceForUpdate = _.cloneDeep(instance);
+                instanceForUpdate.state = new MediaObjectState({initialState: instance.state.state});
+                instanceForUpdate.state.transition(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.TRANSITION);
+
+                // APEP 250418 TODO to be replaced with an API call... /playback/media/transition
+                SendActions.updateMediaInstance(SendActions.TRANSITION_MEDIA_COMMAND, connection, instanceForUpdate);
+            }, time);
+
+            playingToTransitionTimers.set(instance._id, transitionTimer);
+
+        } else if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.TRANSITION) {
+
+            // APEP 090618 ensure we clean up the timer - if the Controller initialised this state change rather than a media engine
+            this._removeInstanceTimer(playingToTransitionTimers, instance);
+
+            let doneTimer = setTimeout(() => {
+                console.log(`MediaEngineStore - playing - done firing`);
+
+                let instanceForUpdate = _.cloneDeep(instance);
+                instanceForUpdate.state = new MediaObjectState({initialState: instance.state.state});
+                instanceForUpdate.state.transition(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED);
+
+                // APEP 250418 TODO to be replaced with an API call... /playback/media/done
+                SendActions.updateMediaInstance(SendActions.DONE_MEDIA_COMMAND, connection, instanceForUpdate);
+            }, instance._transitionTime * 1000);
+
+            transitionToStoppedTimers.set(instance._id, doneTimer);
+
+        } else if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED) {
+            // APEP 030518 is deleting from the pool is not the right thing to do
+            mediaInstancePool.delete(instance._id);
+
+            this._removeInstanceTimer(transitionToStoppedTimers, instance);
+            this._removeInstanceTimer(playingToTransitionTimers, instance);
+        }
+    },
+
     dispatcherIndex: AppDispatcher.register(function (payload) {
         var action = payload.action;
+
+        let self = this;
 
         switch (action.type) {
 
             case ActionTypes.RECEIVE_CONTROLLER_RESET:
                 console.log("MediaEngineStore - Disconnection");
-                timeouts.forEach(timeout => {
-                    clearTimeout(timeout);
-                });
-                timeouts.clear();
-                mediaInstancePool.clear();
+
+                try {
+                    // Stop all the transition timeouts
+                    _.forEach(playingToTransitionTimers.values(), timeout => {
+                        clearTimeout(timeout);
+                    });
+                    playingToTransitionTimers.clear();
+
+                    // Stop all the stop timers
+                    _.forEach(transitionToStoppedTimers.values(), timeout => {
+                        clearTimeout(timeout);
+                    });
+                    transitionToStoppedTimers.clear();
+
+                    // Empty the instance pool
+                    mediaInstancePool.clear();
+                } catch (e) {
+                    console.log(e);
+                    console.log(e);
+                    console.log(e);
+                    console.log(e);
+                    console.log(e);
+                }
+
+                console.log("MediaEngineStore - Disconnection - Tidy Complete")
+
                 controllerConnection = null;
                 MediaEngineStore.emitChange();
                 break;
@@ -95,29 +174,9 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
                     // APEP is the state property has specifically changed - we need to handle state transition logic
                     if(isStateTransition) {
                         console.log(`state from DTO - isStateDirty ${isStateTransition} - ie Controller reported state: ${instance.state.compositeState()}`);
-
-                        if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING) {
-                            console.log(`MediaEngineStore - setting timeout to stopped in ${instance._stopTime * 1000}`);
-                            let timeout = setTimeout(() => {
-                                console.log(`MediaEngineStore - playing - done firing`);
-
-                                timeouts.delete(timeout);
-
-                                let instanceForUpdate = _.cloneDeep(instance);
-                                instanceForUpdate.state = new MediaObjectState({initialState: instance.state.state});
-                                instanceForUpdate.state.transition(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED);
-
-                                // APEP 250418 TODO to be replaced with an API call... /playback/media/done
-                                SendActions.updateMediaInstance(SendActions.DONE_MEDIA_COMMAND, connection, instanceForUpdate);
-                            }, instance._stopTime * 1000);
-                            timeouts.add(timeout);
-                        } else if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED) {
-                            // APEP 030518 is deleting from the pool is not the right thing to do
-                            mediaInstancePool.delete(instance._id);
-                        }
+                        MediaEngineStore._mediaInstanceStateChange(connection, instance);
+                        MediaEngineStore.emitChange();
                     }
-
-                    MediaEngineStore.emitChange();
                 } catch (e) {
                     console.log(`error ${e.message}`);
                     console.log(e);

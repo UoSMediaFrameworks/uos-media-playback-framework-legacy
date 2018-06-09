@@ -25,19 +25,21 @@ let MediaObjectState = machina.Fsm.extend({
         },
         'loaded': {
             _onEnter: function () {
-                // console.log('mo loaded')
                 this.emit(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE_CHANGES.ON_LOADED);
             },
         },
         'playing': {
             _onEnter: function () {
-                // console.log('mo playing')
                 this.emit(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE_CHANGES.ON_PLAYING);
+            },
+        },
+        'transition': {
+            _onEnter: function () {
+                this.emit(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE_CHANGES.ON_TRANSITION);
             },
         },
         'stopped': {
             _onEnter: function () {
-                // console.log('mo stopped')
                 this.emit(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE_CHANGES.ON_DONE);
             },
         }

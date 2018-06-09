@@ -7,7 +7,7 @@ if (workbox) {
     console.log(`Boo! Workbox didn't load 😬`);
 }
 
-workbox.LOG_LEVEL = 'debug'
+// workbox.LOG_LEVEL = 'debug'
 
 workbox.routing.registerRoute(
     new RegExp('^(.*)uosassetstore.blob.core.windows.net/assetstoredev/video/transcoded/dash/(.*).mp4'),
