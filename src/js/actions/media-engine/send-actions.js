@@ -29,7 +29,7 @@ module.exports = {
 
     updateMediaInstance(path, connection, instance) {
 
-        console.log(`updateMediaInstance ${path}`);
+        // console.log(`updateMediaInstance ${path}`);
 
         var MediaEngineConnection = require('../../utils/media-engine/connection');
 

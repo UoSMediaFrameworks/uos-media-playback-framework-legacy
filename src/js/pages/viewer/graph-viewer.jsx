@@ -7,6 +7,8 @@ var _ = require('lodash');
 var classNames = require('classnames');
 var ReactAudioPlayer = require('react-audio-player').default;
 var ReactPlayer = require('react-player').default;
+var ReactAnimationFrame = require('react-animation-frame');
+var TWEEN = require('@tweenjs/tween.js');
 
 var MediaEngineStore = require('../../stores/media-engine-store');
 var InternalEventConstants = require('../../private-dependencies/internal-event-constants');
@@ -83,10 +85,6 @@ var ImageMediaObjectInstance = React.createClass({
             "media-object": true,
             "show-media-object": this.props.mo.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING
         });
-
-        console.log(`image style`);
-
-        console.log(this.state.style);
 
         return (
             <img
@@ -212,11 +210,79 @@ var TextMediaObjectInstance = React.createClass({
 
 var AudioMediaObjectInstance = React.createClass({
 
-    // APEP TODO add transition _transitionType for _transitionTime
-    // volume tween using transition properties?
+    getInitialState: function () {
+        return {
+            volume: 0,
+
+            transitionIn: null,
+            transitionOut: null
+        };
+    },
 
     onCanPlay: function() {
         MediaEngineSendActions.mediaObjectInstanceReady(this.props.connection, this.props.mo);
+    },
+
+    componentDidUpdate: function(prevProps, prevState, snapshot) {
+
+        let isTransitionIn = prevProps.mo.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.LOADED &&
+            this.props.mo.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING;
+
+        if (isTransitionIn) {
+            console.log(`Starting tween volume in - tween for ${this.props.mo._transitionTime}`);
+
+            let self = this;
+            let tween = new TWEEN.Tween({vol: 0})
+                .to({vol: this.getVolume()}, this.props.mo._transitionTime * 1000)
+                .onUpdate((obj) => {
+                    self.setState({volume: obj.vol});
+                });
+            self.setState({transitionIn: tween});
+            tween.start();
+
+            return;
+        }
+
+        let isTransitionOut = prevProps.mo.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING &&
+            this.props.mo.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.TRANSITION;
+
+        if (isTransitionOut) {
+            console.log(`Starting tween volume OUT - tween for ${this.props.mo._transitionTime}`);
+
+            this._stopTransitionIn();
+
+            let self = this;
+
+            let tween = new TWEEN.Tween({vol: this.getVolume()})
+                .to({vol: 0}, this.props.mo._transitionTime * 1000)
+                .onUpdate((obj) => {
+                    self.setState({volume: obj.vol});
+                });
+            self.setState({transitionOut: tween});
+            tween.start();
+        }
+    },
+
+    _stopTransitionIn: function() {
+        if(this.state.transitionIn) {
+            console.log("componentWillUnmount - transitionIn");
+            this.state.transitionIn.stop();
+            TWEEN.remove(this.state.transitionIn);
+        }
+    },
+
+    _stopTransitionOut: function() {
+        if(this.state.transitionOut) {
+            console.log("componentWillUnmount - transitionOut");
+            this.state.transitionOut.stop();
+            TWEEN.remove(this.state.transitionOut);
+        }
+    },
+
+    componentWillUnmount: function() {
+        this._stopTransitionIn();
+
+        this._stopTransitionOut();
     },
 
     getVolume: function() {
@@ -229,7 +295,7 @@ var AudioMediaObjectInstance = React.createClass({
             <ReactAudioPlayer
                 src={this.props.mo._content}
                 onCanPlay={this.onCanPlay}
-                volume={this.getVolume()}
+                volume={this.state.volume}
                 autoPlay
             />
         )
@@ -286,6 +352,14 @@ var GraphViewer = React.createClass({
         MediaEngineStore.removeChangeListener(this._onChange);
     },
 
+    onAnimationFrame(time) {
+        // Using the ReactAnimationFrame wrapper - we can hook into the browsers animation timer for TWEEN js
+        // This is required for any tween to work correctly.
+        // By using the param time, we can limit the performance impact, default of 50ms chosen.
+        // For higher performance we can throttle this update further
+        TWEEN.update(time);
+    },
+
     reloadController: function () {
         console.log("USE API TO RELOAD CONTROLLER");
         MediaEngineSendActions.restartController();
@@ -310,5 +384,5 @@ var GraphViewer = React.createClass({
     }
 });
 
-module.exports = GraphViewer;
+module.exports = ReactAnimationFrame(GraphViewer, 50);
 

@@ -60,10 +60,10 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
         if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING) {
             let time = (instance._stopTime * 1000) - (instance._transitionTime * 1000);
 
-            console.log(`MediaEngineStore - setting timeout to transition in ${time}`);
+            // console.log(`MediaEngineStore - setting timeout to transition in ${time}`);
 
             let transitionTimer = setTimeout(() => {
-                console.log(`MediaEngineStore - playing - transition firing`);
+                // console.log(`MediaEngineStore - playing - transition firing`);
 
                 let instanceForUpdate = _.cloneDeep(instance);
                 instanceForUpdate.state = new MediaObjectState({initialState: instance.state.state});
@@ -81,7 +81,7 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
             this._removeInstanceTimer(playingToTransitionTimers, instance);
 
             let doneTimer = setTimeout(() => {
-                console.log(`MediaEngineStore - playing - done firing`);
+                // console.log(`MediaEngineStore - playing - done firing`);
 
                 let instanceForUpdate = _.cloneDeep(instance);
                 instanceForUpdate.state = new MediaObjectState({initialState: instance.state.state});
@@ -129,10 +129,6 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
                     mediaInstancePool.clear();
                 } catch (e) {
                     console.log(e);
-                    console.log(e);
-                    console.log(e);
-                    console.log(e);
-                    console.log(e);
                 }
 
                 console.log("MediaEngineStore - Disconnection - Tidy Complete")
@@ -149,7 +145,7 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
                 let connection = action.connection;
                 let instance = action.instance;
 
-                console.log(`MediaEngineStore - RECEIVE_MEDIA_OBJECT_INSTANCE - ${JSON.stringify(instance)}`);
+                // console.log(`MediaEngineStore - RECEIVE_MEDIA_OBJECT_INSTANCE - ${JSON.stringify(instance)}`);
 
                 instance.state = new MediaObjectState({initialState: instance.state.state});
 
@@ -173,7 +169,7 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
                     // APEP is the state property has specifically changed - we need to handle state transition logic
                     if(isStateTransition) {
-                        console.log(`state from DTO - isStateDirty ${isStateTransition} - ie Controller reported state: ${instance.state.compositeState()}`);
+                        // console.log(`state from DTO - isStateDirty ${isStateTransition} - ie Controller reported state: ${instance.state.compositeState()}`);
                         MediaEngineStore._mediaInstanceStateChange(connection, instance);
                         MediaEngineStore.emitChange();
                     }

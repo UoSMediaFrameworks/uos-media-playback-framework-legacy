@@ -7,7 +7,10 @@ if (workbox) {
     console.log(`Boo! Workbox didn't load 😬`);
 }
 
-// workbox.LOG_LEVEL = 'debug'
+// APEP look to convert to environment specific?
+workbox.setConfig({
+    debug: false
+});
 
 workbox.routing.registerRoute(
     new RegExp('^(.*)uosassetstore.blob.core.windows.net/assetstoredev/video/transcoded/dash/(.*).mp4'),
