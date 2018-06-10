@@ -104,9 +104,9 @@ var DashVideoMediaObjectInstance = React.createClass({
             style: {}
         };
 
-        state = _.extend(state, InstanceStateToReact.convertInstanceTransitionProperties(this.props.mo));
-        state = _.extend(state, InstanceStateToReact.convertInstanceVisualLayer(this.props.mo));
-        state = _.extend(state, InstanceStateToReact.convertInstanceVisualPosition(this.props.mo));
+        state.style = _.extend(state.style, InstanceStateToReact.convertInstanceTransitionProperties(this.props.mo).style);
+        state.style = _.extend(state.style, InstanceStateToReact.convertInstanceVisualLayer(this.props.mo).style);
+        state.style = _.extend(state.style, InstanceStateToReact.convertInstanceVisualPosition(this.props.mo).style);
 
         return state;
     },
@@ -180,9 +180,9 @@ var TextMediaObjectInstance = React.createClass({
             style: {}
         };
 
-        state = _.extend(state, InstanceStateToReact.convertInstanceTransitionProperties(this.props.mo));
-        state = _.extend(state, InstanceStateToReact.convertInstanceVisualLayer(this.props.mo));
-        state = _.extend(state, InstanceStateToReact.convertInstanceVisualPosition(this.props.mo));
+        state.style = _.extend(state.style, InstanceStateToReact.convertInstanceTransitionProperties(this.props.mo).style);
+        state.style = _.extend(state.style, InstanceStateToReact.convertInstanceVisualLayer(this.props.mo).style);
+        state.style = _.extend(state.style, InstanceStateToReact.convertInstanceVisualPosition(this.props.mo).style);
 
         return state;
     },
