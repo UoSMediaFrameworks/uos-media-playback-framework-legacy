@@ -12,14 +12,14 @@ var socket;
 var _ = require('lodash');
 
 var HubClient = {
-    login: function(url, creds) {
+    login: function (url, creds) {
         var type;
         switch (arguments.length) {
             case 1:
                 type = 'token';
                 creds = {token: connectionCache.getToken()};
 
-                if (! url || ! creds.token) {
+                if (!url || !creds.token) {
                     // bad localstorage, or nothing in it, so just return
                     connectionCache.clear();
                     HubRecieveActions.recieveLoginResult(false);
@@ -35,15 +35,15 @@ var HubClient = {
 
         // APEP if we had a socket open already, we should force disconnect
         // this also removes any previous on listeners we added
-        if(socket) {
+        if (socket) {
             socket.disconnect();
         }
 
         socket = io(url, {forceNew: true});
 
-        socket.on('connect',function() {
+        socket.on('connect', function () {
             console.log("connect")
-            socket.emit('auth', creds, function(err, token, socketID/*AJF: doesn't get used here*/, groupID) {/*AJF: callback extended to accept the groupID of the user*/
+            socket.emit('auth', creds, function (err, token, socketID/*AJF: doesn't get used here*/, groupID) {/*AJF: callback extended to accept the groupID of the user*/
                 console.log("auth - err: ", err);
                 if (err) {
                     socket.disconnect();
@@ -61,20 +61,20 @@ var HubClient = {
                     HubRecieveActions.recieveLoginResult(true);
                     HubRecieveActions.tryListScenes();
 
-                    socket.emit('listScenes', function(err, scenes) {
+                    socket.emit('listScenes', function (err, scenes) {
                         if (err) throw err;
                         HubRecieveActions.recieveSceneList(scenes);
                     });
 
-                    socket.emit('listSceneGraphs', function(err, sceneGraphs) {
-                        if(err) throw err;
+                    socket.emit('listSceneGraphs', function (err, sceneGraphs) {
+                        if (err) throw err;
                         HubRecieveActions.recieveSceneGraphList(sceneGraphs);
                     })
                 }
             });
         });
 
-        socket.on('connect_error', function(err) {
+        socket.on('connect_error', function (err) {
             HubRecieveActions.errorMessage(
                 "Connection to hub failed: " +
                 err.toString() +
@@ -85,7 +85,7 @@ var HubClient = {
         socket.on('sceneUpdate', HubRecieveActions.recieveScene);
 
         // APEP we only want to add these listeners once per socket, since login tears down old socket connect this is valid now
-        socket.on('command', function(data) {
+        socket.on('command', function (data) {
             console.log("HubClient - on command - data: ", data);
             if (data.name === 'showScenes') {
                 // APEP publish scene ID list
@@ -99,15 +99,15 @@ var HubClient = {
 
     },
 
-    logout: function() {
+    logout: function () {
         connectionCache.clear();
         socket.disconnect();
     },
 
-    loadScene: function(id) {
-        console.log("loadScene",id)
-        socket.emit('loadScene', id, function(err, scene) {
-            if (err || ! scene) {
+    loadScene: function (id) {
+        console.log("loadScene", id)
+        socket.emit('loadScene', id, function (err, scene) {
+            if (err || !scene) {
                 /*HubRecieveActions.errorMessage('Couldn\'t load requested scene, reload the page and try again');*/
             } else {
                 console.log("loading requested scene")
@@ -116,9 +116,9 @@ var HubClient = {
         });
     },
 
-    loadSceneWithCb: function(id, cb) {
-        socket.emit('loadScene', id, function(err, scene) {
-            if (err || ! scene) {
+    loadSceneWithCb: function (id, cb) {
+        socket.emit('loadScene', id, function (err, scene) {
+            if (err || !scene) {
                 cb(null);
             } else {
                 cb(scene);
@@ -126,18 +126,18 @@ var HubClient = {
         });
     },
 
-    loadSceneGraph: function(id) {
-        socket.emit('loadSceneGraph', id, function(err, sceneGraph) {
-            if (err || ! sceneGraph) {
-               /* HubRecieveActions.errorMessage('Couldn\'t load requested scene graph, reload the page and try again');*/
+    loadSceneGraph: function (id) {
+        socket.emit('loadSceneGraph', id, function (err, sceneGraph) {
+            if (err || !sceneGraph) {
+                /* HubRecieveActions.errorMessage('Couldn\'t load requested scene graph, reload the page and try again');*/
             } else {
                 HubRecieveActions.recieveSceneGraph(sceneGraph);
             }
         });
     },
 
-    save: function(scene, cb) {
-        socket.emit('saveScene', scene, function(err, newScene) {
+    save: function (scene, cb) {
+        socket.emit('saveScene', scene, function (err, newScene) {
             if (err) {
                 HubRecieveActions.errorMessage('Couldn\'t save scene, please try again');
             } else {
@@ -157,27 +157,27 @@ var HubClient = {
         });
     },
 
-    saveSceneGraph: function(sceneGraph, cb) {
+    saveSceneGraph: function (sceneGraph, cb) {
 
         // APEP Hack - Block the merged graph from running node list generation.
         // APEP this process was done by a script and we don't want to override its results
-        if(sceneGraph._id !== "579a2186792e8b3c827d2b15") {
+        if (sceneGraph._id !== "579a2186792e8b3c827d2b15") {
             NodeListGeneration.generateNodeListForSceneGraph(sceneGraph);
         }
 
-        socket.emit('saveSceneGraph', sceneGraph, function(err, newSceneGraph) {
-            if(err) {
+        socket.emit('saveSceneGraph', sceneGraph, function (err, newSceneGraph) {
+            if (err) {
                 HubRecieveActions.errorMessage('Couldn\'t save scene graph, please try again');
             } else {
-                if(cb) {
+                if (cb) {
                     cb(newSceneGraph);
                 }
             }
         });
     },
 
-    deleteScene: function(id) {
-        socket.emit('deleteScene', id, function(err) {
+    deleteScene: function (id) {
+        socket.emit('deleteScene', id, function (err) {
             if (err) {
                 HubRecieveActions.errorMessage('Couldn\'t delete scene, please try again');
             } else {
@@ -186,40 +186,52 @@ var HubClient = {
         });
     },
 
-    deleteSceneGraph: function(id) {
-        socket.emit('deleteSceneGraph', id, function(err){
-            if(err) {
+    deleteSceneGraph: function (id) {
+        socket.emit('deleteSceneGraph', id, function (err) {
+            if (err) {
                 HubRecieveActions.errorMessage('Couldn\'t delete scene graph, please try again');
             }
         });
     },
 
-    subscribeScene: function(id) {
+    subscribeScene: function (id) {
         // no confirmation handler as of yet
-        console.log("subscribeSceneid",id)
-        socket.emit('subScene', id, function(err, scene) {
+        console.log("subscribeSceneid", id)
+        socket.emit('subScene', id, function (err, scene) {
             if (err) {
                 HubRecieveActions.errorMessage("Couldn't subscribe to scene, please reload the page");
             } else {
-                console.log("subscribeScene",scene)
+                console.log("subscribeScene", scene)
                 HubRecieveActions.recieveScene(scene);
             }
         });
     },
 
-    unsubscribeScene: function(id) {
+    unsubscribeScene: function (id) {
         // no confirmation handler as of yet
         socket.emit('unsubScene', id);
     },
-    publishSceneCommand: function(sceneList, roomId) {
+    publishSceneCommand: function (sceneList, roomId) {
         // APEP allow the score playback functionality to publish commands
         socket.emit("sendCommand", roomId, 'showScenes', sceneList);
     },
-    publishScoreCommand: function(score, roomId) {
+    publishScoreCommand: function (score, roomId) {
         // APEP allow the score playback functionality to publish commands
         socket.emit("sendCommand", roomId, 'showScenesAndThemes', score);
     },
-    getSceneGraph:function(sceneId){
+    publishVolumeScale: function (data, roomId) {
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("POST", 'http://staging-uos-html-random-controller.eu-west-1.elasticbeanstalk.com/playback/scene/audio/scale', true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.setRequestHeader("x-api-key", connectionCache.getToken());
+        xhttp.send({
+            rescaleAudioForScene: data
+        });
+        var response = JSON.parse(xhttp.responseText);
+        console.log("slider",response)
+    },
+    getSceneGraph: function (sceneId) {
         socket.emit('loadSceneGraph', sceneId, function (err, sceneGraph) {
             if (err) {
                 HubRecieveActions.errorMessage("Couldn't subscribe to scene, please reload the page");
@@ -228,7 +240,7 @@ var HubClient = {
             }
         });
     },
-    registerToGraphPlayerRoom: function(roomId) {
+    registerToGraphPlayerRoom: function (roomId) {
 
         console.log("HubClient - registerToGraphPlayerRoom - roomId: " + roomId);
 

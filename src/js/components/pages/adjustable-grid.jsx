@@ -23,7 +23,7 @@ var LayoutConstants = require("../../constants/layout-constants"),
     LayoutComponentTypesForPopout = LayoutConstants.ComponentTypesForPopout,
     LayoutComponentTypesForPresentation = LayoutConstants.ComponentTypesForPresentation;
 var GraphTitles = require("../../constants/graph-constants").GraphTitles;
-
+var Slider = require("./slider.jsx");
 ReactGridLayout = WidthProvider(ReactGridLayout);
 var RespGrid = React.createClass({
     getInitialState: function () {
@@ -125,11 +125,20 @@ var RespGrid = React.createClass({
                 break;
             case LayoutComponentTypes.MediaUpload:
                 return (
-                    <MediaUpload 
+                    <MediaUpload
                         isLayout={true}
                          _id = {this.state.data.scene._id}
                     >
                     </MediaUpload>
+                )
+                break;
+
+            case LayoutComponentTypes.Slider:
+                return (
+                    <Slider>
+
+
+                    </Slider>
                 )
                 break;
             default:

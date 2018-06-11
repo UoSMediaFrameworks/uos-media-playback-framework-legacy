@@ -8,6 +8,7 @@ module.exports = {
         "SceneViewer": "Scene-Viewer",
         "GraphViewer": "Graph-Viewer",
         "SceneEditor": "Scene-Editor",
+        "Slider":"Slider",
         "SceneMediaBrowser": "Scene-Media-Browser",
         "SceneEditorGUI": "Scene-Editor-GUI",
         "TagEditor": "Tag-Editor",
@@ -15,6 +16,7 @@ module.exports = {
     },
     ComponentTitles:{
         "Scene-List":"Scene List",
+
         "Scene-Graph-List": "Scene Graph List",
         "Scene-Graph": "Scene Graph Editor",
         "Graph" : "Graph",
@@ -24,6 +26,7 @@ module.exports = {
         "Scene-Media-Browser":"Scene Media Browser",
         "Scene-Editor-GUI":"Visual Scene Editor",
         "Tag-Editor": "Tag Editor",
+        "Slider":"Slider",
         "Media-Upload":"Media Upload"
     },
     ColumnTypes: {

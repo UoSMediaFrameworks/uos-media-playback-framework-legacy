@@ -145,6 +145,9 @@ var NavigationBar = React.createClass({
             case LayoutComponentConstants.SceneEditor:
                 return <li><span className="navbar-text">Scene Viewer</span></li>;
                 break;
+            case LayoutComponentConstants.SceneEditor:
+                return <li><span className="navbar-text">Slider</span></li>;
+                break;
             default:
                 return (<li><span className="navbar-text"></span></li>); //return empty if no navbar element
                 break
@@ -239,6 +242,7 @@ var NavigationBar = React.createClass({
                                                     className="btn btn-dark navbar-btn">
                                         <MenuItem divider/>
                                         <MenuItem header>Scenes</MenuItem>
+
                                         <MenuItem eventKey="1"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditor)}>Scene
                                             Editor</MenuItem>
@@ -273,6 +277,9 @@ var NavigationBar = React.createClass({
                                         <MenuItem eventKey="9"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.GraphViewer)}>External
                                             Player</MenuItem>
+                                        <MenuItem eventKey="10"
+                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.Slider)}>Slider
+                                            </MenuItem>
                                     </DropdownButton>
                                 </li>
                                 <li>
