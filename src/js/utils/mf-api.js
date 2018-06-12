@@ -2,11 +2,12 @@
 
 const connectionCache = require('./connection-cache');
 const Swagger = require('swagger-client');
+const Limiter = require('limiter').RateLimiter;
 
 const swaggerApiSpecUrl = process.env.MF_API_DOCS_JSON;
 
 let swaggerClient = null;
-
+let AudioMessageLimiter = new Limiter(10,1000,true);
 class MediaframeworkAPI {
 
     static _generateRestartControllerMethod(token) {
@@ -36,23 +37,35 @@ class MediaframeworkAPI {
     }
 
     static sendAudioScale(data){
+        console.log(data);
         return new Promise((resolve, reject) => {
+            AudioMessageLimiter.removeTokens(1,function(err,remainingRequests){
+                if(err){
+                    console.log("Rate limiter error",err)
+                }else{
+                    if (remainingRequests < 1) {
+                        console.log("Rate limit reached, too many requests")
+                    } else {
+                        if (! swaggerClient) {
+                            Swagger(swaggerApiSpecUrl)
+                                .then(client => {
+                                    swaggerClient = client;
 
-            if (! swaggerClient) {
-                Swagger(swaggerApiSpecUrl)
-                    .then(client => {
-                        swaggerClient = client;
+                                    swaggerClient.execute(MediaframeworkAPI.AudioScale(connectionCache.getToken(),data))
+                                        .then(resolve)
+                                        .catch(reject);
+                                })
+                                .catch(reject);
+                        } else {
+                            swaggerClient.execute(MediaframeworkAPI.AudioScale(connectionCache.getToken(),data))
+                                .then(resolve)
+                                .catch(reject);
+                        }
+                    }
+                }
 
-                        swaggerClient.execute(MediaframeworkAPI.AudioScale(connectionCache.getToken(),data))
-                            .then(resolve)
-                            .catch(reject);
-                    })
-                    .catch(reject);
-            } else {
-                swaggerClient.execute(MediaframeworkAPI.AudioScale(connectionCache.getToken(),data))
-                    .then(resolve)
-                    .catch(reject);
-            }
+            });
+
         })
     }
     static restartController() {
