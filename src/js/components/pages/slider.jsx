@@ -82,7 +82,7 @@ var VolumeSlider = React.createClass({
         volumeSliderHandler(scene, evt) {
             console.log("slider", evt.target.value / 100, scene);
             if (this.state.limiterEnabled) {
-                MessageArray.push({sceneId: scene._id, rescaleValue: evt.target.value / 100});
+                MessageArray.push({sceneId: scene._id, rescaleFactor: evt.target.value / 100});
                 if (MessageArray.length == 50) {
 
                     var scenes = _.uniq(MessageArray, function (m) {
@@ -92,16 +92,16 @@ var VolumeSlider = React.createClass({
                         var messages = _.filter(MessageArray, {sceneId: s.sceneId});
 
                         var sum = _.sum(messages, function (object) {
-                            return object.rescaleValue;
+                            return object.rescaleFactor;
                         })
                         var avg = sum / messages.length;
 
-                        MFAPI.sendAudioScale({sceneId: s.sceneId, rescaleValue: avg});
+                        MFAPI.sendAudioScale({sceneId: s.sceneId, rescaleFactor: avg});
                     });
                     MessageArray = [];
                 }
             } else {
-                MFAPI.sendAudioScale({sceneId: scene._id, rescaleValue: evt.target.value / 100});
+                MFAPI.sendAudioScale({sceneId: scene._id, rescaleFactor: evt.target.value / 100});
             }
 
 
