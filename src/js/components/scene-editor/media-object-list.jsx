@@ -140,7 +140,7 @@ var MediaObjectList = React.createClass({
     },
 
     componentDidMount: function() {
-        addSceneMediaToCache(this.props.scene)
+        // addSceneMediaToCache(this.props.scene)
     },
 
     componentWillUpdate: function (nextProps, nextState) {
@@ -149,7 +149,7 @@ var MediaObjectList = React.createClass({
             this.setState({selectedIndex: nextProps.focusedMediaObject});
 
         if (!_.isEqual(this.props.scene, nextProps.scene)) {
-            addSceneMediaToCache(this.props.scene)
+            // addSceneMediaToCache(this.props.scene)
         }
     },
 
