@@ -23,7 +23,8 @@ var LayoutConstants = require("../../constants/layout-constants"),
     LayoutComponentTypesForPopout = LayoutConstants.ComponentTypesForPopout,
     LayoutComponentTypesForPresentation = LayoutConstants.ComponentTypesForPresentation;
 var GraphTitles = require("../../constants/graph-constants").GraphTitles;
-
+var Slider = require("../pages/slider.jsx");
+var Config = require("../pages/config-swappers.jsx");
 ReactGridLayout = WidthProvider(ReactGridLayout);
 var RespGrid = React.createClass({
     getInitialState: function () {
@@ -48,7 +49,7 @@ var RespGrid = React.createClass({
         window.removeEventListener("resize", this.updateDimensions);
     },
 
-    updateDimensions: function() {
+    updateDimensions: function () {
         var dom = ReactDOM.findDOMNode(this);
         // APEP ensure we report some key state
         ViewLayoutActions.gridDOMUpdate(dom.parentElement.clientHeight, this.state.rows, dom.parentElement.clientWidth);
@@ -89,9 +90,9 @@ var RespGrid = React.createClass({
                 return <GraphTest isLayout={true} _id={self.state.data.sceneGraph._id}/>;
                 break;
             case LayoutComponentTypes.SceneMediaBrowser:
-                return ( <SceneMediaBrowser isLayout={true} scene={SceneStore.getScene(this.state.data.scene._id) || {}}
-                                            focusedMediaObject={this.state.data.focusedMediaObject}
-                                            _id={self.state.data.scene._id}>
+                return (<SceneMediaBrowser isLayout={true} scene={SceneStore.getScene(this.state.data.scene._id) || {}}
+                                           focusedMediaObject={this.state.data.focusedMediaObject}
+                                           _id={self.state.data.scene._id}>
                     </SceneMediaBrowser>
                 );
                 break;
@@ -115,21 +116,31 @@ var RespGrid = React.createClass({
                 );
                 break;
             case LayoutComponentTypes.SceneEditor:
-                return ( <LayoutMonacoTextEditor isLayout={true}
-                                                 focusedMediaObject={this.state.data.focusedMediaObject}
-                                                 focusFromMonacoEditor={this.state.data.fromMonacoEditor}
-                                                 _id={this.state.data.scene._id}
-                                                 focusHandler={SceneActions.changeMediaObjectFocus}>
+                return (<LayoutMonacoTextEditor isLayout={true}
+                                                focusedMediaObject={this.state.data.focusedMediaObject}
+                                                focusFromMonacoEditor={this.state.data.fromMonacoEditor}
+                                                _id={this.state.data.scene._id}
+                                                focusHandler={SceneActions.changeMediaObjectFocus}>
                     </LayoutMonacoTextEditor>
                 );
                 break;
             case LayoutComponentTypes.MediaUpload:
+                return (<MediaUpload
+                    isLayout={true}
+                    _id={this.state.data.scene._id}
+                >
+                </MediaUpload>)
+                break;
+            case LayoutComponentTypes.Slider:
                 return (
-                    <MediaUpload 
-                        isLayout={true}
-                         _id = {this.state.data.scene._id}
+                    <Slider
                     >
-                    </MediaUpload>
+                    </Slider>
+                )
+                break;
+            case LayoutComponentTypes.Config:
+                return (
+                    <Config></Config>
                 )
                 break;
             default:
@@ -275,13 +286,13 @@ var RespGrid = React.createClass({
                 leftComp = rightComp = null;
             }
 
-            var componentPopoutButton = LayoutComponentTypesForPopout.hasOwnProperty(item.type)? < i
+            var componentPopoutButton = LayoutComponentTypesForPopout.hasOwnProperty(item.type) ? < i
                 className={item.state === "default" ? "fa fa-share-alt-square  mf-maximize" : "hidden "}
                 onClick={self.popout.bind(self, index, item, false)
                 }>
             </i> : <span></span>;
 
-            var componentPresentation = LayoutComponentTypesForPresentation.hasOwnProperty(item.type)? <i
+            var componentPresentation = LayoutComponentTypesForPresentation.hasOwnProperty(item.type) ? <i
                 className={item.state === "default" ? "fa fa-television  mf-maximize" : "hidden "}
                 onClick={self.popout.bind(self, index, item, true)}>
             </i> : <span></span>;
