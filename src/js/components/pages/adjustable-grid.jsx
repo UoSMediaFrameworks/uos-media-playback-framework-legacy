@@ -24,6 +24,7 @@ var LayoutConstants = require("../../constants/layout-constants"),
     LayoutComponentTypesForPresentation = LayoutConstants.ComponentTypesForPresentation;
 var GraphTitles = require("../../constants/graph-constants").GraphTitles;
 var Slider = require("../pages/slider.jsx");
+var Config = require("../pages/config-swappers.jsx");
 ReactGridLayout = WidthProvider(ReactGridLayout);
 var RespGrid = React.createClass({
     getInitialState: function () {
@@ -135,6 +136,11 @@ var RespGrid = React.createClass({
                     <Slider
                     >
                     </Slider>
+                )
+                break;
+            case LayoutComponentTypes.Config:
+                return (
+                    <Config></Config>
                 )
                 break;
             default:

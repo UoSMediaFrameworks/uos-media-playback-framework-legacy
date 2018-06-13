@@ -105,7 +105,7 @@ var HubClient = {
             if (err || ! scene) {
                 /*HubRecieveActions.errorMessage('Couldn\'t load requested scene, reload the page and try again');*/
             } else {
-                console.log("loading requested scene")
+                console.log("loading requested scene",scene)
                 HubRecieveActions.recieveScene(scene);
             }
         });

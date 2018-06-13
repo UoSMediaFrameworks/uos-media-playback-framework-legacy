@@ -1156,3 +1156,116 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     padding-left: 2px;
     padding-right: 2px;
 }
+.slider-component{
+    overflow-y: auto;
+}
+.slider-cont{
+    list-style: none;
+    display: flex;
+    background-color: rgba(255, 255, 255, .5);
+    border-bottom:1px dashed black;
+    flex-direction: row;
+    box-shadow: 0 0 20px rgba(0, 0, 0, .1);
+    counter-reset: done-items undone-items;
+}
+.slider-list-cont{
+    display: flex;
+    user-select: none;
+    flex-direction: column;
+}
+
+.slider-cont:hover {
+    background-color: rgba(255, 255, 255, .2);
+}
+.scene-slider{
+    display: block;
+    position: relative;
+    cursor: pointer;
+    flex:1;
+    color:black;
+}
+.range {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: relative;
+    background-color:transparent!important;
+    margin-right:10px;
+    flex:1;
+}
+
+.range::-webkit-slider-runnable-track {
+
+    -webkit-appearance: none;
+    background: rgb(18, 227, 7);
+    background: -moz-linear-gradient(45deg, rgb(5, 227, 0) 0%, rgb(177, 230, 4) 25%, rgb(183, 136, 0) 51%, rgb(255, 63, 0) 100%);
+    background: -webkit-linear-gradient(45deg,  rgb(5, 227, 0) 0%, rgb(177, 230, 4) 25%, rgb(183, 136, 0) 51%, rgb(255, 63, 0) 100%);
+    background: -o-linear-gradient(45deg, rgb(5, 227, 0) 0%, rgb(177, 230, 4) 25%, rgb(183, 136, 0) 51%, rgb(255, 63, 0) 100%);
+    background: -ms-linear-gradient(45deg,  rgb(5, 227, 0) 0%, rgb(177, 230, 4) 25%, rgb(183, 136, 0) 51%, rgb(255, 63, 0) 100%);
+    background: linear-gradient(45deg,  rgb(5, 227, 0) 0%, rgb(177, 230, 4) 25%, rgb(183, 136, 0) 51%, rgb(255, 63, 0) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3bade3 ', endColorstr='#ff357f ', GradientType=1 );
+    height: 5px;
+    -webkit-border-radius: 25%;
+    -moz-border-radius: 25%;
+    border-radius: 25%;
+}
+
+.range :focus {
+    outline: none;
+}
+
+.range::-moz-range-track {
+    -moz-appearance: none;
+    background: rgb(18, 227, 7);
+    background: -moz-linear-gradient(45deg,  rgb(5, 227, 0) 0%, rgb(177, 230, 4) 25%, rgb(183, 136, 0) 51%, rgb(255, 63, 0) 100%);
+    background: -webkit-linear-gradient(45deg, rgb(5, 227, 0) 0%, rgb(177, 230, 4) 25%, rgb(183, 136, 0) 51%, rgb(255, 63, 0) 100%);
+    background: -o-linear-gradient(45deg,  rgb(5, 227, 0) 0%, rgb(177, 230, 4) 25%, rgb(183, 136, 0) 51%, rgb(255, 63, 0) 100%);
+    background: -ms-linear-gradient(45deg,  rgb(5, 227, 0) 0%, rgb(177, 230, 4) 25%, rgb(183, 136, 0) 51%, rgb(255, 63, 0) 100%);
+    background: linear-gradient(45deg, rgb(5, 227, 0) 0%, rgb(177, 230, 4) 25%, rgb(183, 136, 0) 51%, rgb(255, 63, 0) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#3bade3 ', endColorstr='#ff357f ', GradientType=1 );
+    height:5px;
+    -webkit-border-radius: 25%;
+    -moz-border-radius: 25%;
+    border-radius: 25%;
+}
+
+.range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: 2px solid;
+    border-radius: 50%;
+    height: 25px;
+    width: 25px;
+    max-width: 80px;
+    position: relative;
+    bottom: 11px;
+    background-color: #1d1c25;
+    cursor: -webkit-grab;
+
+    -webkit-transition: border 1000ms ease;
+    transition: border 1000ms ease;
+}
+
+.range::-moz-range-thumb {
+    -moz-appearance: none;
+    border: 2px solid;
+    border-radius: 50%;
+    height: 25px;
+    width: 25px;
+    max-width: 80px;
+    position: relative;
+    bottom: 11px;
+    background-color: #1d1c25;
+    cursor: -moz-grab;
+    -moz-transition: border 1000ms ease;
+    transition: border 1000ms ease;
+}
+
+
+
+
+input[type=range]::-webkit-slider-thumb:active {
+    cursor: -webkit-grabbing;
+}
+
+input[type=range]::-moz-range-thumb:active {
+    cursor: -moz-grabbing;
+}

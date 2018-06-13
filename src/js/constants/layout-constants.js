@@ -12,7 +12,8 @@ module.exports = {
         "SceneEditorGUI": "Scene-Editor-GUI",
         "TagEditor": "Tag-Editor",
         "MediaUpload": "Media-Upload",
-        "Slider":"Slider"
+        "Slider":"Slider",
+        "Config":"Config"
     },
     ComponentTitles:{
         "Scene-List":"Scene List",
@@ -26,7 +27,8 @@ module.exports = {
         "Scene-Editor-GUI":"Visual Scene Editor",
         "Tag-Editor": "Tag Editor",
         "Media-Upload":"Media Upload",
-        "Slider":"Volume Control"
+        "Slider":"Volume Control",
+        "Config":"Scene Configuration Swapper"
     },
     ColumnTypes: {
         "RHS": "RightHandSide",

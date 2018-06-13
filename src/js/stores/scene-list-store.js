@@ -18,16 +18,24 @@ function _addScenes (scenes) {
 	});
 }
 
-function _updateSceneName (_id, name, _groupID) {
+function _updateSceneName (_id, name, _groupID,_themes,_config) {
 
 	if (_scenes.hasOwnProperty(_id)) {
 		if (_scenes[_id].name !== name) {
 			_scenes[_id].name = name;
             _scenes[_id]._groupID = _groupID;
+            _scenes[_id]._themes = _themes;
+            _scenes[_id]._config = _config;
 			return true;
-		}
+		}else{
+            _scenes[_id].name = name;
+            _scenes[_id]._groupID = _groupID;
+            _scenes[_id]._themes = _themes;
+            _scenes[_id]._config = _config;
+            return true;
+        }
 	} else {
-		_scenes[_id] = {name: name, _id: _id, _groupID: _groupID};
+		_scenes[_id] = {name: name, _id: _id, _groupID: _groupID,_themes:_themes,_config:_config};
 		return true;
 	}
 }
@@ -77,11 +85,12 @@ var SceneListStore = assign({}, EventEmitter.prototype, {
             case ActionTypes.SCENE_CHANGE:
             case ActionTypes.RECIEVE_SCENE:
             	scene = action.scene;
-            	if (_updateSceneName(scene._id, scene.name, scene._groupID)) {
+            	if (_updateSceneName(scene._id, scene.name, scene._groupID,scene.themes,scene.config || {})) {
             		SceneListStore.emitChange();
-            	}
+            	}else{
+                    SceneListStore.emitChange();
+                }
             	break;
-
             case ActionTypes.DELETE_SCENE:
                 delete _scenes[action.sceneId];
                 SceneListStore.emitChange();
