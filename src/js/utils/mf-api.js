@@ -7,7 +7,7 @@ const Limiter = require('limiter').RateLimiter;
 const swaggerApiSpecUrl = process.env.MF_API_DOCS_JSON;
 
 let swaggerClient = null;
-let AudioMessageLimiter = new Limiter(10, 1000, true);
+let AudioMessageLimiter = new Limiter(1, 100, true);
 
 class MediaframeworkAPI {
 
