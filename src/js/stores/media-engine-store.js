@@ -163,6 +163,7 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
                     // APEP TODO 140618 we might not need to do this - unit test this
                     mediaInstancePool.set(poolInstance._id, poolInstance);
+                    MediaEngineStore.emitChange();
                 }
 
                 break;
