@@ -82,7 +82,7 @@ var WebsocketHTMLRandomControllerConnection = {
         });
 
         this.socket.on(MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE, function(connection, instance) {
-            MediaEngineReceiveActions.receiveMediaObjectInstance(connection, instance)
+            MediaEngineReceiveActions.receiveMediaObjectInstanceProperty(connection, instance)
         });
     },
 

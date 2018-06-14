@@ -105,7 +105,8 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
     dispatcherIndex: AppDispatcher.register(function (payload) {
         var action = payload.action;
 
-        let self = this;
+        let connection = action.connection;
+        let instance = action.instance;
 
         switch (action.type) {
 
@@ -141,10 +142,32 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
                 console.log("MediaEngineStore - The new store has received a message");
                 break;
 
-            case ActionTypes.RECEIVE_MEDIA_OBJECT_INSTANCE:
-                let connection = action.connection;
-                let instance = action.instance;
+            case ActionTypes.RECEIVE_MEDIA_OBJECT_INSTANCE_PROPERTY_CHANGE:
+                console.log(`MediaEngineStore - RECEIVE_MEDIA_OBJECT_INSTANCE_PROPERTY_CHANGE - ${JSON.stringify(instance)}`);
 
+                if (mediaInstancePool.has(instance._id)) {
+                    // APEP transfer properties
+
+                    let propertiesToTransfer = [
+                        "_startTime",
+                        "_stopTime",
+                        "_transitionTime",
+                        "_transitionType",
+                        "_volume",
+                        "visualLayer"
+                    ];
+
+                    let updatedData = _.pick(instance, propertiesToTransfer);
+                    let poolInstance = mediaInstancePool.get(instance._id);
+                    _.merge(poolInstance, updatedData);
+
+                    // APEP TODO 140618 we might not need to do this - unit test this
+                    mediaInstancePool.set(poolInstance._id, poolInstance);
+                }
+
+                break;
+
+            case ActionTypes.RECEIVE_MEDIA_OBJECT_INSTANCE:
                 // console.log(`MediaEngineStore - RECEIVE_MEDIA_OBJECT_INSTANCE - ${JSON.stringify(instance)}`);
 
                 instance.state = new MediaObjectState({initialState: instance.state.state});
@@ -166,6 +189,9 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
                     // APEP for any media object instance message - store the server copy in the instance pool
                     mediaInstancePool.set(instance._id, instance);
+
+                    // APEP TODO maybe separate receive_media_object and dirty_properties_media_object straight from the controller
+                    // We already do the work there to know if its a state transition or just a property update
 
                     // APEP is the state property has specifically changed - we need to handle state transition logic
                     if(isStateTransition) {

@@ -22,6 +22,14 @@ var MediaEngineReceiveActions = {
         });
     },
 
+    receiveMediaObjectInstanceProperty: function(connection, instance) {
+        AppDispatcher.handleServerAction({
+            type: ActionTypes.RECEIVE_MEDIA_OBJECT_INSTANCE_PROPERTY_CHANGE,
+            connection: connection,
+            instance: instance
+        });
+    },
+
     receiveControllerReset: function() {
         AppDispatcher.handleServerAction({
             type: ActionTypes.RECEIVE_CONTROLLER_RESET
