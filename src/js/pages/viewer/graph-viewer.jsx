@@ -225,13 +225,14 @@ var AudioMediaObjectInstance = React.createClass({
 
     componentDidUpdate: function(prevProps, prevState, snapshot) {
 
+        let self = this;
+
         let isTransitionIn = prevProps.mo.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.LOADED &&
             this.props.mo.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING;
 
         if (isTransitionIn) {
             console.log(`Starting tween volume in - tween for ${this.props.mo._transitionTime}`);
 
-            let self = this;
             let tween = new TWEEN.Tween({vol: 0})
                 .to({vol: this.getVolume()}, this.props.mo._transitionTime * 1000)
                 .onUpdate((obj) => {
@@ -251,8 +252,6 @@ var AudioMediaObjectInstance = React.createClass({
 
             this._stopTransitionIn();
 
-            let self = this;
-
             let tween = new TWEEN.Tween({vol: this.getVolume()})
                 .to({vol: 0}, this.props.mo._transitionTime * 1000)
                 .onUpdate((obj) => {
@@ -260,6 +259,16 @@ var AudioMediaObjectInstance = React.createClass({
                 });
             self.setState({transitionOut: tween});
             tween.start();
+        }
+
+        let isVolumeUpdate = prevProps.mo._volume !== this.props.mo._volume;
+
+        // APEP handle property changes
+        if (!isTransitionIn && !isTransitionOut) {
+
+            if(isVolumeUpdate) {
+                self.setState({volume: this.props.mo._volume});
+            }
         }
     },
 
