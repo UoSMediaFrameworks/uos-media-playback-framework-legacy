@@ -267,7 +267,7 @@ var AudioMediaObjectInstance = React.createClass({
         if (!isTransitionIn && !isTransitionOut) {
 
             if(isVolumeUpdate) {
-                self.setState({volume: this.props.mo._volume});
+                self.setState({volume: this.props.mo._volume / 100});
             }
         }
     },
