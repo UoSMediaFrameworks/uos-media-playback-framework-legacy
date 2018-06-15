@@ -41,7 +41,7 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
     },
 
     getMedia: function() {
-        return _.clone(Array.from(mediaInstancePool.values()));
+        return _.cloneDeep(Array.from(mediaInstancePool.values()));
     },
 
     getConnection: function() {
