@@ -83,7 +83,7 @@ var ImageMediaObjectInstance = React.createClass({
         const IMAGE_CLASSES = classNames({
             "image-media-object": true,
             "media-object": true,
-            "show-media-object": this.props.mo.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING
+            "show-media-object": this.props.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING
         });
 
         return (
@@ -123,7 +123,7 @@ var DashVideoMediaObjectInstance = React.createClass({
         let VIDEO_CLASSES = classNames({
             "video-media-object": true,
             "media-object": true,
-            "show-media-object": this.props.mo.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING
+            "show-media-object": this.props.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING
         });
 
         return (
@@ -197,7 +197,7 @@ var TextMediaObjectInstance = React.createClass({
         let TEXT_CLASSES = classNames({
             "text-media-object": true,
             "media-object": true,
-            "show-media-object": this.props.mo.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING
+            "show-media-object": this.props.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING
         });
 
         return (
@@ -227,8 +227,8 @@ var AudioMediaObjectInstance = React.createClass({
 
         let self = this;
 
-        let isTransitionIn = prevProps.mo.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.LOADED &&
-            this.props.mo.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING;
+        let isTransitionIn = prevProps.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.LOADED &&
+            this.props.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING;
 
         if (isTransitionIn) {
             console.log(`Starting tween volume in - tween for ${this.props.mo._transitionTime}`);
@@ -244,8 +244,8 @@ var AudioMediaObjectInstance = React.createClass({
             return;
         }
 
-        let isTransitionOut = prevProps.mo.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING &&
-            this.props.mo.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.TRANSITION;
+        let isTransitionOut = prevProps.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING &&
+            this.props.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.TRANSITION;
 
         if (isTransitionOut) {
             console.log(`Starting tween volume OUT - tween for ${this.props.mo._transitionTime}`);
