@@ -51,6 +51,7 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
     _removeInstanceTimer: function(timerMap, instance) {
         // APEP 080618 if the timeout map is still recording the instance id, we should delete
         if(timerMap.has(instance._id)){
+            clearTimeout(timerMap.get(instance._id));
             timerMap.delete(instance._id);
         }
     },
