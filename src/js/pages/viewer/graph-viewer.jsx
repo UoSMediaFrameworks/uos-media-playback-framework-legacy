@@ -252,7 +252,7 @@ var AudioMediaObjectInstance = React.createClass({
 
             this._stopTransitionIn();
 
-            let tween = new TWEEN.Tween({vol: this.getVolume()})
+            let tween = new TWEEN.Tween({vol: this.getStateVolume()})
                 .to({vol: 0}, this.props.mo._transitionTime * 1000)
                 .onUpdate((obj) => {
                     self.setState({volume: obj.vol});
@@ -297,6 +297,10 @@ var AudioMediaObjectInstance = React.createClass({
     getVolume: function() {
         // APEP protect against missing _volume property
         return (this.props.mo._volume || 100) / 100
+    },
+
+    getStateVolume: function() {
+        return this.state.volume || this.getVolume();
     },
 
     render: function () {
