@@ -9,60 +9,60 @@ var _ = require("lodash");
 
 const DASH_CACHE = "dash-blob-cache";
 
-async function addToCache(urls) {
+// async function addToCache(urls) {
+//
+//     urls = _.filter(urls, url => {
+//         return url.indexOf("video/raw") !== -1;
+//     });
+//
+//     urls = _.map(urls, url => {
+//         return url.replace("video/raw", "video/transcoded/dash")
+//     });
+//
+//
+//     let allTranscodedUrls = [];
+//
+//     _.forEach(urls, url => {
+//
+//         url = url.replace("https://", "");
+//
+//         let urlWithNoFileName = url.split("/")
+//
+//
+//         urlWithNoFileName = urlWithNoFileName.slice(0, urlWithNoFileName.length - 1);
+//
+//
+//         urlWithNoFileName = urlWithNoFileName.join("/");
+//
+//
+//         let audio =  "https://" + urlWithNoFileName + "/audio_128k.mp4";
+//         let video1 = "https://" + urlWithNoFileName + "/video_600k.mp4";
+//         let video2 = "https://" + urlWithNoFileName + "/video_1200k.mp4";
+//         let video3 = "https://" + urlWithNoFileName + "/video_2400k.mp4";
+//         let video4 = "https://" + urlWithNoFileName + "/video_4800k.mp4";
+//
+//         allTranscodedUrls.push(audio, video1, video2, video3, video4)
+//     });
+//
+//     console.log(allTranscodedUrls);
+//
+//     const myCache = await window.caches.open(DASH_CACHE);
+//     await myCache.addAll(allTranscodedUrls);
+// }
 
-    urls = _.filter(urls, url => {
-        return url.indexOf("video/raw") !== -1;
-    });
-
-    urls = _.map(urls, url => {
-        return url.replace("video/raw", "video/transcoded/dash")
-    });
-
-
-    let allTranscodedUrls = [];
-
-    _.forEach(urls, url => {
-
-        url = url.replace("https://", "");
-
-        let urlWithNoFileName = url.split("/")
-
-
-        urlWithNoFileName = urlWithNoFileName.slice(0, urlWithNoFileName.length - 1);
-
-
-        urlWithNoFileName = urlWithNoFileName.join("/");
-
-
-        let audio =  "https://" + urlWithNoFileName + "/audio_128k.mp4";
-        let video1 = "https://" + urlWithNoFileName + "/video_600k.mp4";
-        let video2 = "https://" + urlWithNoFileName + "/video_1200k.mp4";
-        let video3 = "https://" + urlWithNoFileName + "/video_2400k.mp4";
-        let video4 = "https://" + urlWithNoFileName + "/video_4800k.mp4";
-
-        allTranscodedUrls.push(audio, video1, video2, video3, video4)
-    });
-
-    console.log(allTranscodedUrls);
-
-    const myCache = await window.caches.open(DASH_CACHE);
-    await myCache.addAll(allTranscodedUrls);
-}
-
-async function addSceneMediaToCache(scene) {
-    let mos = scene.scene;
-
-    let urlMos = _.filter(mos, mo => {
-        return mo.hasOwnProperty("url");
-    })
-
-    let urls = _.map(urlMos, mo => {
-        return mo.url
-    });
-
-    addToCache(urls);
-}
+// async function addSceneMediaToCache(scene) {
+//     let mos = scene.scene;
+//
+//     let urlMos = _.filter(mos, mo => {
+//         return mo.hasOwnProperty("url");
+//     })
+//
+//     let urls = _.map(urlMos, mo => {
+//         return mo.url
+//     });
+//
+//     addToCache(urls);
+// }
 
 
 var MediaObjectList = React.createClass({
@@ -143,7 +143,7 @@ var MediaObjectList = React.createClass({
     },
 
     componentDidMount: function() {
-        addSceneMediaToCache(this.props.scene)
+        // addSceneMediaToCache(this.props.scene)
     },
 
     componentWillUpdate: function (nextProps, nextState) {
@@ -152,7 +152,7 @@ var MediaObjectList = React.createClass({
             this.setState({selectedIndex: nextProps.focusedMediaObject});
 
         if (!_.isEqual(this.props.scene, nextProps.scene)) {
-            addSceneMediaToCache(this.props.scene)
+            // addSceneMediaToCache(this.props.scene)
         }
     },
 

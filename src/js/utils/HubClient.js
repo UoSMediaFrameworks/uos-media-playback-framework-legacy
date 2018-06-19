@@ -90,7 +90,7 @@ var HubClient = {
             if (data.name === 'showScenes') {
                 // APEP publish scene ID list
                 HubRecieveActions.recieveSceneListForPlayer(data.value);
-            } else if (data.name === 'showScenesAndThemes') {
+            } else if (data.name === 'showSceneAndThemes') {
                 HubRecieveActions.recieveSceneAndThemeListForPlayer(data.value);
             } else {
                 HubRecieveActions.errorMessage("Failed to receive scene list for playback");
