@@ -178,10 +178,12 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
                 try {
 
+                    // APEP if this is the first time we are seeing the instance, we only accept instances at LOAD
                     if (!mediaInstancePool.has(instance._id)) {
-                        // APEP if this is the first time we are seeing the instance, we only accept instances at LOAD
+
                         let isInstanceAtBeginningState = instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.LOADED;
 
+                        // APEP we break out of switch so we don't store the instance - ie this media engine rejects that instance
                         if(!isInstanceAtBeginningState) {
                             break;
                         }

@@ -45,7 +45,7 @@ var WebsocketHTMLRandomControllerConnection = {
 
         console.log(`MediaEngineConnection - login ${url} ${JSON.stringify(creds)}`);
 
-        this.socket = io(url, {forceNew: true});
+        this.socket = io(url, {forceNew: true, transports: ['websocket']});
 
         let self = this;
 
