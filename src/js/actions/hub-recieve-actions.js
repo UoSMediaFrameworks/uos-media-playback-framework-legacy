@@ -1,6 +1,7 @@
 var SceneConstants = require('../constants/scene-constants');
 var AppDispatcher = require('../dispatchers/app-dispatcher');
 var ActionTypes = SceneConstants.ActionTypes;
+var _ = require('lodash');
 
 var HubRecieveActions = {
 
@@ -82,8 +83,8 @@ var HubRecieveActions = {
     },
     recieveSceneAndThemeListForPlayer: function(scoreCommand) {
 
-        var sceneIds = scoreCommand.play.scenes;
-        var themes = scoreCommand.play.themes;
+        var sceneIds = _.get(scoreCommand, 'play.scenes') || _.get(scoreCommand, 'scenes');
+        var themes = _.get(scoreCommand, 'play.themes') || _.get(scoreCommand, 'themes');
 
         AppDispatcher.handleViewAction({
             type: ActionTypes.RECIEVE_SCENES_AND_THEMES_FROM_SCORE,
