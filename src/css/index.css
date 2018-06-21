@@ -1157,3 +1157,9 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     padding-left: 2px;
     padding-right: 2px;
 }
+
+.mf-placeable {
+    border: 1px solid red;
+    width: 100%;
+    height: 100%;
+}

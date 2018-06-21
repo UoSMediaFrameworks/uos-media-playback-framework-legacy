@@ -23,6 +23,8 @@ var SceneEditorGUI = React.createClass({
             shouldSave: false,
             height: 0,
             width: 0,
+            targets = [],
+            clicked: 0
         });
     },
 
@@ -165,6 +167,7 @@ var SceneEditorGUI = React.createClass({
     // post render events:
     componentDidUpdate() {
         //check for resize and update if size changed
+        this.checkColision(this.SceneObjectA, this.SceneObjectB);
 
         if (this.SceneLayoutArea != null) {
             var area = this.SceneLayoutArea;
@@ -343,6 +346,7 @@ var SceneEditorGUI = React.createClass({
             placement = this.zoom(0, placement)
         }
 
+        //
         this.setState({placement: placement, shouldSave: true})
     },
 
@@ -573,249 +577,177 @@ var SceneEditorGUI = React.createClass({
         //for debug
         console.log("SceneEditorGUI: Rendering", this.state)
 
-        if (this.state.scene == null) {
-            return(<div className="mf-empty-grid-component">Please select a scene</div>)
-        }
+        var placement = {
+            x: 0,
+            y: 0,
+            width: 100,
+            height: 100,
+            rotation: 0,
+            isRandom: false,
+            IsAspectLocked: true,
+            valid: true
+        };
 
-        if (this.state.focusedMediaObject == null) {
-            return(<div className="mf-empty-grid-component">Please select a media object</div>)
-        }
+        return (
+            <div style = {{width: "100%", height: "100%"}}>
+        <Rectangle aspectRatio={[16, 9]}>
+            <div className="mf-scene-layout-area mf_fs_widget_padding_remove" ref="LayoutArea">
+                    <Rnd
+                        ref="ref1"
+                        bounds = "parent"
+                        default={{
+                        x: 0,
+                        y: 0,
+                        width: 320,
+                        height: 200,
+                        }}
+                        >
+                        <div className="mf-placeable">1</div>
+                    </Rnd>
+                    <Rnd
+                        ref="ref2"
+                        bounds = "parent"
+                        onDragStop={(e, d) => {
+                            this.checkColision(e,d)
+                        }}
+                        default={{
+                        x: 0,
+                        y: 0,
+                        width: 320,
+                        height: 200,
+                        }}
+                        >
+                        <div className="mf-placeable">2</div>
+                    </Rnd>
+                    <Rnd
+                        ref="ref3"
+                        bounds = "parent"
+                        onDragStop={(e, d) => {
+                            this.checkColision(e,d)
+                        }}
+                        default={{
+                        x: 0,
+                        y: 0,
+                        width: 320,
+                        height: 200,
+                        }}
+                        >
+                        <div className="mf-placeable">3</div>
+                    </Rnd>
+            </div>
+        </Rectangle>
+        </div>
+        )
+    },
 
+    
 
-        if (this.state.mediaTypeSupported == false) {
-            //unsupported type, no reason to load the editor
-            return(
-                <div className="mf-empty-grid-component">This media type can't be positioned</div>
-            )
-        } else {
-            //supported type, load the editor
-            if (this.state.placement != null) {
+    checkColision: function(e,d) {
+        console.log(this.refs.ref1)
+        console.log(this.refs.ref2)
+        A = {
+            width: this.refs.ref1.resizable.state.width,
+            height: this.refs.ref1.resizable.state.height,
+            x: this.refs.ref1.draggable.state.x,
+            y: this.refs.ref1.draggable.state.y
+        } 
+        B = {
+            width: this.refs.ref2.resizable.state.width,
+            height: this.refs.ref2.resizable.state.height,
+            x: this.refs.ref2.draggable.state.x,
+            y: this.refs.ref2.draggable.state.y
+        } 
+       
+        w = 0.5 * (A.width + B.width);
+        h = 0.5 * (A.height + B.height);
+        dx = (A.x + A.width/2) - (B.x + B.width/2);
+        dy = (A.y + A.height/2) - (B.y + B.height/2);
 
+       if (Math.abs(dx) <= w && Math.abs(dy) <= h)
+       {
+           //collision!
+           wy = w * dy;
+           hx = h * dx;
 
-                if (this.state.placement.valid == false) {
-                    return(<div className="mf-empty-grid-component">This objects placement is invalid, please check it's style is fully specifed with top, left, width and height in the JSON</div>)
-                }
+           if (wy > hx) {
+           if (wy > -hx) {
+               console.log("col top")
+               this.refs.ref2.draggable.state.y = A.y - B.height;
+           } else {
+                console.log("col left")
+                this.refs.ref2.draggable.state.x = A.x + A.width;
+           }
+           } else {
+               if (wy > -hx) {
+                console.log("col right")
+                this.refs.ref2.draggable.state.x = A.x - A.width;
+               } else {
+                console.log("col bottom")
+                this.refs.ref2.draggable.state.y = A.y + A.height;
+               }
+           }
+       }
+   },
 
+   shrink: function(e,d) {
 
-                if (this.state.placement.isRandom) {
-                    //placement is random disable all controls and display message
-                    return (
-                        <div className="mf-no-scroll-grid-component">
-                        <Rectangle aspectRatio={[16, 9]}>
-                            <div className="mf-scene-layout-area mf_fs_widget_padding_remove" ref={(c) => this.SceneLayoutArea = c}>
-                                By default content is placed randomly. Uncheck random placement to manualy
-                                position media.
-                            </div>
-                        </Rectangle>
-
-                        <div className="mf-gui-toolbar mf_fs_widget_padding_remove">
-                            <span>
-                                <span className="mf-gui-toolbar-text">Random Postion</span>
-                                <FontAwesome
-                                    id="randomPlacement"
-                                    className='mf-gui-toolbar-icon'
-                                    onClick={this.toggleRandomPlacement}
-                                    name='check-square-o'
-                                    size='2x'/>
-                            </span>
-                        </div>
-                    </div>
-                    )
-                } else {
-                    //placement is manual, load the full editor
-
-                    //get the correct icon state
-                    var aspectIcon;
-                    if (this.state.placement.IsAspectLocked) {
-                        aspectIcon = "lock";
-                    } else {
-                        aspectIcon = "unlock";
-                    }
-
-                    return (
-                        <div className="mf-empty-grid-component">
-                            <Rectangle aspectRatio={[16, 9]}>
-                                <div className="mf-scene-layout-area mf_fs_widget_padding_remove" ref={(c) => this.SceneLayoutArea = c}>
-                                    <Rnd
-                                        ref={(c) => this.SceneObject = c}
-                                        bounds='parent'
-                                        onDragStop={(e, d) => {
-                                        this.onSceneObjectMoved(e, d)
-                                    }}
-                                        onResize={(e, direction, ref, delta, position) => {
-                                        this.onSceneObjectResizing(e, direction, ref, delta, position)
-                                    }}
-                                        onResizeStop={(e, direction, ref, delta, position) => {
-                                        this.onSceneObjectResizingEnded(e, direction, ref, delta, position)
-                                    }}
-                                        size={{
-                                        width: (this.state.placement.width / 100) * this.state.width,
-                                        height: (this.state.placement.height / 100) * this.state.height
-                                    }}
-                                        position={{
-                                        x: (this.state.placement.x / 100) * this.state.width,
-                                        y: (this.state.placement.y / 100) * this.state.height
-                                    }}
-                                        lockAspectRatio={this.state.placement.IsAspectLocked}>
-
-                                        {this.getMediaRepresentation(this.state.mediaObject)}
-
-                                    </Rnd>
-                                </div>
-                            </Rectangle>
-                            <div className="mf-gui-toolbar mf_fs_widget_padding_remove">
-
-                                <span>
-                                    <FontAwesome
-                                        id="moveUp"
-                                        className='mf-gui-toolbar-icon'
-                                        name='arrow-up'
-                                        onClick={this.toolbarButtonClick}
-                                        size='2x'/>
-                                    <FontAwesome
-                                        id="moveDown"
-                                        className='mf-gui-toolbar-icon'
-                                        name='arrow-down'
-                                        onClick={this.toolbarButtonClick}
-                                        size='2x'/>
-                                    <FontAwesome
-                                        id="moveLeft"
-                                        className='mf-gui-toolbar-icon'
-                                        name='arrow-left'
-                                        onClick={this.toolbarButtonClick}
-                                        size='2x'/>
-                                    <FontAwesome
-                                        id="moveRight"
-                                        className='mf-gui-toolbar-icon'
-                                        name='arrow-right'
-                                        onClick={this.toolbarButtonClick}
-                                        size='2x'/>
-                                </span>
-
-                                <span>
-                                    <FontAwesome
-                                        id='rotate-left'
-                                        className='mf-gui-toolbar-icon'
-                                        name='rotate-left'
-                                        onClick={this.toolbarButtonClick}
-                                        size='2x'/>
-                                    <FontAwesome
-                                        id='rotate-right'
-                                        className='mf-gui-toolbar-icon'
-                                        name='rotate-right'
-                                        onClick={this.toolbarButtonClick}
-                                        size='2x'/>
-                                </span>
-
-                                <span>
-                                    <FontAwesome
-                                        id="zoomIn"
-                                        className='mf-gui-toolbar-icon'
-                                        name='search-plus'
-                                        size='2x'
-                                        onClick={this.toolbarButtonClick}/>
-                                    <FontAwesome
-                                        id="zoomOut"
-                                        className='mf-gui-toolbar-icon'
-                                        name='search-minus'
-                                        size='2x'
-                                        onClick={this.toolbarButtonClick}/>
-                                </span>
-
-                                <span>
-                                    <span className="mf-gui-toolbar-text">Random Postion</span>
-                                    <FontAwesome
-                                        id="randomPlacement"
-                                        className='mf-gui-toolbar-icon'
-                                        onClick={this.toggleRandomPlacement}
-                                        name='square-o'
-                                        size='2x'/>
-                                </span>
-
-                                <span>
-                                    <span className="mf-gui-toolbar-text">Aspect Ratio</span>
-                                    <FontAwesome
-                                        id="aspectRatio"
-                                        className='mf-gui-toolbar-icon'
-                                        onClick={this.toolbarButtonClick}
-                                        name={aspectIcon}
-                                        size='2x'/>
-                                </span>
-
-                                <span>
-                                    <FontAwesome
-                                        id="refresh"
-                                        className='mf-gui-toolbar-icon'
-                                        onClick={this.getDefaultPlacement}
-                                        name='refresh'
-                                        size='2x'/>
-                                </span>
-
-                                <span className="mf-gui-editor-templateBar">
-                                    <span className="mf-gui-toolbar-text">Templates</span>
-                                    <img
-                                        id="QuadUL"
-                                        width='32'
-                                        height='32'
-                                        onClick={this.templateButtonClick}
-                                        src="images/QuadUL.png"/>
-                                    <img id="QuadUR" onClick={this.templateButtonClick} src="images/QuadUR.png"/>
-                                    <img id="QuadLL" onClick={this.templateButtonClick} src="images/QuadLL.png"/>
-                                    <img id="QuadLR" onClick={this.templateButtonClick} src="images/QuadLR.png"/>
-                                    <img id="Full" onClick={this.templateButtonClick} src="images/Full.png"/>
-                                    <img id="Center" onClick={this.templateButtonClick} src="images/Center.png"/>
-                                </span>
-
-                            </div>
-                        </div>
-                    );
-                }
-
-
-
-            }
-        }
-        return (<div className="mf-empty-grid-component"> failed to render component</div>)
-    }
+    //check if overlap and shrink to fit in space
+    
+   }     
 
 });
 
 
-var PositionableMediaObject = react.createClass({
+var PositionableMediaObject = React.createClass ({
 
-    constructor(props) {
-        super(props);
+    getInitialState: function(){
+        return {
+            x: x,
+            placement: {
+                x: 0,
+                y: 0,
+                width: 50,
+                height: 50,
+                rotation: 0,
+                isRandom: false,
+                IsAspectLocked: true,
+                valid: true},
+        }
+    },
+
+    onDrag: function() {
+
+    },
+
+    onDragEnd: function(){
+
+    },
     
-        this.state = {
-          x: props.x,
-          y: props.y,
-          z: props.z,
-          width: props.width,
-          height: props.height,
-          rotation = props.rotation
-        };
+    onMoved: function () {
+
+    },   
+    
+    onMoveEnd: function() {
+
     },
 
     render: function() {
-        <Rnd
-            ref={(c) => this.SceneObject = c}
-            bounds='parent'
-            onDragStop={(e, d) => {this.onSceneObjectMoved(e, d)}}
-            onResize={(e, direction, ref, delta, position) => {this.onSceneObjectResizing(e, direction, ref, delta, position)}}
-            onResizeStop={(e, direction, ref, delta, position) => {this.onSceneObjectResizingEnded(e, direction, ref, delta, position)}}
-            size={{width: (this.state.placement.width / 100) * this.state.width,
-                   height: (this.state.placement.height / 100) * this.state.height}}
-            position={{x: (this.state.placement.x / 100) * this.state.width,
-                       y: (this.state.placement.y / 100) * this.state.height}}
-            lockAspectRatio={this.state.placement.IsAspectLocked}>
-
-            {this.getMediaRepresentation(this.state.mediaObject)}
-
-        </Rnd>
+    <Rnd
+        default={{
+            x: 0,
+            y: 0,
+            width: 320,
+            height: 200,
+        }}>
+        Rnd
+    </Rnd>
     }
 
-
-
 })
+
+
+function PercentageToAboloute(ValPercent, percentOf) {
+    return (ValPercent/100)*percentOf
+}
 
 module.exports = SceneEditorGUI;
