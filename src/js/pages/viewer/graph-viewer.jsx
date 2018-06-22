@@ -314,7 +314,8 @@ var AudioMediaObjectInstance = React.createClass({
     },
 
     getStateVolume: function() {
-        let volumeForTweenOut = this.state.volume || this.getVolume();
+        // APEP as this.state.volume is a number, when the volume is 0, it is being interpreted as false.
+        let volumeForTweenOut = this.state.volume; // || this.getVolume();
 
         console.log(`getStateVolume - volumeForTweenOut - ${volumeForTweenOut}`);
 
