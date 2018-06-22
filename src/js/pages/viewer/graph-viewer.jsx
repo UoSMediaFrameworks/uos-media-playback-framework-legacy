@@ -263,18 +263,32 @@ var AudioMediaObjectInstance = React.createClass({
 
         let isVolumeUpdate = prevProps.mo._volume !== this.props.mo._volume;
 
-        // APEP handle property changes
-        if (!isTransitionIn && !isTransitionOut) {
-
-            if(isVolumeUpdate) {
-                self.setState({volume: this.props.mo._volume / 100});
+        // APEP if we've had a volume property change
+        if (isVolumeUpdate) {
+            // APEP stop any automatic system volume tweens - the performer should take over
+            // APEP 220618 While the react component state might not clear up this.state.transitionIn - use a try catch as we do not want to introduce any thrown errors
+            try {
+                this._stopTransitionIn();
+            } catch (e) {
+                console.log("componentDidUpdate - failed to stopTransitionIn - either a true error or the tween has been stopped and removed already");
+                console.log(e);
             }
+
+            try {
+                this._stopTransitionOut();
+            } catch (e) {
+                console.log("componentDidUpdate - failed to _stopTransitionOut - either a true error or the tween has been stopped and removed already");
+                console.log(e);
+            }
+
+            self.setState({volume: this.props.mo._volume / 100});
         }
+
     },
 
     _stopTransitionIn: function() {
         if(this.state.transitionIn) {
-            console.log("componentWillUnmount - transitionIn");
+            console.log("_stopTransitionIn - transitionIn");
             this.state.transitionIn.stop();
             TWEEN.remove(this.state.transitionIn);
         }
@@ -282,7 +296,7 @@ var AudioMediaObjectInstance = React.createClass({
 
     _stopTransitionOut: function() {
         if(this.state.transitionOut) {
-            console.log("componentWillUnmount - transitionOut");
+            console.log("_stopTransitionOut - transitionOut");
             this.state.transitionOut.stop();
             TWEEN.remove(this.state.transitionOut);
         }
