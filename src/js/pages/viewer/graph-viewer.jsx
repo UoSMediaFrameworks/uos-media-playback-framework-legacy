@@ -314,7 +314,11 @@ var AudioMediaObjectInstance = React.createClass({
     },
 
     getStateVolume: function() {
-        return this.state.volume || this.getVolume();
+        let volumeForTweenOut = this.state.volume || this.getVolume();
+
+        console.log(`getStateVolume - volumeForTweenOut - ${volumeForTweenOut}`);
+
+        return volumeForTweenOut;
     },
 
     render: function () {
