@@ -242,6 +242,9 @@ var NavigationBar = React.createClass({
                                         <MenuItem eventKey="1"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditor)}>Scene
                                             Editor</MenuItem>
+                                        <MenuItem eventKey="1"
+                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.MuliItemEditor)}>Scene Editor Multi
+                                        </MenuItem>
                                         <MenuItem eventKey="2"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneMediaBrowser)}>Scene
                                             Media Browser</MenuItem>

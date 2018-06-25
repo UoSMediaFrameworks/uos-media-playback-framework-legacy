@@ -11,7 +11,8 @@ module.exports = {
         "SceneMediaBrowser": "Scene-Media-Browser",
         "SceneEditorGUI": "Scene-Editor-GUI",
         "TagEditor": "Tag-Editor",
-        "MediaUpload": "Media-Upload"
+        "MediaUpload": "Media-Upload",
+        "MuliItemEditor": "Scene-Editor-Multi",
     },
     ComponentTitles:{
         "Scene-List":"Scene List",
@@ -24,7 +25,8 @@ module.exports = {
         "Scene-Media-Browser":"Scene Media Browser",
         "Scene-Editor-GUI":"Visual Scene Editor",
         "Tag-Editor": "Tag Editor",
-        "Media-Upload":"Media Upload"
+        "Media-Upload":"Media Upload",
+        "Scene-Editor-Multi": "Scene Editor Multi-Item"
     },
     ColumnTypes: {
         "RHS": "RightHandSide",
