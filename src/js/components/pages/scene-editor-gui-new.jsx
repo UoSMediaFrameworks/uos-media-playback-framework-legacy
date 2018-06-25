@@ -10,9 +10,10 @@ var Rectangle = require('react-rectangle');
 var ImageLoader = require('react-imageloader');
 var MediaObjectPreview = require('../scene-editor/media-object-preview.jsx');
 var Glyphicon = require('../glyphicon.jsx');
+var Hat = require('hat');
 
 var SceneEditorGUI = React.createClass({ 
-    
+
     saveTimeout: null,
 
     getInitialState: function() {
@@ -65,12 +66,13 @@ var SceneEditorGUI = React.createClass({
             this.setState(this.getStateFromStores());
     },
 
+    
     addTarget: function() {
         scene = this.state.scene
         currentTargets = scene.targets;
         
         var newTarget = {
-            "ID": currentTargets.length, //next sequential ID (probably risky - UUID?)
+            "ID": hat(), //assign UID - not currently used but futureproofing JSON
             "Placement": {
                 "x": 0,
                 "y": 0,
@@ -137,6 +139,29 @@ var SceneEditorGUI = React.createClass({
         scene.targets[targetIndex].mediaObjects.push(selectedMediaObject);
         this.setState({scene: scene})
         this.setSave();
+    },
+
+    SetTargetStyle: function(targetIndex, style) {
+        scene = this.state.scene;
+        target = scene.targets[targetIndex];
+
+
+        switch (style) {
+            case "quad":
+                if (target.style === "quad") {
+                    target.style = "";
+                } else {
+                    target.style = "quad";
+                }
+                break;
+            default:
+                taget.style = "";
+                break;
+        }
+
+        scene.targets[targetIndex] = target;
+        this.setState({scene: scene});
+        this.setSave;
     },
     
     OnTargetDrag: function(targetIndex, newLocation) {
@@ -380,6 +405,11 @@ var SceneEditorGUI = React.createClass({
                 tempZIndex += 100; // temp bring to front when selected
             }
 
+            //required to avoid blowing up on targets that don't have style.
+            if (!target.hasOwnProperty("style")) {
+                target.style = "";
+            }
+
             renderTargets.push(
                 <Rnd
                     size={{
@@ -400,7 +430,7 @@ var SceneEditorGUI = React.createClass({
                          style = {{transform: 'rotate(' + target.Placement.rotate + 'deg)', zIndex: target.Placement.z + tempZIndex, backgroundColor: "hsl(0, 0%, 20%)"}}
                          >
                         <span>
-                            <div>{target.ID + " - Layer: " + target.Placement.z }</div>
+                            <div>{index + " - Layer: " + target.Placement.z + " style: " + target.style}</div>
 
                             <FontAwesome
                                 id="addMediaToTarget"
@@ -409,7 +439,13 @@ var SceneEditorGUI = React.createClass({
                                 name='plus-square'
                                 size='2x'
                             />
-                            
+                            <FontAwesome
+                                id="addMediaToTarget"
+                                className='mf-gui-toolbar-icon'
+                                onClick={() => {this.SetTargetStyle(index, "quad")}}
+                                name='th-large'
+                                size='2x'
+                            />
                             <FontAwesome
                                 id="addTarget"
                                 className='mf-gui-toolbar-icon'
@@ -548,13 +584,60 @@ var SceneEditorGUI = React.createClass({
     Save: function() {
         mediaObjectPatch = [];
 
+        
         this.state.scene.targets.forEach(target => {
-            var mfStyle = this.ConvertPlacmentToMfStyle(target.Placement)
-            target.mediaObjects.forEach(mediaObject => {
-                mediaObjectPatch.push({id: mediaObject, style: mfStyle})
-            });
+            if (target.style === "quad") {
+                var quad = this.getQuadFromPlacement(target.Placement);
+                target.mediaObjects.forEach((mediaObject, index) => {
+                    var placement = _.cloneDeep(target.Placement);
+                    var quadPatch = quad[index%4];
+                    placement.x = quadPatch.x;
+                    placement.y = quadPatch.y;
+                    placement.width = quadPatch.width;
+                    placement.height = quadPatch.height;
+                    var style = this.ConvertPlacmentToMfStyle(placement);
+                    style.padding = "5px"
+                    mediaObjectPatch.push({id: mediaObject, style: style})
+                });
+
+            } else {
+                var mfStyle = this.ConvertPlacmentToMfStyle(target.Placement)
+                target.mediaObjects.forEach(mediaObject => {
+                    mediaObjectPatch.push({id: mediaObject, style: mfStyle})
+                });
+            }
         });
         this.SaveToScene(mediaObjectPatch)
+    },
+
+    getQuadFromPlacement(placement) {
+        //calculate nice quad layout with proportional gap
+        return [
+            { //UL
+                x: placement.x, 
+                y: placement.y, 
+                width: placement.width/2, 
+                height: placement.height/2
+            }, 
+            { //UR
+                x: placement.x + placement.width/2, 
+                y: placement.y, 
+                width: placement.width/2, 
+                height: placement.height/2
+            },
+            { //LL
+                x: placement.x, 
+                y: placement.y + placement.height/2,
+                width: placement.width/2, 
+                height: placement.height/2
+            },
+            { //LR
+                x: placement.x + placement.width/2, 
+                y: placement.y + placement.height/2, 
+                width: placement.width/2, 
+                height: placement.height/2
+            }
+        ]
     },
 
     SaveToScene: function(ChangedMediaObjects) {
