@@ -224,10 +224,7 @@ var MediaObjectList = React.createClass({
 
                         let isMatchedByTagMatcher = tagMatcher.match(mediaObject.tags);
 
-                        let isPartialMatch = false;
-                        if (mediaObject.tags.indexOf(self.state.tagSearch) !== -1) {
-                            isPartialMatch = true;
-                        }
+                        let isPartialMatch = mediaObject.tags.indexOf(self.state.tagSearch) !== -1;
 
                         //AP : making sure that the objects that answer to the tag matcher are highlighted
                         if (isMatchedByTagMatcher || isPartialMatch) {
