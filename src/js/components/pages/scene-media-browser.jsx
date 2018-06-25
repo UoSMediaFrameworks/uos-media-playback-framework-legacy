@@ -12,6 +12,8 @@ var MediaPreviewComponent =  require('../scene-editor/media-preview-player.jsx')
 var SplitPane = require('react-split-pane');
 var Measure = require('react-measure');
 
+var DEFAULT_SPLIT_PANE_POS = 150;
+
 var SceneMediaBrowser = React.createClass({
 
     getInitialState: function () {
@@ -21,7 +23,7 @@ var SceneMediaBrowser = React.createClass({
                 width: -1,
                 height: -1
               },
-            lowerPaneHeight: 0               
+            lowerPaneHeight: 0
         });
     },
 
@@ -70,16 +72,16 @@ var SceneMediaBrowser = React.createClass({
             <div className='RemoveWidgetPadding'>
                 <div className={showOverlay}></div>
                 <Measure onMeasure={this.onMeasure}>
-                    <SplitPane id="splitPane" split="horizontal" minSize={0} defaultSize={this.getLastSplit()} onChange={size => this.splitChanged(size)}>
-                        <div style={{height: "100%", width: "100%"}}>
-                            <MediaPreviewComponent 
-                                style={{height: "100%", width: "100%"}} 
+                    <SplitPane id="splitPane" split="horizontal" minSize={0} maxSize={-15} defaultSize={this.getLastSplit()} onChange={size => this.splitChanged(size)}>
+                        <div style={{width: "100%"}}>
+                            <MediaPreviewComponent
+                                style={{height: "100%", width: "100%"}}
                                 focusedMediaObject={this.props.focusedMediaObject}
                                 scene={this.state.scene}
                             />
                         </div>
                         <div style={{height: (""+this.state.lowerPaneHeight+"px"), width: "100%"}}>
-                            <MediaObjectList 
+                            <MediaObjectList
                                 focusedMediaObject={this.props.focusedMediaObject}
                                 focusHandler={SceneActions.changeMediaObjectFocus}
                                 scene={this.state.scene}
@@ -89,6 +91,10 @@ var SceneMediaBrowser = React.createClass({
                 </Measure>
             </div>
         )
+    },
+
+    _normaliseSplitPos: function(newSplitPos) {
+        return newSplitPos > this.state.dimensions.height ? DEFAULT_SPLIT_PANE_POS : newSplitPos;
     },
 
     splitChanged: function(size) {
@@ -101,9 +107,11 @@ var SceneMediaBrowser = React.createClass({
     getLastSplit: function() {
         if (localStorage.getItem("splitPos") === null) {
             //default split
-            return 150;
-        } else { 
-            return parseInt(localStorage.getItem('splitPos'), 10)
+            return DEFAULT_SPLIT_PANE_POS;
+        } else {
+            // APEP if we've cached a value larger than the dimensions of the component, lets fallback to default
+            var cachedSplitPos = parseInt(localStorage.getItem('splitPos'), 10);
+            return this._normaliseSplitPos(cachedSplitPos);
         }
     },
 
