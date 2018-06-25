@@ -147,10 +147,12 @@ var SceneEditorGUI = React.createClass({
         this.setSave();
     },
 
-    OnTargetResize: function(targetIndex, newSize) {
+    OnTargetResize: function(targetIndex, newSize, placement) {
         scene = this.state.scene
         scene.targets[targetIndex].Placement.width = (newSize.offsetWidth/this.state.width)*100;
         scene.targets[targetIndex].Placement.height = (newSize.offsetHeight/this.state.height)*100;
+        scene.targets[targetIndex].Placement.x = (placement.x/this.state.width)*100;
+        scene.targets[targetIndex].Placement.y = (placement.y/this.state.height)*100;
         this.setState({
             scene: scene
         });
@@ -391,7 +393,7 @@ var SceneEditorGUI = React.createClass({
                     bounds = "parent"
                     style = {{zIndex: target.Placement.z + tempZIndex}}
                     onDrag={(e, d) => this.OnTargetDrag(index, d)}                   
-                    onResize={(e, direction, refToElement, delta, position) => this.OnTargetResize(index, refToElement)}
+                    onResize={(e, direction, refToElement, delta, position) => this.OnTargetResize(index, refToElement, position)}
                 >                
                     <div className={klass} 
                          onClick={() => {this.setState({selectedIndex: index})}}
