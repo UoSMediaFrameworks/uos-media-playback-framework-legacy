@@ -358,6 +358,13 @@ var SceneEditorGUI = React.createClass({
             ) 
         } 
 
+        if (!this.state.scene.hasOwnProperty("targets")) {
+            scene = this.state.scene;
+            scene.targets = [];
+            this.setState({scene: scene})
+            this.setSave()
+        }
+
         var targets = this.state.scene.targets
 
         var renderTargets = []
