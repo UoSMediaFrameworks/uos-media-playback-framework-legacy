@@ -8,444 +8,219 @@ var Rnd = require('react-rnd');
 var FontAwesome = require('react-fontawesome');
 var Rectangle = require('react-rectangle');
 var ImageLoader = require('react-imageloader');
+var MediaObjectPreview = require('../scene-editor/media-object-preview.jsx');
+var Glyphicon = require('../glyphicon.jsx');
 
-var SceneEditorGUI = React.createClass({
-
+var SceneEditorGUI = React.createClass({ 
+    
     saveTimeout: null,
 
-    getInitialState: function () {
-        return _.extend(this.getStateFromStores(), {
-            focusedMediaObject: null,
-            scene: null,
-            placement: null,
-            mediaObject: null,
-            mediaTypeSupported: null,
-            shouldSave: false,
-            height: 0,
-            width: 0,
-            targets = [],
-            clicked: 0
-        });
+    getInitialState: function() {
+        console.log("TSX -GH")
+        return {
+            selectedIndex: 0,
+            scene: SceneStore.getScene(this.props._id)
+        };
     },
 
-    getStateFromStores: function () {
+    getStateFromStores: function() {
         return {
-            scene: SceneStore.getScene(this.props._id),
+            scene: SceneStore.getScene(this.props._id)
         };
     },
 
     componentDidMount: function () {
+        console.log("SceneEditorGUI: Mounted")
+        //subscribe to changes
+        SceneStore.addChangeListener(this._onChange);
+        //GridStore.addChangeListener(this._onFocusChange)
 
-
-    },
-
-    componentWillReceiveProps: function (nextProps) {
-        //same as focus change, same handling procedure, required because selected scene change dosn't appear to reliably fire change event??
-        //this._onFocusChange();
+        //this is the first point where rendered size of area can be captured
+        if(this.SceneLayoutArea){
+            this.setState({width: this.SceneLayoutArea.offsetWidth, height: this.SceneLayoutArea.offsetHeight})
+        }
     },
 
     componentWillUnmount: function () {
+        if (this.saveTimeout) {
+            //this.saveToScene()
+            clearTimeout(this.saveTimeout);
+        }
         SceneStore.removeChangeListener(this._onChange);
-        GridStore.removeChangeListener(this._onFocusChange)
+        //GridStore.removeChangeListener(this._onFocusChange);
+    },
+
+    _onFocusChange() {
+        var selectedMediaObject = GridStore.getFocusedMediaObject() 
+        var scene = this.state.scene
+        scene.targets[selectedIndex].mediaObjects.push(selectedMediaObject);
+        this.setState({scene: scene});
+        console.log("TSX2", scene.targets);
+        this.setSave();
     },
 
     _onChange: function () {
         //scene changed, clear all state
-        //clearTimeout(saveTimeout);
-        console.log("SceneEditorGUI: Scene change", this.getStateFromStores())
-        this.setState(this.getStateFromStores());
+        clearTimeout(this.saveTimeout);
+        
+            console.log("SceneEditorGUI: Scene change", this.getStateFromStores())
+            this.setState(this.getStateFromStores());
     },
 
-    _onFocusChange: function () {
-        //clearTimeout(saveTimeout) //overide autosave
-        //this.saveToScene() //save last object to scene before doing anything else.
-        var focusedMediaObject = GridStore.getFocusedMediaObject();
-        var scene = SceneStore.getScene(this.props._id);
-
-        var mediaObject = null;
-        var placement = null;
-        var mediaTypeSupported = null;
-
-        //have to use try catch because focusedMediaObject can be out of bounds
-        try {
-            mediaObject = scene.scene[focusedMediaObject]
-        } catch (error) {
-            console.log("SceneEditorGUI: failed to read media object", error);
+    addTarget: function() {
+        scene = this.state.scene
+        currentTargets = scene.targets;
+        
+        var newTarget = {
+            "ID": currentTargets.length, //next sequential ID (probably risky - UUID?)
+            "Placement": {
+                "x": 0,
+                "y": 0,
+                "z": 1,
+                "width": 50,
+                "height": 50,
+                "rotate": 0,
+                "isRandom": false,
+            },
+            "mediaObjects": []
         }
-
-        //handle different media types
-        if (mediaObject != null) {
-            switch (mediaObject.type) {
-                case "image":
-                    mediaTypeSupported = true
-                    placement = this.getPlacementFromMfJSON(mediaObject);
-                    break;
-                case "video":
-                    mediaTypeSupported = true
-                    placement = this.getPlacementFromMfJSON(mediaObject);
-                    break;
-                default:
-                    //unsupported media type
-                    mediaTypeSupported = false
-                    break;
-            }
-        }
-
-        this.setState(_.extend(this.getStateFromStores(), {
-            focusedMediaObject: focusedMediaObject,
-            placement: placement,
-            mediaObject: mediaObject,
-            mediaTypeSupported: mediaTypeSupported,
-            shouldSave: false,
+        currentTargets.push(
+            newTarget
+        )
+        this.setState({
             scene: scene
-        }));
-
+        })
+        this.setSave();
     },
 
-    getPlacementFromMfJSON(mediaObject) {
-        var placement = {
-            x: 0,
-            y: 0,
-            width: 100,
-            height: 100,
-            rotation: 0,
-            isRandom: false,
-            IsAspectLocked: true,
-            valid: true
-        };
 
-        // APEP We must check to see if the mediaObject has the style property
-        if (mediaObject.hasOwnProperty("style") && mediaObject.style.position === "absolute") {
-            try {
-                console.log("SceneEditorGUI: Loading Position");
-                placement.x = parseFloat(mediaObject.style.left);
-                placement.y = parseFloat(mediaObject.style.top);
-                placement.width = parseFloat(mediaObject.style.width);
-                placement.height = parseFloat(mediaObject.style.height);
-                placement.isRandom = false
+    removeMediaObjectFromTarget: function(targetIndex, mediaObjectID) {
+        var scene = this.state.scene;
+        var mediaObjectIndex = scene.targets[targetIndex].mediaObjects.indexOf(mediaObjectID);
+        scene.targets[targetIndex].mediaObjects.splice(mediaObjectIndex, 1);
+        this.setState({scene: scene});
+        this.setSave();
+    },
 
+    getTargetMediaObjectsAsListItems: function(targetIndex) {
+        target = this.state.scene.targets[targetIndex];
+        mediaPreviewListItems = [];
+        target.mediaObjects.forEach((mediaObjectID, index) => {
+            fullMediaObject = this.state.scene.scene.find(m => m._id == mediaObjectID) //find media object
+            mediaPreviewListItems.push(
+                <li className={"media-object-item"}
+                key={index}
+                onClick={() => {}}>
+                <MediaObjectPreview mediaObject={fullMediaObject}>
+                    <button className='btn' 
+                            onClick={(mediaObject) => this.removeMediaObjectFromTarget(targetIndex, mediaObjectID)}>
+                            <Glyphicon icon='remove-circle'/>
+                    </button>
+                </MediaObjectPreview>
+                </li>
+            )
+        });
+        return mediaPreviewListItems;
+    },
 
-                //get rotation
-                if(mediaObject.style.transform != null) {
-                    var rotateString = mediaObject.style.transform.match(/\(([^)]+)deg\)/)[1] //regex to extract rotate transform only
-                    placement.rotation=parseInt(rotateString);
-                } else {
-                    placement.rotation = 0;
-                }
+    AddSelectedMediaObjectToTarget: function(targetIndex) {
+        var scene = this.state.scene
+        var selectedMediaObject = scene.scene[GridStore.getFocusedMediaObject()]._id;
+        var targets = scene.targets;
 
-                //check to test old content that only has partial position.
-                if (isNaN(placement.y) || isNaN(placement.x) || isNaN(placement.width) || isNaN(placement.height)) {
-                    placement.valid = false; //partial postion can't be converted without loss of auther intent.
-                } else {
-                    placement.valid = true;
-                }
-
-            } catch (error) {
-                console.log("SceneEditorGUI: Error Loading Position", error);
-                placement.valid=false;
+        //remove any exisitng refrences to the media object (only one ref per layout)
+        targets.forEach((target, index) => {
+            var indexof = target.mediaObjects.indexOf(selectedMediaObject)
+            if (indexof != -1) {
+                targets[index].mediaObjects.splice(indexof, 1)
             }
+        });
 
-        } else {
-            console.log("SceneEditorGUI: Position is Random");
-            placement.isRandom = true;
-            placement.valid = true;
-        }
-
-
-        console.log("SceneEditorGUI: Placement Loaded", placement);
-        return placement;
+        scene.targets[targetIndex].mediaObjects.push(selectedMediaObject);
+        this.setState({scene: scene})
+        this.setSave();
+    },
+    
+    OnTargetDrag: function(targetIndex, newLocation) {
+        scene = this.state.scene
+        scene.targets[targetIndex].Placement.x = (newLocation.x/this.state.width)*100;
+        scene.targets[targetIndex].Placement.y = (newLocation.y/this.state.height)*100;
+        this.setState({scene: scene})
+        this.setSave();
     },
 
-    getImageSize(url, callback) {
-        var img = new Image();
-        img.src = url;
-        img.onload = function () {
-            callback(this.width, this.height);
-        }
+    OnTargetResize: function(targetIndex, newSize) {
+        scene = this.state.scene
+        scene.targets[targetIndex].Placement.width = (newSize.offsetWidth/this.state.width)*100;
+        scene.targets[targetIndex].Placement.height = (newSize.offsetHeight/this.state.height)*100;
+        this.setState({
+            scene: scene
+        });
+        this.setSave();
     },
 
-    // post render events:
-    componentDidUpdate() {
-        //check for resize and update if size changed
-        this.checkColision(this.SceneObjectA, this.SceneObjectB);
-
-        if (this.SceneLayoutArea != null) {
-            var area = this.SceneLayoutArea;
-            if (area.offsetHeight != this.state.height || area.offsetWidth != this.state.width) {
-                this.setState({width: area.offsetWidth, height: area.offsetHeight})
-            }
-        }
-
-        //check save flag and schedule save if required
-        if (this.state.shouldSave) {
-            this.setState({shouldSave: false}) //avoid cycles of saving
+    RemoveTarget: function(targetIndex) {
+        if (confirm('Remove target - all media in target will return to random placement?')) {
+            scene = this.state.scene;
+            scene.targets.splice(targetIndex, 1);
+            this.setState({scene: scene});
             this.setSave();
         }
-
     },
 
-    //get the best placement of an image while preserving aspect ratio
-    getDefaultPlacement() {
-          console.log("SceneEditorGUI: Getting Default Placement")
-          var placement = this.state.placement;
-          if (this.state.mediaObject.type === "image") {
-            var self = this
-            this.getImageSize(self.state.mediaObject.url, function(imgWidth, imgHeight) {
-
-                var scaleX = self.state.width/imgWidth
-                var scaleY = self.state.height/imgHeight;
-
-                var newWidth, newHeight
-                //choose the smallest scale to get best fit
-                if (scaleX < scaleY) {
-                    newWidth = scaleX*imgWidth;
-                    newHeight = scaleX*imgHeight;
-                } else {
-                    newWidth = scaleY*imgWidth;
-                    newHeight = scaleY*imgHeight;
-                }
-
-                //convert back to relative units
-                placement.x = 0;
-                placement.y = 0;
-                placement.width =  (newWidth/self.state.width)*100;
-                placement.height = (newHeight/self.state.height)*100;
-
-                //center image
-                placement.x = 50 - placement.width / 2;
-                placement.y = 50 - placement.height / 2;
-
-                //set flags
-                placement.lockAspectRatio = true; //lock aspect ratio to try to preserve
-                placement.isRandom = false;
-                console.log("SceneEditorGUI: Placing with optimum aspect")
-                self.setState({placement: placement, shouldSave: true})
-            })
-
-        } else {
-            //can't auto find aspect
-            console.log("SceneEditorGUI: Can't find aspect ratio, defaulting to full screen")
-            placement.x = 0;
-            placement.y = 0;
-            placement.width = 100;
-            placement.height = 100;
-            placement.isRandom = false;
-            this.setState({placement: placement, shouldSave: true})
-        }
-
-    },
-
-    //schedules a save in 1 second. Avoids to many saves
-    setSave() {
-        console.log("SceneEditorGUI: Save Scheduled")
-        if (this.saveTimeout) {
-            clearTimeout(this.saveTimeout);
-        }
-        this.saveTimeout = setTimeout(this.saveToScene, 1000);
-    },
-
-    saveToScene() {
-
-                //Capture current state
-                var placement = this.state.placement;
-
-                //Used to build the new style
-                var mfStyle = {}
-
-                //Random placement, provide no style so MF player uses random positioning
-                if (this.state.placement.isRandom == true) {
-                    mfStyle["z-index"] = 1;
-                }
-
-                //Map placement to correct CSS style
-                if (this.state.placement.isRandom == false) {
-                    mfStyle["z-index"] = 1;
-                    mfStyle["position"] = "absolute";
-                    //x,y coordinates map to CSS "top" and "left" (in relative units)
-                    mfStyle["left"] = '' + placement
-                        .x
-                        .toFixed(2) + '%';
-                    mfStyle["top"] = '' + placement
-                        .y
-                        .toFixed(2) + '%'
-                    //Width and height (in relative units)
-                    mfStyle["width"] = '' + placement
-                        .width
-                        .toFixed(2) + '%';
-                    mfStyle["height"] = '' + placement
-                        .height
-                        .toFixed(2) + '%';
-
-                    mfStyle["max-width"] = '' + placement
-                        .width
-                        .toFixed(2) + '%';
-                    mfStyle["max-height"] = '' + placement
-                        .height
-                        .toFixed(2) + '%';
-                    //Rotation (degrees)
-                    mfStyle["transform"] = 'rotate(' + placement.rotation + 'deg)';
-                }
-
-                //Attemp to save back to the scene store
-                try {
-                    var scene = this.state.scene
-                    scene.scene[this.state.focusedMediaObject].style = mfStyle
-                    SceneActions.updateScene(scene)
-                    console.log("SceneEditorGUI: Changes saved:", JSON.stringify(mfStyle))
-                } catch (error) {
-                    console.log("SceneEditorGUI: Failed to save changes:", error)
-                }
-
-            },
-
-    //object being dragged (don't save to many events generated)
-    onSceneObjectResizing(e, direction, ref, delta, position) {
-        var relativePlacement = this.state.placement
-        relativePlacement.x = (position.x / this.SceneLayoutArea.offsetWidth) * 100;
-        relativePlacement.y = (position.y / this.SceneLayoutArea.offsetHeight) * 100;
-        relativePlacement.width = (ref.offsetWidth / this.SceneLayoutArea.offsetWidth) * 100;
-        relativePlacement.height = (ref.offsetHeight / this.SceneLayoutArea.offsetHeight) * 100;
-        this.setState({placement: relativePlacement, shouldSave: false});
-    },
-
-    //object dragging ended (now save once)
-    onSceneObjectResizingEnded(e, direction, ref, delta, position) {
-        //convert to relative units
-        console.log("SceneEditorGUI: Ended")
-        var relativePlacement = this.state.placement
-        relativePlacement.x = (position.x / this.SceneLayoutArea.offsetWidth) * 100;
-        relativePlacement.y = (position.y / this.SceneLayoutArea.offsetHeight) * 100;
-        relativePlacement.width = (ref.offsetWidth / this.SceneLayoutArea.offsetWidth) * 100;
-        relativePlacement.height = (ref.offsetHeight / this.SceneLayoutArea.offsetHeight) * 100;
-        this.setState({placement: relativePlacement, shouldSave: true});
-    },
-
-    //object moving ended (should save)
-    onSceneObjectMoved(e, d) {
-        var relativePlacement = this.state.placement; //needed for width/height
-        relativePlacement.x = (d.x / this.SceneLayoutArea.offsetWidth) * 100;
-        relativePlacement.y = (d.y / this.SceneLayoutArea.offsetHeight) * 100;
-        this.setState({placement: relativePlacement, shouldSave: true})
-    },
-
-    //Handles mouse over scroll to zoom
-    mouseWheelZoom(e) {
-
-        //Stops window scrolling
-        e.preventDefault()
-
-        var placement = this.state.placement;
-
-        //Zooming in - wheel towards
-        if (e.deltaY > 0) {
-            placement = this.zoom(1, placement);
-        }
-
-        //Zooming out - wheel away
-        if (e.deltaY < 0) {
-            placement = this.zoom(0, placement)
-        }
-
-        //
-        this.setState({placement: placement, shouldSave: true})
-    },
-
-    zoom(direction, placement) {
-
-        //Temp vars
-        var oldWidth = placement.width;
-        var oldHeight = placement.height
-
-        //Zoom in
-        if (direction == 1) {
-            placement.width = placement.width * 1.1;
-            placement.height = placement.height * 1.1;
-            placement.x = placement.x - (placement.width - oldWidth) / 2;
-            placement.y = placement.y - (placement.height - oldHeight) / 2;
-        }
-
-        //Zoom out
-        if (direction == 0) {
-            placement.width = placement.width * 0.9;
-            placement.height = placement.height * 0.9;
-            placement.x = placement.x + (oldWidth - placement.width) / 2;
-            placement.y = placement.y + (oldHeight - placement.height) / 2;
-        }
-
-        return placement;
-    },
-
-    //handles toolbar actions
     toolbarButtonClick(e) {
 
         //choose action based on button ID
         var toolbarAction = e.target.id;
 
         //Current state - is updated into next state
-        var placement = this.state.placement;
+        var placement = this.state.scene.targets[this.state.selectedIndex].Placement
 
         switch (toolbarAction) {
             case "zoomIn":
                 placement = this.zoom(1, placement);
                 break;
-
             case "zoomOut":
                 placement = this.zoom(0, placement);
                 break;
-
             case "moveLeft":
-                placement.x -= 5;
+                placement.x -= 1;
                 break;
-
             case "moveRight":
-                placement.x += 5;
+                placement.x += 1;
                 break;
-
             case "moveUp":
-                placement.y -= 5;
+                placement.y -= 1;
                 break;
-
             case "moveDown":
-                placement.y += 10;
+                placement.y += 1;
                 break;
-
-            case "aspectRatio":
-                placement.IsAspectLocked = !placement.IsAspectLocked;
-                break;
-
             case "rotate-left":
-                placement.rotation = (placement.rotation - 45) % 360 //limit to 360 for user readability
+                placement.rotate = (placement.rotate - 45) % 360 //limit to 360 for user readability
                 break;
-
             case "rotate-right":
-                placement.rotation = (placement.rotation + 45) % 360 //limit to 360 for user readability
+                placement.rotate = (placement.rotate + 45) % 360 //limit to 360 for user readability
+                break;
+            case "zDown":
+                placement.z -=1;
+                break;
+            case "zUp":
+                placement.z +=1;
                 break;
             default:
                 console.log("SceneEditorGUI: Error toolbar action not registered");
                 break;
         }
-
-        this.setState({placement: placement, shouldSave: true})
-
-    },
-
-    toggleRandomPlacement() {
-        console.log("SceneEditorGUI: Toggle Random Placement")
-        var placement = this.state.placement;
-        if (placement.isRandom == true) {
-            this.getDefaultPlacement();
-        } else {
-            placement.isRandom = true;
-            this.setState({placement: placement, shouldSave: true})
-        }
+        this.state.scene.targets[this.state.selectedIndex].Placement = placement;
+        this.setState({placement: placement})
+        this.setSave();
     },
 
     //Appy template based on ID of clicked button
     templateButtonClick(e) {
-
         var selectedTemplate = e.target.id;
-
-        var placement = this.state.placement;
+        scene = this.state.scene;
+        var placement = scene.targets[this.state.selectedIndex].Placement;
 
         //Templates
         switch (selectedTemplate) {
@@ -454,195 +229,56 @@ var SceneEditorGUI = React.createClass({
                 placement.y = 0;
                 placement.width = 50;
                 placement.height = 50;
-                placement.rotation = 0;
+                placement.rotate = 0;
                 placement.IsAspectLocked = false;
                 break;
-
             case "QuadUR":
                 placement.x = 50;
                 placement.y = 0;
                 placement.width = 50;
                 placement.height = 50;
-                placement.rotation = 0;
+                placement.rotate = 0;
                 placement.IsAspectLocked = false;
                 break;
-
             case "QuadLL":
                 placement.x = 0;
                 placement.y = 50;
                 placement.width = 50;
                 placement.height = 50;
-                placement.rotation = 0;
+                placement.rotate = 0;
                 placement.IsAspectLocked = false;
                 break;
-
             case "QuadLR":
                 placement.x = 50;
                 placement.y = 50;
                 placement.width = 50;
                 placement.height = 50;
-                placement.rotation = 0;
+                placement.rotate = 0;
                 placement.IsAspectLocked = false;
                 break;
-
             case "Full":
                 placement.x = 0;
                 placement.y = 0;
                 placement.width = 100;
                 placement.height = 100;
-                placement.rotation = 0;
+                placement.rotate = 0;
                 placement.IsAspectLocked = false;
                 break;
-
             case "Center":
                 placement.x = 50 - placement.width / 2;
                 placement.y = 50 - placement.height / 2;
                 break;
-
             default:
                 //Unknown ID - do nothing
                 break;
-
         }
-        this.setState({placement: placement, shouldSave: true});
+        scene.targets[this.state.selectedIndex].Placement = placement;
+        this.setState({scene: scene});
+        this.setSave();
     },
 
-    //displayed while waiting for potentialy slow loading content to be delivered
-    imagePreloader() {
-        return (
-            <div className='mf-media-loader-box'>
-            <FontAwesome
-                className="mf-media-loader-spinner"
-                name='spinner'
-                size='4x'
-                spin
-                style={{
-                    textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)'
-                }}
-            />
-            </div>
-        )
-    },
-
-    getMediaRepresentation(mediaObject) {
-        switch (mediaObject.type) {
-
-            case "image":
-                return (
-                    <ImageLoader
-                        src={this.state.mediaObject.url}
-                        imgProps={{
-                            className: "mf-scene-layout-media-object",
-                            draggable: false,
-                            onWheel: this.mouseWheelZoom
-                        }}
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            transform: 'rotate(' + this.state.placement.rotation + 'deg)'
-                        }}
-                        wrapper={React.DOM.div}
-                        preloader={this.imagePreloader}>
-                        Error: Image load failed!
-                    </ImageLoader>
-                )
-            break;
-
-            case "video":
-               return (
-                    <img
-                        src="images/video.png"
-                        className="mf-scene-layout-media-object"
-                        onWheel={this.mouseWheelZoom}
-                        style={{
-                            transform: 'rotate(' + this.state.placement.rotation + 'deg)'
-                        }}
-                        draggable={false}
-                    />
-                )
-            break;
-
-            default:
-                //supported but not displayable
-                return (
-                <div className="mf-scene-layout-media-object">
-                    This media can't be displayed but may still be placed
-                </div>
-                )
-            break;
-        }
-    },
-
-    render: function () {
-        //for debug
-        console.log("SceneEditorGUI: Rendering", this.state)
-
-        var placement = {
-            x: 0,
-            y: 0,
-            width: 100,
-            height: 100,
-            rotation: 0,
-            isRandom: false,
-            IsAspectLocked: true,
-            valid: true
-        };
-
-        return (
-            <div style = {{width: "100%", height: "100%"}}>
-        <Rectangle aspectRatio={[16, 9]}>
-            <div className="mf-scene-layout-area mf_fs_widget_padding_remove" ref="LayoutArea">
-                    <Rnd
-                        ref="ref1"
-                        bounds = "parent"
-                        default={{
-                        x: 0,
-                        y: 0,
-                        width: 320,
-                        height: 200,
-                        }}
-                        >
-                        <div className="mf-placeable">1</div>
-                    </Rnd>
-                    <Rnd
-                        ref="ref2"
-                        bounds = "parent"
-                        onDragStop={(e, d) => {
-                            this.checkColision(e,d)
-                        }}
-                        default={{
-                        x: 0,
-                        y: 0,
-                        width: 320,
-                        height: 200,
-                        }}
-                        >
-                        <div className="mf-placeable">2</div>
-                    </Rnd>
-                    <Rnd
-                        ref="ref3"
-                        bounds = "parent"
-                        onDragStop={(e, d) => {
-                            this.checkColision(e,d)
-                        }}
-                        default={{
-                        x: 0,
-                        y: 0,
-                        width: 320,
-                        height: 200,
-                        }}
-                        >
-                        <div className="mf-placeable">3</div>
-                    </Rnd>
-            </div>
-        </Rectangle>
-        </div>
-        )
-    },
-
-    
-
-    checkColision: function(e,d) {
+    //ToDo: Re-Write as snap to grid (not for first version)
+    /*checkColision: function(e,d) {
         console.log(this.refs.ref1)
         console.log(this.refs.ref2)
         A = {
@@ -687,67 +323,282 @@ var SceneEditorGUI = React.createClass({
                }
            }
        }
-   },
+    },*/
 
-   shrink: function(e,d) {
+    zoom(direction, placement) {
 
-    //check if overlap and shrink to fit in space
-    
-   }     
+        //Temp vars
+        var oldWidth = placement.width;
+        var oldHeight = placement.height
 
-});
-
-
-var PositionableMediaObject = React.createClass ({
-
-    getInitialState: function(){
-        return {
-            x: x,
-            placement: {
-                x: 0,
-                y: 0,
-                width: 50,
-                height: 50,
-                rotation: 0,
-                isRandom: false,
-                IsAspectLocked: true,
-                valid: true},
+        //Zoom in
+        if (direction == 1) {
+            placement.width = placement.width * 1.1;
+            placement.height = placement.height * 1.1;
+            placement.x = placement.x - (placement.width - oldWidth) / 2;
+            placement.y = placement.y - (placement.height - oldHeight) / 2;
         }
-    },
 
-    onDrag: function() {
+        //Zoom out
+        if (direction == 0) {
+            placement.width = placement.width * 0.9;
+            placement.height = placement.height * 0.9;
+            placement.x = placement.x + (oldWidth - placement.width) / 2;
+            placement.y = placement.y + (oldHeight - placement.height) / 2;
+        }
 
-    },
-
-    onDragEnd: function(){
-
-    },
-    
-    onMoved: function () {
-
-    },   
-    
-    onMoveEnd: function() {
-
+        return placement;
     },
 
     render: function() {
-    <Rnd
-        default={{
-            x: 0,
-            y: 0,
-            width: 320,
-            height: 200,
-        }}>
-        Rnd
-    </Rnd>
+
+        if (this.state.scene == null) {
+            return (
+                <div>Please select a scene</div>
+            ) 
+        } 
+
+        var targets = this.state.scene.targets
+
+        var renderTargets = []
+
+
+        targets.forEach((target, index) => {
+            var klass = "mf-placeable";
+
+            var tempZIndex = 0;
+
+            if (this.state.selectedIndex == index) {
+                klass += "-selected";
+                tempZIndex += 100; // temp bring to front when selected
+            }
+
+            renderTargets.push(
+                <Rnd
+                    size={{
+                        width: (target.Placement.width / 100) * this.state.width,
+                        height: (target.Placement.height / 100) * this.state.height
+                    }}
+                    position={{ 
+                        x: (target.Placement.x / 100) * this.state.width,
+                        y: (target.Placement.y / 100) * this.state.height
+                    }}
+                    bounds = "parent"
+                    style = {{zIndex: target.Placement.z + tempZIndex}}
+                    onDrag={(e, d) => this.OnTargetDrag(index, d)}                   
+                    onResize={(e, direction, refToElement, delta, position) => this.OnTargetResize(index, refToElement)}
+                >                
+                    <div className={klass} 
+                         onClick={() => {this.setState({selectedIndex: index})}}
+                         style = {{transform: 'rotate(' + target.Placement.rotate + 'deg)', zIndex: target.Placement.z + tempZIndex, backgroundColor: "#3D4E6B"}}
+                         >
+                        <span>
+                            <div>{target.ID + " - Layer: " + target.Placement.z }</div>
+
+                            <FontAwesome
+                                id="addMediaToTarget"
+                                className='mf-gui-toolbar-icon'
+                                onClick={() => {this.AddSelectedMediaObjectToTarget(index)}}
+                                name='plus-square'
+                                size='2x'
+                            />
+                            
+                            <FontAwesome
+                                id="addTarget"
+                                className='mf-gui-toolbar-icon'
+                                name='times-circle'
+                                onClick = {() => this.RemoveTarget(index)}
+                                size='2x'
+                            />
+
+                            <div className={"media-object-list media-object-list-Grid"}>
+                                <ul className=''>
+                                    {this.getTargetMediaObjectsAsListItems(index)}
+                                </ul>
+                            </div>
+
+                        </span>
+                    </div>
+                </Rnd>
+            )
+        });    
+
+        return (
+            <div className="mf-empty-grid-component">
+                <Rectangle aspectRatio={[16, 9]}>
+                    <div className="mf-scene-layout-area mf_fs_widget_padding_remove" ref={(c) => this.SceneLayoutArea = c}>
+                        {renderTargets}
+                    </div>
+                </Rectangle>
+                <div className="mf-gui-toolbar mf_fs_widget_padding_remove">
+
+                    <span>
+                        <FontAwesome
+                            id="moveUp"
+                            className='mf-gui-toolbar-icon'
+                            name='arrow-up'
+                            onClick={this.toolbarButtonClick}
+                            size='2x'/>
+                        <FontAwesome
+                            id="moveDown"
+                            className='mf-gui-toolbar-icon'
+                            name='arrow-down'
+                            onClick={this.toolbarButtonClick}
+                            size='2x'/>
+                        <FontAwesome
+                            id="moveLeft"
+                            className='mf-gui-toolbar-icon'
+                            name='arrow-left'
+                            onClick={this.toolbarButtonClick}
+                            size='2x'/>
+                        <FontAwesome
+                            id="moveRight"
+                            className='mf-gui-toolbar-icon'
+                            name='arrow-right'
+                            onClick={this.toolbarButtonClick}
+                            size='2x'/>
+                    </span>
+
+                    <span>
+                        <FontAwesome
+                            id='rotate-left'
+                            className='mf-gui-toolbar-icon'
+                            name='rotate-left'
+                            onClick={this.toolbarButtonClick}
+                            size='2x'/>
+                        <FontAwesome
+                            id='rotate-right'
+                            className='mf-gui-toolbar-icon'
+                            name='rotate-right'
+                            onClick={this.toolbarButtonClick}
+                            size='2x'/>
+                    </span>
+
+                    <span>
+                        <FontAwesome
+                            id="zoomIn"
+                            className='mf-gui-toolbar-icon'
+                            name='search-plus'
+                            size='2x'
+                            onClick={this.toolbarButtonClick}/>
+                        <FontAwesome
+                            id="zoomOut"
+                            className='mf-gui-toolbar-icon'
+                            name='search-minus'
+                            size='2x'
+                            onClick={this.toolbarButtonClick}/>
+                    </span>
+
+
+                    <span>
+                        Z-index (layer)
+                        <FontAwesome
+                            id="zUp"
+                            className='mf-gui-toolbar-icon'
+                            name='arrow-circle-up'
+                            size='2x'
+                            onClick={this.toolbarButtonClick}/>
+                        <FontAwesome
+                            id="zDown"
+                            className='mf-gui-toolbar-icon'
+                            name='arrow-circle-down'
+                            size='2x'
+                            onClick={this.toolbarButtonClick}/>
+                    </span>
+
+                    <span>
+                        <FontAwesome
+                            id="addTarget"
+                            className='mf-gui-toolbar-icon'
+                            onClick={this.addTarget}
+                            name='plus-square'
+                            size='2x'/>
+                    </span>
+
+                    <span className="mf-gui-editor-templateBar">
+                        <span className="mf-gui-toolbar-text">Templates</span>
+                        <img id="QuadUL" onClick={this.templateButtonClick} src="images/QuadUL.png"/>
+                        <img id="QuadUR" onClick={this.templateButtonClick} src="images/QuadUR.png"/>
+                        <img id="QuadLL" onClick={this.templateButtonClick} src="images/QuadLL.png"/>
+                        <img id="QuadLR" onClick={this.templateButtonClick} src="images/QuadLR.png"/>
+                        <img id="Full" onClick={this.templateButtonClick} src="images/Full.png"/>
+                        <img id="Center" onClick={this.templateButtonClick} src="images/Center.png"/>
+                    </span>
+
+                </div>
+            </div>
+        )
+        
+    },
+
+    setSave() {
+        if (this.saveTimeout) {
+            clearTimeout(this.saveTimeout);
+        }
+        this.saveTimeout = setTimeout(this.Save, 1000);
+    },
+
+    Save: function() {
+        mediaObjectPatch = [];
+
+        this.state.scene.targets.forEach(target => {
+            var mfStyle = this.ConvertPlacmentToMfStyle(target.Placement)
+            target.mediaObjects.forEach(mediaObject => {
+                mediaObjectPatch.push({id: mediaObject, style: mfStyle})
+            });
+        });
+
+        console.log("MOP", mediaObjectPatch);
+        this.SaveToScene(mediaObjectPatch)
+    },
+
+    SaveToScene: function(ChangedMediaObjects) {
+        var scene = this.state.scene
+        var mediaObjectList = scene.scene; 
+
+        //apply media object changes
+        ChangedMediaObjects.forEach(ChangedMediaObject => {
+            mediaObjectList.forEach((mediaObject, index) => {
+                if (mediaObject._id === ChangedMediaObject.id) {
+                    scene.scene[index].style = ChangedMediaObject.style
+                }
+            })
+        })
+
+        SceneActions.updateScene(scene)
+    },
+
+    componentDidUpdate() {
+        //check for resize and update if size changed (for percentage units)
+        if (this.SceneLayoutArea != null) {
+            var area = this.SceneLayoutArea;
+            if (area.offsetHeight != this.state.height || area.offsetWidth != this.state.width) {
+                this.setState({width: area.offsetWidth, height: area.offsetHeight})
+            }
+        }
+    },
+
+    ConvertPlacmentToMfStyle: function(placement) {
+        var mfStyle = {};
+        if (placement.isRandom == true) {
+            //Random placement, provide no style so MF player uses random positioning
+            mfStyle["z-index"] = 1;
+        } else {
+            //Targeted placement, provide a full style 
+            mfStyle["z-index"] = placement.z;
+            mfStyle["position"] = "absolute";
+            //x,y coordinates map to CSS "top" and "left" (in relative units)
+            mfStyle["left"] = '' + placement.x + "%";
+            mfStyle["top"] = '' + placement.y + "%";
+            mfStyle["width"] = '' + placement.width + "%";
+            mfStyle["height"] = '' + placement.height + "%";
+            mfStyle["max-width"] = '' + placement.width + "%";
+            mfStyle["max-height"] = '' + placement.height + "%";
+            mfStyle["transform"] = 'rotate(' + placement.rotate + 'deg)';
+        }
+        return mfStyle;
     }
-
+    
 })
-
-
-function PercentageToAboloute(ValPercent, percentOf) {
-    return (ValPercent/100)*percentOf
-}
 
 module.exports = SceneEditorGUI;
