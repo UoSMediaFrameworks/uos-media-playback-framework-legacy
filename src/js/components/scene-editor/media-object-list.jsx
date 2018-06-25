@@ -104,8 +104,13 @@ var MediaObjectList = React.createClass({
 
                         let isMatchedByTagMatcher = tagMatcher.match(mediaObject.tags);
 
+                        let isPartialMatch = false;
+                        if (mediaObject.tags.indexOf(self.state.tagSearch) !== -1) {
+                            isPartialMatch = true;
+                        }
+
                         //AP : making sure that the objects that answer to the tag matcher are highlighted
-                        if (isMatchedByTagMatcher) {
+                        if (isMatchedByTagMatcher || isPartialMatch) {
                             // APEP if its a match and we are highlighting apply the class, if its filter the unmatched will have style applied
                             if (self.state.highlightType === "Highlight")
                                 klass += ' ' + this.handleHighlightType();
