@@ -397,7 +397,7 @@ var SceneEditorGUI = React.createClass({
                 >                
                     <div className={klass} 
                          onClick={() => {this.setState({selectedIndex: index})}}
-                         style = {{transform: 'rotate(' + target.Placement.rotate + 'deg)', zIndex: target.Placement.z + tempZIndex, backgroundColor: "#3D4E6B"}}
+                         style = {{transform: 'rotate(' + target.Placement.rotate + 'deg)', zIndex: target.Placement.z + tempZIndex, backgroundColor: "hsl(0, 0%, 20%)"}}
                          >
                         <span>
                             <div>{target.ID + " - Layer: " + target.Placement.z }</div>
