@@ -16,7 +16,6 @@ var SceneEditorGUI = React.createClass({
     saveTimeout: null,
 
     getInitialState: function() {
-        console.log("TSX -GH")
         return {
             selectedIndex: 0,
             scene: SceneStore.getScene(this.props._id)
@@ -55,7 +54,6 @@ var SceneEditorGUI = React.createClass({
         var scene = this.state.scene
         scene.targets[selectedIndex].mediaObjects.push(selectedMediaObject);
         this.setState({scene: scene});
-        console.log("TSX2", scene.targets);
         this.setSave();
     },
 
@@ -554,8 +552,6 @@ var SceneEditorGUI = React.createClass({
                 mediaObjectPatch.push({id: mediaObject, style: mfStyle})
             });
         });
-
-        console.log("MOP", mediaObjectPatch);
         this.SaveToScene(mediaObjectPatch)
     },
 
