@@ -426,6 +426,7 @@ var SceneEditorGUI = React.createClass({
                 target.style = "";
             } else {
                 if (target.style === "grid") {
+                    target.Placement.rotate = 0; //can't yet rotate a grid!
                     if (!target.hasOwnProperty("rows") || !target.hasOwnProperty("cols")) {
                         scene = this.state.scene;
                         scene.targets[index].rows = 2;
