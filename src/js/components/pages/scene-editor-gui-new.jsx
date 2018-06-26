@@ -587,15 +587,11 @@ var SceneEditorGUI = React.createClass({
         
         this.state.scene.targets.forEach(target => {
             if (target.style === "quad") {
-                var quad = this.getQuadFromPlacement(target.Placement);
+                var grid = this.getGridFromPlacement(target.Placement, 2,2);
                 target.mediaObjects.forEach((mediaObject, index) => {
                     var placement = _.cloneDeep(target.Placement);
-                    var quadPatch = quad[index%4];
-                    placement.x = quadPatch.x;
-                    placement.y = quadPatch.y;
-                    placement.width = quadPatch.width;
-                    placement.height = quadPatch.height;
-                    var style = this.ConvertPlacmentToMfStyle(placement);
+                    var patchedPlacement = _.merge(placement, grid[index%grid.length])
+                    var style = this.ConvertPlacmentToMfStyle(patchedPlacement);
                     style.padding = "5px"
                     mediaObjectPatch.push({id: mediaObject, style: style})
                 });
@@ -610,34 +606,23 @@ var SceneEditorGUI = React.createClass({
         this.SaveToScene(mediaObjectPatch)
     },
 
-    getQuadFromPlacement(placement) {
-        //calculate nice quad layout with proportional gap
-        return [
-            { //UL
-                x: placement.x, 
-                y: placement.y, 
-                width: placement.width/2, 
-                height: placement.height/2
-            }, 
-            { //UR
-                x: placement.x + placement.width/2, 
-                y: placement.y, 
-                width: placement.width/2, 
-                height: placement.height/2
-            },
-            { //LL
-                x: placement.x, 
-                y: placement.y + placement.height/2,
-                width: placement.width/2, 
-                height: placement.height/2
-            },
-            { //LR
-                x: placement.x + placement.width/2, 
-                y: placement.y + placement.height/2, 
-                width: placement.width/2, 
-                height: placement.height/2
+    getGridFromPlacement(placement, rows, cols) {
+        cellWidth = placement.width/cols;
+        cellHeight = placement.height/rows;
+        cells = [];
+        for (row = 0; row < rows; row++) {
+            for (col = 0; col < cols; col++) {
+                cells.push(
+                    {
+                        x: placement.x + col*cellWidth,
+                        y: placement.y + row*cellHeight,
+                        width: cellWidth,
+                        height: cellHeight,
+                    }
+                )
             }
-        ]
+        }
+        return cells;
     },
 
     SaveToScene: function(ChangedMediaObjects) {
