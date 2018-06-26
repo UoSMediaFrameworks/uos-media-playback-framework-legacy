@@ -6,6 +6,12 @@ var SceneActions = require('../../actions/scene-actions');
 var MediaObjectPreview = require('./media-object-preview.jsx');
 var TagMatcher = require('../../utils/tag-matcher');
 var _ = require("lodash");
+var JSZip = require("JSzip")
+
+var zip = new JSZip();
+var download = require("downloadjs");
+
+
 var MediaObjectList = React.createClass({
     getInitialState: function () {
         return {
@@ -75,6 +81,8 @@ var MediaObjectList = React.createClass({
         }
     },
 
+    
+
     /* shouldComponentUpdate: function(nextProps, nextState) {
      //Only allow component update if we have a change in focused media or scene media list length
      return this.state.selectedIndex === null ||  ( this.state.selectedIndex !== nextProps.focusedMediaObject || this.props.scene.scene.length !== nextProps.scene.scene.length );
@@ -87,6 +95,37 @@ var MediaObjectList = React.createClass({
         if (this.props.focusedMediaObject !== nextProps.focusedMediaObject)
             this.setState({selectedIndex: nextProps.focusedMediaObject});
     },
+
+
+    addUrlToZip: function(url) {
+        return new Promise(function(resolve) {
+          var httpRequest = new XMLHttpRequest();
+          httpRequest.open("GET", url);
+          httpRequest.onload = function() {
+              var simpleFileName = url.split('/').pop().split('#')[0].split('?')[0]; //filename from URL
+            zip.file(simpleFileName, this.responseText);
+            resolve()
+          }
+          httpRequest.send()
+        })
+    },
+
+    downloadAsZipFile: function(urls) {
+        var self = this;
+        Promise.all(urls.map(function(url) {
+            return self.addUrlToZip(url)
+          }))
+          .then(function() {
+            console.log(zip);
+            zip.generateAsync({
+                type: "blob",
+            })
+            .then(function(content) {
+                //var filename = self.props.scene._id + "-" + self.props.scene.name + ".zip";
+               download(URL.createObjectURL(content))
+            });
+          })
+      },
 
     render: function () {
         var items = null;
@@ -121,6 +160,7 @@ var MediaObjectList = React.createClass({
                     return (
                         <li className={klass}
                             key={index}
+                            mediaObject={mediaObject}
                             onClick={this.handleSelect(index)}>
                             <MediaObjectPreview mediaObject={mediaObject}>
                                 <button className='btn' onClick={this.handleDelete(this.props.scene, index)}>
@@ -158,7 +198,27 @@ var MediaObjectList = React.createClass({
                     <button type='button' onClick={this.handleHighlightChange}
                             className={this.highlightSelectedClass("Filter")}>Filter
                     </button>
+                    
                 </div>
+
+                <button className='btn-dark' style ={{float: "right"}}type='button' onClick={() => {
+                        var urls = [];
+                        items.forEach(listItem => {
+                            urls.push(listItem.props.mediaObject.url);
+                        });
+                        this.downloadAsZipFile(urls)
+                    }}>
+                        Download All   
+                </button>
+                <button className='btn-dark' style ={{float: "right"}}type='button' onClick={() => {
+                        var urls = [];
+                        items.forEach(listItem => {
+                            urls.push(listItem.props.mediaObject.url);
+                        });
+                        this.downloadAsZipFile(urls)
+                    }}>
+                        Download by theme   
+                </button>
 
                 <form >
                     <input ref="tag-search"
