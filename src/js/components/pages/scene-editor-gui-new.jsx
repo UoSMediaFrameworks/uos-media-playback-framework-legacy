@@ -11,6 +11,7 @@ var ImageLoader = require('react-imageloader');
 var MediaObjectPreview = require('../scene-editor/media-object-preview.jsx');
 var Glyphicon = require('../glyphicon.jsx');
 var Hat = require('hat');
+var NumericInput = require('react-numeric-input');
 
 var SceneEditorGUI = React.createClass({ 
 
@@ -47,7 +48,7 @@ var SceneEditorGUI = React.createClass({
             clearTimeout(this.saveTimeout);
         }
         SceneStore.removeChangeListener(this._onChange);
-        //GridStore.removeChangeListener(this._onFocusChange);
+        //GridStore.removeChangeListener(this._onFocusChange); 
     },
 
     _onFocusChange() {
@@ -72,7 +73,7 @@ var SceneEditorGUI = React.createClass({
         currentTargets = scene.targets;
         
         var newTarget = {
-            "ID": hat(), //assign UID - not currently used but futureproofing JSON
+            "ID": Hat(), //assign UID - not currently used but futureproofing JSON
             "Placement": {
                 "x": 0,
                 "y": 0,
@@ -147,16 +148,15 @@ var SceneEditorGUI = React.createClass({
 
 
         switch (style) {
-            case "quad":
-                if (target.style === "quad") {
+            case "grid":
+                if (target.style === "grid") {
                     target.style = "";
                 } else {
-                    target.style = "quad";
+                    target.style = "grid";
                 }
                 break;
             default:
                 taget.style = "";
-                break;
         }
 
         scene.targets[targetIndex] = target;
@@ -350,6 +350,21 @@ var SceneEditorGUI = React.createClass({
        }
     },*/
 
+    setTargetGridRows(targetIndex, rows) {
+        scene = this.state.scene;
+        scene.targets[targetIndex].rows = rows;
+        this.setState({scene: scene});
+        this.setSave();
+    },
+
+    setTargetGridCols(targetIndex, cols) {
+        scene = this.state.scene;
+        scene.targets[targetIndex].cols = cols;
+        this.setState({scene: scene});
+        this.setSave();
+    },
+
+
     zoom(direction, placement) {
 
         //Temp vars
@@ -405,11 +420,61 @@ var SceneEditorGUI = React.createClass({
                 tempZIndex += 100; // temp bring to front when selected
             }
 
+            var gridJSX = <div></div>;
             //required to avoid blowing up on targets that don't have style.
             if (!target.hasOwnProperty("style")) {
                 target.style = "";
-            }
+            } else {
+                if (target.style === "grid") {
+                    if (!target.hasOwnProperty("rows") || !target.hasOwnProperty("cols")) {
+                        scene = this.state.scene;
+                        scene.targets[index].rows = 2;
+                        scene.targets[index].cols = 2;
+                        this.setState({scene: scene});
+                        this.setSave();
+                    } else {
+                        gridJSX = (
+                            <div>
+                                <span>
+                                    <p className="mf-inlineBlock" style={{width: "50px"}}>Rows</p> 
+                                    <NumericInput min={1} 
+                                                  value={target.rows} 
+                                                  step={1} 
+                                                  precision={0} 
+                                                  snap 
+                                                  style={{
+                                                    input: {
+                                                        width: "100px",
+                                                        color: 'black'
+                                                    }
+                                                  }}
+                                                  onChange={(valueAsNumber) => this.setTargetGridRows(index, valueAsNumber)}
+                                                  />
+                                </span>
+                                <br/>
+                                <span>
+                                    <p className="mf-inlineBlock" style={{width: "50px"}}>Cols</p> 
+                                    <NumericInput min={1} 
+                                                  value={target.cols} 
+                                                  step={1} 
+                                                  precision={0} 
+                                                  snap 
+                                                  style={{
+                                                    input: {
+                                                        width: "100px",
+                                                        color: 'black'
+                                                    }
+                                                  }}
+                                                  onChange={(valueAsNumber) => this.setTargetGridCols(index, valueAsNumber)}
+                                                  />                          
+                                </span>
+                            </div>
+                        )
 
+                    }
+                }
+            }
+                   
             renderTargets.push(
                 <Rnd
                     size={{
@@ -427,10 +492,12 @@ var SceneEditorGUI = React.createClass({
                 >                
                     <div className={klass} 
                          onClick={() => {this.setState({selectedIndex: index})}}
-                         style = {{transform: 'rotate(' + target.Placement.rotate + 'deg)', zIndex: target.Placement.z + tempZIndex, backgroundColor: "hsl(0, 0%, 20%)"}}
+                         style = {{transform: 'rotate(' + target.Placement.rotate + 'deg)', zIndex: target.Placement.z + tempZIndex, backgroundColor: "hsl(0, 0%, 20%)", overflowY: "hidden"}}
                          >
                         <span>
                             <div>{index + " - Layer: " + target.Placement.z + " style: " + target.style}</div>
+
+                            {gridJSX}
 
                             <FontAwesome
                                 id="addMediaToTarget"
@@ -442,7 +509,7 @@ var SceneEditorGUI = React.createClass({
                             <FontAwesome
                                 id="addMediaToTarget"
                                 className='mf-gui-toolbar-icon'
-                                onClick={() => {this.SetTargetStyle(index, "quad")}}
+                                onClick={() => {this.SetTargetStyle(index, "grid")}}
                                 name='th-large'
                                 size='2x'
                             />
@@ -455,7 +522,7 @@ var SceneEditorGUI = React.createClass({
                             />
 
                             <div className={"media-object-list media-object-list-Grid"}>
-                                <ul className=''>
+                                <ul className='' style={{overflowY: "scroll"}}>
                                     {this.getTargetMediaObjectsAsListItems(index)}
                                 </ul>
                             </div>
@@ -586,8 +653,8 @@ var SceneEditorGUI = React.createClass({
 
         
         this.state.scene.targets.forEach(target => {
-            if (target.style === "quad") {
-                var grid = this.getGridFromPlacement(target.Placement, 2,2);
+            if (target.style === "grid") {
+                var grid = this.getGridFromPlacement(target.Placement, target.rows , target.cols);
                 target.mediaObjects.forEach((mediaObject, index) => {
                     var placement = _.cloneDeep(target.Placement);
                     var patchedPlacement = _.merge(placement, grid[index%grid.length])
