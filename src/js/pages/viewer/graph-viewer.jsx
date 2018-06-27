@@ -231,7 +231,7 @@ var AudioMediaObjectInstance = React.createClass({
             this.props.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING;
 
         if (isTransitionIn) {
-            console.log(`Starting tween volume in - tween for ${this.props.mo._transitionTime}`);
+            // console.log(`Starting tween volume in - tween for ${this.props.mo._transitionTime} to ${this.getVolume()}`);
 
             let tween = new TWEEN.Tween({vol: 0})
                 .to({vol: this.getVolume()}, this.props.mo._transitionTime * 1000)
@@ -248,7 +248,7 @@ var AudioMediaObjectInstance = React.createClass({
             this.props.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.TRANSITION;
 
         if (isTransitionOut) {
-            console.log(`Starting tween volume OUT - tween for ${this.props.mo._transitionTime}`);
+            // console.log(`Starting tween volume OUT - tween for ${this.props.mo._transitionTime}`);
 
             this._stopTransitionIn();
 
@@ -288,7 +288,7 @@ var AudioMediaObjectInstance = React.createClass({
 
     _stopTransitionIn: function() {
         if(this.state.transitionIn) {
-            console.log("_stopTransitionIn - transitionIn");
+            // console.log("_stopTransitionIn - transitionIn");
             this.state.transitionIn.stop();
             TWEEN.remove(this.state.transitionIn);
         }
@@ -296,7 +296,7 @@ var AudioMediaObjectInstance = React.createClass({
 
     _stopTransitionOut: function() {
         if(this.state.transitionOut) {
-            console.log("_stopTransitionOut - transitionOut");
+            // console.log("_stopTransitionOut - transitionOut");
             this.state.transitionOut.stop();
             TWEEN.remove(this.state.transitionOut);
         }
@@ -310,19 +310,29 @@ var AudioMediaObjectInstance = React.createClass({
 
     getVolume: function() {
         // APEP protect against missing _volume property
-        return (this.props.mo._volume || 100) / 100
+
+        // console.log(`getVolume ${this.props.mo._volume}`);
+
+        let volume = this.props.mo._volume;
+
+        volume = volume / 100;
+
+        // console.log(`getVolume ${volume}`);
+
+        return volume;
     },
 
     getStateVolume: function() {
         // APEP as this.state.volume is a number, when the volume is 0, it is being interpreted as false.
         let volumeForTweenOut = this.state.volume; // || this.getVolume();
 
-        console.log(`getStateVolume - volumeForTweenOut - ${volumeForTweenOut}`);
+        // console.log(`getStateVolume - volumeForTweenOut - ${volumeForTweenOut}`);
 
         return volumeForTweenOut;
     },
 
     render: function () {
+        // console.log(`audio render ${this.state.volume}`);
         return (
             <ReactAudioPlayer
                 src={this.props.mo._content}
@@ -416,5 +426,5 @@ var GraphViewer = React.createClass({
     }
 });
 
-module.exports = ReactAnimationFrame(GraphViewer, 50);
+module.exports = ReactAnimationFrame(GraphViewer, 100);
 

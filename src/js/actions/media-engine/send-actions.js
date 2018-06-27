@@ -20,9 +20,9 @@ module.exports = {
     mediaObjectInstanceReady(connection, instance) {
         let instanceForUpdate = _.cloneDeep(instance);
 
-        instanceForUpdate.state = new MediaObjectState({initialState: instance.state.state});
-
-        instanceForUpdate.state.transition(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING);
+        instanceForUpdate.state = {
+            state: InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING
+        };
 
         this.updateMediaInstance(this.PLAY_MEDIA_COMMAND, connection, instanceForUpdate);
     },
@@ -32,6 +32,14 @@ module.exports = {
         // console.log(`updateMediaInstance ${path}`);
 
         var MediaEngineConnection = require('../../utils/media-engine/connection');
+
+        // APEP TODO prune instance fields not required for sending
+
+        // let instanceForUpdate = _.cloneDeep(instance);
+        //
+        // instanceForUpdate.state = {
+        //     state: instance.state.compositeState()
+        // };
 
         MediaEngineConnection.publishMediaInstanceStateChange(path, connection, instance);
     },
