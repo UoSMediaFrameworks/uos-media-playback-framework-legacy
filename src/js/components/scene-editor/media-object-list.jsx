@@ -19,7 +19,7 @@ var MediaObjectList = React.createClass({
             selectedIndex: this.props.focusedMediaObject,
             listLayout: 'Grid',
             tagSearch: "",
-            highlightType: 'Filter'
+            highlightType: 'Filter',
         };
     },
 
@@ -80,9 +80,7 @@ var MediaObjectList = React.createClass({
         } else {
             return 'btn btn-default';
         }
-    },
-
-    
+    },    
 
     /* shouldComponentUpdate: function(nextProps, nextState) {
      //Only allow component update if we have a change in focused media or scene media list length
@@ -109,14 +107,13 @@ var MediaObjectList = React.createClass({
 
                     var klass = 'media-object-item' + (this.state.selectedIndex === index ? ' selected' : '');
 
-                    if (this.state.tagSearch.length > 0) {
-
+                    //if (this.state.tagSearch.length > 0) {
                         let isMatchedByTagMatcher = tagMatcher.match(mediaObject.tags);
-
                         let isPartialMatch = mediaObject.tags.indexOf(self.state.tagSearch) !== -1;
+                        let isMatched = (isMatchedByTagMatcher || isPartialMatch);
 
                         //AP : making sure that the objects that answer to the tag matcher are highlighted
-                        if (isMatchedByTagMatcher || isPartialMatch) {
+                        if (isMatched) {
                             // APEP if its a match and we are highlighting apply the class, if its filter the unmatched will have style applied
                             if (self.state.highlightType === "Highlight")
                                 klass += ' ' + this.handleHighlightType();
@@ -125,12 +122,13 @@ var MediaObjectList = React.createClass({
                             if (self.state.highlightType !== "Highlight")
                                 klass += ' ' + this.handleHighlightType();
                         }
-                    }
+                    //}
 
                     return (
                         <li className={klass}
                             key={index}
-                            mediaObject={mediaObject}
+                            mediaObject={mediaObject} 
+                            isMatched ={isMatched}
                             onClick={this.handleSelect(index)}>
                             <MediaObjectPreview mediaObject={mediaObject}>
                                 <button className='btn' onClick={this.handleDelete(this.props.scene, index)}>
@@ -175,20 +173,27 @@ var MediaObjectList = React.createClass({
                 <button type='button' className="btn btn-dark" onClick={() => {
                         var urls = [];
                         items.forEach(listItem => {
+                            if (listItem.props.isMatched) {
                             var mediaObject = listItem.props.mediaObject;
-                            if(mediaObject.hasOwnProperty("url")) { //required to avoid none file items (text)
-                                if(mediaObject.url.startsWith("https://soundcloud") || mediaObject.url.startsWith("http://soundcloud")) {
-                                soundCloud.streamUrl(mediaObject.url, function(err, streamUrl) {
-                                     if (!err) {
-                                         urls.push(streamUrl);
-                                     }
-                                    }) 
-                                } else {
-                                    urls.push(mediaObject.url);
+                                if(mediaObject.hasOwnProperty("url")) { //required to avoid none file items (text)
+                                    if(mediaObject.url.startsWith("https://soundcloud") || mediaObject.url.startsWith("http://soundcloud")) {
+                                    soundCloud.streamUrl(mediaObject.url, function(err, streamUrl) {
+                                         if (!err) {
+                                             urls.push(streamUrl);
+                                         }
+                                        }) 
+                                    } else {
+                                        urls.push(mediaObject.url);
+                                    }
                                 }
                             }
                         });
-                        var filename = self.props.scene._id + "_" + self.props.scene.name + ".zip";
+
+                        var searchTerm = ""
+                        if (this.state.tagSearch.length > 0) {
+                            searchTerm = "_(" + this.state.tagSearch + ")"
+                        }
+                        var filename = self.props.scene._id + "_" + self.props.scene.name + searchTerm + ".zip";
                         MediaDownloader.downloadAsZipFile(urls, filename);
                     }}>
                         Download Media
