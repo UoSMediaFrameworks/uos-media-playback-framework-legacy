@@ -1,4 +1,4 @@
-var JSZip = require("JSzip")
+var JSZip = require("jszip")
 var TagMatcher = require('./tag-matcher');
 var _ = require('lodash');
 var soundCloud = require('./sound-cloud');
@@ -19,7 +19,7 @@ class ThemeDownloader {
             mediaObject.isInTheme = false;
         })
 
-        //themes are stored as object keys not an array!! 
+        //themes are stored as object keys not an array!!
         Object.keys(themes).forEach(function(key) {
             var themeName = key;
             var themeQueryString = themes[key];
@@ -38,14 +38,14 @@ class ThemeDownloader {
                                         files.push({"url": streamUrl, "theme": themeName})
                                         mediaObject.isInTheme = true; //use this to keep track of media not in any theme!
                                      }
-                                    }) 
+                                    })
                                 } else {
                                     files.push({"url": mediaObject.url, "theme": themeName})
                                     mediaObject.isInTheme = true; //use this to keep track of media not in any theme!
                                 }
                         }
                     }
-                } 
+                }
             })
         })
 
@@ -59,7 +59,7 @@ class ThemeDownloader {
                                  if (!err) {
                                     files.push({"url": streamUrl, "theme": "_none_"})
                                  }
-                                }) 
+                                })
                             } else {
                                 files.push({"url": mediaObject.url, "theme": "_none_"})
                             }
@@ -116,7 +116,7 @@ class ThemeDownloader {
         let blobURL = URL.createObjectURL(blob)
 
         //workaround to rename blob!
-        let a = document.createElement("a") 
+        let a = document.createElement("a")
         a.download = filename
         a.href = blobURL
         document.body.appendChild(a)

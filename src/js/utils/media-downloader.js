@@ -1,13 +1,13 @@
 
-var JSZip = require("JSzip")
+var JSZip = require("jszip")
 
 
 class MediaDownloader {
-    
+
     constructor() {
         this.zip = new JSZip();
     }
-    
+
     addUrlToZip(url) {
         var self = this;
         return new Promise(function(resolve) {
@@ -48,7 +48,7 @@ class MediaDownloader {
         let blobURL = URL.createObjectURL(blob)
 
         //workaround to rename blob!
-        let a = document.createElement("a") 
+        let a = document.createElement("a")
         a.download = filename
         a.href = blobURL
         document.body.appendChild(a)
