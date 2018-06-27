@@ -34,7 +34,6 @@
     "connect": "^3.2.0",
     "connect-livereload": "^0.4.0",
     "d3": "^4.9.1",
-    "downloadjs": "^1.4.7",
     "envify": "^3.2.0",
     "es6-promise": "^2.0.1",
     "es6-promises": "^1.0.8",
