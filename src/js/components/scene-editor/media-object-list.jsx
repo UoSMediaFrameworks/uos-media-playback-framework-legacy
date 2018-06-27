@@ -6,12 +6,15 @@ var SceneActions = require('../../actions/scene-actions');
 var MediaObjectPreview = require('./media-object-preview.jsx');
 var TagMatcher = require('../../utils/tag-matcher');
 var _ = require("lodash");
-var JSZip = require("JSzip")
+var MediaDownloader = require('../../utils/media-downloader.js');
+var soundCloud = require('../../utils/sound-cloud');
 
-var zip = new JSZip();
 
 var MediaObjectList = React.createClass({
+
+
     getInitialState: function () {
+        MediaDownloader = new MediaDownloader();
         return {
             selectedIndex: this.props.focusedMediaObject,
             listLayout: 'Grid',
@@ -94,50 +97,6 @@ var MediaObjectList = React.createClass({
             this.setState({selectedIndex: nextProps.focusedMediaObject});
     },
 
-    addUrlToZip: function(url) {
-        return new Promise(function(resolve) {
-          var httpRequest = new XMLHttpRequest();
-          httpRequest.open("GET", url);
-          httpRequest.onload = function() {
-              var simpleFileName = url.split('/').pop().split('#')[0].split('?')[0]; //filename from URL
-              var guid = url.split('/')[url.split('/').length-2] //guid location in mf asset store.
-            zip.file(guid + "_" + simpleFileName, this.responseText);
-            resolve()
-          }
-          httpRequest.send()
-        })
-    },
-
-    downloadAsZipFile: function(urls) {
-        var self = this;
-        //promise structure to zip all files and download.
-        Promise.all(urls.map(function(url) {
-            return self.addUrlToZip(url)
-          }))
-          .then(function() {
-            console.log(zip);
-            zip.generateAsync({
-                type: "blob",
-            })
-            .then(function(content) {
-                var filename = self.props.scene._id + "_" + self.props.scene.name + ".zip";
-                self.downloadBlobWithFileName(content, filename);
-            });
-          })
-      },
-
-    downloadBlobWithFileName(blob, filename) {
-        let blobURL = URL.createObjectURL(blob)
-
-        //workaround to rename blob!
-        let a = document.createElement("a") 
-        a.download = filename
-        a.href = blobURL
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-    },
-
     render: function () {
         var items = null;
         var self =this;
@@ -212,24 +171,30 @@ var MediaObjectList = React.createClass({
                     
                 </div>
 
-                <button className='btn-dark' style ={{float: "right"}}type='button' onClick={() => {
+                <div className='btn-group btn-group-xs' role='group' style ={{float: "right"}} >
+                <button type='button' className="btn btn-dark" onClick={() => {
                         var urls = [];
                         items.forEach(listItem => {
-                            urls.push(listItem.props.mediaObject.url);
+                            var mediaObject = listItem.props.mediaObject;
+                            if(mediaObject.hasOwnProperty("url")) { //required to avoid none file items (text)
+                                if(mediaObject.url.startsWith("https://soundcloud") || mediaObject.url.startsWith("http://soundcloud")) {
+                                soundCloud.streamUrl(mediaObject.url, function(err, streamUrl) {
+                                     if (!err) {
+                                         urls.push(streamUrl);
+                                     }
+                                    }) 
+                                } else {
+                                    urls.push(mediaObject.url);
+                                }
+                            }
                         });
-                        this.downloadAsZipFile(urls)
+                        var filename = self.props.scene._id + "_" + self.props.scene.name + ".zip";
+                        MediaDownloader.downloadAsZipFile(urls, filename);
                     }}>
-                        Download All   
+                        Download Media
                 </button>
-                <button className='btn-dark' style ={{float: "right"}}type='button' onClick={() => {
-                        var urls = [];
-                        items.forEach(listItem => {
-                            urls.push(listItem.props.mediaObject.url);
-                        });
-                        this.downloadAsZipFile(urls)
-                    }}>
-                        Download by theme   
-                </button>
+                </div>
+
 
                 <form >
                     <input ref="tag-search"
@@ -245,6 +210,18 @@ var MediaObjectList = React.createClass({
             </div>
         );
     }
+
+    /* TODO: Implement download by theme
+                <button className='btn-dark' style ={{float: "right"}}type='button' onClick={() => {
+                        var urls = [];
+                        items.forEach(listItem => {
+                            urls.push(listItem.props.mediaObject.url);
+                        });
+                        this.downloadAsZipFile(urls)
+                    }}>
+                        Download by theme   
+                </button>
+    */
 
 });
 
