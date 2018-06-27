@@ -1,6 +1,7 @@
 var JSZip = require("JSzip")
 var TagMatcher = require('./tag-matcher');
 var _ = require('lodash');
+var soundCloud = require('./sound-cloud');
 
 class ThemeDownloader {
 
@@ -31,8 +32,17 @@ class ThemeDownloader {
                 if (isMatchedByTagMatcher) {
                     if (mediaObject.hasOwnProperty("url")) {
                         if(mediaObject.type == "audio") { //TEMP LIMIT TO AUDIO ONLY!
-                            files.push({"url": mediaObject.url, "theme": themeName})
-                            mediaObject.isInTheme = true; //use this to keep track of media not in any theme!
+                            if(mediaObject.url.startsWith("https://soundcloud") || mediaObject.url.startsWith("http://soundcloud")) {
+                                soundCloud.streamUrl(mediaObject.url, function(err, streamUrl) {
+                                     if (!err) {
+                                        files.push({"url": streamUrl, "theme": themeName})
+                                        mediaObject.isInTheme = true; //use this to keep track of media not in any theme!
+                                     }
+                                    }) 
+                                } else {
+                                    files.push({"url": mediaObject.url, "theme": themeName})
+                                    mediaObject.isInTheme = true; //use this to keep track of media not in any theme!
+                                }
                         }
                     }
                 } 
@@ -44,7 +54,15 @@ class ThemeDownloader {
             if (mediaObject.isInTheme == false) {
                 if (mediaObject.hasOwnProperty("url")) {
                     if(mediaObject.type == "audio") { //TEMP LIMIT TO AUDIO ONLY!
-                        files.push({"url": mediaObject.url, "theme": "_none_"})
+                        if(mediaObject.url.startsWith("https://soundcloud") || mediaObject.url.startsWith("http://soundcloud")) {
+                            soundCloud.streamUrl(mediaObject.url, function(err, streamUrl) {
+                                 if (!err) {
+                                    files.push({"url": streamUrl, "theme": "_none_"})
+                                 }
+                                }) 
+                            } else {
+                                files.push({"url": mediaObject.url, "theme": "_none_"})
+                            }
                     }
                 }
             }
@@ -59,6 +77,7 @@ class ThemeDownloader {
     addToZip(downloadObject) {
         var url = downloadObject.url;
         var folder = downloadObject.theme;
+        var self = this;
         return new Promise(function(resolve) {
           var httpRequest = new XMLHttpRequest();
           httpRequest.responseType="blob";
@@ -69,8 +88,7 @@ class ThemeDownloader {
               if (simpleFileName.endsWith("stream")) {
                   simpleFileName += ".mp3" // for soundcloud
               }
-            zip.folder()
-            zip.file(folder + "/" + guid + "_" + simpleFileName, this.response);
+            self.zip.file(folder + "/" + guid + "_" + simpleFileName, this.response);
             resolve()
           }
           httpRequest.send()
@@ -79,14 +97,13 @@ class ThemeDownloader {
 
     downloadAsZipFile(downloadObjects, filename) {
         var self = this;
-        zip = new JSZip(); //need to create new zip object or old files remain
+        self.zip = new JSZip(); //need to create new zip object or old files remain
         //promise structure to zip all files and download.
         Promise.all(downloadObjects.map(function(downloadObject) {
             return self.addToZip(downloadObject)
           }))
           .then(function() {
-            console.log(zip);
-            zip.generateAsync({
+            self.zip.generateAsync({
                 type: "blob",
             })
             .then(function(content) {
