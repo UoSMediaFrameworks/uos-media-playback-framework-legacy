@@ -8,7 +8,7 @@ var TagMatcher = require('../../utils/tag-matcher');
 var _ = require("lodash");
 var MediaDownloader = require('../../utils/media-downloader.js');
 var soundCloud = require('../../utils/sound-cloud');
-
+var ThemeDownloader = require('../../utils/theme-downloader');
 
 var MediaObjectList = React.createClass({
 
@@ -207,6 +207,15 @@ var MediaObjectList = React.createClass({
                         Download Media
                 </button>
                 
+                <button type='button' 
+                        className="btn btn-dark" 
+                        onClick={() => {
+                            var downloader = new ThemeDownloader();
+                            downloader.download(this.props.scene);
+                        }}>
+                        Download Audio Themes
+                </button>
+
                 </div>
 
                 <form >
