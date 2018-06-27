@@ -1,15 +1,15 @@
 
 var JSZip = require("JSzip")
 
-zip = new JSZip();
 
 class MediaDownloader {
     
     constructor() {
-        
+        this.zip = new JSZip();
     }
     
     addUrlToZip(url) {
+        var self = this;
         return new Promise(function(resolve) {
           var httpRequest = new XMLHttpRequest();
           httpRequest.responseType="blob";
@@ -20,7 +20,7 @@ class MediaDownloader {
               if (simpleFileName.endsWith("stream")) {
                   simpleFileName += ".mp3" // for soundcloud
               }
-            zip.file(guid + "_" + simpleFileName, this.response);
+            self.zip.file(guid + "_" + simpleFileName, this.response);
             resolve()
           }
           httpRequest.send()
@@ -29,14 +29,13 @@ class MediaDownloader {
 
     downloadAsZipFile(urls, filename) {
         var self = this;
-        zip = new JSZip(); //need to create new zip object or old files remain
+        self.zip = new JSZip(); //need to create new zip object or old files remain
         //promise structure to zip all files and download.
         Promise.all(urls.map(function(url) {
             return self.addUrlToZip(url)
           }))
           .then(function() {
-            console.log(zip);
-            zip.generateAsync({
+            self.zip.generateAsync({
                 type: "blob",
             })
             .then(function(content) {
