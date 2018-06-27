@@ -7,7 +7,7 @@
     "test": "mocha"
   },
   "engines": {
-      "node": "6.3.1"
+    "node": "6.3.1"
   },
   "author": "",
   "license": "ISC",
@@ -53,6 +53,7 @@
     "inherits": "^2.0.1",
     "jquery": "^3.3.1",
     "jsonfile": "^2.4.0",
+    "jszip": "^3.1.5",
     "keymirror": "^0.1.0",
     "lodash": "^3.6.0",
     "lodash._basecreatewrapper": "^2.4.1",
