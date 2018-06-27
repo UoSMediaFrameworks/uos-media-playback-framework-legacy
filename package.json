@@ -106,7 +106,6 @@
     "tween.js": "^0.14.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.0.0",
-    "watchify": "^2.1.1",
-    "zip-js": "0.0.2"
+    "watchify": "^2.1.1"
   }
 }

@@ -9,8 +9,6 @@ var _ = require("lodash");
 var JSZip = require("JSzip")
 
 var zip = new JSZip();
-var download = require("downloadjs");
-
 
 var MediaObjectList = React.createClass({
     getInitialState: function () {
@@ -96,14 +94,14 @@ var MediaObjectList = React.createClass({
             this.setState({selectedIndex: nextProps.focusedMediaObject});
     },
 
-
     addUrlToZip: function(url) {
         return new Promise(function(resolve) {
           var httpRequest = new XMLHttpRequest();
           httpRequest.open("GET", url);
           httpRequest.onload = function() {
               var simpleFileName = url.split('/').pop().split('#')[0].split('?')[0]; //filename from URL
-            zip.file(simpleFileName, this.responseText);
+              var guid = url.split('/')[url.split('/').length-2] //guid location in mf asset store.
+            zip.file(guid + "_" + simpleFileName, this.responseText);
             resolve()
           }
           httpRequest.send()
@@ -112,6 +110,7 @@ var MediaObjectList = React.createClass({
 
     downloadAsZipFile: function(urls) {
         var self = this;
+        //promise structure to zip all files and download.
         Promise.all(urls.map(function(url) {
             return self.addUrlToZip(url)
           }))
@@ -121,11 +120,23 @@ var MediaObjectList = React.createClass({
                 type: "blob",
             })
             .then(function(content) {
-                //var filename = self.props.scene._id + "-" + self.props.scene.name + ".zip";
-               download(URL.createObjectURL(content))
+                var filename = self.props.scene._id + "_" + self.props.scene.name + ".zip";
+                self.downloadBlobWithFileName(content, filename);
             });
           })
       },
+
+    downloadBlobWithFileName(blob, filename) {
+        let blobURL = URL.createObjectURL(blob)
+
+        //workaround to rename blob!
+        let a = document.createElement("a") 
+        a.download = filename
+        a.href = blobURL
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+    },
 
     render: function () {
         var items = null;
