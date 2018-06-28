@@ -3,11 +3,13 @@ var JSZip = require("JSzip")
 var streamSaver = require('streamsaver');
 
 
+
 class MediaDownloader {
-    
+
     constructor() {
         this.zip = new JSZip();
     }
+
     
     addUrlToZip(url, progressCB) {
         var self = this;
@@ -66,6 +68,17 @@ class MediaDownloader {
                 .on('error', err => {fileStream.abort(); console.log("Download error", err)})
                 .on('end', () => fileStream.close())
                 .resume()
+    downloadBlobWithFileName(blob, filename) {
+        let blobURL = URL.createObjectURL(blob)
+
+        //workaround to rename blob!
+        let a = document.createElement("a")
+        a.download = filename
+        a.href = blobURL
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(blobURL);
     }
     */
 
