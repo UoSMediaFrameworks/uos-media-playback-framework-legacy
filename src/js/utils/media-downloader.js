@@ -1,5 +1,5 @@
 
-var JSZip = require("JSzip")
+var JSZip = require("jszip")
 var streamSaver = require('streamsaver');
 
 
