@@ -1,12 +1,10 @@
-
 var JSZip = require("jszip")
 var streamSaver = require('streamsaver');
 
 
-
-class MediaDownloader {
-
-    constructor() {
+var MediaDownloader = {
+    
+    constructor: function () {
         this.zip = new JSZip();
     }
 
@@ -68,6 +66,7 @@ class MediaDownloader {
                 .on('error', err => {fileStream.abort(); console.log("Download error", err)})
                 .on('end', () => fileStream.close())
                 .resume()
+                
     downloadBlobWithFileName(blob, filename) {
         let blobURL = URL.createObjectURL(blob)
 
@@ -82,12 +81,14 @@ class MediaDownloader {
     }
     */
 
-   //stream zip not async but fast alows multi GB file sizes.
+   //stream zip not async but fast alows 1GB file sizes.
    downloadBlobWithFileName(blob, filename) {
     let fileStream = streamSaver.createWriteStream(filename)
     blob.stream().pipeTo(fileStream)
 }
 
-}
+
+
+
 
 module.exports = MediaDownloader;
