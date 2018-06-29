@@ -14,7 +14,7 @@ var MediaObjectList = React.createClass({
 
 
     getInitialState: function () {
-        MediaDownloader = new MediaDownloader();
+
         return {
             selectedIndex: this.props.focusedMediaObject,
             listLayout: 'Grid',
@@ -80,7 +80,7 @@ var MediaObjectList = React.createClass({
         } else {
             return 'btn btn-default';
         }
-    },    
+    },
 
     /* shouldComponentUpdate: function(nextProps, nextState) {
      //Only allow component update if we have a change in focused media or scene media list length
@@ -106,7 +106,7 @@ var MediaObjectList = React.createClass({
                          if (!err) {
                              urls.push(streamUrl);
                          }
-                        }) 
+                        })
                     } else {
                         urls.push(mediaObject.url);
                     }
@@ -152,7 +152,7 @@ var MediaObjectList = React.createClass({
                     return (
                         <li className={klass}
                             key={index}
-                            mediaObject={mediaObject} 
+                            mediaObject={mediaObject}
                             isMatched ={isMatched}
                             onClick={this.handleSelect(index)}>
                             <MediaObjectPreview mediaObject={mediaObject}>
@@ -176,7 +176,7 @@ var MediaObjectList = React.createClass({
 
     render: function () {
         var items = this.getFilteredMediaList();
-        
+
         var wrapperClass = 'media-object-list media-object-list-' + this.state.listLayout;
 
         return (
@@ -197,18 +197,18 @@ var MediaObjectList = React.createClass({
                     <button type='button' onClick={this.handleHighlightChange}
                             className={this.highlightSelectedClass("Filter")}>Filter
                     </button>
-                    
+
                 </div>
 
                 <div className='btn-group btn-group-xs' role='group' style ={{float: "right"}} >
-                <button type='button' 
-                        className="btn btn-dark" 
+                <button type='button'
+                        className="btn btn-dark"
                         onClick={() => {this.downloadMediaObjects(items)}}>
                         Download Media
                 </button>
-                
-                <button type='button' 
-                        className="btn btn-dark" 
+
+                <button type='button'
+                        className="btn btn-dark"
                         onClick={() => {
                             var downloader = new ThemeDownloader();
                             downloader.download(this.props.scene);
