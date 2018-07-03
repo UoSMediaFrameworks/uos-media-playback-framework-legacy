@@ -14,18 +14,18 @@ var browserify = require('browserify');
 var reactify = require('reactify');
 var envify = require('envify');
 var stripify = require('stripify');
+var babelify = require('babelify');
 var uglify = require('gulp-uglify');
-var gulpBabel = require('gulp-babel');
-var concat = require('gulp-concat'),
-    livereload = require('gulp-livereload'),
+var livereload = require('gulp-livereload'),
     dest = 'dist',
     src = 'src',
     lvPort = 35729;
 var realFs = require('fs');
 var gracefulFs = require('graceful-fs');
+gracefulFs.gracefulify(realFs);
 
 var cssGlobs = ['src/css/**/*.css'];
-gracefulFs.gracefulify(realFs);
+
 var static_server = require('./static_server');
 
 // APEP tools for creating and writing the version json file
@@ -42,17 +42,14 @@ var revReplace = require("gulp-rev-replace");
 */
 var production = process.env.NODE_ENV === 'production';
 if (production) {
-    gutil.log('making production build');
+    gutil.log('making production build process.env.NODE_ENV === \'production\'');
 }
 
 
 var debugMode = process.env.DEBUG === 'true';
 
-gutil.log('debugMode: ' + debugMode);
-
-
 if(debugMode) {
-    gutil.log('debug turned on');
+    gutil.log('debug turned on process.env.DEBUG === \'true\'');
 }
 
 /*
@@ -73,6 +70,7 @@ function bundlerBuilder (startPath, finishName, useReactify) {
     }
 
     bundler.transform(envify);
+    bundler.transform(babelify);
     bundler.on('log', gutil.log);
 
     var rebundle = function() {
@@ -81,7 +79,6 @@ function bundlerBuilder (startPath, finishName, useReactify) {
             .pipe(source(finishName))
             .pipe(gulpif(production, buffer()))
             .pipe(gulpif(production, sourcemaps.init({loadMaps: true})))
-            .pipe(gulpif(production, gulpBabel({presets:['@babel/preset-env']})))
             .pipe(gulpif(production, uglify()))
             .pipe(gulpif(production, sourcemaps.write('./')))
             .pipe(gulp.dest(dest + '/js'));
