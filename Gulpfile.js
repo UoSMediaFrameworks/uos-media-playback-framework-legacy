@@ -81,7 +81,7 @@ function bundlerBuilder (startPath, finishName, useReactify) {
             .pipe(source(finishName))
             .pipe(gulpif(production, buffer()))
             .pipe(gulpif(production, sourcemaps.init({loadMaps: true})))
-            .pipe(gulpif(production, gulpBabel({presets:['@babel/env']})))
+            .pipe(gulpif(production, gulpBabel({presets:['@babel/preset-env']})))
             .pipe(gulpif(production, uglify()))
             .pipe(gulpif(production, sourcemaps.write('./')))
             .pipe(gulp.dest(dest + '/js'));
