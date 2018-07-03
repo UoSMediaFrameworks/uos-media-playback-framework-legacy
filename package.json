@@ -70,6 +70,7 @@
     "lodash.isobject": "^3.0.2",
     "lodash.noop": "^3.0.1",
     "lodash.support": "^3.0.4",
+    "machina": "^2.0.2",
     "merge-stream": "^0.1.6",
     "moment": "^2.18.1",
     "node-uuid": "^1.4.7",
