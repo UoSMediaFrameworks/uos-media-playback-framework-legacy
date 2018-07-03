@@ -11,7 +11,7 @@ Copy the file [env-example.sh](env-example.sh) to `env.sh`.  Set the `ASSET_STOR
 
 `DEBUG` - Allows console logs to be stripped out and other development build processes
 
-Node v4.4.7 and npm v2.15.8. 
+Node v6.3.1
 Install the needed npm packages:
 ```
 npm install
