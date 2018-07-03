@@ -77,12 +77,12 @@ var WebsocketHTMLRandomControllerConnection = {
             MediaEngineReceiveActions.receiveActiveScene(null);
         });
 
-        this.socket.on(MEDIA_OBJECT_INSTANCE__EVENTS__STATE_CHANGE, function(connection, instance) {
-            MediaEngineReceiveActions.receiveMediaObjectInstance(connection, instance)
+        this.socket.on(MEDIA_OBJECT_INSTANCE__EVENTS__STATE_CHANGE_TOPIC, function(payload) {
+            MediaEngineReceiveActions.receiveMediaObjectInstance(payload.connection, payload.instance)
         });
 
-        this.socket.on(MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE, function(connection, instance) {
-            MediaEngineReceiveActions.receiveMediaObjectInstanceProperty(connection, instance)
+        this.socket.on(MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE_TOPIC, function(payload) {
+            MediaEngineReceiveActions.receiveMediaObjectInstanceProperty(payload.connection, payload.instance)
         });
     },
 
