@@ -11,7 +11,8 @@ module.exports = {
         "SceneMediaBrowser": "Scene-Media-Browser",
         "SceneEditorGUI": "Scene-Editor-GUI",
         "TagEditor": "Tag-Editor",
-        "MediaUpload": "Media-Upload"
+        "MediaUpload": "Media-Upload",
+        "MuliItemEditor": "Scene-Editor-Multi",
     },
     ComponentTitles:{
         "Scene-List":"Scene List",
@@ -24,7 +25,8 @@ module.exports = {
         "Scene-Media-Browser":"Scene Media Browser",
         "Scene-Editor-GUI":"Visual Scene Editor",
         "Tag-Editor": "Tag Editor",
-        "Media-Upload":"Media Upload"
+        "Media-Upload":"Media Upload",
+        "Scene-Editor-Multi": "Scene Editor Multi-Item"
     },
     ColumnTypes: {
         "RHS": "RightHandSide",
@@ -56,9 +58,15 @@ module.exports = {
                 {"x":21,"y":0,"w":9,"h":5,"_w":9,"_h":5,"type":"Media-Upload","visible":true,"isResizable":true,"state":"default","moved":false,"static":false},
                 {"x":21,"y":14,"w":9,"h":10,"_w":9,"_h":10,"type":"Scene-Viewer","visible":true,"isResizable":true,"state":"default","moved":false,"static":false}
             ],
-            "graph": [{"x":0,"y":0,"w":4,"h":24,"_w":4,"_h":24,"type":"Scene-Graph-List","visible":true,"isResizable":true,"state":"default","moved":false,"static":false},
+            "graph": [
+                {"x":0,"y":0,"w":4,"h":24,"_w":4,"_h":24,"type":"Scene-Graph-List","visible":true,"isResizable":true,"state":"default","moved":false,"static":false},
                 {"x":4,"y":0,"w":11,"h":24,"_w":11,"_h":24,"type":"Scene-Graph","visible":true,"isResizable":true,"state":"default","moved":false,"static":false},
                 {"x":15,"y":0,"w":15,"h":17,"_w":15,"_h":17,"type":"Graph","visible":true,"isResizable":true,"state":"default","moved":false,"static":false}
+            ],
+            "multiItem": [
+                {"x":17,"y":0,"w":13,"h":11,"_w":13,"_h":11,"type":"Scene-Viewer","visible":true,"isResizable":true,"state":"default","moved":false,"static":false},
+                {"x":0,"y":14,"w":30,"h":8,"_w":30,"_h":8,"type":"Scene-Media-Browser","visible":true,"isResizable":true,"state":"default","moved":false,"static":false},
+                {"x":0,"y":0,"w":17,"h":14,"_w":17,"_h":14,"type":"Scene-Editor-Multi","visible":true,"isResizable":true,"state":"default","moved":false,"static":false}
             ]
         }
     }
