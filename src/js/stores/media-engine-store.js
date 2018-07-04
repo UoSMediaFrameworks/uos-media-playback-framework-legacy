@@ -58,6 +58,10 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
     _mediaInstanceStateChange: function(connection, instance) {
 
+        // APEP 090618 ensure we clean up the timer - if the Controller initialised this state change rather than a media engine
+        this._removeInstanceTimer(transitionToStoppedTimers, instance);
+        this._removeInstanceTimer(playingToTransitionTimers, instance);
+
         if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING) {
             let time = (instance._stopTime * 1000) - (instance._transitionTime * 1000);
 
@@ -67,8 +71,7 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
                 // console.log(`MediaEngineStore - playing - transition firing`);
 
                 let instanceForUpdate = _.cloneDeep(instance);
-                instanceForUpdate.state = new MediaObjectState({initialState: instance.state.state});
-                instanceForUpdate.state.transition(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.TRANSITION);
+                instanceForUpdate.state.state = InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.TRANSITION;
 
                 // APEP 250418 TODO to be replaced with an API call... /playback/media/transition
                 SendActions.updateMediaInstance(SendActions.TRANSITION_MEDIA_COMMAND, connection, instanceForUpdate);
@@ -78,15 +81,11 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
         } else if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.TRANSITION) {
 
-            // APEP 090618 ensure we clean up the timer - if the Controller initialised this state change rather than a media engine
-            this._removeInstanceTimer(playingToTransitionTimers, instance);
-
             let doneTimer = setTimeout(() => {
                 // console.log(`MediaEngineStore - playing - done firing`);
 
                 let instanceForUpdate = _.cloneDeep(instance);
-                instanceForUpdate.state = new MediaObjectState({initialState: instance.state.state});
-                instanceForUpdate.state.transition(InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED);
+                instanceForUpdate.state.state = InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED;
 
                 // APEP 250418 TODO to be replaced with an API call... /playback/media/done
                 SendActions.updateMediaInstance(SendActions.DONE_MEDIA_COMMAND, connection, instanceForUpdate);
@@ -97,9 +96,6 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
         } else if (instance.state.compositeState() === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.STOPPED) {
             // APEP 030518 is deleting from the pool is not the right thing to do
             mediaInstancePool.delete(instance._id);
-
-            this._removeInstanceTimer(transitionToStoppedTimers, instance);
-            this._removeInstanceTimer(playingToTransitionTimers, instance);
         }
     },
 
@@ -144,7 +140,8 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
                 break;
 
             case ActionTypes.RECEIVE_MEDIA_OBJECT_INSTANCE_PROPERTY_CHANGE:
-                console.log(`MediaEngineStore - RECEIVE_MEDIA_OBJECT_INSTANCE_PROPERTY_CHANGE - ${JSON.stringify(instance)}`);
+                console.log(`MediaEngineStore - RECEIVE_MEDIA_OBJECT_INSTANCE_PROPERTY_CHANGE`);
+                console.log(_.pick(instance, ["_id", "state", "_volume", "state"]));
 
                 if (mediaInstancePool.has(instance._id)) {
                     // APEP transfer properties
@@ -170,7 +167,8 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
                 break;
 
             case ActionTypes.RECEIVE_MEDIA_OBJECT_INSTANCE:
-                // console.log(`MediaEngineStore - RECEIVE_MEDIA_OBJECT_INSTANCE - ${JSON.stringify(instance)}`);
+                console.log(`MediaEngineStore - RECEIVE_MEDIA_OBJECT_INSTANCE`);
+                console.log(_.pick(instance, ["_id", "state", "_volume", "state"]));
 
                 instance.state = new MediaObjectState({initialState: instance.state.state});
 
