@@ -1,19 +1,19 @@
-var React = require('react');
-var _ = require('lodash');
-var SceneStore = require('../../stores/scene-store');
-var GridStore = require("../../stores/grid-store");
-var HubSendActions = require('../../actions/hub-send-actions');
-var SceneActions = require('../../actions/scene-actions');
-var Rnd = require('react-rnd');
-var FontAwesome = require('react-fontawesome');
-var Rectangle = require('react-rectangle');
-var ImageLoader = require('react-imageloader');
-var MediaObjectPreview = require('../scene-editor/media-object-preview.jsx');
-var Glyphicon = require('../glyphicon.jsx');
-var Hat = require('hat');
-var NumericInput = require('react-numeric-input');
+let React = require('react');
+let _ = require('lodash');
+let SceneStore = require('../../stores/scene-store');
+let GridStore = require("../../stores/grid-store");
+let HubSendActions = require('../../actions/hub-send-actions');
+let SceneActions = require('../../actions/scene-actions');
+let Rnd = require('react-rnd');
+let FontAwesome = require('react-fontawesome');
+let Rectangle = require('react-rectangle');
+let ImageLoader = require('react-imageloader');
+let MediaObjectPreview = require('../scene-editor/media-object-preview.jsx');
+let Glyphicon = require('../glyphicon.jsx');
+let Hat = require('hat');
+let NumericInput = require('react-numeric-input');
 
-var SceneEditorGUI = React.createClass({ 
+let SceneEditorGUI = React.createClass({
 
     saveTimeout: null,
 
@@ -48,12 +48,12 @@ var SceneEditorGUI = React.createClass({
             clearTimeout(this.saveTimeout);
         }
         SceneStore.removeChangeListener(this._onChange);
-        //GridStore.removeChangeListener(this._onFocusChange); 
+        //GridStore.removeChangeListener(this._onFocusChange);
     },
 
     _onFocusChange() {
-        var selectedMediaObject = GridStore.getFocusedMediaObject() 
-        var scene = this.state.scene
+        let selectedMediaObject = GridStore.getFocusedMediaObject()
+        let scene = this.state.scene
         scene.targets[selectedIndex].mediaObjects.push(selectedMediaObject);
         this.setState({scene: scene});
         this.setSave();
@@ -62,17 +62,17 @@ var SceneEditorGUI = React.createClass({
     _onChange: function () {
         //scene changed, clear all state
         clearTimeout(this.saveTimeout);
-        
+
             console.log("SceneEditorGUI: Scene change", this.getStateFromStores())
             this.setState(this.getStateFromStores());
     },
 
-    
+
     addTarget: function() {
-        scene = this.state.scene
-        currentTargets = scene.targets;
-        
-        var newTarget = {
+        let scene = this.state.scene
+        let currentTargets = scene.targets;
+
+        let newTarget = {
             "ID": Hat(), //assign UID - not currently used but futureproofing JSON
             "Placement": {
                 "x": 0,
@@ -96,24 +96,24 @@ var SceneEditorGUI = React.createClass({
 
 
     removeMediaObjectFromTarget: function(targetIndex, mediaObjectID) {
-        var scene = this.state.scene;
-        var mediaObjectIndex = scene.targets[targetIndex].mediaObjects.indexOf(mediaObjectID);
+        let scene = this.state.scene;
+        let mediaObjectIndex = scene.targets[targetIndex].mediaObjects.indexOf(mediaObjectID);
         scene.targets[targetIndex].mediaObjects.splice(mediaObjectIndex, 1);
         this.setState({scene: scene});
         this.setSave();
     },
 
     getTargetMediaObjectsAsListItems: function(targetIndex) {
-        target = this.state.scene.targets[targetIndex];
-        mediaPreviewListItems = [];
+        let target = this.state.scene.targets[targetIndex];
+        let mediaPreviewListItems = [];
         target.mediaObjects.forEach((mediaObjectID, index) => {
-            fullMediaObject = this.state.scene.scene.find(m => m._id == mediaObjectID) //find media object
+            let fullMediaObject = this.state.scene.scene.find(m => m._id === mediaObjectID) //find media object
             mediaPreviewListItems.push(
                 <li className={"media-object-item"}
                 key={index}
                 onClick={() => {}}>
                 <MediaObjectPreview mediaObject={fullMediaObject}>
-                    <button className='btn' 
+                    <button className='btn'
                             onClick={(mediaObject) => this.removeMediaObjectFromTarget(targetIndex, mediaObjectID)}>
                             <Glyphicon icon='remove-circle'/>
                     </button>
@@ -125,13 +125,13 @@ var SceneEditorGUI = React.createClass({
     },
 
     AddSelectedMediaObjectToTarget: function(targetIndex) {
-        var scene = this.state.scene
-        var selectedMediaObject = scene.scene[GridStore.getFocusedMediaObject()]._id;
-        var targets = scene.targets;
+        let scene = this.state.scene
+        let selectedMediaObject = scene.scene[GridStore.getFocusedMediaObject()]._id;
+        let targets = scene.targets;
 
         //remove any exisitng refrences to the media object (only one ref per layout)
         targets.forEach((target, index) => {
-            var indexof = target.mediaObjects.indexOf(selectedMediaObject)
+            let indexof = target.mediaObjects.indexOf(selectedMediaObject)
             if (indexof != -1) {
                 targets[index].mediaObjects.splice(indexof, 1)
             }
@@ -143,8 +143,8 @@ var SceneEditorGUI = React.createClass({
     },
 
     SetTargetStyle: function(targetIndex, style) {
-        scene = this.state.scene;
-        target = scene.targets[targetIndex];
+        let scene = this.state.scene;
+        let target = scene.targets[targetIndex];
 
 
         switch (style) {
@@ -161,11 +161,11 @@ var SceneEditorGUI = React.createClass({
 
         scene.targets[targetIndex] = target;
         this.setState({scene: scene});
-        this.setSave;
+        this.setSave();
     },
-    
+
     OnTargetDrag: function(targetIndex, newLocation) {
-        scene = this.state.scene
+        let scene = this.state.scene
         scene.targets[targetIndex].Placement.x = (newLocation.x/this.state.width)*100;
         scene.targets[targetIndex].Placement.y = (newLocation.y/this.state.height)*100;
         this.setState({scene: scene})
@@ -173,7 +173,7 @@ var SceneEditorGUI = React.createClass({
     },
 
     OnTargetResize: function(targetIndex, newSize, placement) {
-        scene = this.state.scene
+        let scene = this.state.scene
         scene.targets[targetIndex].Placement.width = (newSize.offsetWidth/this.state.width)*100;
         scene.targets[targetIndex].Placement.height = (newSize.offsetHeight/this.state.height)*100;
         scene.targets[targetIndex].Placement.x = (placement.x/this.state.width)*100;
@@ -186,7 +186,7 @@ var SceneEditorGUI = React.createClass({
 
     RemoveTarget: function(targetIndex) {
         if (confirm('Remove target - all media in target will return to random placement?')) {
-            scene = this.state.scene;
+            let scene = this.state.scene;
             scene.targets.splice(targetIndex, 1);
             this.setState({scene: scene});
             this.setSave();
@@ -196,10 +196,10 @@ var SceneEditorGUI = React.createClass({
     toolbarButtonClick(e) {
 
         //choose action based on button ID
-        var toolbarAction = e.target.id;
+        let toolbarAction = e.target.id;
 
         //Current state - is updated into next state
-        var placement = this.state.scene.targets[this.state.selectedIndex].Placement
+        let placement = this.state.scene.targets[this.state.selectedIndex].Placement
 
         switch (toolbarAction) {
             case "zoomIn":
@@ -243,9 +243,9 @@ var SceneEditorGUI = React.createClass({
 
     //Appy template based on ID of clicked button
     templateButtonClick(e) {
-        var selectedTemplate = e.target.id;
-        scene = this.state.scene;
-        var placement = scene.targets[this.state.selectedIndex].Placement;
+        let selectedTemplate = e.target.id;
+        let scene = this.state.scene;
+        let placement = scene.targets[this.state.selectedIndex].Placement;
 
         //Templates
         switch (selectedTemplate) {
@@ -311,14 +311,14 @@ var SceneEditorGUI = React.createClass({
             height: this.refs.ref1.resizable.state.height,
             x: this.refs.ref1.draggable.state.x,
             y: this.refs.ref1.draggable.state.y
-        } 
+        }
         B = {
             width: this.refs.ref2.resizable.state.width,
             height: this.refs.ref2.resizable.state.height,
             x: this.refs.ref2.draggable.state.x,
             y: this.refs.ref2.draggable.state.y
-        } 
-       
+        }
+
         w = 0.5 * (A.width + B.width);
         h = 0.5 * (A.height + B.height);
         dx = (A.x + A.width/2) - (B.x + B.width/2);
@@ -351,14 +351,14 @@ var SceneEditorGUI = React.createClass({
     },*/
 
     setTargetGridRows(targetIndex, rows) {
-        scene = this.state.scene;
+        let scene = this.state.scene;
         scene.targets[targetIndex].rows = rows;
         this.setState({scene: scene});
         this.setSave();
     },
 
     setTargetGridCols(targetIndex, cols) {
-        scene = this.state.scene;
+        let scene = this.state.scene;
         scene.targets[targetIndex].cols = cols;
         this.setState({scene: scene});
         this.setSave();
@@ -367,9 +367,9 @@ var SceneEditorGUI = React.createClass({
 
     zoom(direction, placement) {
 
-        //Temp vars
-        var oldWidth = placement.width;
-        var oldHeight = placement.height
+        //Temp lets
+        let oldWidth = placement.width;
+        let oldHeight = placement.height
 
         //Zoom in
         if (direction == 1) {
@@ -392,11 +392,13 @@ var SceneEditorGUI = React.createClass({
 
     render: function() {
 
+        let scene;
+
         if (this.state.scene == null) {
             return (
                 <div>Please select a scene</div>
-            ) 
-        } 
+            )
+        }
 
         if (!this.state.scene.hasOwnProperty("targets")) {
             scene = this.state.scene;
@@ -405,22 +407,22 @@ var SceneEditorGUI = React.createClass({
             this.setSave()
         }
 
-        var targets = this.state.scene.targets
+        let targets = this.state.scene.targets
 
-        var renderTargets = []
+        let renderTargets = []
 
 
         targets.forEach((target, index) => {
-            var klass = "mf-placeable";
+            let klass = "mf-placeable";
 
-            var tempZIndex = 0;
+            let tempZIndex = 0;
 
             if (this.state.selectedIndex == index) {
                 klass += "-selected";
                 tempZIndex += 100; // temp bring to front when selected
             }
 
-            var gridJSX = <div></div>;
+            let gridJSX = <div></div>;
             //required to avoid blowing up on targets that don't have style.
             if (!target.hasOwnProperty("style")) {
                 target.style = "";
@@ -437,12 +439,12 @@ var SceneEditorGUI = React.createClass({
                         gridJSX = (
                             <div>
                                 <span>
-                                    <p className="mf-inlineBlock" style={{width: "50px"}}>Rows</p> 
-                                    <NumericInput min={1} 
-                                                  value={target.rows} 
-                                                  step={1} 
-                                                  precision={0} 
-                                                  snap 
+                                    <p className="mf-inlineBlock" style={{width: "50px"}}>Rows</p>
+                                    <NumericInput min={1}
+                                                  value={target.rows}
+                                                  step={1}
+                                                  precision={0}
+                                                  snap
                                                   style={{
                                                     input: {
                                                         width: "100px",
@@ -454,12 +456,12 @@ var SceneEditorGUI = React.createClass({
                                 </span>
                                 <br/>
                                 <span>
-                                    <p className="mf-inlineBlock" style={{width: "50px"}}>Cols</p> 
-                                    <NumericInput min={1} 
-                                                  value={target.cols} 
-                                                  step={1} 
-                                                  precision={0} 
-                                                  snap 
+                                    <p className="mf-inlineBlock" style={{width: "50px"}}>Cols</p>
+                                    <NumericInput min={1}
+                                                  value={target.cols}
+                                                  step={1}
+                                                  precision={0}
+                                                  snap
                                                   style={{
                                                     input: {
                                                         width: "100px",
@@ -467,7 +469,7 @@ var SceneEditorGUI = React.createClass({
                                                     }
                                                   }}
                                                   onChange={(valueAsNumber) => this.setTargetGridCols(index, valueAsNumber)}
-                                                  />                          
+                                                  />
                                 </span>
                             </div>
                         )
@@ -475,23 +477,23 @@ var SceneEditorGUI = React.createClass({
                     }
                 }
             }
-                   
+
             renderTargets.push(
                 <Rnd
                     size={{
                         width: (target.Placement.width / 100) * this.state.width,
                         height: (target.Placement.height / 100) * this.state.height
                     }}
-                    position={{ 
+                    position={{
                         x: (target.Placement.x / 100) * this.state.width,
                         y: (target.Placement.y / 100) * this.state.height
                     }}
                     bounds = "parent"
                     style = {{zIndex: target.Placement.z + tempZIndex}}
-                    onDrag={(e, d) => this.OnTargetDrag(index, d)}                   
+                    onDrag={(e, d) => this.OnTargetDrag(index, d)}
                     onResize={(e, direction, refToElement, delta, position) => this.OnTargetResize(index, refToElement, position)}
-                >                
-                    <div className={klass} 
+                >
+                    <div className={klass}
                          onClick={() => {this.setState({selectedIndex: index})}}
                          style = {{transform: 'rotate(' + target.Placement.rotate + 'deg)', zIndex: target.Placement.z + tempZIndex, backgroundColor: "hsl(0, 0%, 20%)", overflowY: "hidden"}}
                          >
@@ -532,7 +534,7 @@ var SceneEditorGUI = React.createClass({
                     </div>
                 </Rnd>
             )
-        });    
+        });
 
         return (
             <div className="mf-empty-grid-component">
@@ -639,7 +641,7 @@ var SceneEditorGUI = React.createClass({
                 </div>
             </div>
         )
-        
+
     },
 
     setSave() {
@@ -650,22 +652,21 @@ var SceneEditorGUI = React.createClass({
     },
 
     Save: function() {
-        mediaObjectPatch = [];
+        let mediaObjectPatch = [];
 
-        
         this.state.scene.targets.forEach(target => {
             if (target.style === "grid") {
-                var grid = this.getGridFromPlacement(target.Placement, target.rows , target.cols);
+                let grid = this.getGridFromPlacement(target.Placement, target.rows , target.cols);
                 target.mediaObjects.forEach((mediaObject, index) => {
-                    var placement = _.cloneDeep(target.Placement);
-                    var patchedPlacement = _.merge(placement, grid[index%grid.length])
-                    var style = this.ConvertPlacmentToMfStyle(patchedPlacement);
+                    let placement = _.cloneDeep(target.Placement);
+                    let patchedPlacement = _.merge(placement, grid[index%grid.length])
+                    let style = this.ConvertPlacmentToMfStyle(patchedPlacement);
                     style.padding = "5px"
                     mediaObjectPatch.push({id: mediaObject, style: style})
                 });
 
             } else {
-                var mfStyle = this.ConvertPlacmentToMfStyle(target.Placement)
+                let mfStyle = this.ConvertPlacmentToMfStyle(target.Placement)
                 target.mediaObjects.forEach(mediaObject => {
                     mediaObjectPatch.push({id: mediaObject, style: mfStyle})
                 });
@@ -675,11 +676,11 @@ var SceneEditorGUI = React.createClass({
     },
 
     getGridFromPlacement(placement, rows, cols) {
-        cellWidth = placement.width/cols;
-        cellHeight = placement.height/rows;
-        cells = [];
-        for (row = 0; row < rows; row++) {
-            for (col = 0; col < cols; col++) {
+        let cellWidth = placement.width/cols;
+        let cellHeight = placement.height/rows;
+        let cells = [];
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
                 cells.push(
                     {
                         x: placement.x + col*cellWidth,
@@ -694,8 +695,8 @@ var SceneEditorGUI = React.createClass({
     },
 
     SaveToScene: function(ChangedMediaObjects) {
-        var scene = this.state.scene
-        var mediaObjectList = scene.scene; 
+        let scene = this.state.scene
+        let mediaObjectList = scene.scene;
 
         //apply media object changes
         ChangedMediaObjects.forEach(ChangedMediaObject => {
@@ -712,7 +713,7 @@ var SceneEditorGUI = React.createClass({
     componentDidUpdate() {
         //check for resize and update if size changed (for percentage units)
         if (this.SceneLayoutArea != null) {
-            var area = this.SceneLayoutArea;
+            let area = this.SceneLayoutArea;
             if (area.offsetHeight != this.state.height || area.offsetWidth != this.state.width) {
                 this.setState({width: area.offsetWidth, height: area.offsetHeight})
             }
@@ -720,12 +721,12 @@ var SceneEditorGUI = React.createClass({
     },
 
     ConvertPlacmentToMfStyle: function(placement) {
-        var mfStyle = {};
+        let mfStyle = {};
         if (placement.isRandom == true) {
             //Random placement, provide no style so MF player uses random positioning
             mfStyle["z-index"] = 1;
         } else {
-            //Targeted placement, provide a full style 
+            //Targeted placement, provide a full style
             mfStyle["z-index"] = placement.z;
             mfStyle["position"] = "absolute";
             //x,y coordinates map to CSS "top" and "left" (in relative units)
@@ -739,7 +740,7 @@ var SceneEditorGUI = React.createClass({
         }
         return mfStyle;
     }
-    
+
 })
 
 module.exports = SceneEditorGUI;
