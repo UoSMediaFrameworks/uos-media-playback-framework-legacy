@@ -15,6 +15,7 @@ var ClientStore = require('./stores/client-store');
 var appVersion = require('./utils/app-version');
 var AdjustableGrid = require('./components/pages/adjustable-grid.jsx');
 var PopOutComponent = require('./components/pages/pop-out-component.jsx');
+var PerformancePlayer = require('./pages/viewer/graph-viewer.jsx');
 // login with localStorage creds if possible
 HubSendActions.tryTokenLogin();
 
@@ -35,6 +36,9 @@ ReactDOM.render(
         </Route>
         <Route path="/presentation" component={PresentationLayoutApp}>
             <IndexRoute component={PopOutComponent} onEnter={requireAuth}/>
+        </Route>
+        <Route path="/performance" component={PresentationLayoutApp}>
+            <IndexRoute component={PerformancePlayer} onEnter={requireAuth}/>
         </Route>
     </Router> ), document.getElementById('main')
    );

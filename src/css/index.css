@@ -826,7 +826,7 @@ html, body, #main, .app {
     width: 100%;
 }
 .mf-pop-out-component{
-    overflow-y: auto;
+    overflow: none;
     -webkit-box-flex: 1;
     -webkit-flex: 1 1 auto;
     display: flex;
