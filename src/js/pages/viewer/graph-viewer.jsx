@@ -132,7 +132,10 @@ var DashVideoMediaObjectInstance = React.createClass({
                 config={{
                     file: {forceDASH: true}
                 }}
+                width={this.state.style.width}
+                height={this.state.style.height}
                 className={VIDEO_CLASSES}
+                volume={this.props.mo._authoredVolume / 100}
                 style={this.state.style}
                 onReady={this.onReady}
                 playing
