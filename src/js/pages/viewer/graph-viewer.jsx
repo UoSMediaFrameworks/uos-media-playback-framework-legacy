@@ -14,6 +14,7 @@ var MediaEngineStore = require('../../stores/media-engine-store');
 var InternalEventConstants = require('../../private-dependencies/internal-event-constants');
 var MediaEngineSendActions = require('../../actions/media-engine/send-actions');
 
+const MINIMUM_AUDIO_VOLUME = 0.0001;
 
 // APEP classnames documentation
 // media-object position: abs and opacity 0 with show-media-object bring opacity back to 1
@@ -208,6 +209,128 @@ var TextMediaObjectInstance = React.createClass({
     }
 });
 
+var AudioContextMediaObjectInstance = React.createClass({
+    getInitialState: function () {
+        return {
+            volume: MINIMUM_AUDIO_VOLUME,
+
+            transitionIn: null,
+            transitionOut: null
+        };
+    },
+
+    onCanPlay: function() {
+        MediaEngineSendActions.mediaObjectInstanceReady(this.props.connection, this.props.mo);
+    },
+
+    componentDidUpdate: function(prevProps, prevState, snapshot) {
+
+        let self = this;
+
+        let isTransitionIn = prevProps.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.LOADED &&
+            this.props.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING;
+
+        if (isTransitionIn) {
+            // console.log(`Starting tween volume in - tween for ${this.props.mo._transitionTime} to ${this.getVolume()}`);
+
+            // APEP stop any automatic system volume tweens - the performer should take over
+            // this._stopScehduledRampValues();
+
+            self.state.gainNode.gain.exponentialRampToValueAtTime(this.getVolume(), this.props.audioContext.currentTime + this.props.mo._transitionTime);
+
+            return;
+        }
+
+        let isTransitionOut = prevProps.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING &&
+            this.props.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.TRANSITION;
+
+        if (isTransitionOut) {
+            // console.log(`Starting tween volume OUT - tween for ${this.props.mo._transitionTime}`);
+
+            // APEP stop any automatic system volume tweens - the performer should take over
+            // this._stopScehduledRampValues();
+
+            self.state.gainNode.gain.exponentialRampToValueAtTime(MINIMUM_AUDIO_VOLUME, this.props.audioContext.currentTime + this.props.mo._transitionTime);
+        }
+
+        let isVolumeUpdate = prevProps.mo._volume !== this.props.mo._volume;
+
+        // APEP if we've had a volume property change
+        if (isVolumeUpdate) {
+            // APEP stop any automatic system volume tweens - the performer should take over
+            // this._stopScehduledRampValues();
+
+            this.state.gainNode.gain.exponentialRampToValueAtTime(this._getPropVolumeProtected(), this.props.audioContext.currentTime + 0.1);
+        }
+
+    },
+
+    // APEP handle some API audio volume concerns
+    _getPropVolumeProtected: function () {
+        let propVol = this.props.mo._volume / 100;
+
+        if (propVol <= 0) {
+            return MINIMUM_AUDIO_VOLUME;
+        }
+
+        if (propVol > 1) {
+            return 1;
+        }
+
+        return propVol;
+    },
+
+    _stopScehduledRampValues: function() {
+        this.state.gainNode.gain.cancelScheduledValues(this.props.audioContext.currentTime);
+    },
+
+    componentWillUnmount: function() {
+        this._stopScehduledRampValues();
+
+        if (this.state.gainNode)
+            this.state.gainNode.disconnect();
+        if (this.state.sourceNode)
+            this.state.sourceNode.disconnect();
+    },
+
+    componentDidMount: function () {
+        let source = this.props.audioContext.createMediaElementSource(this.sound.audioEl);
+
+        let gainNode = this.props.audioContext.createGain();
+
+        gainNode.gain.exponentialRampToValueAtTime(MINIMUM_AUDIO_VOLUME, this.props.audioContext.currentTime + 0.1);
+
+        // connect the AudioBufferSourceNode to the gainNode
+        // and the gainNode to the destination, so we can play the
+        // music and adjust the volume using the mouse cursor
+        source.connect(gainNode);
+
+        gainNode.connect(this.props.audioContext.destination);
+
+        this.setState({sourceNode: source, gainNode: gainNode});
+    },
+
+    getVolume: function() {
+        let volume = this.props.mo._volume;
+
+        volume = volume / 100;
+
+        return volume;
+    },
+
+    render: function () {
+        // console.log(`audio render ${this.state.volume}`);
+        return (
+            <ReactAudioPlayer
+                src={this.props.mo._content}
+                onCanPlay={this.onCanPlay}
+                ref={(element) => { this.sound = element; }}
+                autoPlay
+            />
+        )
+    }
+});
+
 var AudioMediaObjectInstance = React.createClass({
 
     getInitialState: function () {
@@ -356,7 +479,7 @@ var MediaObjectInstance = React.createClass({
         } else if (this.props.mo.type === "text") {
             el = <TextMediaObjectInstance key={`instance-${this.props.mo._id}`} mo={this.props.mo} connection={this.props.connection}/>
         } else if (this.props.mo.type === "audio") {
-            el = <AudioMediaObjectInstance key={`instance-${this.props.mo._id}`} mo={this.props.mo} connection={this.props.connection}/>
+            el = <AudioContextMediaObjectInstance key={`instance-${this.props.mo._id}`} mo={this.props.mo} connection={this.props.connection} audioContext={this.props.audioContext}/>
         } else {
             el = <DebugMediaObjectInstance key={`instance-${this.props.mo._id}`} mo={this.props.mo} connection={this.props.connection}/>
         }
@@ -368,7 +491,17 @@ var MediaObjectInstance = React.createClass({
 var GraphViewer = React.createClass({
 
     getInitialState: function () {
-        return this.getStateFromStores();
+
+        let AudioContext = window.AudioContext || window.webkitAudioContext;
+
+        let audioContext = {
+            audioContext: new AudioContext({
+                latencyHint: 'interactive',
+                sampleRate: 44100
+            })
+        };
+
+        return _.merge(audioContext, this.getStateFromStores());
     },
 
     getStateFromStores: function () {
@@ -419,12 +552,12 @@ var GraphViewer = React.createClass({
                 {restartController}
 
                 {_.map(this.state.media, (mo) => {
-                    return <MediaObjectInstance key={mo._id} mo={mo} connection={this.state.connection}/>
+                    return <MediaObjectInstance key={mo._id} mo={mo} connection={this.state.connection} audioContext={this.state.audioContext}/>
                 })}
             </div>
         )
     }
 });
 
-module.exports = ReactAnimationFrame(GraphViewer, 100);
+module.exports = GraphViewer; //ReactAnimationFrame(, 100);
 
