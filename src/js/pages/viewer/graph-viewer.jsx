@@ -284,7 +284,9 @@ var AudioContextMediaObjectInstance = React.createClass({
     },
 
     _stopScehduledRampValues: function() {
-        this.state.gainNode.gain.cancelScheduledValues(this.props.audioContext.currentTime);
+        if (this.state.gainNode) {
+            this.state.gainNode.gain.cancelScheduledValues(this.props.audioContext.currentTime);
+        }
     },
 
     componentWillUnmount: function() {
@@ -297,18 +299,19 @@ var AudioContextMediaObjectInstance = React.createClass({
     },
 
     componentDidMount: function () {
+
         let source = this.props.audioContext.createMediaElementSource(this.sound.audioEl);
 
         let gainNode = this.props.audioContext.createGain();
 
-        gainNode.gain.exponentialRampToValueAtTime(MINIMUM_AUDIO_VOLUME, this.props.audioContext.currentTime + 0.1);
-
         // connect the AudioBufferSourceNode to the gainNode
-        // and the gainNode to the destination, so we can play the
-        // music and adjust the volume using the mouse cursor
+        // and the gainNode to the destination, for vol change
         source.connect(gainNode);
 
         gainNode.connect(this.props.audioContext.destination);
+
+        // APEP force the sound to start at 0 volume from 0t
+        gainNode.gain.setValueAtTime(MINIMUM_AUDIO_VOLUME, 0);
 
         this.setState({sourceNode: source, gainNode: gainNode});
     },
@@ -323,6 +326,7 @@ var AudioContextMediaObjectInstance = React.createClass({
 
     render: function () {
         // console.log(`audio render ${this.state.volume}`);
+        // APEP autoPlay improves latency (suspected cold cache during testing)
         return (
             <ReactAudioPlayer
                 src={this.props.mo._content}
