@@ -319,6 +319,12 @@ var AudioContextMediaObjectInstance = React.createClass({
     getVolume: function() {
         let volume = this.props.mo._volume;
 
+        if (_.isNumber(volume)) {
+            if (volume <= 0) {
+                return MINIMUM_AUDIO_VOLUME;
+            }
+        }
+
         volume = volume / 100;
 
         return volume;
