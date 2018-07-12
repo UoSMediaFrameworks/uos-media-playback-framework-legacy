@@ -95,6 +95,10 @@ var SceneMonacoTextEditor = React.createClass({
         return {
             scene: null,
             code: null,
+            // APEP the history array lets us keep track of every full valid version of scene json
+            // when a save happens, we know can tell if the component has seen this and assume the editor is ahead
+            // some detailed logic in the update loop gives us this check
+            sceneHistory: [],
             focusedMediaObject: null
         };
     },
@@ -113,7 +117,17 @@ var SceneMonacoTextEditor = React.createClass({
         if (compareNewPropsAndCurrentEditorCopy) {
             var sceneVal = this.getHumanReadableScene(scene);
             var code = this.getSceneStringForSceneObj(sceneVal);
-            this.setState({scene: scene, code: code})
+
+            let history = this.state.sceneHistory;
+
+            history.push(scene);
+
+            // APEP it's going to be wasteful to store much more than 4 history items
+            // APEP I think the max depth we need is 3, until this is set, we can leave at 4
+            if (history.length > 4)
+                history.shift();
+
+            this.setState({scene: scene, code: code, sceneHistory: history})
         }
     },
 
@@ -370,19 +384,28 @@ var SceneMonacoTextEditor = React.createClass({
             return true;
         }
 
-        // Check if the scene in the next props is the same as the editor copy
-        var compareNewPropsAndCurrentEditorCopy = !_.isEqual(nextState.scene, this.getMonacoEditorVersionOfScene());
-        // If so the editor initiated the change and does not need a component update
-        // If the component does update it can cause the cursor to lose position in editor (bad UX)
-        return compareNewPropsAndCurrentEditorCopy;
-
+        // APEP pruned an equals check, considering we handle all situations in didUpdate, we may as well allow the update
+        return true;
     },
 
     componentDidUpdate: function (previousProps, previousState) {
 
         try {
             // APEP see if the new state for the scene has changed
-            var sceneChangeShouldUpdate = !_.isEqual(this.state.scene, previousState.scene);
+            let isNotInHistory = _.indexOf(this.state.sceneHistory, this.state.scene) === -1;
+            let isDifferentScene = true;
+
+            // APEP use the state stores, given the way we update this.state, it seems we cannot use it for the correct result
+            // this is a bad code smell and something out of the update pattern is breaking our chance to check this.state
+            let previousScene = _.last(_.initial(this.state.sceneHistory));
+            let currentScene = _.last(this.state.sceneHistory);
+
+            if (previousState && currentScene) {
+                isDifferentScene = previousScene._id !== currentScene._id;
+            }
+
+            var sceneChangeShouldUpdate = isDifferentScene ? true : isNotInHistory; // isNotInHistory || isDifferentScene;
+
             // APEP check the monaco editor to see if it already has a value set.
             var emptyEditorShouldUpdate = this.refs.monaco.editor.getValue() === null || this.refs.monaco.editor.getValue().length === 0;
 
