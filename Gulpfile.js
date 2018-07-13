@@ -157,9 +157,26 @@ gulp.task('include-schemas',function(){
     return gulp.src(['src/schemas/**']).pipe(gulp.dest('dist/schemas'));
 });
 
-gulp.task('service-workers',function(){
-    return gulp.src(['src/sw-toolbox.js']).pipe(gulp.dest('dist'));
+let removeLine = require('gulp-remove-line');
+
+gulp.task('service-workers', ['remove-browserify-wrapper']);
+
+gulp.task('service-workers-transfer', function() {
+
+    var b = browserify('src/sw-toolbox.js', {node: true}),
+        output = realFs.createWriteStream('dist/sw-toolbox.js');
+
+    b.transform(envify);
+
+    return b.bundle().pipe(output);
+
 });
+
+gulp.task('remove-browserify-wrapper', ['service-workers-transfer'], function () {
+    gulp.src(['dist/sw-toolbox.js'])
+        .pipe( removeLine( { "sw-toolbox.js": [ 1, 104 ]} ) )
+        .pipe( gulp.dest( "dist" ) );
+})
 
 gulp.task('build-dist', ['service-workers', 'bundlejs', 'html', 'css', 'icon', 'images', 'external-deps-for-china',  'include-monaco-editor', 'include-schemas', 'build-version-document']);
 

@@ -2,9 +2,9 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/3.2.0/workbox
 
 
 if (workbox) {
-    console.log(`Yay! Workbox is loaded 🎉`);
+    console.log(`Workbox dependency is supported by the browser`);
 } else {
-    console.log(`Boo! Workbox didn't load 😬`);
+    console.log(`Workbox depdency has failed - it is not support by the browser`);
 }
 
 // APEP look to convert to environment specific?
@@ -12,8 +12,10 @@ workbox.setConfig({
     debug: false
 });
 
+var cdn = process.env.AZURE_CDN_URL;
+
 workbox.routing.registerRoute(
-    new RegExp('^(.*)uosassetstore.blob.core.windows.net/assetstoredev/video/transcoded/dash/(.*).mp4'),
+    new RegExp(`^(.*)${cdn}(.*)/video/transcoded/dash/(.*).mp4`),
     workbox.strategies.cacheFirst({
         // Use a custom cache name
         cacheName: 'dash-blob-cache',
@@ -31,7 +33,7 @@ workbox.routing.registerRoute(
 );
 
 workbox.routing.registerRoute(
-    new RegExp('^(.*)uosassetstore.blob.core.windows.net/assetstoredev/video/transcoded/dash/(.*)(?:mpd)'),
+    new RegExp(`^(.*)${cdn}(.*)/video/transcoded/dash/(.*)(?:mpd)`),
     workbox.strategies.staleWhileRevalidate({
         // Use a custom cache name
         cacheName: 'dash-manifests-blob-cache',
@@ -48,7 +50,7 @@ workbox.routing.registerRoute(
 );
 
 workbox.routing.registerRoute(
-    new RegExp('^(.*)uosassetstore.blob.core.windows.net/assetstoredev/video/raw/(.*)(?:mp4)'),
+    new RegExp(`^(.*)${cdn}(.*)/video/raw/(.*)(?:mp4)`),
     workbox.strategies.staleWhileRevalidate({
         // Use a custom cache name
         cacheName: 'raw-vid-blob-cache',
@@ -65,7 +67,7 @@ workbox.routing.registerRoute(
 );
 
 workbox.routing.registerRoute(
-    new RegExp('^(.*)uosassetstore.blob.core.windows.net/assetstoredev/audio(.*)'),
+    new RegExp(`^(.*)${cdn}(.*)/audio(.*)`),
     workbox.strategies.staleWhileRevalidate({
         // Use a custom cache name
         cacheName: 'audio-blob-cache',
@@ -82,7 +84,7 @@ workbox.routing.registerRoute(
 );
 
 workbox.routing.registerRoute(
-    new RegExp('^(.*)uosassetstore.blob.core.windows.net/(.*)(?:png|jpg|jpeg|svg|gif)'),
+    new RegExp(`^(.*)${cdn}(.*)(?:png|jpg|jpeg|svg|gif)`),
     workbox.strategies.staleWhileRevalidate({
         // Use a custom cache name
         cacheName: 'image-blob-cache',
