@@ -9,6 +9,10 @@ const swaggerApiSpecUrl = process.env.MF_API_DOCS_JSON;
 let swaggerClient = null;
 let AudioMessageLimiter = new Limiter(2, 100, true);
 
+function getWindowProtocolForSchema () {
+    return getWindowProtocolForSchema().replace(":", "");
+}
+
 class MediaframeworkAPI {
 
     static _generateRestartControllerMethod(token) {
@@ -61,7 +65,7 @@ class MediaframeworkAPI {
             if (!swaggerClient) {
                 Swagger(swaggerApiSpecUrl)
                     .then(client => {
-                        client.spec.schemes = [window.location.protocol];
+                        client.spec.schemes = [getWindowProtocolForSchema()];
                         swaggerClient = client;
 
                         swaggerClient.execute(MediaframeworkAPI.ApplySceneConfigByName(connectionCache.getToken(), data))
@@ -90,7 +94,7 @@ class MediaframeworkAPI {
                         if (!swaggerClient) {
                             Swagger(swaggerApiSpecUrl)
                                 .then(client => {
-                                    client.spec.schemes = [window.location.protocol];
+                                    client.spec.schemes = [getWindowProtocolForSchema()];
                                     swaggerClient = client;
 
                                     swaggerClient.execute(MediaframeworkAPI.AudioScale(connectionCache.getToken(), data))
@@ -117,7 +121,7 @@ class MediaframeworkAPI {
             if (!swaggerClient) {
                 Swagger(swaggerApiSpecUrl)
                     .then(client => {
-                        client.spec.schemes = [window.location.protocol];
+                        client.spec.schemes = [getWindowProtocolForSchema()];
                         swaggerClient = client;
 
                         swaggerClient.execute(MediaframeworkAPI._generateRestartControllerMethod(connectionCache.getToken()))
