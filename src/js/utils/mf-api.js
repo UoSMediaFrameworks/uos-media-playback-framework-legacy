@@ -61,6 +61,7 @@ class MediaframeworkAPI {
             if (!swaggerClient) {
                 Swagger(swaggerApiSpecUrl)
                     .then(client => {
+                        swaggerClient.setSchemes([window.location.protocol]);
                         swaggerClient = client;
 
                         swaggerClient.execute(MediaframeworkAPI.ApplySceneConfigByName(connectionCache.getToken(), data))
@@ -89,6 +90,7 @@ class MediaframeworkAPI {
                         if (!swaggerClient) {
                             Swagger(swaggerApiSpecUrl)
                                 .then(client => {
+                                    swaggerClient.setSchemes([window.location.protocol]);
                                     swaggerClient = client;
 
                                     swaggerClient.execute(MediaframeworkAPI.AudioScale(connectionCache.getToken(), data))
@@ -115,6 +117,7 @@ class MediaframeworkAPI {
             if (!swaggerClient) {
                 Swagger(swaggerApiSpecUrl)
                     .then(client => {
+                        swaggerClient.setSchemes([window.location.protocol]);
                         swaggerClient = client;
 
                         swaggerClient.execute(MediaframeworkAPI._generateRestartControllerMethod(connectionCache.getToken()))
