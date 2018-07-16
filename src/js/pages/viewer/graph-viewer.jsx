@@ -1,13 +1,11 @@
 'use strict';
 
 const React = require('react');
-const Component = React.Component;
 
 var _ = require('lodash');
 var classNames = require('classnames');
 var ReactAudioPlayer = require('react-audio-player').default;
 var ReactPlayer = require('react-player').default;
-var ReactAnimationFrame = require('react-animation-frame');
 var TWEEN = require('@tweenjs/tween.js');
 
 var MediaEngineStore = require('../../stores/media-engine-store');
@@ -15,6 +13,7 @@ var InternalEventConstants = require('../../private-dependencies/internal-event-
 var MediaEngineSendActions = require('../../actions/media-engine/send-actions');
 
 const MINIMUM_AUDIO_VOLUME = 0.0001;
+const AUDIO_TRANSITION_IN_DURATION = 0.5;
 
 // APEP classnames documentation
 // media-object position: abs and opacity 0 with show-media-object bring opacity back to 1
@@ -237,11 +236,11 @@ var AudioContextMediaObjectInstance = React.createClass({
             // console.log(`Starting tween volume in - tween for ${this.props.mo._transitionTime} to ${this.getVolume()}`);
 
             // APEP stop any automatic system volume tweens - the performer should take over
-            // this._stopScehduledRampValues();
+            this._stopScehduledRampValues();
 
-            self.state.gainNode.gain.exponentialRampToValueAtTime(this.getVolume(), this.props.audioContext.currentTime + this.props.mo._transitionTime);
+            this.transitionInTime = this.props.audioContext.currentTime + AUDIO_TRANSITION_IN_DURATION;
 
-            return;
+            self.state.gainNode.gain.exponentialRampToValueAtTime(this.getVolume(), this.props.audioContext.currentTime + AUDIO_TRANSITION_IN_DURATION);
         }
 
         let isTransitionOut = prevProps.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING &&
@@ -251,7 +250,9 @@ var AudioContextMediaObjectInstance = React.createClass({
             // console.log(`Starting tween volume OUT - tween for ${this.props.mo._transitionTime}`);
 
             // APEP stop any automatic system volume tweens - the performer should take over
-            // this._stopScehduledRampValues();
+            this._stopScehduledRampValues();
+
+            this.transitionOutTime = this.props.audioContext.currentTime + this.props.mo._transitionTime;
 
             self.state.gainNode.gain.exponentialRampToValueAtTime(MINIMUM_AUDIO_VOLUME, this.props.audioContext.currentTime + this.props.mo._transitionTime);
         }
@@ -261,9 +262,22 @@ var AudioContextMediaObjectInstance = React.createClass({
         // APEP if we've had a volume property change
         if (isVolumeUpdate) {
             // APEP stop any automatic system volume tweens - the performer should take over
-            // this._stopScehduledRampValues();
 
-            this.state.gainNode.gain.exponentialRampToValueAtTime(this._getPropVolumeProtected(), this.props.audioContext.currentTime + 0.1);
+            // APEP TODO consider making inclusive of the end time of the linear RAMP ?
+            let currentTime = this.props.audioContext.currentTime;
+            if (currentTime < this.transitionInTime) {
+                // APEP this update has come in before the transition in has completed
+                this._stopScehduledRampValues();
+            }
+
+            if (currentTime < this.transitionOutTime) {
+                // APEP this update has come before the transition out has complete
+                this._stopScehduledRampValues();
+            }
+
+            let nextVolumeUpdateTime = this.props.audioContext.currentTime + 0.25;
+            this.state.gainNode.gain.linearRampToValueAtTime(this._getPropVolumeProtected(), nextVolumeUpdateTime);
+            this.lastManualVolumeChangeTime = nextVolumeUpdateTime;
         }
 
     },
@@ -312,6 +326,12 @@ var AudioContextMediaObjectInstance = React.createClass({
 
         // APEP force the sound to start at 0 volume from 0t
         gainNode.gain.setValueAtTime(MINIMUM_AUDIO_VOLUME, 0);
+
+        // APEP initial some variables that are not related to the rendering process, ie never be apart of the react component update cycle
+        this.transitionInTime = 0;
+        this.transitionOutTime = 0;
+
+        // this.lastManualVolumeChangeTime = 0;
 
         this.setState({sourceNode: source, gainNode: gainNode});
     },
