@@ -10,7 +10,7 @@ let swaggerClient = null;
 let AudioMessageLimiter = new Limiter(2, 100, true);
 
 function getWindowProtocolForSchema () {
-    return getWindowProtocolForSchema().replace(":", "");
+    return window.location.protocol.replace(":", "");
 }
 
 class MediaframeworkAPI {
