@@ -163,7 +163,7 @@ gulp.task('service-workers', ['remove-browserify-wrapper']);
 
 gulp.task('service-workers-transfer', function() {
 
-    var b = browserify('src/sw-toolbox.js', {node: true});
+    var b = browserify('src/sw-toolbox.js', {require: false});
 
     b.transform(envify);
 
@@ -174,7 +174,7 @@ gulp.task('service-workers-transfer', function() {
 });
 
 gulp.task('remove-browserify-wrapper', ['service-workers-transfer'], function () {
-    gulp.src(['dist/sw-toolbox.js'])
+    gulp.src(["dist/sw-toolbox.js"])
         .pipe( removeLine( { "sw-toolbox.js": [ 1, 104 ]} ) )
         .pipe( gulp.dest(dest) );
 })

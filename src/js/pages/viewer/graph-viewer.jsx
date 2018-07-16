@@ -227,20 +227,15 @@ var AudioContextMediaObjectInstance = React.createClass({
 
     componentDidUpdate: function(prevProps, prevState, snapshot) {
 
-        let self = this;
-
         let isTransitionIn = prevProps.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.LOADED &&
             this.props.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING;
 
         if (isTransitionIn) {
             // console.log(`Starting tween volume in - tween for ${this.props.mo._transitionTime} to ${this.getVolume()}`);
 
-            // APEP stop any automatic system volume tweens - the performer should take over
-            this._stopScehduledRampValues();
-
             this.transitionInTime = this.props.audioContext.currentTime + AUDIO_TRANSITION_IN_DURATION;
 
-            self.state.gainNode.gain.exponentialRampToValueAtTime(this.getVolume(), this.props.audioContext.currentTime + AUDIO_TRANSITION_IN_DURATION);
+            this.gainNode.gain.linearRampToValueAtTime(this.getVolume(), this.transitionInTime);
         }
 
         let isTransitionOut = prevProps.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING &&
@@ -249,12 +244,9 @@ var AudioContextMediaObjectInstance = React.createClass({
         if (isTransitionOut) {
             // console.log(`Starting tween volume OUT - tween for ${this.props.mo._transitionTime}`);
 
-            // APEP stop any automatic system volume tweens - the performer should take over
-            this._stopScehduledRampValues();
-
             this.transitionOutTime = this.props.audioContext.currentTime + this.props.mo._transitionTime;
 
-            self.state.gainNode.gain.exponentialRampToValueAtTime(MINIMUM_AUDIO_VOLUME, this.props.audioContext.currentTime + this.props.mo._transitionTime);
+            this.gainNode.gain.linearRampToValueAtTime(MINIMUM_AUDIO_VOLUME, this.transitionOutTime);
         }
 
         let isVolumeUpdate = prevProps.mo._volume !== this.props.mo._volume;
@@ -265,19 +257,14 @@ var AudioContextMediaObjectInstance = React.createClass({
 
             // APEP TODO consider making inclusive of the end time of the linear RAMP ?
             let currentTime = this.props.audioContext.currentTime;
-            if (currentTime < this.transitionInTime) {
+            if (currentTime < this.transitionInTime || currentTime < this.transitionOutTime) {
                 // APEP this update has come in before the transition in has completed
-                this._stopScehduledRampValues();
-            }
-
-            if (currentTime < this.transitionOutTime) {
                 // APEP this update has come before the transition out has complete
                 this._stopScehduledRampValues();
             }
 
-            let nextVolumeUpdateTime = this.props.audioContext.currentTime + 0.25;
-            this.state.gainNode.gain.linearRampToValueAtTime(this._getPropVolumeProtected(), nextVolumeUpdateTime);
-            this.lastManualVolumeChangeTime = nextVolumeUpdateTime;
+            let nextVolumeUpdateTime = this.props.audioContext.currentTime + 0.05;
+            this.gainNode.gain.linearRampToValueAtTime(this._getPropVolumeProtected(), nextVolumeUpdateTime);
         }
 
     },
@@ -298,18 +285,18 @@ var AudioContextMediaObjectInstance = React.createClass({
     },
 
     _stopScehduledRampValues: function() {
-        if (this.state.gainNode) {
-            this.state.gainNode.gain.cancelScheduledValues(this.props.audioContext.currentTime);
+        if (this.gainNode) {
+            this.gainNode.gain.cancelScheduledValues(this.props.audioContext.currentTime);
         }
     },
 
     componentWillUnmount: function() {
         this._stopScehduledRampValues();
 
-        if (this.state.gainNode)
-            this.state.gainNode.disconnect();
-        if (this.state.sourceNode)
-            this.state.sourceNode.disconnect();
+        if (this.gainNode)
+            this.gainNode.disconnect();
+        if (this.sourceNode)
+            this.sourceNode.disconnect();
     },
 
     componentDidMount: function () {
@@ -333,7 +320,8 @@ var AudioContextMediaObjectInstance = React.createClass({
 
         // this.lastManualVolumeChangeTime = 0;
 
-        this.setState({sourceNode: source, gainNode: gainNode});
+        this.sourceNode = source;
+        this.gainNode = gainNode;
     },
 
     getVolume: function() {
