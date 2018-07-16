@@ -233,7 +233,8 @@ var AudioContextMediaObjectInstance = React.createClass({
         if (isTransitionIn) {
             // console.log(`Starting tween volume in - tween for ${this.props.mo._transitionTime} to ${this.getVolume()}`);
 
-            this.transitionInTime = this.props.audioContext.currentTime + AUDIO_TRANSITION_IN_DURATION;
+            // this.transitionInTime = this.props.audioContext.currentTime + AUDIO_TRANSITION_IN_DURATION;
+            this.transitionInTime = this.props.audioContext.currentTime + this.props.mo._transitionTime;
 
             this.gainNode.gain.linearRampToValueAtTime(this.getVolume(), this.transitionInTime);
         }
@@ -257,10 +258,21 @@ var AudioContextMediaObjectInstance = React.createClass({
 
             // APEP TODO consider making inclusive of the end time of the linear RAMP ?
             let currentTime = this.props.audioContext.currentTime;
-            if (currentTime < this.transitionInTime || currentTime < this.transitionOutTime) {
+            if (currentTime < this.transitionInTime ) {
                 // APEP this update has come in before the transition in has completed
-                // APEP this update has come before the transition out has complete
                 this._stopScehduledRampValues();
+
+                // then reset transitionInTime to 0, to say hey we've cancelled it once
+                this.transitionInTime = 0;
+            }
+
+            if (currentTime < this.transitionOutTime) {
+                // APEP this update has come before the transition out has complete
+
+                this._stopScehduledRampValues();
+
+                // APEP we've now cancelled the transition, so we can not do this again
+                this.transitionOutTime = 0;
             }
 
             let nextVolumeUpdateTime = this.props.audioContext.currentTime + 0.05;
