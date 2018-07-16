@@ -163,19 +163,20 @@ gulp.task('service-workers', ['remove-browserify-wrapper']);
 
 gulp.task('service-workers-transfer', function() {
 
-    var b = browserify('src/sw-toolbox.js', {node: true}),
-        output = gracefulFs.createWriteStream('dist/sw-toolbox.js');
+    var b = browserify('src/sw-toolbox.js', {node: true});
 
     b.transform(envify);
 
-    return b.bundle().pipe(output);
+    return b.bundle()
+        .pipe(source("sw-toolbox.js"))
+        .pipe( gulp.dest(dest))
 
 });
 
 gulp.task('remove-browserify-wrapper', ['service-workers-transfer'], function () {
     gulp.src(['dist/sw-toolbox.js'])
         .pipe( removeLine( { "sw-toolbox.js": [ 1, 104 ]} ) )
-        .pipe( gulp.dest( "dist" ) );
+        .pipe( gulp.dest(dest) );
 })
 
 gulp.task('build-dist', ['service-workers', 'bundlejs', 'html', 'css', 'icon', 'images', 'external-deps-for-china',  'include-monaco-editor', 'include-schemas', 'build-version-document']);
