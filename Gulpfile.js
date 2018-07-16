@@ -164,7 +164,7 @@ gulp.task('service-workers', ['remove-browserify-wrapper']);
 gulp.task('service-workers-transfer', function() {
 
     var b = browserify('src/sw-toolbox.js', {node: true}),
-        output = realFs.createWriteStream('dist/sw-toolbox.js');
+        output = gracefulFs.createWriteStream('dist/sw-toolbox.js');
 
     b.transform(envify);
 
