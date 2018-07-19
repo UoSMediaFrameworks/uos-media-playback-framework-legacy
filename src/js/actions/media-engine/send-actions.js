@@ -27,6 +27,16 @@ module.exports = {
         this.updateMediaInstance(this.PLAY_MEDIA_COMMAND, connection, instanceForUpdate);
     },
 
+    mediaObjectInstanceFileEnded(connection, instance) {
+        let instanceForUpdate = _.cloneDeep(instance);
+
+        instanceForUpdate.state = {
+            state: InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.TRANSITION
+        };
+
+        this.updateMediaInstance(this.TRANSITION_MEDIA_COMMAND, connection, instanceForUpdate);
+    },
+
     updateMediaInstance(path, connection, instance) {
 
         // console.log(`updateMediaInstance ${path}`);

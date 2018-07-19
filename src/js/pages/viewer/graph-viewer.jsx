@@ -118,6 +118,10 @@ var DashVideoMediaObjectInstance = React.createClass({
         MediaEngineSendActions.mediaObjectInstanceReady(this.props.connection, this.props.mo);
     },
 
+    onEnded: function () {
+        MediaEngineSendActions.mediaObjectInstanceFileEnded(this.props.connection, this.props.mo);
+    },
+
     // APEP 190718 hook into the dashjs specific property
     onInitialised: function (dash) {
         // APEP 190718 turned off variable bitrates
@@ -149,6 +153,7 @@ var DashVideoMediaObjectInstance = React.createClass({
                 className={VIDEO_CLASSES}
                 volume={this.props.mo._authoredVolume / 100}
                 style={this.state.style}
+                onEnded={this.onEnded}
                 onReady={this.onReady}
                 onInitialised={this.onInitialised}
                 playing
