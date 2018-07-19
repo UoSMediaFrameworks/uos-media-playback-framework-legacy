@@ -12,7 +12,7 @@ workbox.setConfig({
     debug: false
 });
 
-var cdn = process.env.AZURE_CDN_URL;
+var cdn = "process.env.AZURE_CDN_URL";
 
 workbox.routing.registerRoute(
     new RegExp(`^(.*)${cdn}(.*)/video/transcoded/dash/(.*).mp4`),
