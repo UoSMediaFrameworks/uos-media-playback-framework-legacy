@@ -127,7 +127,7 @@ var DashVideoMediaObjectInstance = React.createClass({
         // APEP 190718 turned off variable bitrates
         dash.setAutoSwitchQuality(false);
         // APEP fix to highest quality
-        dash.setQualityFor("video", 3);
+        // dash.setQualityFor("video", 2);
 
         // Example of how to parse the available bitrates to pick given some simple rules
         var bitrates = dash.getBitrateInfoListFor("video");
