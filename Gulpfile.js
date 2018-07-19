@@ -157,27 +157,13 @@ gulp.task('include-schemas',function(){
     return gulp.src(['src/schemas/**']).pipe(gulp.dest('dist/schemas'));
 });
 
-let removeLine = require('gulp-remove-line');
+let replace  = require('gulp-replace');
 
-gulp.task('service-workers', ['remove-browserify-wrapper']);
-
-gulp.task('service-workers-transfer', function() {
-
-    var b = browserify('src/sw-toolbox.js', {require: false});
-
-    b.transform(envify);
-
-    return b.bundle()
-        .pipe(source("sw-toolbox.js"))
-        .pipe( gulp.dest(dest))
-
+gulp.task('service-workers', function () {
+    gulp.src(['src/sw-toolbox.js'])
+        .pipe(replace('process.env.AZURE_CDN_URL', process.env.AZURE_CDN_URL))
+        .pipe(gulp.dest(dest));
 });
-
-gulp.task('remove-browserify-wrapper', ['service-workers-transfer'], function () {
-    gulp.src(["dist/sw-toolbox.js"])
-        .pipe( removeLine( { "sw-toolbox.js": [ 1, 104 ]} ) )
-        .pipe( gulp.dest(dest) );
-})
 
 gulp.task('build-dist', ['service-workers', 'bundlejs', 'html', 'css', 'icon', 'images', 'external-deps-for-china',  'include-monaco-editor', 'include-schemas', 'build-version-document']);
 
