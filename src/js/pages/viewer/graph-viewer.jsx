@@ -118,6 +118,18 @@ var DashVideoMediaObjectInstance = React.createClass({
         MediaEngineSendActions.mediaObjectInstanceReady(this.props.connection, this.props.mo);
     },
 
+    // APEP 190718 hook into the dashjs specific property
+    onInitialised: function (dash) {
+        // APEP 190718 turned off variable bitrates
+        dash.setAutoSwitchQuality(false);
+        // APEP fix to highest quality
+        dash.setQualityFor("video", 3);
+
+        // Example of how to parse the available bitrates to pick given some simple rules
+        var bitrates = dash.getBitrateInfoListFor("video");
+        console.log('Bitrates available: ' + bitrates.length);
+    },
+
     render: function () {
 
         let VIDEO_CLASSES = classNames({
@@ -138,6 +150,7 @@ var DashVideoMediaObjectInstance = React.createClass({
                 volume={this.props.mo._authoredVolume / 100}
                 style={this.state.style}
                 onReady={this.onReady}
+                onInitialised={this.onInitialised}
                 playing
             />
         )
