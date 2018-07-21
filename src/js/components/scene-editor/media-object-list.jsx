@@ -59,7 +59,15 @@ function addToCache(urls, name) {
             .then((myCache) => {
                 let downloadChunks = _.chunk(allTranscodedUrls, 5);
                 Promise.map(downloadChunks, (chunkOfUrls) => {
-                    return myCache.addAll(chunkOfUrls);
+                    return new Promise((resolve, reject) => {
+                        // APEP wrap the addAll in our own promise, we don't want to block the cacher on errors
+                        // we might as well cache everything after and just inform user something was missing or error
+                        myCache.addAll(chunkOfUrls)
+                            .then(resolve)
+                            .catch((err) => {
+                                resolve();
+                            });
+                    });
                 }, {concurrency: 2})
                     .then(resolve)
                     .catch(reject)
@@ -81,7 +89,15 @@ function addAudioToCache(urls, name) {
             .then((myCache) => {
                 let downloadChunks = _.chunk(urls, 5);
                 Promise.map(downloadChunks, (chunkOfUrls) => {
-                    return myCache.addAll(chunkOfUrls);
+                    return new Promise((resolve, reject) => {
+                        // APEP wrap the addAll in our own promise, we don't want to block the cacher on errors
+                        // we might as well cache everything after and just inform user something was missing or error
+                        myCache.addAll(chunkOfUrls)
+                            .then(resolve)
+                            .catch((err) => {
+                                resolve();
+                            });
+                    });
                 }, {concurrency: 2})
                     .then(resolve)
                     .catch(reject)
