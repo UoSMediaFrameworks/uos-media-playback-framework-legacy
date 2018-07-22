@@ -377,6 +377,7 @@ var AudioContextMediaObjectInstance = React.createClass({
                 src={this.props.mo._content}
                 onCanPlay={this.onCanPlay}
                 ref={(element) => { this.sound = element; }}
+                preload={"none"}
                 autoPlay
             />
         )
