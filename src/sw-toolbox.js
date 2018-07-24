@@ -66,7 +66,7 @@ workbox.routing.registerRoute(
 );
 
 workbox.routing.registerRoute(
-    new RegExp(`^(.*)${cdn}(.*)/audio(.*)`),
+    new RegExp(`^(.*)${cdn}(.*)/audio/(.*)/(.*)`),
     workbox.strategies.staleWhileRevalidate({
         // Use a custom cache name
         cacheName: 'audio-blob-cache',
