@@ -126,13 +126,18 @@ var DashVideoMediaObjectInstance = React.createClass({
     onInitialised: function (dash) {
         // APEP 190718 turned off variable bitrates
         // APEP tried various methods - all caused encoding issues apart from the below
-        dash.setMaxAllowedBitrateFor("video", 2500);
-        dash.setMinAllowedBitrateFor("video", 1100);
+        // dash.setMaxAllowedBitrateFor("video", 2500);
+        // dash.setMinAllowedBitrateFor("video", 1100);
 
-        // APEP tune the dash settings to support fast pace changing videos rather than reliable live streaming
-        dash.setBufferToKeep(0);
-        dash.setBufferAheadToKeep(8);
-        dash.setBufferPruningInterval(5);
+        try {
+            // APEP tune the dash settings to support fast pace changing videos rather than reliable live streaming
+            dash.setBufferToKeep(0);
+            dash.setBufferAheadToKeep(8);
+            dash.setBufferPruningInterval(5);
+        } finally {
+            console.log("DASH JS methods missing for optimisation");
+        }
+
     },
 
     render: function () {
