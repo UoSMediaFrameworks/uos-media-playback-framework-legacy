@@ -199,5 +199,11 @@ gulp.task('serve', function(next) {
     static_server(dest, {callback: next, livereload: true});
 });
 
+gulp.task('serve-deploy', function(next) {
+    static_server(dest, {callback: next, livereload: false});
+});
+
 //, 'watch'
 gulp.task('default', ['build-dist', 'serve', 'watch']);
+
+gulp.task('default-deploy', ['build-dist', 'serve-deploy']);
