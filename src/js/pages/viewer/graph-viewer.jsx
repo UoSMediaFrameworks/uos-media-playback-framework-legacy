@@ -5,7 +5,6 @@ const React = require('react');
 var _ = require('lodash');
 var classNames = require('classnames');
 var ReactAudioPlayer = require('react-audio-player').default;
-var ReactPlayer = require('react-player').default;
 var TWEEN = require('@tweenjs/tween.js');
 
 var MediaEngineStore = require('../../stores/media-engine-store');
@@ -96,6 +95,8 @@ var ImageMediaObjectInstance = React.createClass({
     }
 });
 
+
+
 var DashVideoMediaObjectInstance = React.createClass({
 
     getInitialState: function () {
@@ -107,6 +108,8 @@ var DashVideoMediaObjectInstance = React.createClass({
         state.style = _.extend(state.style, InstanceStateToReact.convertInstanceTransitionProperties(this.props.mo).style);
         state.style = _.extend(state.style, InstanceStateToReact.convertInstanceVisualLayer(this.props.mo).style);
         state.style = _.extend(state.style, InstanceStateToReact.convertInstanceVisualPosition(this.props.mo).style);
+
+        this.dash = null;
 
         return state;
     },
@@ -122,20 +125,36 @@ var DashVideoMediaObjectInstance = React.createClass({
         MediaEngineSendActions.mediaObjectInstanceFileEnded(this.props.connection, this.props.mo);
     },
 
-    // APEP 190718 hook into the dashjs specific property
-    onInitialised: function (dash) {
-        // APEP 190718 turned off variable bitrates
-        // APEP tried various methods - all caused encoding issues apart from the below
+    componentDidMount: function() {
+        this.dash = dashjs.MediaPlayer().create();
+        this.dash.getDebug().setLogToBrowserConsole(false);
+        this.dash.initialize(this.refs.player, this.props.mo._content, true);
 
+        // this.dash.on(dashjs.MediaPlayer.events['STREAM_INITIALIZED'], this.onInitialised);
+        this.refs.player.addEventListener('canplay', this.onReady);
+        this.refs.player.addEventListener('ended', this.onEnded);
+    },
+
+    componentWillUnmount: function() {
+        if (this.dash) {
+            // this.dash.off(dashjs.MediaPlayer.events['STREAM_INITIALIZED'], this.onInitialised);
+            this.refs.player.removeEventListener('canplay', this.onReady);
+            this.refs.player.removeEventListener('ended', this.onEnded);
+            this.dash.reset();
+        }
+    },
+
+    // APEP 190718 hook into the dashjs specific property
+    onInitialised: function (e) {
         try {
             // APEP tune the dash settings to support fast pace changing videos rather than reliable live streaming
-            dash.setBufferToKeep(0);
+            this.dash.setBufferToKeep(0);
+            // APEP later versions of dash have this
             // dash.setBufferAheadToKeep(8);
             // dash.setBufferPruningInterval(5);
         } finally {
             console.log("DASH JS methods missing for optimisation");
         }
-
     },
 
     render: function () {
@@ -147,22 +166,17 @@ var DashVideoMediaObjectInstance = React.createClass({
         });
 
         return (
-            <ReactPlayer
-                url={this.props.mo._content}
-                config={{
-                    file: {forceDASH: true}
-                }}
-                width={this.state.style.width}
-                height={this.state.style.height}
+            <video
+                ref="player"
                 className={VIDEO_CLASSES}
-                volume={this.props.mo._authoredVolume / 100}
                 style={this.state.style}
-                onEnded={this.onEnded}
-                onReady={this.onReady}
-                onInitialised={this.onInitialised}
-                playing
-            />
-        )
+                preload='auto'
+                autoPlay={true}
+                controls={false}
+                width={this.state.style.width}
+                height={this.state.style.height}>
+            </video>
+        );
     }
 });
 
