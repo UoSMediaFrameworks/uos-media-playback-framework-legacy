@@ -170,7 +170,7 @@ var DashVideoMediaObjectInstance = React.createClass({
                 ref="player"
                 className={VIDEO_CLASSES}
                 style={this.state.style}
-                preload='auto'
+                preload='none'
                 autoPlay={true}
                 controls={false}
                 width={this.state.style.width}
@@ -394,7 +394,7 @@ var AudioContextMediaObjectInstance = React.createClass({
                 src={this.props.mo._content}
                 onCanPlay={this.onCanPlay}
                 ref={(element) => { this.sound = element; }}
-                preload={"none"}
+                preload="none"
                 autoPlay
             />
         )
