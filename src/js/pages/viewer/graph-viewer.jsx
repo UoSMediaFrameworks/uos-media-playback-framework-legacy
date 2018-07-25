@@ -129,6 +129,7 @@ var DashVideoMediaObjectInstance = React.createClass({
         this.dash = dashjs.MediaPlayer().create();
         this.dash.getDebug().setLogToBrowserConsole(false);
         this.dash.initialize(this.refs.player, this.props.mo._content, true);
+        this.dash.setVolume(this.props.mo._authoredVolume / 100);
 
         // this.dash.on(dashjs.MediaPlayer.events['STREAM_INITIALIZED'], this.onInitialised);
         this.refs.player.addEventListener('canplay', this.onReady);
