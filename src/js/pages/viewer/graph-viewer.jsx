@@ -626,11 +626,10 @@ var GraphViewer = React.createClass({
             <div>
                 {restartController}
 
-                {_.map(types, (type) => {
-                    console.log(type);
-                    console.log(types[type].length);
+                {_.map(Object.keys(types), (type) => {
                     return <span style={{backgroundColor: "black", color: "white"}}>
-                        {type}-{types[type].length}
+                        {type}
+                        {types[type].length}
                     </span>
                 })}
 
