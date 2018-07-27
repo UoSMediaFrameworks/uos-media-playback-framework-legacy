@@ -618,20 +618,24 @@ var GraphViewer = React.createClass({
             onClick={this.reloadController}
             style={{position: 'absolute', opacity: 0.2}}>reload controller data</button>;
 
-        // let types = _.groupBy(this.state.media, (mo) => {
-        //     return mo.type
-        // });
-        //
-        // {_.map(Object.keys(types), (type) => {
-        //     return <span style={{backgroundColor: "black", color: "white"}}>
-        //                 {type}
-        //         {types[type].length}
-        //             </span>
-        // })}
+        let types = _.groupBy(this.state.media, (mo) => {
+            return mo.type
+        });
+
+        let typeInfo = _.map(Object.keys(types), (type) => {
+            return <p style={{backgroundColor: "black", color: "white"}}>
+                {type}
+                -
+                {types[type].length}
+            </p>
+        });
 
         return (
             <div>
                 {restartController}
+                <div style={{position: 'absolute', top: 0, right: 0, zIndex: 10000000}}>
+                    {typeInfo}
+                </div>
                 {_.map(this.state.media, (mo) => {
                     return <MediaObjectInstance key={mo._id} mo={mo} connection={this.state.connection} audioContext={this.state.audioContext}/>
                 })}
