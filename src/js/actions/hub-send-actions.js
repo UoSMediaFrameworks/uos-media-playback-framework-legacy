@@ -30,6 +30,16 @@ module.exports = {
         HubClient.login(process.env.MEDIA_HUB);
     },
 
+    tryPublicAuth: function (creds, callback) {
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.HUB_LOGIN_ATTEMPT,
+            authType: 'public'
+        });
+        // coming from envify
+        HubClient.login(process.env.MEDIA_HUB, creds, callback);
+    },
+
+
     getNewGDCSceneGraph: function (name) {
         return {
             'name': name,

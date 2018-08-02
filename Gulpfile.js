@@ -59,6 +59,7 @@ if(debugMode) {
   abstract out the process of making a bundler, and then leave it open to manual triggering
 */
 var indexBundler = bundlerBuilder('./src/js/index.jsx', 'index.js', true);
+var mfViewBundler = bundlerBuilder('./src/js/mf_viewer.jsx', 'mf_viewer.js', true);
 
 function bundlerBuilder (startPath, finishName, useReactify) {
     var bundler = watchify(browserify(startPath, objectAssign({debug: true, cache: {}, packageCache: {}}, watchify.args)));
@@ -102,6 +103,7 @@ gulp.task('watch', function () {
     gulp.watch(cssGlobs, ['css']);
 
     indexBundler.bundler.on('update', indexBundler.rebundle);
+    mfViewBundler.bundler.on('update', mfViewBundler.rebundle);
 });
 
 gulp.task('html', function() {
@@ -126,7 +128,8 @@ gulp.task('css', function() {
 
 gulp.task('bundlejs', function() {
     return mergeStream(
-        indexBundler.rebundle()
+        indexBundler.rebundle(),
+        mfViewBundler.rebundle()
     );
 });
 
@@ -160,10 +163,11 @@ gulp.task('build', ['build-dist'], function() {
     // watchify watch handles must be closed, otherwise gulp task will hang,
     // thus the .on('end', ...)
     indexBundler.bundler.close();
+    mfViewBundler.bundler.close();
 });
 
 gulp.task('serve', function(next) {
-    static_server(dest, {callback: next, livereload: true});
+    static_server(dest, {callback: next, livereload: false});
 });
 
 //, 'watch'

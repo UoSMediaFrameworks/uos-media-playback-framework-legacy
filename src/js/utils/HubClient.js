@@ -10,68 +10,104 @@ var NodeListGeneration = require('./scene-graph/node-list-generation');
 var toastr = require('toastr');
 var socket;
 var _ = require('lodash');
+var CredentialValidator = require('./credential-validation');
+
 
 var HubClient = {
-    login: function(url, creds) {
-        var type;
-        switch (arguments.length) {
-            case 1:
-                type = 'token';
-                creds = {token: connectionCache.getToken()};
+    
+    login: function(url, creds, callback) {
+        
+        var LoginType;
 
-                if (! url || ! creds.token) {
-                    // bad localstorage, or nothing in it, so just return
-                    connectionCache.clear();
-                    HubRecieveActions.recieveLoginResult(false);
-                    return;
-                }
-                break;
-            case 2:
-                connectionCache.setHubUrl(url);
-                break;
-            default:
-                throw 'url and creds must be provided for login to function';
+        //MK credential format validation
+        if(creds == null) {
+            LoginType = "token";
+            creds = {token: connectionCache.getToken()};
+            if (! url || ! creds.token) {
+                // bad localstorage, or nothing in it, so just return
+                connectionCache.clear();
+                console.log("Login attempt failed, please provide credentials in a valid format")
+                HubRecieveActions.recieveLoginResult(false);
+                return;
+            }
+        } else if (CredentialValidator.isValidUsernameAndPasswordRequest(creds)) {
+            LoginType = "userPass"  
+            connectionCache.setHubUrl(url);
+        } else if (CredentialValidator.isValidPasswordOnlyRequest(creds)) {         
+            LoginType = "passwordOnly"
+            connectionCache.setHubUrl(url);
+        } else if (CredentialValidator.isValidPublicRequest(creds)) {
+            LoginType = "publicContent"
+            connectionCache.clear(); //MK make sure no previous connection details are kept! (shouldn't be any anyway)
+        } else {
+            console.log("Login details were provided in an incorrect format", creds);
+            HubRecieveActions.recieveLoginResult(false);
+            return;
         }
-
+        
         // APEP if we had a socket open already, we should force disconnect
         // this also removes any previous on listeners we added
         if(socket) {
             socket.disconnect();
         }
-
         socket = io(url, {forceNew: true});
-
         socket.on('connect',function() {
-            console.log("connect")
-            socket.emit('auth', creds, function(err, token, socketID/*AJF: doesn't get used here*/, groupID) {/*AJF: callback extended to accept the groupID of the user*/
-                console.log("auth - err: ", err);
-                if (err) {
-                    socket.disconnect();
-                    HubRecieveActions.recieveLoginResult(false, err.toString());
-                } else {
-                    connectionCache.setHubToken(token);
-                    connectionCache.setSocketID(socketID);
-                    console.log("Setting groupID in HubClient to: " + groupID);
-                    connectionCache.setGroupID(groupID);//AJF: set the groupID
 
-                    //Angel P: I am calling this function to register the listener to a specific room ID
-                    //In order for the layout components graph to communicate with the Scene graph editor.
-                    HubClient.registerToGraphPlayerRoom(socketID)
-
-                    HubRecieveActions.recieveLoginResult(true);
-                    HubRecieveActions.tryListScenes();
-
-                    socket.emit('listScenes', function(err, scenes) {
-                        if (err) throw err;
-                        HubRecieveActions.recieveSceneList(scenes);
+            switch(LoginType) {
+                case "publicContent":
+                    console.log("auth - public: ");
+                    socket.emit('auth', creds, function(err, token, roomId, contentRef) {/*AJF: callback extended to accept the groupID of the user*/
+                        
+                        if (err) {
+                            socket.disconnect();
+                            HubRecieveActions.recieveLoginResult(false, err.toString());
+                        } else {
+                            //MK register to roomID not socket ID
+                            connectionCache.setSocketID(roomId);
+                            connectionCache.setHubToken(token)
+                            console.log("ROM", roomId)
+                            HubClient.registerToGraphPlayerRoom(creds.roomID || roomId)
+                            if(callback) {
+                                callback(roomId, contentRef)
+                            }
+                            HubRecieveActions.recieveLoginResult(true);
+                        }
                     });
+                    break;
+                default:
+                    socket.emit('auth', creds, function(err, token, socketID/*AJF: doesn't get used here*/, groupID) {/*AJF: callback extended to accept the groupID of the user*/
+                                    console.log("auth - err: ", err);
+                                    if (err) {
+                                        socket.disconnect();
+                                        HubRecieveActions.recieveLoginResult(false, err.toString());
+                                    } else {
+                                        connectionCache.setHubToken(token);
+                                        connectionCache.setSocketID(socketID);
+                                        console.log("Setting groupID in HubClient to: " + groupID);
+                                        connectionCache.setGroupID(groupID);//AJF: set the groupID
 
-                    socket.emit('listSceneGraphs', function(err, sceneGraphs) {
-                        if(err) throw err;
-                        HubRecieveActions.recieveSceneGraphList(sceneGraphs);
-                    })
-                }
-            });
+                                        //Angel P: I am calling this function to register the listener to a specific room ID
+                                        //In order for the layout components graph to communicate with the Scene graph editor.
+                                        HubClient.registerToGraphPlayerRoom(socketID)
+
+                                        HubRecieveActions.recieveLoginResult(true);
+                                        HubRecieveActions.tryListScenes();
+
+                                        socket.emit('listScenes', function(err, scenes) {
+                                            if (err) throw err;
+                                            HubRecieveActions.recieveSceneList(scenes);
+                                        });
+
+                                        socket.emit('listSceneGraphs', function(err, sceneGraphs) {
+                                            if(err) throw err;
+                                            HubRecieveActions.recieveSceneGraphList(sceneGraphs);
+                                        })
+                                    }
+                                });
+                    break;
+            }
+            console.log("Socket connecting to hub")
+            
         });
 
         socket.on('connect_error', function(err) {

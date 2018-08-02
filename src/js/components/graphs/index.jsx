@@ -10,7 +10,7 @@ var GDCGraph = require('./gdc-graph.jsx');
 var ThumbGraph = require('./thumbnail-graph.jsx');
 var CeramicGraph = require('./ceramic-graph.jsx');
 var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
-var AutocompleteStore = require('../../stores/autocomplete-store')
+//var AutocompleteStore = require('../../stores/autocomplete-store')
 var QRCODE = require('qrcode.react');
 var OptionsMenu = require('./options-menu.jsx');
 var BreadcrumbsMenu = require('./breadcrumbs-menu.jsx');
@@ -23,6 +23,7 @@ var GridStore = require("../../stores/grid-store");
 var GraphTypes = require("../../constants/graph-constants").GraphTypes;
 var GraphContainer = React.createClass({
     getInitialState: function () {
+        console.log("loaded graph " + this.props._id);
         return {
             graphId: null,
             sceneList: null,
@@ -54,7 +55,7 @@ var GraphContainer = React.createClass({
         this.setState({breadcrumbsList: BreadcrumbsStore.getBreadcrumbs()});
     },
     autocompleteChangeHandler: function () {
-        var value = AutocompleteStore.getSelectedValue();
+        var value = "" //AutocompleteStore.getSelectedValue();
         console.log(value);
         this.setState({autocompleteValue: value })
     },
@@ -252,7 +253,7 @@ var GraphContainer = React.createClass({
         var dom = ReactDom.findDOMNode(this);
         SceneGraphListStore.addChangeListener(this._onChange);
         BreadcrumbsStore.addChangeListener(this._onCrumbsChange);
-        AutocompleteStore.addChangeListener(this.autocompleteChangeHandler);
+        //AutocompleteStore.addChangeListener(this.autocompleteChangeHandler);
         BreadcrumbsStore.setBreadcrumbs(this.state.graphId);
         GridStore.setRoomId(connectionCache.getSocketID());
         this.setState({height: dom.parentElement.clientHeight, width: dom.parentElement.clientWidth})
@@ -273,7 +274,7 @@ var GraphContainer = React.createClass({
         document.removeEventListener('keyup', this.optionsMenuHandler, false);
         SceneGraphListStore.removeChangeListener(this._onChange);
         BreadcrumbsStore.removeChangeListener(this._onCrumbsChange);
-        AutocompleteStore.removeChangeListener(this.autocompleteChangeHandler);
+        //AutocompleteStore.removeChangeListener(this.autocompleteChangeHandler);
         GridStore.setRoomId("presentation1");
     },
     autocompleteHandler: function () {

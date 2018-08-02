@@ -8,7 +8,7 @@ var Text = require("./gdc-components/text.jsx")
 var _ = require("lodash");
 var connectionCache = require("../../utils/connection-cache");
 var HubClient = require("../../utils/HubClient");
-var AutocompleteStore = require('../../stores/autocomplete-store');
+//var AutocompleteStore = require('../../stores/autocomplete-store');
 var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
 var GraphBreadcrumbActions = require("../../actions/graph-breadcrumb-actions");
 var AutowalkStore = require('../../stores/autowalk-store.js');
@@ -52,7 +52,7 @@ var GDCGraph = React.createClass({
         BreadcrumbsStore.addPlayListener(this._playBreadcrumbs);
         BreadcrumbsStore.addTraceListener(this._traceBreadcrumbs);
         AutowalkStore.addChangeListener(this._autowalkHandler);
-        AutocompleteStore.addChangeListener(this._playAutocompleteNode);
+        //AutocompleteStore.addChangeListener(this._playAutocompleteNode);
     },
     _playAutocompleteNode:function(value){
         var self =this;
@@ -71,7 +71,7 @@ var GDCGraph = React.createClass({
         BreadcrumbsStore.removePlayListener(this._playBreadcrumbs);
         BreadcrumbsStore.removeTraceListener(this._traceBreadcrumbs);
         AutowalkStore.removeChangeListener(this._autowalkHandler);
-        AutocompleteStore.removeChangeListener(this._playAutocompleteNode);
+        //AutocompleteStore.removeChangeListener(this._playAutocompleteNode);
     },
     _autowalkHandler: function (props) {
         var self = this;

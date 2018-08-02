@@ -11,6 +11,8 @@ var urlParams = function(obj) {
 
 var makeRequest = function(ops) {
 	var xhr = new XMLHttpRequest();
+
+	//xhr.withCredentials = true; //MK requied inside iframe
 	var url = ops.url;
 	var onLoad = ops.onLoad || null;
 	var method = ops.method || 'GET';

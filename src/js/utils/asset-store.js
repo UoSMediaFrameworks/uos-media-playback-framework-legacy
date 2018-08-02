@@ -55,18 +55,25 @@ module.exports = {
         })
     },
     getFullScene: function(sceneId, callback) {
-        var data = new FormData();
-        data.append('sceneId', sceneId);
-        data.append('token', connectionCache.getToken());
-
+        console.log("GFS", sceneId, connectionCache.getToken() );
+        var urlEncodedDataPairs = [];
+        urlEncodedDataPairs.push(encodeURIComponent('sceneId') + '=' + encodeURIComponent(sceneId));
+        urlEncodedDataPairs.push(encodeURIComponent('token') + '=' + encodeURIComponent(connectionCache.getToken()));
+        var urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
+        console.log("API REQ", urlEncodedData);
         var xhr = apiRequest.makeRequest({
             url: GET_FULL_SCENE_API,
             responseParser: jsonParser,
             method: 'POST',
-            formData: data,
+            formData: urlEncodedData,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+
             onLoad: function(err,data) {
                 callback(err, data);
             },
+
             onError: function(err) {
                 callback(err, null);
             }

@@ -16,6 +16,7 @@ var AudioMediaObject = require('../utils/media-object/audio-media-object');
 var RandomVisualPlayer = require('../components/viewer/random-visual-player.jsx');
 var ActiveTheme = require('../components/viewer/viewer-active-theme.jsx');
 var hat = require('hat');
+var SceneActions = require('../actions/scene-actions');
 
 var MINIMUM_NUMBER_OF_MEDIA_TO_BE_MATCHED_WITH_THEME_QUERY = 0;
 
@@ -40,11 +41,11 @@ var SceneListener = React.createClass({
         return this.props.sceneId || this.props.params.id;
     },
 
-    _getScene: function () {
+    _getScene: function (callback) {
 
         try {
             if (this.props.activeScene) {
-                return this.props.activeScene;
+                callback(this.props.activeScene);
             }
 
             var sceneId = this._getSceneId();
@@ -54,16 +55,19 @@ var SceneListener = React.createClass({
             }
 
             console.log("SceneListener - _getScene - sceneId: ", sceneId);
-            return SceneStore.getScene(sceneId);
+            SceneActions.getFullScene(sceneId, function (scene) {
+                console.log("SSS", scene);
+                callback(scene);
+            });
         } catch (e) {
             console.log("SceneListener - _getScene - error loading full Scene", e);
-            return null;
+            callback(null);
         }
     },
 
     getInitialState: function () {
         return {
-            scene: this._getScene(),
+            scene: null,
             activeThemes: [],
             fromGraphViewer: this.props.activeScene !== null,
             triggeredActiveThemes: {},
@@ -116,12 +120,17 @@ var SceneListener = React.createClass({
         }
     },
     componentWillReceiveProps: function (nextProps) {
-
-        var scene = this._getScene();
-        this.setState({scene: scene})
+        var self = this;
+        this._getScene(function (scene) {
+            self.setState({scene: scene})
+        });
     },
     componentDidMount: function () {
         try {
+            var self = this;
+            this._getScene(function (scene) {
+                self.setState({scene: scene});
+            });
             SceneStore.addChangeListener(this._onChange);
             this._maybeUpdatePlayer();
         } catch (e) {
@@ -212,7 +221,10 @@ var SceneListener = React.createClass({
     },
 
     _onChange: function () {
-        this.setState({scene: this._getScene()});
+        var self = this;
+        this._getScene(function (scene) {
+            self.setState({scene: scene });
+        })
     },
 
     handleThemeChange: function (newThemes) {
@@ -327,7 +339,7 @@ var SceneListener = React.createClass({
 
         if (this.state.scene) {
             return (
-                <div className={self.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"}
+                <div className={self.props.sceneViewer ? "mf-local-width mf-local-height scene-listener" : "scene-listener"}
                      ref="scene_listener">
                     <Loader loaded={this.state.scene !== null}></Loader>
                     <RandomVisualPlayer sceneStyle={this.state.scene.style}
