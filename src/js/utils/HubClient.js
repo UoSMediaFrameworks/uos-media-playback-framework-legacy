@@ -172,6 +172,26 @@ var HubClient = {
         });
     },
 
+    create: function(scene, cb) {
+        socket.emit('createScene', scene, function(err, newScene) {
+            if (err) {
+                HubRecieveActions.errorMessage('Couldn\'t create scene, please try again');
+            } else {
+                toastr.success('Successfully created scene');
+                if (cb) {
+                    cb(newScene);
+                }
+                // APEP update the scene saving store for a successful save
+                HubRecieveActions.sceneSaved(newScene);
+                // APEP publish that we have received a new version of the scene
+                HubRecieveActions.recieveScene(newScene);
+
+                // APEP Make sure the V2 scene store is up to date
+                SceneActions.getFullScene(newScene._id);
+            }
+        })
+    },
+
     save: function(scene, cb) {
         socket.emit('saveScene', scene, function(err, newScene) {
             if (err) {

@@ -660,7 +660,7 @@ module.exports = {
             'scene': []
         };
 
-        HubClient.save(scene, function (newScene) {
+        HubClient.create(scene, function (newScene) {
             HubRecieveActions.savedScene(newScene);
             HubRecieveActions.recieveScene(newScene);
             cb(newScene); //return new scene too callback
