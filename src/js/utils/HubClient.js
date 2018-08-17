@@ -75,7 +75,7 @@ var HubClient = {
                     });
                     break;
                 default:
-                    socket.emit('auth', creds, function(err, token, socketID/*AJF: doesn't get used here*/, groupID) {/*AJF: callback extended to accept the groupID of the user*/
+                    socket.emit('auth', creds, function(err, token, socketID/*AJF: doesn't get used here*/, user) {/*AJF: callback extended to accept the groupID of the user*/
                                     console.log("auth - err: ", err);
                                     if (err) {
                                         socket.disconnect();
@@ -83,8 +83,8 @@ var HubClient = {
                                     } else {
                                         connectionCache.setHubToken(token);
                                         connectionCache.setSocketID(socketID);
-                                        console.log("Setting groupID in HubClient to: " + groupID);
-                                        connectionCache.setGroupID(groupID);//AJF: set the groupID
+                                        console.log("Setting groupID in HubClient to:,", user._id);
+                                        connectionCache.setGroupID(user._id);//AJF: set the groupID
 
                                         //Angel P: I am calling this function to register the listener to a specific room ID
                                         //In order for the layout components graph to communicate with the Scene graph editor.
@@ -134,6 +134,18 @@ var HubClient = {
         });
 
     },
+
+    getUserObject: function(callback)
+        {  
+            console.log('getUser')
+            socket.emit('getUser', function(err,user) {
+                if (err) {
+                    return callback(null);
+                } else {
+                    return callback(user);
+                }
+            })
+        },
 
     logout: function() {
         connectionCache.clear();

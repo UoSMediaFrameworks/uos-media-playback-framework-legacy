@@ -3,7 +3,7 @@ var GridStore = require('../stores/grid-store');
 var connectionCache = require('../utils/connection-cache');
 var SceneActions = require('../actions/scene-actions');
 var ClientStore = require('../stores/client-store');
-
+var HubClient = require('../utils/HubClient')
 var DropdownButton = require('react-bootstrap').DropdownButton;
 var MenuItem = require('react-bootstrap').MenuItem;
 var FormHelper = require('../mixins/form-helper');
@@ -17,6 +17,8 @@ var GraphTitles = require('../constants/graph-constants').GraphTitles;
 
 var SceneSelector = require('./scene-selector.jsx');
 var ViewLayoutActions = require("../actions/view-layout-actions");
+var UserModal = require('./user-modal')
+
 
 function _getState() {
     return {
@@ -24,7 +26,9 @@ function _getState() {
         focusedLayoutItem: GridStore.getFocusedComponent(),
         value: GraphTypes.GDC,
         focusedSceneID: "",
-        focusedSceneGraphID: ""
+        focusedSceneGraphID: "",
+        showUserModal: false,
+        user: null
     }
 }
 
@@ -35,7 +39,9 @@ var NavigationBar = React.createClass({
     },
 
     _onLoginChange: function () {
-        this.setState({loggedIn: ClientStore.loggedIn()});
+        HubClient.getUserObject((user) => {
+            this.setState({loggedIn: ClientStore.loggedIn(), user: user});
+        })
     },
 
     _onLayoutChange: function () {
@@ -53,6 +59,7 @@ var NavigationBar = React.createClass({
 
     handleLogout: function (event) {
         SceneActions.logout();
+        this.setState({loggedIn: false})
     },
 
     addComponent: function (type) {
@@ -159,7 +166,7 @@ var NavigationBar = React.createClass({
         var self = this;
         var nc = this.getNavComponent();
         var isAdmin = connectionCache.getGroupID() === 0;
-        var sessionNav = null;
+        var UserArea = null;
         var adminDropDown = null;
 
         if (isAdmin) {
@@ -178,11 +185,7 @@ var NavigationBar = React.createClass({
 
         if (this.state.loggedIn) {
             // APEP TODO no reason why this can't be it's own react class.  We might already have one...
-            sessionNav = (   <li>
-                    <p className="navbar-text">{connectionCache.getGroupID()}
-                        - {connectionCache.getShortGroupName(connectionCache.getGroupID())}</p>
-                </li>
-            );
+            UserArea = (<UserModal user={this.state.user} logoutFunction={this.handleLogout}/>);
         }
 
 
@@ -202,6 +205,7 @@ var NavigationBar = React.createClass({
         // APEP TODO Look at why we have a hard coded Version: 0
         // APEP TODO A lot of these can be React classes
             return (
+                <div>
                 <nav className={navbarParentClassname}>
                     <div className="container-fluid mf-brand-position-fix">
                         <div className="navbar-header">
@@ -225,7 +229,7 @@ var NavigationBar = React.createClass({
                                 <li>
                                     <span className="navbar-text">Version: 0</span>
                                 </li>
-                                {sessionNav}
+                                
                                 {adminDropDown}
                                 <li className="mf-dropdown">
                                     <DropdownButton id="set-layout-to-preset" title={"Workflows"} className="btn btn-dark navbar-btn">
@@ -279,19 +283,18 @@ var NavigationBar = React.createClass({
                                             Player</MenuItem>
                                     </DropdownButton>
                                 </li>
-                                <li>
-                                    <button type="button" onClick={this.handleLogout}
-                                            className='btn btn-dark navbar-btn'>
-                                        Log out
-                                    </button>
-                                </li>
+                                {UserArea}
                             </ul>
                             <ul className="nav navbar-nav navbar-right">
                                 {nc}
                             </ul>
                         </div>
                     </div>
+                    
                 </nav>
+                <userModal show = {this.state.showUserModal} user ={this.state.user}/>
+                </div>
+                
             );
         else
             return null;

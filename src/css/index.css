@@ -1173,3 +1173,23 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
 .mf-inlineBlock {
     display: inline-block;
   }
+
+
+.nav-userdropdown .btn {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+.nav-userArea * {
+    display: inline-block;
+    color: white;
+}
+
+.nav-userArea-profileImage {
+    height: 40px;
+    margin-right: 7px;
+}
+
+.nav-userArea-userName {
+    margin-right: 3px;
+}
