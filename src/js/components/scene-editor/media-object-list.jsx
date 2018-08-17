@@ -84,7 +84,7 @@ var MediaObjectList = React.createClass({
 
     /* shouldComponentUpdate: function(nextProps, nextState) {
      //Only allow component update if we have a change in focused media or scene media list length
-     return this.state.selectedIndex === null ||  ( this.state.selectedIndex !== nextProps.focusedMediaObject || this.props.scene.scene.length !== nextProps.scene.scene.length );
+     return this.state.selectedIndex === null ||  ( this.state.selectedIndex !== nextProps.focusedMediaObject || this.props.scene.objects.length !== nextProps.scene.objects.length );
      },*/
     componentWillUnmount: function () {
         console.log("media-object-list unmounting")
@@ -124,11 +124,11 @@ var MediaObjectList = React.createClass({
 
     getFilteredMediaList() {
         try {
-            if (this.props.scene && this.props.scene.scene && this.props.scene.scene.length !== 0) {
+            if (this.props.scene && this.props.scene.objects && this.props.scene.objects.length !== 0) {
 
                 let tagMatcher = new TagMatcher("(" + this.state.tagSearch + ")");
 
-                var items = this.props.scene.scene.map(function (mediaObject, index) {
+                var items = this.props.scene.objects.map(function (mediaObject, index) {
 
                     var klass = 'media-object-item' + (this.state.selectedIndex === index ? ' selected' : '');
 

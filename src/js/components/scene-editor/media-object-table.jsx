@@ -37,8 +37,8 @@ var MediaObjectTable = React.createClass({
 	render: function() {
 		var rows = null;
 		
-		if (this.props.scene.scene && this.props.scene.scene.length !== 0) {
-			rows = this.props.scene.scene.map(function(mediaObject, index) {
+		if (this.props.scene.objects && this.props.scene.objects.length !== 0) {
+			rows = this.props.scene.objects.map(function(mediaObject, index) {
 				return <TableItem key={index} index={index} scene={this.props.scene} mediaObject={mediaObject} />;
 			}.bind(this));	
 		} else {

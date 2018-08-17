@@ -14,9 +14,9 @@ var MediaObjectPreviewPlayer = React.createClass({
         };
     },
     _getMediaObject: function (props) {
-        var scenes = props.scene;
+        var scene = props.scene;
         var currentMediaItemIndex = props.focusedMediaObject;
-        return scenes.scene[currentMediaItemIndex] || null;
+        return scene.objects[currentMediaItemIndex] || null;
     },
     _cssToReactCSS: function (styleObject) {
         var ReactStyleObj = {};
@@ -49,7 +49,7 @@ var MediaObjectPreviewPlayer = React.createClass({
             return;
         }
         var unwanted_styles = ["position", "max-width", "width", "min-width", "max-height", "height", "min-height", "left", "right", "top", "bottom"]
-        var style = props.scene.scene[props.focusedMediaObject].style ? _.cloneDeep(props.scene.scene[props.focusedMediaObject].style) : {};
+        var style = props.scene.objects[props.focusedMediaObject].style ? _.cloneDeep(props.scene.objects[props.focusedMediaObject].style) : {};
         for (var i = 0; i < unwanted_styles.length;i++) {
 
          delete style[unwanted_styles[i]]
@@ -60,7 +60,7 @@ var MediaObjectPreviewPlayer = React.createClass({
                 var preview;
                 var self = this;
                 var text = "Undefined";
-                text = props.scene.scene[props.focusedMediaObject].text;
+                text = props.scene.objects[props.focusedMediaObject].text;
                 preview = <p style={ this._cssToReactCSS(style)} dangerouslySetInnerHTML={{__html: text}}></p>;
                 self.setState({preview: preview, previewClass: 'media-object-item-preview-player text-container'});
                 break;

@@ -79,7 +79,7 @@ var SceneEditorGUI = React.createClass({
 
         //have to use try catch because focusedMediaObject can be out of bounds
         try {
-            mediaObject = scene.scene[focusedMediaObject]
+            mediaObject = scene.objects[focusedMediaObject]
         } catch (error) {
             console.log("SceneEditorGUI: failed to read media object", error);
         }
@@ -299,7 +299,7 @@ var SceneEditorGUI = React.createClass({
                 //Attemp to save back to the scene store
                 try {
                     var scene = this.state.scene
-                    scene.scene[this.state.focusedMediaObject].style = mfStyle
+                    scene.objects[this.state.focusedMediaObject].style = mfStyle
                     SceneActions.updateScene(scene)
                     console.log("SceneEditorGUI: Changes saved:", JSON.stringify(mfStyle))
                 } catch (error) {

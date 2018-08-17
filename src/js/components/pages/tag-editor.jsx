@@ -73,7 +73,7 @@ var TagEditor = React.createClass({
 
         try {
             var scene = this.state.scene
-            scene.scene[this.state.focusedMediaObject].tags = csv;
+            scene.objects[this.state.focusedMediaObject].tags = csv;
             SceneActions.updateScene(scene)
             console.log("TagEditor: Changes saved");
         } catch (error) {
@@ -91,7 +91,7 @@ var TagEditor = React.createClass({
 
         if (focusedMediaObject != null) {
             try {
-                mediaObject = scene.scene[focusedMediaObject]
+                mediaObject = scene.objects[focusedMediaObject]
             } catch (err) {
                 console.log("failed to load media object", err)
             }
@@ -158,7 +158,7 @@ var TagEditor = React.createClass({
         if (scene != null) {
 
             //rename to avoid confusion
-            var sceneMediaObjects = scene.scene;
+            var sceneMediaObjects = scene.objects;
 
             //iterate media objects
             sceneMediaObjects.forEach(mediaObject => {

@@ -108,7 +108,7 @@ function MediaObjectLinearQueue(types, defaultDisplayCounts, manager) {
         try {
             masterBucketsList = {};
             // APEP get all media objects with sequenceByNumber
-            var sceneMediaObjectsForLinearPlayback = _.filter(newScene.scene, function(mo) { return mo.hasOwnProperty("sequenceNumber"); });
+            var sceneMediaObjectsForLinearPlayback = _.filter(newscene.objects, function(mo) { return mo.hasOwnProperty("sequenceNumber"); });
             // APEP for all media objects that are sequenced, add to buckets
             _.forEach(sceneMediaObjectsForLinearPlayback, function(mo) {
 

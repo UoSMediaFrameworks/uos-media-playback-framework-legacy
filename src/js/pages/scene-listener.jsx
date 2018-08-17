@@ -282,7 +282,7 @@ var SceneListener = React.createClass({
         var scene = this._getSceneForUpdatingPlayerComponent();
 
         // APEP search media objects for matching tags and create a local state copy of wanted media objects to be force to screen
-        var cuePointMediaObjects = _(scene.scene)
+        var cuePointMediaObjects = _(scene.objects)
             .filter(function (mo) {
                 return tagMatcher.match(mo.tags)
             })

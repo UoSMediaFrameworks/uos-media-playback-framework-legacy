@@ -107,7 +107,7 @@ let SceneEditorGUI = React.createClass({
         let target = this.state.scene.targets[targetIndex];
         let mediaPreviewListItems = [];
         target.mediaObjects.forEach((mediaObjectID, index) => {
-            let fullMediaObject = this.state.scene.scene.find(m => m._id === mediaObjectID) //find media object
+            let fullMediaObject = this.state.scene.objects.find(m => m._id === mediaObjectID) //find media object
             mediaPreviewListItems.push(
                 <li className={"media-object-item"}
                 key={index}
@@ -126,7 +126,7 @@ let SceneEditorGUI = React.createClass({
 
     AddSelectedMediaObjectToTarget: function(targetIndex) {
         let scene = this.state.scene
-        let selectedMediaObject = scene.scene[GridStore.getFocusedMediaObject()]._id;
+        let selectedMediaObject = scene.objects[GridStore.getFocusedMediaObject()]._id;
         let targets = scene.targets;
 
         //remove any exisitng refrences to the media object (only one ref per layout)
@@ -696,13 +696,13 @@ let SceneEditorGUI = React.createClass({
 
     SaveToScene: function(ChangedMediaObjects) {
         let scene = this.state.scene
-        let mediaObjectList = scene.scene;
+        let mediaObjectList = scene.objects;
 
         //apply media object changes
         ChangedMediaObjects.forEach(ChangedMediaObject => {
             mediaObjectList.forEach((mediaObject, index) => {
                 if (mediaObject._id === ChangedMediaObject.id) {
-                    scene.scene[index].style = ChangedMediaObject.style
+                    scene.objects[index].style = ChangedMediaObject.style
                 }
             })
         })

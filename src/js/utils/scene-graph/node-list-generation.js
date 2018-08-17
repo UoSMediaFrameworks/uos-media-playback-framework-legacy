@@ -82,7 +82,7 @@ var getSceneNodeListForSTheme = function(sceneGraph, sthemeId) {
         //  this is like this from quick develop for the GDC event.
         //   - We may wish to change this, when a theme is looked up, we probably want to allow a user to avoid duplicate theme names here
         if(sceneThemes.indexOf(sthemeId) !== -1) {
-            sceneNameIds.push( { name: scene.name, _id: scene._id, media: scene.scene, themes: scene.themes });
+            sceneNameIds.push( { name: scene.name, _id: scene._id, media: scene.objects, themes: scene.themes });
         }
     });
 

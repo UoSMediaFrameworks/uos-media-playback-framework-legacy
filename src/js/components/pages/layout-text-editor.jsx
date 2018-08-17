@@ -164,7 +164,7 @@ var SceneMonacoTextEditor = React.createClass({
 
                 var newScene = this.getMonacoEditorVersionOfScene();
 
-                var mediaWithoutTagOrType = _.filter(newScene.scene, function (sceneObj) {
+                var mediaWithoutTagOrType = _.filter(newScene.objects, function (sceneObj) {
                     return !sceneObj.hasOwnProperty("tags") || !sceneObj.hasOwnProperty("type");
                 });
 

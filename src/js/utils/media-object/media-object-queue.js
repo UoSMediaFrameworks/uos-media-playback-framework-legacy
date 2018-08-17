@@ -138,7 +138,7 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
             index,
             oldMo;
 
-        var masterListMediaObjects = _.filter(newScene.scene, function(mo) {
+        var masterListMediaObjects = _.filter(newscene.objects, function(mo) {
             // APEP if we are not in default mode, only non sequenced media can be included
            if(isRandomOptions === "playRemainingMedia") {
                return !mo.hasOwnProperty("sequenceNumber");
@@ -147,7 +147,7 @@ function MediaObjectQueue(types, defaultDisplayCounts, manager) {
            }
         });
 
-        console.log("media-object-queue - newScene.scene.length, masterListMediaObjects.length: ", newScene.scene.length, masterListMediaObjects.length);
+        console.log("media-object-queue - newscene.objects.length, masterListMediaObjects.length: ", newscene.objects.length, masterListMediaObjects.length);
 
         // make new masterList using media Object list built for optional logic
         masterList = _.map(masterListMediaObjects, function(mo) {

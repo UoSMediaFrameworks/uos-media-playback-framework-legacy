@@ -240,7 +240,7 @@ describe('MediaObjectQueue', function () {
     describe('take() in conjuction with tagFiltering behavior', function () {
         beforeEach(function () {
             var scene = makeScene();
-            scene.scene = [
+            scene.objects = [
                 moWithTags('foo', 'apples, bananas'),
                 moWithTags('foo', ''),
                 moWithTags('bar', 'apples')
@@ -272,7 +272,7 @@ describe('MediaObjectQueue', function () {
     describe('setTagFilter()', function () {
         beforeEach(function () {
             var scene = makeScene();
-            scene.scene = [moWithTags('foo', 'apples')];
+            scene.objects = [moWithTags('foo', 'apples')];
             this.queue.setScene(scene);
 
             this.mo = this.queue.take([FooMediaObject]);
