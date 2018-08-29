@@ -8,6 +8,7 @@ var TagEditor = require('./tag-editor.jsx');
 var MediaUpload = require('./media-upload.jsx');
 var SceneGraph = require('./scenegraph.jsx');
 var GraphTest = require('../graphs/index.jsx');
+var CameraComp = require('../webcam.jsx');
 var SceneGraphChooser = require('./scene-graph-choose-or-create.jsx');
 var SceneListener = require('../../pages/scene-listener.jsx');
 var GraphViewer = require("../../pages/viewer/graph-viewer.jsx");
@@ -138,9 +139,17 @@ var RespGrid = React.createClass({
                     </Slider>
                 )
                 break;
+
             case LayoutComponentTypes.Config:
                 return (
                     <Config></Config>
+                )
+                break;
+            case LayoutComponentTypes.Camera:
+                return (
+                    <CameraComp
+                    >
+                    </CameraComp>
                 )
                 break;
             default:

@@ -151,6 +151,9 @@ var NavigationBar = React.createClass({
             case LayoutComponentConstants.Config:
                 return <li><span className="navbar-text">Scene Configuration Swapper</span></li>;
                 break;
+            case LayoutComponentConstants.Camera:
+                return <li><span className="navbar-text">Camera</span></li>;
+                break;
             default:
                 return (<li><span className="navbar-text"></span></li>); //return empty if no navbar element
                 break
@@ -283,6 +286,8 @@ var NavigationBar = React.createClass({
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.Slider)}>Volume Control</MenuItem>
                                         <MenuItem eventKey="11"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.Config)}>Scene Configuration Swapper</MenuItem>
+                                        <MenuItem eventKey="12"
+                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.Camera)}>Camera</MenuItem>
                                     </DropdownButton>
                                 </li>
                                 <li>

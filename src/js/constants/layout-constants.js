@@ -13,7 +13,8 @@ module.exports = {
         "TagEditor": "Tag-Editor",
         "MediaUpload": "Media-Upload",
         "Slider":"Slider",
-        "Config":"Config"
+        "Config":"Config",
+        "Camera":"Camera"
     },
     ComponentTitles:{
         "Scene-List":"Scene List",
@@ -28,7 +29,8 @@ module.exports = {
         "Tag-Editor": "Tag Editor",
         "Media-Upload":"Media Upload",
         "Slider":"Volume Control",
-        "Config":"Scene Configuration Swapper"
+        "Config":"Scene Configuration Swapper",
+        "Camera":"Camera"
     },
     ColumnTypes: {
         "RHS": "RightHandSide",
