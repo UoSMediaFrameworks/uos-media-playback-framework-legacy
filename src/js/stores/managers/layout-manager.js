@@ -235,6 +235,13 @@ class LayoutManager {
             state: "default"
         };
 
+        if (type == LayoutComponentConstants.SceneEditorGUI) {
+            _.extend(newComponent, {
+                minH: 8,
+                minW: 8
+            })
+        }
+
         // APEP this needs more work, if we wish to set the minH, we need to hook into window events and change this value as it will be needed to be changed.
         /*if(type === LayoutComponentConstants.SceneEditorGUI) {
             newComponent.minH = componentHeight;
