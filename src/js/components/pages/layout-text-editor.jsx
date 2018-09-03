@@ -443,7 +443,16 @@ var SceneMonacoTextEditor = React.createClass({
         var options = {
             selectOnLineNumbers: true,
             automaticLayout: true,
-            scrollBeyondLastLine: false
+            scrollBeyondLastLine: false,
+            folding:true,
+            showFoldingControls:'always',
+            matchBracket:true,
+            lightbulb:{
+                enabled:true
+            },
+            minimap:{
+                enabled:false
+            }
         };
 
         var requireConfig = {
