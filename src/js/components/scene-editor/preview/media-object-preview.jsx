@@ -1,10 +1,10 @@
 'use strict';
 
 var React = require('react');
-var Glyphicon = require('../glyphicon.jsx');
-var soundCloud = require('../../utils/sound-cloud');
-var vimeoApi = require('../../utils/vimeo-api');
-var getVimeoId = require('../../utils/get-vimeo-id');
+var Glyphicon = require('../../glyphicon.jsx');
+var soundCloud = require('../../../utils/sound-cloud');
+var vimeoApi = require('../../../utils/vimeo-api');
+var getVimeoId = require('../../../utils/get-vimeo-id');
 var ImgLoader = require('react-image').default;
 var FontAwesome = require('react-fontawesome');
 

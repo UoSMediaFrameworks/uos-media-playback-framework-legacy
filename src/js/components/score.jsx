@@ -3,7 +3,7 @@
 var React = require('react');
 var _ = require('lodash');
 
-var ScoreTextEditor = require('../score/score-text-editor.jsx');
+var ScoreTextEditor = require('./score/score-text-editor.jsx');
 
 var Score = React.createClass({
     render: function() {

@@ -1,12 +1,12 @@
 var React = require('react');
 
 //Stores
-var SceneStore = require('../../stores/scene-store');
-var GridStore = require("../../stores/grid-store");
+var SceneStore = require('../stores/scene-store');
+var GridStore = require("../stores/grid-store");
 //Actions
-var SceneActions = require('../../actions/scene-actions');
-var AssetActions = require('../../actions/asset-actions');
-//UI components
+var SceneActions = require('../actions/scene-actions');
+var AssetActions = require('../actions/asset-actions');
+//UI preview
 var FontAwesome = require('react-fontawesome');
 var ReactTags = require('react-tag-input').WithContext;
 

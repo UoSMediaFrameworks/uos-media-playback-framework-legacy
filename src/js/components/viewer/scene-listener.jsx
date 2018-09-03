@@ -1,20 +1,20 @@
 'use strict';
 
 var React = require('react');
-var SceneStore = require('../stores/full-scene-store');
-var ThemeSelector = require('../components/theme-selector.jsx');
-var HubSendActions = require('../actions/hub-send-actions');
-var Authentication = require('../mixins/Authentication');
-var Loader = require('../components/loader.jsx');
+var SceneStore = require('../../stores/full-scene-store');
+var ThemeSelector = require('../theme-selector.jsx');
+var HubSendActions = require('../../actions/hub-send-actions');
+var Authentication = require('../../mixins/Authentication');
+var Loader = require('../loader.jsx');
 var _ = require('lodash');
-var TagMatcher = require('../utils/tag-matcher');
-var MediaObjectQueueManager = require('../utils/media-object/media-object-queue-manager');
-var TextMediaObject = require('../utils/media-object/text-media-object');
-var ImageMediaObject = require('../utils/media-object/image-media-object');
-var VideoMediaObject = require('../utils/media-object/video-media-object');
-var AudioMediaObject = require('../utils/media-object/audio-media-object');
-var RandomVisualPlayer = require('../components/viewer/random-visual-player.jsx');
-var ActiveTheme = require('../components/viewer/viewer-active-theme.jsx');
+var TagMatcher = require('../../utils/tag-matcher');
+var MediaObjectQueueManager = require('../../utils/media-object/media-object-queue-manager');
+var TextMediaObject = require('../../utils/media-object/text-media-object');
+var ImageMediaObject = require('../../utils/media-object/image-media-object');
+var VideoMediaObject = require('../../utils/media-object/video-media-object');
+var AudioMediaObject = require('../../utils/media-object/audio-media-object');
+var RandomVisualPlayer = require('./random-visual-player.jsx');
+var ActiveTheme = require('./viewer-active-theme.jsx');
 var hat = require('hat');
 
 var MINIMUM_NUMBER_OF_MEDIA_TO_BE_MATCHED_WITH_THEME_QUERY = 0;

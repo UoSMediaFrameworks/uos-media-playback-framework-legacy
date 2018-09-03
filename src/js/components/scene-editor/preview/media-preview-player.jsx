@@ -2,8 +2,8 @@
 var React = require('react');
 var toastr = require('toastr');
 var hat = require('hat');
-var VideoMediaPreviewPlayer = require('./components/video-media-preview-player.jsx');
-var AudioMediaPreviewPlayer = require('./components/audio-media-preview-player.jsx');
+var VideoMediaPreviewPlayer = require('./video-media-preview-player.jsx');
+var AudioMediaPreviewPlayer = require('./audio-media-preview-player.jsx');
 var _ = require('lodash');
 
 var MediaObjectPreviewPlayer = React.createClass({

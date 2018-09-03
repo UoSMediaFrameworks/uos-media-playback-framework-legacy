@@ -104,9 +104,9 @@ describe('LayoutManager', function() {
         it('should estimate the X position using the number of layout items added', function() {
             var manager = new LayoutManager();
 
-            manager.layout = []; // APEP remove default added components
+            manager.layout = []; // APEP remove default added preview
 
-            assert(manager.calculateStartingPositionXForNewComponent() === 0, "With no components added we will always get 0");
+            assert(manager.calculateStartingPositionXForNewComponent() === 0, "With no preview added we will always get 0");
 
             manager.layout.push({}); // APEP add a fake object
 
@@ -118,7 +118,7 @@ describe('LayoutManager', function() {
         it('should add the component of the correct type with valid defaults', function() {
             var manager = new LayoutManager();
 
-            manager.layout = []; // APEP remove default added components
+            manager.layout = []; // APEP remove default added preview
 
             manager.addComponent(LayoutComponentConstants.SceneMediaBrowser);
 
@@ -126,12 +126,12 @@ describe('LayoutManager', function() {
 
             var component = manager.layout[0];
 
-            assert(component.type === LayoutComponentConstants.SceneMediaBrowser, "The components type is correct");
-            assert(component.x === 0, "The components X is correct");
-            assert(component.y === Infinity, "The components Y is correct");
+            assert(component.type === LayoutComponentConstants.SceneMediaBrowser, "The preview type is correct");
+            assert(component.x === 0, "The preview X is correct");
+            assert(component.y === Infinity, "The preview Y is correct");
 
             assert(component.i.length === 32, "The component has a random ID with length 32");
-            assert(component.state === "default", "The components state is default");
+            assert(component.state === "default", "The preview state is default");
 
             assert(component.w === manager.defaultComponentWidth);
             assert(component._w === manager.defaultComponentWidth);
@@ -146,7 +146,7 @@ describe('LayoutManager', function() {
         it('should add the visual gui editor with a calculated h', function() {
             var manager = new LayoutManager();
 
-            manager.layout = []; // APEP remove default added components
+            manager.layout = []; // APEP remove default added preview
 
             // APEP setup the DOM size properties so we can calculate screen size specific values
             manager.gridContainerDOMClientWidth = 1280;
@@ -159,11 +159,11 @@ describe('LayoutManager', function() {
 
             var component = manager.layout[0];
 
-            assert(component.type === LayoutComponentConstants.SceneEditorGUI, "The components type is correct");
-            assert(component.x === 0, "The components X is correct");
-            assert(component.y === Infinity, "The components Y is correct");
+            assert(component.type === LayoutComponentConstants.SceneEditorGUI, "The preview type is correct");
+            assert(component.x === 0, "The preview X is correct");
+            assert(component.y === Infinity, "The preview Y is correct");
 
-            assert(component.state === "default", "The components state is default");
+            assert(component.state === "default", "The preview state is default");
 
             assert(component.w === manager.defaultComponentWidth);
             assert(component._w === manager.defaultComponentWidth);
@@ -181,7 +181,7 @@ describe('LayoutManager', function() {
        beforeEach(function() {
             this.manager = new LayoutManager();
             this.manager.defaultComponentStartingY = 0;
-            this.manager.layout = []; // APEP remove default added components
+            this.manager.layout = []; // APEP remove default added preview
        });
 
        it('should find no neighbours when no component is given to the method', function() {
@@ -270,11 +270,11 @@ describe('LayoutManager', function() {
        });
    });
 
-   describe('findStackedLayoutItemsForGivenSide searchs the layout for components on a specific side', function() {
+   describe('findStackedLayoutItemsForGivenSide searchs the layout for preview on a specific side', function() {
        beforeEach(function() {
            this.manager = new LayoutManager();
            this.manager.defaultComponentStartingY = 0;
-           this.manager.layout = []; // APEP remove default added components
+           this.manager.layout = []; // APEP remove default added preview
        });
 
        it('finds none when no items are in the layout', function() {
@@ -305,7 +305,7 @@ describe('LayoutManager', function() {
        beforeEach(function() {
            this.manager = new LayoutManager();
            this.manager.defaultComponentStartingY = 0;
-           this.manager.layout = []; // APEP remove default added components
+           this.manager.layout = []; // APEP remove default added preview
        });
 
        /*
@@ -365,7 +365,7 @@ describe('LayoutManager', function() {
         beforeEach(function() {
             this.manager = new LayoutManager();
             this.manager.defaultComponentStartingY = 0;
-            this.manager.layout = []; // APEP remove default added components
+            this.manager.layout = []; // APEP remove default added preview
         });
 
         it('should shrink the middle component when expanding a previously collapsed component', function() {
@@ -413,7 +413,7 @@ describe('LayoutManager', function() {
        beforeEach(function() {
            this.manager = new LayoutManager();
            this.manager.defaultComponentStartingY = 0;
-           this.manager.layout = []; // APEP remove default added components
+           this.manager.layout = []; // APEP remove default added preview
        });
 
        it('should expand the middle when the RHS comp is collapsed', function() {
@@ -438,7 +438,7 @@ describe('LayoutManager', function() {
        beforeEach(function() {
            this.manager = new LayoutManager();
            this.manager.defaultComponentStartingY = 0;
-           this.manager.layout = []; // APEP remove default added components
+           this.manager.layout = []; // APEP remove default added preview
        });
 
        it('should shrink the middle when the RHS comp is expanded', function() {
@@ -469,7 +469,7 @@ describe('LayoutManager', function() {
        beforeEach(function() {
            this.manager = new LayoutManager();
            this.manager.defaultComponentStartingY = 0;
-           this.manager.layout = []; // APEP remove default added components
+           this.manager.layout = []; // APEP remove default added preview
        });
 
        it('should maximise a single component, changing state, w, h and visible', function() {
@@ -508,7 +508,7 @@ describe('LayoutManager', function() {
        beforeEach(function() {
            this.manager = new LayoutManager();
            this.manager.defaultComponentStartingY = 0;
-           this.manager.layout = []; // APEP remove default added components
+           this.manager.layout = []; // APEP remove default added preview
        });
 
        it('should do nothing if no component is found', function() {
@@ -531,7 +531,7 @@ describe('LayoutManager', function() {
            assert(this.manager.layout.length === 0, "the item was removed");
        });
 
-       it('should unhide all components if a maximized item was removed', function() {
+       it('should unhide all preview if a maximized item was removed', function() {
            this.manager.addComponent(LayoutComponentConstants.SceneMediaBrowser);
            this.manager.addComponent(LayoutComponentConstants.Graph);
 
@@ -564,7 +564,7 @@ describe('LayoutManager', function() {
        beforeEach(function() {
            this.manager = new LayoutManager();
            this.manager.defaultComponentStartingY = 0;
-           this.manager.layout = []; // APEP remove default added components
+           this.manager.layout = []; // APEP remove default added preview
        });
 
        it('should add a fixed layout from the constants file', function() {
@@ -573,7 +573,7 @@ describe('LayoutManager', function() {
            assert(_.isEqual(cleanManagerLayoutOfIds(this.manager.layout), LayoutComponentPresets.authoring.scene));
        });
 
-       it('should ensure all the components in the layout given are valid', function() {
+       it('should ensure all the preview in the layout given are valid', function() {
            var layoutWithOldComponent = _.cloneDeep(LayoutComponentPresets.authoring.scene);
 
            var fakeOldComponent = {"x":15,"y":0,"w":15,"h":17,"_w":15,"_h":17,"type":"Graph-OLD","visible":true,"isResizable":true,"state":"default","moved":false,"static":false};
@@ -585,7 +585,7 @@ describe('LayoutManager', function() {
            assert(_.isEqual(cleanManagerLayoutOfIds(this.manager.layout), LayoutComponentPresets.authoring.scene));
        });
 
-       it('should cloneDeep and assign new ids for the new components', function() {
+       it('should cloneDeep and assign new ids for the new preview', function() {
 
            this.manager.setLayoutFromPreset(LayoutComponentPresets.authoring.scene);
 

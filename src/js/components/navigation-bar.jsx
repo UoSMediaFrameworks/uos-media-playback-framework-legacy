@@ -88,7 +88,7 @@ var NavigationBar = React.createClass({
         GridStore.removeChangeListener(this._onLayoutChange);
     },
 
-    // APEP TODO these components should be separate React Classes in my opinion, it would make this a lot less messy.
+    // APEP TODO these preview should be separate React Classes in my opinion, it would make this a lot less messy.
     getNavComponent: function () {
         switch (this.state.focusedLayoutItem) {
             case LayoutComponentConstants.SceneGraph:

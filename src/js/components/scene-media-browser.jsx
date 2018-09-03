@@ -1,14 +1,14 @@
 var React = require('react');
 var _ = require('lodash');
-var SceneStore = require('../../stores/scene-store');
-var SceneSavedStore = require('../../stores/scene-saving-store');
-var GridStore = require("../../stores/grid-store");
-var AddMediaObjectStore = require("../../stores/add-media-object-store");
-var HubSendActions = require('../../actions/hub-send-actions');
-var SceneActions = require('../../actions/scene-actions');
-var MediaObjectList = require('../scene-editor/media-object-list.jsx');
-var Loader = require('../loader.jsx');
-var MediaPreviewComponent =  require('../scene-editor/media-preview-player.jsx');
+var SceneStore = require('../stores/scene-store');
+var SceneSavedStore = require('../stores/scene-saving-store');
+var GridStore = require("../stores/grid-store");
+var AddMediaObjectStore = require("../stores/add-media-object-store");
+var HubSendActions = require('../actions/hub-send-actions');
+var SceneActions = require('../actions/scene-actions');
+var MediaObjectList = require('./scene-editor/media-object-list.jsx');
+var Loader = require('./loader.jsx');
+var MediaPreviewComponent =  require('./scene-editor/preview/media-preview-player.jsx');
 var SplitPane = require('react-split-pane');
 var Measure = require('react-measure');
 
@@ -21,7 +21,7 @@ var SceneMediaBrowser = React.createClass({
                 width: -1,
                 height: -1
               },
-            lowerPaneHeight: 0               
+            lowerPaneHeight: 0
         });
     },
 
@@ -72,14 +72,14 @@ var SceneMediaBrowser = React.createClass({
                 <Measure onMeasure={this.onMeasure}>
                     <SplitPane id="splitPane" split="horizontal" minSize={0} defaultSize={this.getLastSplit()} onChange={size => this.splitChanged(size)}>
                         <div style={{height: "100%", width: "100%"}}>
-                            <MediaPreviewComponent 
-                                style={{height: "100%", width: "100%"}} 
+                            <MediaPreviewComponent
+                                style={{height: "100%", width: "100%"}}
                                 focusedMediaObject={this.props.focusedMediaObject}
                                 scene={this.state.scene}
                             />
                         </div>
                         <div style={{height: (""+this.state.lowerPaneHeight+"px"), width: "100%"}}>
-                            <MediaObjectList 
+                            <MediaObjectList
                                 focusedMediaObject={this.props.focusedMediaObject}
                                 focusHandler={SceneActions.changeMediaObjectFocus}
                                 scene={this.state.scene}
@@ -102,7 +102,7 @@ var SceneMediaBrowser = React.createClass({
         if (localStorage.getItem("splitPos") === null) {
             //default split
             return 150;
-        } else { 
+        } else {
             return parseInt(localStorage.getItem('splitPos'), 10)
         }
     },

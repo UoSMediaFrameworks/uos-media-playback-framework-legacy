@@ -10,7 +10,7 @@ var ReactBootstrap = require('react-bootstrap');
 var Modal = ReactBootstrap.Modal;
 
 
-//components
+//preview
 var SelectPlus = require('react-select-plus').default;
 var FontAwesome = require('react-fontawesome');
 var ReactClipboard = require('react-copy-to-clipboard').CopyToClipboard;
@@ -21,8 +21,8 @@ var _ = require('lodash');
 var SceneSelector = React.createClass({
 
   getInitialState: function () {
-    var lastSelectedScene = JSON.parse(localStorage.getItem("scene-selector-filter")); 
-    
+    var lastSelectedScene = JSON.parse(localStorage.getItem("scene-selector-filter"));
+
     if (lastSelectedScene === null) {
       //no scene in local storage revert to default
       lastSelectedScene = {value: "none", label: "none"}
@@ -205,13 +205,13 @@ var SceneSelector = React.createClass({
                   style={{width: "60%"}}
                   defaultValue={this.state.sceneListFilter.value.name}
                   ref={(input) => {this.sceneNameEditInput = input;}}
-                  /> 
+                  />
               </div>
               <div>
                 <div className="inline-item">Scene Action:&nbsp;&nbsp;</div>
                 <button onClick={this._deleteSceneHandler}className="btn btn-danger">Delete&nbsp;&nbsp;<FontAwesome name='trash-o' size='1x'/></button>
               </div>
-            
+
             </Modal.Body>
             <Modal.Footer>
               <button onClick={this._completeDetailsModal} className="btn btn-success">Done</button>

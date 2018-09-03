@@ -2,28 +2,28 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var ReactGridLayout = require('react-grid-layout');
 var WidthProvider = require('react-grid-layout').WidthProvider;
-var SceneMediaBrowser = require('./scene-media-browser.jsx');
-var SceneEditorGUI = require('./scene-editor-gui.jsx');
-var SceneEditorGUIMulti = require('./scene-editor-gui-new.jsx');
-var TagEditor = require('./tag-editor.jsx');
-var MediaUpload = require('./media-upload.jsx');
-var SceneGraph = require('./scenegraph.jsx');
-var GraphTest = require('../graphs/index.jsx');
-var SceneGraphChooser = require('./scene-graph-choose-or-create.jsx');
-var SceneListener = require('../../pages/scene-listener.jsx');
-var GraphViewer = require("../../pages/viewer/graph-viewer.jsx");
-var GridStore = require("../../stores/grid-store.js");
-var SceneStore = require("../../stores/scene-store");
-var LayoutMonacoTextEditor = require("./layout-text-editor.jsx");
+var SceneMediaBrowser = require('../components/scene-media-browser.jsx');
+var SceneEditorGUI = require('../components/scene-editor-gui.jsx');
+var SceneEditorGUIMulti = require('../components/scene-editor-gui-new.jsx');
+var TagEditor = require('../components/tag-editor.jsx');
+var MediaUpload = require('../components/media-upload.jsx');
+var SceneGraph = require('../components/scenegraph.jsx');
+var GraphTest = require('../components/graphs/index.jsx');
+var SceneGraphChooser = require('../components/scene-graph-choose-or-create.jsx');
+var SceneListener = require('../components/viewer/scene-listener.jsx');
+var GraphViewer = require("../components/viewer/graph-viewer.jsx");
+var GridStore = require("../stores/grid-store.js");
+var SceneStore = require("../stores/scene-store");
+var LayoutMonacoTextEditor = require("../components/scene-editor/layout-text-editor.jsx");
 var _ = require("lodash");
-var SceneActions = require("../../actions/scene-actions");
-var ViewLayoutActions = require("../../actions/view-layout-actions");
-var LayoutConstants = require("../../constants/layout-constants"),
+var SceneActions = require("../actions/scene-actions");
+var ViewLayoutActions = require("../actions/view-layout-actions");
+var LayoutConstants = require("../constants/layout-constants"),
     LayoutComponentTypes = LayoutConstants.ComponentTypes,
     LayoutComponentTitles = LayoutConstants.ComponentTitles,
     LayoutComponentTypesForPopout = LayoutConstants.ComponentTypesForPopout,
     LayoutComponentTypesForPresentation = LayoutConstants.ComponentTypesForPresentation;
-var GraphTitles = require("../../constants/graph-constants").GraphTitles;
+var GraphTitles = require("../constants/graph-constants").GraphTitles;
 
 ReactGridLayout = WidthProvider(ReactGridLayout);
 var RespGrid = React.createClass({
@@ -105,7 +105,7 @@ var RespGrid = React.createClass({
                     </SceneEditorGUI>
                 );
                 break;
-            case LayoutComponentTypes.MuliItemEditor: 
+            case LayoutComponentTypes.MuliItemEditor:
                 return (
                     <SceneEditorGUIMulti
                     isLayout={true}
@@ -136,7 +136,7 @@ var RespGrid = React.createClass({
                 break;
             case LayoutComponentTypes.MediaUpload:
                 return (
-                    <MediaUpload 
+                    <MediaUpload
                         isLayout={true}
                          _id = {this.state.data.scene._id}
                     >

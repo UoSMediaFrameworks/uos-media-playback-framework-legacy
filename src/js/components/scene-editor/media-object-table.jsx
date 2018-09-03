@@ -1,7 +1,7 @@
 'use strict';
 
 var React = require('react');
-var MediaObjectPreview = require('./media-object-preview.jsx');
+var MediaObjectPreview = require('./preview/media-object-preview.jsx');
 var SceneActions = require('../../actions/scene-actions');
 var Glyphicon = require('../glyphicon.jsx');
 
@@ -36,17 +36,17 @@ var MediaObjectTable = React.createClass({
 
 	render: function() {
 		var rows = null;
-		
+
 		if (this.props.scene.scene && this.props.scene.scene.length !== 0) {
 			rows = this.props.scene.scene.map(function(mediaObject, index) {
 				return <TableItem key={index} index={index} scene={this.props.scene} mediaObject={mediaObject} />;
-			}.bind(this));	
+			}.bind(this));
 		} else {
 			rows = [<tr key='empty'><td>Nothing in the scene yet</td></tr>];
 		}
 
-		 
-		
+
+
 		return (
 			<table className='table'>
 				<thead>

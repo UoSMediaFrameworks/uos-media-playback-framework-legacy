@@ -5,7 +5,7 @@ var GraphViewerStore = require('../../stores/graph-viewer-store');
 var FullSceneStore = require('../../stores/full-scene-store');
 var _ = require('lodash');
 var SceneActions = require('../../actions/scene-actions');
-var SceneListener = require('../scene-listener.jsx');
+var SceneListener = require('./scene-listener.jsx');
 var SceneThemeTourPermutations = require('../../utils/playback/scene-theme-tour-bucket-permutations');
 var sceneThemeTourPermutations = new SceneThemeTourPermutations();
 

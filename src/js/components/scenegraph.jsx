@@ -6,13 +6,13 @@ var React = require('react');
 var _ = require('lodash');
 var Panel = require('react-bootstrap').Panel;
 var Button = require('react-bootstrap').Button;
-var HubSendActions = require('../../actions/hub-send-actions');
-var SceneGraphActions = require('../../actions/scene-graph-actions');
-var SceneGraphStore = require('../../stores/scene-graph-store.jsx');
-var SceneGraphListStore = require('../../stores/scene-graph-list-store.jsx');
-var SceneListStore = require('../../stores/scene-list-store'); //scene-list-store does not return the full scene objects - I need the themes
-var SceneStore = require('../../stores/scene-store');
-var DragDropContainer = require('../basic-draggable/drag-drop-container.jsx');
+var HubSendActions = require('../actions/hub-send-actions');
+var SceneGraphActions = require('../actions/scene-graph-actions');
+var SceneGraphStore = require('../stores/scene-graph-store.jsx');
+var SceneGraphListStore = require('../stores/scene-graph-list-store.jsx');
+var SceneListStore = require('../stores/scene-list-store'); //scene-list-store does not return the full scene objects - I need the themes
+var SceneStore = require('../stores/scene-store');
+var DragDropContainer = require('./basic-draggable/drag-drop-container.jsx');
 
 var mediaHubGraphURL = process.env.MEDIA_HUB_GRAPH_URL || "";
 
