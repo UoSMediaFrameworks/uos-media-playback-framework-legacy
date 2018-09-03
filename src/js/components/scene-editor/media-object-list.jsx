@@ -11,15 +11,12 @@ var soundCloud = require('../../utils/sound-cloud');
 var ThemeDownloader = require('../../utils/theme-downloader');
 
 var MediaObjectList = React.createClass({
-
-
     getInitialState: function () {
-
         return {
             selectedIndex: this.props.focusedMediaObject,
             listLayout: 'Grid',
             tagSearch: "",
-            highlightType: 'Filter',
+            highlightType: 'Filter'
         };
     },
 

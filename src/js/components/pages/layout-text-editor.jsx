@@ -195,7 +195,7 @@ var SceneMonacoTextEditor = React.createClass({
         var matches = this.refs.monaco.editor.getModel().findMatches(sceneMediaObjectRegex, false, true, false, false);
 
         for (var m in matches) {
-            var possibleMatch = matches[m];
+            var possibleMatch = matches[m].range;
 
             var selectionRange = new monaco.Range(e.selection.startLineNumber, e.selection.startColumn, e.selection.endLineNumber, e.selection.endColumn);
             var tagRange = new monaco.Range(possibleMatch.startLineNumber, possibleMatch.startColumn, possibleMatch.endLineNumber, possibleMatch.endColumn);
@@ -431,8 +431,8 @@ var SceneMonacoTextEditor = React.createClass({
 
             // APEP only set the position and focus of the text editor if the focus event has not come from the editor itself.
             if (!this.props.focusFromMonacoEditor) {
-                this.refs.monaco.editor.setPosition(match.getStartPosition());
-                this.refs.monaco.editor.revealPosition(match.getStartPosition());
+                this.refs.monaco.editor.setPosition(match.range.getStartPosition());
+                this.refs.monaco.editor.revealPosition(match.range.getStartPosition());
             }
         }
 
