@@ -238,6 +238,7 @@ var NavigationBar = React.createClass({
                                         <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.default)}>Default</MenuItem>
                                         <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.authoring.scene)}>Scene Editing</MenuItem>
                                         <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.authoring.graph)}>Graph Editing</MenuItem>
+                                        <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.authoring.multiItem)}>Multi Item Editing</MenuItem>
                                     </DropdownButton>
                                 </li>
                                 <li className="mf-dropdown">
@@ -248,6 +249,9 @@ var NavigationBar = React.createClass({
                                         <MenuItem eventKey="1"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditor)}>Scene
                                             Editor</MenuItem>
+                                        <MenuItem eventKey="1"
+                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.MuliItemEditor)}>Scene Editor Multi
+                                        </MenuItem>
                                         <MenuItem eventKey="2"
                                                   onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneMediaBrowser)}>Scene
                                             Media Browser</MenuItem>

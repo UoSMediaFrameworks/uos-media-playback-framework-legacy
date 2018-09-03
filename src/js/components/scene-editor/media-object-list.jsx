@@ -6,9 +6,12 @@ var SceneActions = require('../../actions/scene-actions');
 var CacheActions = require('../../actions/media-engine/cache-actions');
 var MediaObjectPreview = require('./media-object-preview.jsx');
 var TagMatcher = require('../../utils/tag-matcher');
-
-var _ = require('lodash');
+var _ = require("lodash");
 var Promise = require('bluebird');
+var MediaDownloader = require('../../utils/media-downloader.js');
+var soundCloud = require('../../utils/sound-cloud');
+var ThemeDownloader = require('../../utils/theme-downloader');
+
 
 const DASH_CACHE = "dash-blob-cache";
 const AUDIO_CACHE = "audio-blob-cache";
@@ -136,7 +139,6 @@ function addSceneMediaToCache(scene, forAudio, forVideo) {
             });
 }
 
-
 var MediaObjectList = React.createClass({
     getInitialState: function () {
         return {
@@ -224,39 +226,65 @@ var MediaObjectList = React.createClass({
         addSceneMediaToCache(this.props.scene, true, false);
     },
 
-    render: function () {
-        var items = null;
-        var self = this;
+    downloadMediaObjects: function(items) {
+        var urls = [];
+        items.forEach(listItem => {
+            if (listItem.props.isMatched) {
+                var mediaObject = listItem.props.mediaObject;
+                if(mediaObject.hasOwnProperty("url")) { //required to avoid none file items (text)
+                    if(mediaObject.url.startsWith("https://soundcloud") || mediaObject.url.startsWith("http://soundcloud")) {
+                        soundCloud.streamUrl(mediaObject.url, function(err, streamUrl) {
+                            if (!err) {
+                                urls.push(streamUrl);
+                            }
+                        })
+                    } else {
+                        urls.push(mediaObject.url);
+                    }
+                }
+            }
+        });
+
+        var searchTerm = ""
+        if (this.state.tagSearch.length > 0) {
+            searchTerm = "_(" + this.state.tagSearch + ")"
+        }
+        var filename = this.props.scene._id + "_" + this.props.scene.name + searchTerm + ".zip";
+        MediaDownloader.downloadAsZipFile(urls, filename);
+    },
+
+    getFilteredMediaList() {
         try {
             if (this.props.scene && this.props.scene.scene && this.props.scene.scene.length !== 0) {
 
-                let tagMatcher = new TagMatcher("(" + self.state.tagSearch + ")");
+                let tagMatcher = new TagMatcher("(" + this.state.tagSearch + ")");
 
-                items = this.props.scene.scene.map(function (mediaObject, index) {
+                var items = this.props.scene.scene.map(function (mediaObject, index) {
 
                     var klass = 'media-object-item' + (this.state.selectedIndex === index ? ' selected' : '');
 
-                    if (this.state.tagSearch.length > 0) {
+                    //if (this.state.tagSearch.length > 0) {
+                    let isMatchedByTagMatcher = tagMatcher.match(mediaObject.tags);
+                    let isPartialMatch = mediaObject.tags.indexOf(this.state.tagSearch) !== -1;
+                    let isMatched = (isMatchedByTagMatcher || isPartialMatch);
 
-                        let isMatchedByTagMatcher = tagMatcher.match(mediaObject.tags);
-
-                        let isPartialMatch = mediaObject.tags.indexOf(self.state.tagSearch) !== -1;
-
-                        //AP : making sure that the objects that answer to the tag matcher are highlighted
-                        if (isMatchedByTagMatcher || isPartialMatch) {
-                            // APEP if its a match and we are highlighting apply the class, if its filter the unmatched will have style applied
-                            if (self.state.highlightType === "Highlight")
-                                klass += ' ' + this.handleHighlightType();
-                        } else {
-                            // APEP if it is not a match, and we are on type filter, we should append the class
-                            if (self.state.highlightType !== "Highlight")
-                                klass += ' ' + this.handleHighlightType();
-                        }
+                    //AP : making sure that the objects that answer to the tag matcher are highlighted
+                    if (isMatched) {
+                        // APEP if its a match and we are highlighting apply the class, if its filter the unmatched will have style applied
+                        if (this.state.highlightType === "Highlight")
+                            klass += ' ' + this.handleHighlightType();
+                    } else {
+                        // APEP if it is not a match, and we are on type filter, we should append the class
+                        if (this.state.highlightType !== "Highlight")
+                            klass += ' ' + this.handleHighlightType();
                     }
+                    //}
 
                     return (
                         <li className={klass}
                             key={index}
+                            mediaObject={mediaObject}
+                            isMatched ={isMatched}
                             onClick={this.handleSelect(index)}>
                             <MediaObjectPreview mediaObject={mediaObject}>
                                 <button className='btn' onClick={this.handleDelete(this.props.scene, index)}>
@@ -269,15 +297,21 @@ var MediaObjectList = React.createClass({
             } else {
                 items = [<li key='empty' className='empty-media-object-item '>Nothing in the scene yet</li>];
             }
+            return items;
 
         } catch (e) {
             console.log(e)
+            return [];
         }
+    },
+
+    render: function () {
+        var items = this.getFilteredMediaList();
 
         var wrapperClass = 'media-object-list media-object-list-' + this.state.listLayout;
 
         return (
-            <div style={{overflowY: "none", height: 'calc(100% - 20px)'}}>
+            <div style={{overflowY: "none", height: 'calc(100% - 30px)'}}>
                 <div className='btn-group btn-group-xs' role='group'>
                     <button type='button' onClick={this.handleListChange} className={this.listSelectedClass("Grid")}>
                         Grid
@@ -294,7 +328,26 @@ var MediaObjectList = React.createClass({
                     <button type='button' onClick={this.handleHighlightChange}
                             className={this.highlightSelectedClass("Filter")}>Filter
                     </button>
+
                 </div>
+
+                <div className='btn-group btn-group-xs' role='group' style ={{float: "right"}} >
+                    <button type='button'
+                            className="btn btn-dark"
+                            onClick={() => {this.downloadMediaObjects(items)}}>
+                        Download Media
+                    </button>
+
+                    <button type='button'
+                            className="btn btn-dark"
+                            onClick={() => {
+                                var downloader = new ThemeDownloader();
+                                downloader.download(this.props.scene);
+                            }}>
+                        Download Audio Themes
+                    </button>
+                </div>
+
 
                 <form >
                     <input ref="tag-search"

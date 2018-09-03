@@ -4,6 +4,7 @@ var ReactGridLayout = require('react-grid-layout');
 var WidthProvider = require('react-grid-layout').WidthProvider;
 var SceneMediaBrowser = require('./scene-media-browser.jsx');
 var SceneEditorGUI = require('./scene-editor-gui.jsx');
+var SceneEditorGUIMulti = require('./scene-editor-gui-new.jsx');
 var TagEditor = require('./tag-editor.jsx');
 var MediaUpload = require('./media-upload.jsx');
 var SceneGraph = require('./scenegraph.jsx');
@@ -105,6 +106,16 @@ var RespGrid = React.createClass({
                     </SceneEditorGUI>
                 );
                 break;
+            case LayoutComponentTypes.MuliItemEditor: 
+                return (
+                    <SceneEditorGUIMulti
+                    isLayout={true}
+                                    scene={SceneStore.getScene(this.state.data.scene._id) || {}}
+                                    focusedMediaObject={this.state.data.focusedMediaObject}
+                                    _id={self.state.data.scene._id}>
+                    </SceneEditorGUIMulti>
+                    );
+                    break;
             case LayoutComponentTypes.TagEditor:
                 return (
                     <TagEditor

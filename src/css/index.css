@@ -192,11 +192,11 @@ html, body, #main, .app {
 }
 
 .media-object-item:hover {
-    background-color: #ddd !important;
+    background-color: #4b4a4a !important;
 }
 
 .media-object-item.selected {
-    background-color: #ccc !important;
+    background-color: #717070 !important;
 }
 
 .media-object-list-Grid .media-object-item {
@@ -229,6 +229,7 @@ html, body, #main, .app {
 }
 
 .media-object-list-List .media-object-item-preview {
+    display:inline;
     height: 100%;
 }
 
@@ -1156,6 +1157,23 @@ div.ReactTags__suggestions ul li.ReactTags__activeSuggestion {
     padding-left: 2px;
     padding-right: 2px;
 }
+
+.mf-placeable {
+    border: 1px solid red;
+    width: 100%;
+    height: 100%;
+}
+
+.mf-placeable-selected {
+    border: 1px solid green;
+    width: 100%;
+    height: 100%;
+}
+
+.mf-inlineBlock {
+    display: inline-block;
+}
+
 .slider-component{
     overflow-y: auto;
 }
