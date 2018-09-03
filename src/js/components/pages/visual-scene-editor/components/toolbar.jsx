@@ -21,11 +21,29 @@ var ToolBar = React.createClass({
 
     render() {
 
+        items = [];
+
+        if (this.props.isRandom === true) {
+            return (
+                <div className="mf-gui-toolbar">
+                    <span>
+                        <span className="mf-gui-toolbar-text">Random Postion</span>
+                        <FontAwesome
+                            id="randomPlacement"
+                            className='mf-gui-toolbar-icon'
+                            onClick={this.props.context.toggleRandomPlacement}
+                            name='check-square-o'
+                            size='2x'/>
+                    </span>
+                </div>
+            )
+        }
+
         const customStyles = {
             control: (base, state) => ({
                 ...base,
                 background: "#fff",
-                margin: "5px",
+                margin: "10px",
                 // match with the menu
                 borderRadius: state.isFocused ? "3px 3px 0 0" : 3,
                 // Overwrittes the different states of border
@@ -53,7 +71,7 @@ var ToolBar = React.createClass({
           };
 
         return (
-        <div className="mf-gui-toolbar" style={{width: "100%", maxHeight: "120px"}}>
+        <div className="mf-gui-toolbar">
 
             <span>
                 <FontAwesome
@@ -123,7 +141,7 @@ var ToolBar = React.createClass({
             </span>
 
             <span>
-                <span className="mf-gui-toolbar-text">Aspect Ratio</span>
+                <span className="mf-gui-toolbar-text">Image AR</span>
                 <FontAwesome
                     id="aspectRatio"
                     className='mf-gui-toolbar-icon'
@@ -141,17 +159,19 @@ var ToolBar = React.createClass({
                     size='2x'/>
             </span>
 
-            <span style={{display: "inline-block"}}  className="mf-gui-toolbar-text">Aspect Ratio</span>
-            <span style={{width: "150px"}}>
-                
-                <Creatable 
-                    style={{padding: "5px"}} 
-                    options={ratioList} 
-                    styles={customStyles}
-                    onChange={this.handleSelectRatio}
-                    defaultValue={{label: this.props.ratio, value: this.props.ratio}}
-                    formatCreateLabel={(inputValue) => {return `Custom: ${inputValue}`}}
-                />
+            
+            <span>
+                <span className="mf-gui-toolbar-text">Scene AR</span>
+                <div style={{width: "200px", display:"inline-block"}}>
+                    <Creatable 
+                        menuPlacement="top"
+                        options={ratioList} 
+                        styles={customStyles}
+                        onChange={this.handleSelectRatio}
+                        defaultValue={{label: this.props.ratio, value: this.props.ratio}}
+                        formatCreateLabel={(inputValue) => {return `Custom: ${inputValue}`}}
+                    />
+                </div>
             </span>
 
             <span className="mf-gui-editor-templateBar">

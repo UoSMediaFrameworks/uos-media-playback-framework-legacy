@@ -625,25 +625,21 @@ var SceneEditorGUI = React.createClass({
                 if (this.state.placement.isRandom) {
                     //placement is random disable all controls and display message
                     return (
-                        <div className="mf-no-scroll-grid-component">
-                        <Rectangle aspectRatio={[16, 9]}>
-                            <div className="mf-scene-layout-area mf_fs_widget_padding_remove" ref={(c) => this.SceneLayoutArea = c}>
-                                By default content is placed randomly. Uncheck random placement to manualy
-                                position media.
-                            </div>
-                        </Rectangle>
 
-                        <div className="mf-gui-toolbar mf_fs_widget_padding_remove">
-                            <span>
-                                <span className="mf-gui-toolbar-text">Random Postion</span>
-                                <FontAwesome
-                                    id="randomPlacement"
-                                    className='mf-gui-toolbar-icon'
-                                    onClick={this.toggleRandomPlacement}
-                                    name='check-square-o'
-                                    size='2x'/>
-                            </span>
-                        </div>
+                        <div className="mf-no-scroll-grid-component" style={{display: "flex"}}>
+                        <AspectRatio 
+                            ratio={this.state.scene.aspect}
+                            offset={this.state.toolbarHeight}
+                            >
+                            <div className="mf-scene-layout-area" ref={(c) => this.SceneLayoutArea = c}>
+                                <div className="mf-random-placement-txt">
+                                    By default content is placed randomly. Uncheck random placement to manually
+                                    position media.
+                                </div>
+                            </div>
+
+                            <ToolBar context={this} ratio={this.state.scene.aspect || "16:9"} onSize={(size) => this.setState({toolbarHeight: size.height})} isRandom={true} />
+                        </AspectRatio>
                     </div>
                     )
                 } else {
