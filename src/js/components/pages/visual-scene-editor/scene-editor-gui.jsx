@@ -628,7 +628,7 @@ var SceneEditorGUI = React.createClass({
 
                         <div className="mf-no-scroll-grid-component" style={{display: "flex"}}>
                         <AspectRatio 
-                            ratio={this.state.scene.aspect}
+                            ratio={this.state.scene.aspect || '16:9'}
                             offset={this.state.toolbarHeight}
                             >
                             <div className="mf-scene-layout-area" ref={(c) => this.SceneLayoutArea = c}>
@@ -658,7 +658,7 @@ var SceneEditorGUI = React.createClass({
                     return (
                         <div className="mf-empty-grid-component" style={{display: "flex"}}>
                             <AspectRatio 
-                                ratio={this.state.scene.aspect}
+                                ratio={this.state.scene.aspect  || '16:9'}
                                 offset={this.state.toolbarHeight}
                             >
                                 <div className="mf-scene-layout-area" style={{objectFit: "contain"}} ref={(c) => this.SceneLayoutArea = c}>
