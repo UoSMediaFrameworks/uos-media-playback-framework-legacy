@@ -1,13 +1,16 @@
 var React = require('react');
 var _ = require('lodash');
-var SceneStore = require('../../stores/scene-store');
-var GridStore = require("../../stores/grid-store");
-var HubSendActions = require('../../actions/hub-send-actions');
-var SceneActions = require('../../actions/scene-actions');
+var SceneStore = require('../../../stores/scene-store');
+var GridStore = require("../../../stores/grid-store");
+var HubSendActions = require('../../../actions/hub-send-actions');
+var SceneActions = require('../../../actions/scene-actions');
 var Rnd = require('react-rnd');
 var FontAwesome = require('react-fontawesome');
 var Rectangle = require('react-rectangle');
 var ImageLoader = require('react-imageloader');
+var AspectRatio = require('../../../utils/aspect-ratio.jsx');
+var ToolBar = require('./components/toolbar.jsx');
+
 
 var SceneEditorGUI = React.createClass({
 
@@ -23,6 +26,7 @@ var SceneEditorGUI = React.createClass({
             shouldSave: false,
             height: 0,
             width: 0,
+            toolbarHeight: 0
         });
     },
 
@@ -196,9 +200,9 @@ var SceneEditorGUI = React.createClass({
 
     //get the best placement of an image while preserving aspect ratio
     getDefaultPlacement() {
-          console.log("SceneEditorGUI: Getting Default Placement")
-          var placement = this.state.placement;
-          if (this.state.mediaObject.type === "image") {
+        console.log("SceneEditorGUI: Getting Default Placement")
+        var placement = this.state.placement;
+        if (this.state.mediaObject.type === "image") {
             var self = this
             this.getImageSize(self.state.mediaObject.url, function(imgWidth, imgHeight) {
 
@@ -559,7 +563,7 @@ var SceneEditorGUI = React.createClass({
             break;
 
             case "video":
-               return (
+                return (
                     <img
                         src="images/video.png"
                         className="mf-scene-layout-media-object"
@@ -581,6 +585,12 @@ var SceneEditorGUI = React.createClass({
                 )
             break;
         }
+    },
+
+    handleRatioChange(ratio) {
+        scene = this.state.scene;
+        scene.aspect = ratio;
+        this.setState({scene: scene, shouldSave: true});
     },
 
 
@@ -615,25 +625,21 @@ var SceneEditorGUI = React.createClass({
                 if (this.state.placement.isRandom) {
                     //placement is random disable all controls and display message
                     return (
-                        <div className="mf-no-scroll-grid-component">
-                        <Rectangle aspectRatio={[16, 9]}>
-                            <div className="mf-scene-layout-area mf_fs_widget_padding_remove" ref={(c) => this.SceneLayoutArea = c}>
-                                By default content is placed randomly. Uncheck random placement to manualy
-                                position media.
-                            </div>
-                        </Rectangle>
 
-                        <div className="mf-gui-toolbar mf_fs_widget_padding_remove">
-                            <span>
-                                <span className="mf-gui-toolbar-text">Random Postion</span>
-                                <FontAwesome
-                                    id="randomPlacement"
-                                    className='mf-gui-toolbar-icon'
-                                    onClick={this.toggleRandomPlacement}
-                                    name='check-square-o'
-                                    size='2x'/>
-                            </span>
-                        </div>
+                        <div className="mf-no-scroll-grid-component" style={{display: "flex"}}>
+                        <AspectRatio 
+                            ratio={this.state.scene.aspect || '16:9'}
+                            offset={this.state.toolbarHeight}
+                            >
+                            <div className="mf-scene-layout-area" ref={(c) => this.SceneLayoutArea = c}>
+                                <div className="mf-random-placement-txt">
+                                    By default content is placed randomly. Uncheck random placement to manually
+                                    position media.
+                                </div>
+                            </div>
+
+                            <ToolBar context={this} ratio={this.state.scene.aspect || "16:9"} onSize={(size) => this.setState({toolbarHeight: size.height})} isRandom={true} />
+                        </AspectRatio>
                     </div>
                     )
                 } else {
@@ -647,10 +653,15 @@ var SceneEditorGUI = React.createClass({
                         aspectIcon = "unlock";
                     }
 
+                    /*
+                     */
                     return (
-                        <div className="mf-empty-grid-component">
-                            <Rectangle aspectRatio={[16, 9]}>
-                                <div className="mf-scene-layout-area mf_fs_widget_padding_remove" ref={(c) => this.SceneLayoutArea = c}>
+                        <div className="mf-empty-grid-component" style={{display: "flex"}}>
+                            <AspectRatio 
+                                ratio={this.state.scene.aspect  || '16:9'}
+                                offset={this.state.toolbarHeight}
+                            >
+                                <div className="mf-scene-layout-area" style={{objectFit: "contain"}} ref={(c) => this.SceneLayoutArea = c}>
                                     <Rnd
                                         ref={(c) => this.SceneObject = c}
                                         bounds='parent'
@@ -677,112 +688,11 @@ var SceneEditorGUI = React.createClass({
 
                                     </Rnd>
                                 </div>
-                            </Rectangle>
-                            <div className="mf-gui-toolbar mf_fs_widget_padding_remove">
-
-                                <span>
-                                    <FontAwesome
-                                        id="moveUp"
-                                        className='mf-gui-toolbar-icon'
-                                        name='arrow-up'
-                                        onClick={this.toolbarButtonClick}
-                                        size='2x'/>
-                                    <FontAwesome
-                                        id="moveDown"
-                                        className='mf-gui-toolbar-icon'
-                                        name='arrow-down'
-                                        onClick={this.toolbarButtonClick}
-                                        size='2x'/>
-                                    <FontAwesome
-                                        id="moveLeft"
-                                        className='mf-gui-toolbar-icon'
-                                        name='arrow-left'
-                                        onClick={this.toolbarButtonClick}
-                                        size='2x'/>
-                                    <FontAwesome
-                                        id="moveRight"
-                                        className='mf-gui-toolbar-icon'
-                                        name='arrow-right'
-                                        onClick={this.toolbarButtonClick}
-                                        size='2x'/>
-                                </span>
-
-                                <span>
-                                    <FontAwesome
-                                        id='rotate-left'
-                                        className='mf-gui-toolbar-icon'
-                                        name='rotate-left'
-                                        onClick={this.toolbarButtonClick}
-                                        size='2x'/>
-                                    <FontAwesome
-                                        id='rotate-right'
-                                        className='mf-gui-toolbar-icon'
-                                        name='rotate-right'
-                                        onClick={this.toolbarButtonClick}
-                                        size='2x'/>
-                                </span>
-
-                                <span>
-                                    <FontAwesome
-                                        id="zoomIn"
-                                        className='mf-gui-toolbar-icon'
-                                        name='search-plus'
-                                        size='2x'
-                                        onClick={this.toolbarButtonClick}/>
-                                    <FontAwesome
-                                        id="zoomOut"
-                                        className='mf-gui-toolbar-icon'
-                                        name='search-minus'
-                                        size='2x'
-                                        onClick={this.toolbarButtonClick}/>
-                                </span>
-
-                                <span>
-                                    <span className="mf-gui-toolbar-text">Random Postion</span>
-                                    <FontAwesome
-                                        id="randomPlacement"
-                                        className='mf-gui-toolbar-icon'
-                                        onClick={this.toggleRandomPlacement}
-                                        name='square-o'
-                                        size='2x'/>
-                                </span>
-
-                                <span>
-                                    <span className="mf-gui-toolbar-text">Aspect Ratio</span>
-                                    <FontAwesome
-                                        id="aspectRatio"
-                                        className='mf-gui-toolbar-icon'
-                                        onClick={this.toolbarButtonClick}
-                                        name={aspectIcon}
-                                        size='2x'/>
-                                </span>
-
-                                <span>
-                                    <FontAwesome
-                                        id="refresh"
-                                        className='mf-gui-toolbar-icon'
-                                        onClick={this.getDefaultPlacement}
-                                        name='refresh'
-                                        size='2x'/>
-                                </span>
-
-                                <span className="mf-gui-editor-templateBar">
-                                    <span className="mf-gui-toolbar-text">Templates</span>
-                                    <img
-                                        id="QuadUL"
-                                        width='32'
-                                        height='32'
-                                        onClick={this.templateButtonClick}
-                                        src="images/QuadUL.png"/>
-                                    <img id="QuadUR" onClick={this.templateButtonClick} src="images/QuadUR.png"/>
-                                    <img id="QuadLL" onClick={this.templateButtonClick} src="images/QuadLL.png"/>
-                                    <img id="QuadLR" onClick={this.templateButtonClick} src="images/QuadLR.png"/>
-                                    <img id="Full" onClick={this.templateButtonClick} src="images/Full.png"/>
-                                    <img id="Center" onClick={this.templateButtonClick} src="images/Center.png"/>
-                                </span>
-
-                            </div>
+                                <ToolBar context={this} ratio={this.state.scene.aspect || "16:9"} onSize={(size) => this.setState({toolbarHeight: size.height})} />
+                            </AspectRatio>
+                            
                         </div>
+
                     );
                 }
 
@@ -797,3 +707,5 @@ var SceneEditorGUI = React.createClass({
 });
 
 module.exports = SceneEditorGUI;
+
+//<ToolBar context={this} onSize={(size) => this.setState({toolbarHeight: size.height})} />
