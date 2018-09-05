@@ -82,7 +82,7 @@
     /*display:none;*/
 
 }
-line, path {
+.defaultLine {
     stroke-width:0.25;
     transition:opacity 1s, stroke-width 5s;
     opacity:0.125;

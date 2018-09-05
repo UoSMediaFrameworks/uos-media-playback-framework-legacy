@@ -16,6 +16,7 @@ var AudioMediaObject = require('../../utils/media-object/audio-media-object');
 var RandomVisualPlayer = require('./random-visual-player.jsx');
 var ActiveTheme = require('./viewer-active-theme.jsx');
 var hat = require('hat');
+var AspectRatio = require('../../utils/aspect-ratio.jsx');
 
 var MINIMUM_NUMBER_OF_MEDIA_TO_BE_MATCHED_WITH_THEME_QUERY = 0;
 
@@ -327,18 +328,22 @@ var SceneListener = React.createClass({
 
         if (this.state.scene) {
             return (
-                <div className={self.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"}
-                     ref="scene_listener">
-                    <Loader loaded={this.state.scene !== null}></Loader>
-                    <RandomVisualPlayer sceneStyle={this.state.scene.style}
-                                        mediaQueue={this.state.mediaObjectQueue}
-                                        triggerMediaActiveTheme={this.triggerMediaActiveTheme}
-                                        removeMediaActiveThemesAfterDone={this.removeMediaActiveThemesAfterDone}
-                                        cuePointMediaObjects={this.state.cuePointMediaObjects}
-                                        cueMediaObjectDoneHandler={this.cueMediaObjectDoneHandler}/>
-                    {ThemeDisplay}
-                    {TagForm}
-                </div>
+                <AspectRatio ratio={this.state.scene.aspect || "16:9"} offset={0}>
+                    <div className={self.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"} ref="scene_listener">
+                        <Loader loaded={this.state.scene !== null}></Loader>
+                        <RandomVisualPlayer 
+                            sceneStyle={this.state.scene.style}
+                            mediaQueue={this.state.mediaObjectQueue}
+                            triggerMediaActiveTheme={this.triggerMediaActiveTheme}
+                            removeMediaActiveThemesAfterDone={this.removeMediaActiveThemesAfterDone}
+                            cuePointMediaObjects={this.state.cuePointMediaObjects}
+                            cueMediaObjectDoneHandler={this.cueMediaObjectDoneHandler}
+                        />
+                        {ThemeDisplay}
+                        {TagForm}
+                    </div>
+                    <div></div>
+                </AspectRatio>
             );
         } else {
             return (<div className="mf-empty-grid-component">No scene loaded for viewing</div>)
