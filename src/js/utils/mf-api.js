@@ -41,6 +41,26 @@ class MediaframeworkAPI {
             }
         };
     }
+    static ScenesAndThemes(token, data) {
+        return {
+            url: '/playback/scenes/themes/show',
+            pathName: '/playback/scenes/themes/show',
+            method: "POST",
+            parameters: {
+                play:{
+                    roomId:token,
+                    play: {
+                        scenes:data.play.scenes,
+                        themes:data.play.themes
+                    }
+                }
+            },
+            requestInterceptor: function (req) {
+                req.headers["x-api-key"] = token;
+                return req;
+            }
+        };
+    }
 
     static ApplySceneConfigByName(token, data) {
         return {
@@ -80,7 +100,26 @@ class MediaframeworkAPI {
             }
         })
     }
+    static sendScoreCommand(scoreList){
+       return new Promise((resolve,reject)=>{
+           if (!swaggerClient) {
+               Swagger(swaggerApiSpecUrl)
+                   .then(client => {
+                       client.spec.schemes = [getWindowProtocolForSchema()];
+                       swaggerClient = client;
 
+                       swaggerClient.execute(MediaframeworkAPI.ScenesAndThemes(connectionCache.getToken(), scoreList))
+                           .then(resolve)
+                           .catch(reject);
+                   })
+                   .catch(reject);
+           } else {
+               swaggerClient.execute(MediaframeworkAPI.ScenesAndThemes(connectionCache.getToken(), scoreList))
+                   .then(resolve)
+                   .catch(reject);
+           }
+        })
+    }
     static sendAudioScale(data) {
         console.log(data);
         return new Promise((resolve, reject) => {
