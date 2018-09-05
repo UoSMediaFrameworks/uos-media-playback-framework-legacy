@@ -13,7 +13,7 @@ var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
 var GraphBreadcrumbActions =require("../../actions/graph-breadcrumb-actions");
 var AutowalkStore = require('../../stores/autowalk-store.js');
 
-
+var MFAPI = require('../../utils/mf-api.js')
 var _autowalkHandlerInterval = null;
 var _playRandomNodeInterval = null;
 var CeramicGraph = React.createClass({
@@ -169,7 +169,7 @@ var CeramicGraph = React.createClass({
             _.each(list, function (scene) {
                 scoreList.play.scenes.push(scene.toString());
             });
-            HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID());
+            MFAPI.sendScoreCommand(scoreList);
         } else if (t.type === "subgraphtheme") {
             // APEP collect themes that are direct children of mine.
             var themeChildren = _.filter(t.children, function (child) {
@@ -207,10 +207,21 @@ var CeramicGraph = React.createClass({
                 }
             };
 
-            HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID());
+            MFAPI.sendScoreCommand(scoreList);
         } else {
+
+
+            var scoreList = {
+                "play": {
+                    "themes": [],
+                    "scenes": []
+                }
+            };
+            _.each(list, function (scene) {
+                scoreList.play.scenes.push(scene.toString());
+            });
             // APEP for any other kind of nodes, just play the scene list
-            HubClient.publishSceneCommand(list, connectionCache.getSocketID())
+            MFAPI.sendScoreCommand(scoreList);
         }
     },
 

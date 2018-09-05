@@ -212,7 +212,7 @@ var HubClient = {
     },
     publishScoreCommand: function(score, roomId) {
         // APEP allow the score playback functionality to publish commands
-        socket.emit("sendCommand", roomId, 'showScenesAndThemes', score);
+        socket.emit("sendCommand", roomId, 'playSceneAndThemes', score);
     },
     getSceneGraph:function(sceneId){
         socket.emit('loadSceneGraph', sceneId, function (err, sceneGraph) {
