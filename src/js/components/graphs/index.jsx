@@ -76,7 +76,7 @@ var GraphContainer = React.createClass({
             data.forEach(function (obj) {
                 obj.x = obj.y = 0;
                 obj.cx = self.state.width / 2 - self.state.width * 0.1;
-                obj.cy = self.state.height / 2 - self.state.height * 0.2;
+                obj.cy = self.state.height / 2;
                 obj.width = 120;
                 obj.height = 90;
                 obj.r = 2;
@@ -311,7 +311,6 @@ var GraphContainer = React.createClass({
     cleanTitle: function (title) {
         return title.replace(/([a-z])([A-Z0-9])(?=[a-z])/g, '$1 $2').replace('GUIscene', 'scene').replace(/(scene|chicago|beijing)?\s(.*)?/i, '<sup>$1</sup><span class="$1">$2</span>');
     },
-
     componentWillMount() {
         var queryId;
 
