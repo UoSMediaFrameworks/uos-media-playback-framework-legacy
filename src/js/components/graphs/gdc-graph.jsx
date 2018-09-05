@@ -288,21 +288,23 @@ var GDCGraph = React.createClass({
             }
 
             list = this.dedupeNodeList(list);
+            var scoreList = {
+                "play": {
+                    "themes": [],
+                    "scenes": []
+                }
+            };
+            _.each(list, function (scene) {
+                scoreList.play.scenes.push(scene.toString());
+            });
             //To finalize this method it sends the list of scenes to the graph viewer
             if (t.type != "theme") {
-                HubClient.publishSceneCommand(list, connectionCache.getSocketID())
+                HubClient.publishLegacyScoreCommand(scoreList, connectionCache.getSocketID())
             } else {
-                var scoreList = {
-                    "play": {
-                        "themes": [],
-                        "scenes": []
-                    }
-                };
+
                 scoreList.play.themes.push(t.name.toString());
-                _.each(list, function (scene) {
-                    scoreList.play.scenes.push(scene.toString());
-                });
-                HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID())
+
+                HubClient.publishLegacyScoreCommand(scoreList, connectionCache.getSocketID())
             }
             this.props.titleHandler(t.name)
             this.setState({data: this.state.data});
