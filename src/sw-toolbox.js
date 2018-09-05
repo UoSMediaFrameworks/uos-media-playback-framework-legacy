@@ -20,8 +20,8 @@ workbox.routing.registerRoute(
         cacheName: 'dash-blob-cache',
         plugins: [
             new workbox.expiration.Plugin({
-                // Cache for a maximum of a week
-                maxAgeSeconds: 7 * 24 * 60 * 60,
+                // Cache for a maximum of 180 days
+                maxAgeSeconds: 180 * 24 * 60 * 60,
             }),
             new workbox.rangeRequests.Plugin({}),
             new workbox.cacheableResponse.Plugin({
@@ -38,8 +38,8 @@ workbox.routing.registerRoute(
         cacheName: 'dash-manifests-blob-cache',
         plugins: [
             new workbox.expiration.Plugin({
-                // Cache for a maximum of a week
-                maxAgeSeconds: 7 * 24 * 60 * 60,
+                // Cache for a maximum of 180 days
+                maxAgeSeconds: 180 * 24 * 60 * 60,
             }),
             new workbox.cacheableResponse.Plugin({
                 statuses: [0, 200]
@@ -55,8 +55,8 @@ workbox.routing.registerRoute(
         cacheName: 'raw-vid-blob-cache',
         plugins: [
             new workbox.expiration.Plugin({
-                // Cache for a maximum of a week
-                maxAgeSeconds: 7 * 24 * 60 * 60,
+                // Cache for a maximum of 180 days
+                maxAgeSeconds: 180 * 24 * 60 * 60,
             }),
             new workbox.cacheableResponse.Plugin({
                 statuses: [0, 200]
@@ -72,8 +72,8 @@ workbox.routing.registerRoute(
         cacheName: 'audio-blob-cache',
         plugins: [
             new workbox.expiration.Plugin({
-                // Cache for a maximum of a week
-                maxAgeSeconds: 7 * 24 * 60 * 60,
+                // Cache for a maximum of 180 days
+                maxAgeSeconds: 180 * 24 * 60 * 60,
             }),
             new workbox.cacheableResponse.Plugin({
                 statuses: [0, 200]
@@ -89,8 +89,8 @@ workbox.routing.registerRoute(
         cacheName: 'image-blob-cache',
         plugins: [
             new workbox.expiration.Plugin({
-                // Cache for a maximum of a week
-                maxAgeSeconds: 7 * 24 * 60 * 60,
+                // Cache for a maximum of 180 days
+                maxAgeSeconds: 180 * 24 * 60 * 60,
             }),
             new workbox.cacheableResponse.Plugin({
                 statuses: [0, 200]
