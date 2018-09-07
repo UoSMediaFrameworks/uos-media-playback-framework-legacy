@@ -12,8 +12,8 @@ var AutocompleteStore = require('../../stores/autocomplete-store');
 var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
 var GraphBreadcrumbActions = require("../../actions/graph-breadcrumb-actions");
 var AutowalkStore = require('../../stores/autowalk-store.js');
-var MFAPI = require('../../utils/mf-api.js')
-;var cityColors = [
+
+var cityColors = [
     [255, 0, 0],
     [253, 95, 0],
     [255, 129, 0],
@@ -286,31 +286,21 @@ var GDCGraph = React.createClass({
             }
 
             list = this.dedupeNodeList(list);
-            var scoreList = {
-                "play": {
-                    "themes": [],
-                    "scenes": []
-                }
-            };
             //To finalize this method it sends the list of scenes to the graph viewer
             if (t.type != "theme") {
-                _.each(list, function (scene) {
-                    scoreList.play.scenes.push(scene.toString());
-                });
-
-                MFAPI.sendScoreCommand(scoreList);
+                HubClient.publishSceneCommand(list, connectionCache.getSocketID())
             } else {
-
+                var scoreList = {
+                    "play": {
+                        "themes": [],
+                        "scenes": []
+                    }
+                };
                 scoreList.play.themes.push(t.name.toString());
                 _.each(list, function (scene) {
                     scoreList.play.scenes.push(scene.toString());
                 });
-                try{
-                    MFAPI.sendScoreCommand(scoreList);
-                }catch(e){
-                    console.log("GRAPH Error ", e)
-                }
-
+                HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID())
             }
             this.props.titleHandler(t.name)
             this.setState({data: this.state.data});
