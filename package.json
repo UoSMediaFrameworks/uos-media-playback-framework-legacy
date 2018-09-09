@@ -7,7 +7,7 @@
     "test": "mocha"
   },
   "engines": {
-      "node": "6.3.1"
+    "node": "6.3.1"
   },
   "author": "",
   "license": "ISC",
@@ -96,7 +96,9 @@
     "react-resumable-js": "git+https://github.com/aaronpcz/ReactResumableJS.git#1.1.27",
     "react-rnd": "7.1.2",
     "react-router": "^2.8.1",
+    "react-select": "^2.0.0",
     "react-select-plus": "^1.0.0-rc.10",
+    "react-sizeme": "^2.5.2",
     "react-split-pane": "0.1.77",
     "react-tag-input": "^4.7.2",
     "react-transition-group": "^1.1.3",

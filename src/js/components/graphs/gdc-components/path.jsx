@@ -42,6 +42,7 @@ var Path = React.createClass({
     render(){
         /* console.log(this.props.data)*/
         var classes = classNames({
+            'defaultLine': true,
             'opaque': false,
             'visible-path': this.props.data.visible,
             'highlightedLink':this.props.data.highlighted
