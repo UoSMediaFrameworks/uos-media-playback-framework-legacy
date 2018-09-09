@@ -241,6 +241,7 @@ var RandomVisualPlayer = React.createClass({
             <div className="player" ref="player" style={this.props.sceneStyle}>
                 {q}
                 {cueMediaObjects}
+                {this.props.children}
             </div>
         );
     }
