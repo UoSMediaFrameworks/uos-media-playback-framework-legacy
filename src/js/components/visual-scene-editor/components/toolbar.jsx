@@ -182,12 +182,7 @@ var ToolBar = React.createClass({
 
             <span className="mf-gui-editor-templateBar">
                 <span className="mf-gui-toolbar-text">Templates</span>
-                <img
-                    id="QuadUL"
-                    width='32'
-                    height='32'
-                    onClick={this.templateButtonClick}
-                    src="images/QuadUL.png"/>
+                <img id="QuadUL" width='32' height='32' onClick={this.props.context.templateButtonClick} src="images/QuadUL.png"/>
                 <img id="QuadUR" onClick={this.props.context.templateButtonClick} src="images/QuadUR.png"/>
                 <img id="QuadLL" onClick={this.props.context.templateButtonClick} src="images/QuadLL.png"/>
                 <img id="QuadLR" onClick={this.props.context.templateButtonClick} src="images/QuadLR.png"/>
