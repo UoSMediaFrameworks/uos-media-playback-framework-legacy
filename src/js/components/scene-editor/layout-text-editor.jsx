@@ -147,10 +147,12 @@ var SceneMonacoTextEditor = React.createClass({
     },
 
     saveSceneHistory: function (sceneJsonStringSha1Hash) {
+
+        // APEP avoid filling history, the lower the number the better.
+        // APEP ideally should be 1 or 2 to avoid race conditions
         if (this.state.sceneHistory.length > 4)
             this.state.sceneHistory.shift();
 
-        // APEP early entry of scene string for history check
         this.state.sceneHistory.push(sceneJsonStringSha1Hash);
     },
 
@@ -162,15 +164,14 @@ var SceneMonacoTextEditor = React.createClass({
                 return !sceneObj.hasOwnProperty("tags") || !sceneObj.hasOwnProperty("type");
             });
 
+            // APEP check to see if the author is currently typing a new media object by hand
             var shouldSave = mediaWithoutTagOrType.length === 0;
 
-            // APEP ensure we should save, previously the || logic was forcing unrequired saves
-            if (!_.isEqual(this.state.scene, newScene) && shouldSave) { //TODO ensure a save occurs for scene media without id - must update view with _id
+            if (!_.isEqual(this.state.scene, newScene) && shouldSave) {
 
-                // APEP early entry of scene string for history check
+                // Save a copy of the to be saved new scene, allows the component update cycle to skip updates to avoid race condition for moving cursor post save
                 this.saveSceneHistory(sha1(JSON.stringify(newScene)));
 
-                // APEP with early entry, the update from this specific text based update can be missed by update cycle
                 SceneActions.updateScene(newScene);
             }
 
