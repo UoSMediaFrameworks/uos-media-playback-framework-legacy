@@ -5,6 +5,7 @@ var MonacoEditor = require('react-monaco-editor').default;
 var SceneActions = require('../../actions/scene-actions');
 var SceneStore = require('../../stores/scene-store');
 var _ = require('lodash');
+var sha1 = require('sha1');
 
 //TODO APEP: Github issue raised about issue with regex. https://github.com/Microsoft/monaco-editor/issues/216
 var sceneMediaObjectRegex = "{[\\s\\S\\n]{1,10}tags[\\s\\S\\n]*?type[\\s\\S\\n]*?[\\s\\S\\n]}"; //APEP Full media object selection
@@ -118,16 +119,7 @@ var SceneMonacoTextEditor = React.createClass({
             var sceneVal = this.getHumanReadableScene(scene);
             var code = this.getSceneStringForSceneObj(sceneVal);
 
-            let history = this.state.sceneHistory;
-
-            history.push(scene);
-
-            // APEP it's going to be wasteful to store much more than 4 history items
-            // APEP I think the max depth we need is 3, until this is set, we can leave at 4
-            if (history.length > 4)
-                history.shift();
-
-            this.setState({scene: scene, code: code, sceneHistory: history})
+            this.setState({scene: scene, code: code})
         }
     },
 
@@ -154,40 +146,57 @@ var SceneMonacoTextEditor = React.createClass({
 
     },
 
-    saveJSON: function () {
-        return function () {
-            if (!this.refs.monaco.editor) {
-                console.log("Nothing to save yet as component not mounted");
-                return;
+    saveSceneHistory: function (sceneJsonStringSha1Hash) {
+        if (this.state.sceneHistory.length > 4)
+            this.state.sceneHistory.shift();
+
+        // APEP early entry of scene string for history check
+        this.state.sceneHistory.push(sceneJsonStringSha1Hash);
+    },
+
+    saveJSON: function (newScene) {
+
+        try {
+
+            var mediaWithoutTagOrType = _.filter(newScene.scene, function (sceneObj) {
+                return !sceneObj.hasOwnProperty("tags") || !sceneObj.hasOwnProperty("type");
+            });
+
+            var shouldSave = mediaWithoutTagOrType.length === 0;
+
+            // APEP ensure we should save, previously the || logic was forcing unrequired saves
+            if (!_.isEqual(this.state.scene, newScene) && shouldSave) { //TODO ensure a save occurs for scene media without id - must update view with _id
+
+                // APEP early entry of scene string for history check
+                this.saveSceneHistory(sha1(JSON.stringify(newScene)));
+
+                // APEP with early entry, the update from this specific text based update can be missed by update cycle
+                SceneActions.updateScene(newScene);
             }
-            try {
 
-                var newScene = this.getMonacoEditorVersionOfScene();
-
-                var mediaWithoutTagOrType = _.filter(newScene.scene, function (sceneObj) {
-                    return !sceneObj.hasOwnProperty("tags") || !sceneObj.hasOwnProperty("type");
-                });
-
-                var shouldSave = mediaWithoutTagOrType.length === 0;
-
-                // APEP ensure we should save, previously the || logic was forcing unrequired saves
-                if (!_.isEqual(this.state.scene, newScene) && shouldSave) { //TODO ensure a save occurs for scene media without id - must update view with _id
-                    SceneActions.updateScene(newScene);
-                }
-
-            } catch (e) {
-                if (e instanceof SyntaxError) {
-                } else {
-                    throw e;
-                }
+        } catch (e) {
+            if (e instanceof SyntaxError) {
+            } else {
+                throw e;
             }
-        }.bind(this);
+        }
     },
 
     onChange: function (newValue, e) {
         if (this.saveTimeout) clearTimeout(this.saveTimeout);
 
-        this.saveTimeout = setTimeout(this.saveJSON(false), 1000);
+        this.saveTimeout = setTimeout(() => {
+            try {
+                if (!this.refs.monaco.editor) {
+                    console.log("Nothing to save yet as component not mounted");
+                    return;
+                }
+
+                this.saveJSON(this.getMonacoEditorVersionOfScene());
+            } catch (e) {
+                console.log("layout-text-editor failed to extract monaco editor version of scene")
+            }
+        }, 1000);
     },
 
     onTextSelection: function (e) {
@@ -392,25 +401,28 @@ var SceneMonacoTextEditor = React.createClass({
 
         try {
             // APEP see if the new state for the scene has changed
-            let isNotInHistory = _.indexOf(this.state.sceneHistory, this.state.scene) === -1;
+            let latestStateHash = sha1(JSON.stringify(this.state.scene));
+
+            let isNotLastSeenInHistory = _.filter(this.state.sceneHistory, (id) => {
+                return id === latestStateHash
+            }).length === 0;
+
             let isDifferentScene = true;
-
-            // APEP use the state stores, given the way we update this.state, it seems we cannot use it for the correct result
-            // this is a bad code smell and something out of the update pattern is breaking our chance to check this.state
-            let previousScene = _.last(_.initial(this.state.sceneHistory));
-            let currentScene = _.last(this.state.sceneHistory);
-
-            if (previousState && currentScene) {
-                isDifferentScene = previousScene._id !== currentScene._id;
+            if (previousState.scene && this.state.scene) {
+                isDifferentScene = previousState.scene._id !== this.state.scene._id;
             }
 
-            var sceneChangeShouldUpdate = isDifferentScene ? true : isNotInHistory; // isNotInHistory || isDifferentScene;
+            var sceneChangeShouldUpdate = isDifferentScene || isNotLastSeenInHistory;
 
             // APEP check the monaco editor to see if it already has a value set.
             var emptyEditorShouldUpdate = this.refs.monaco.editor.getValue() === null || this.refs.monaco.editor.getValue().length === 0;
 
             // APEP if the scene state has changed, or the editor has no string set, we should set the value in the component.
             if (sceneChangeShouldUpdate || emptyEditorShouldUpdate) {
+
+                // APEP put in history that we've seen this change
+                this.saveSceneHistory(latestStateHash);
+
                 // APEP after updating, make sure we update the monaco editor
                 this.refs.monaco.editor.setValue(this.getSceneString());
             }
