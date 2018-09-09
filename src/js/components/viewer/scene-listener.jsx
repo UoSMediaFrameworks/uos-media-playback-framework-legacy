@@ -328,6 +328,7 @@ var SceneListener = React.createClass({
 
         if (this.state.scene) {
             return (
+                <div className="mf-no-scroll-grid-component" style={{display: "flex"}}>
                 <AspectRatio ratio={this.state.scene.aspect || "16:9"} offset={0}>
                     <div className={self.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"} ref="scene_listener">
                         <Loader loaded={this.state.scene !== null}></Loader>
@@ -344,6 +345,7 @@ var SceneListener = React.createClass({
                     </div>
                     <div></div>
                 </AspectRatio>
+                </div>
             );
         } else {
             return (<div className="mf-empty-grid-component">No scene loaded for viewing</div>)
