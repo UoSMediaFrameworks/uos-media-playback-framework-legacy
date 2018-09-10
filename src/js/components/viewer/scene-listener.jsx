@@ -332,16 +332,17 @@ var SceneListener = React.createClass({
                 <AspectRatio ratio={this.state.scene.aspect || "16:9"} offset={0}>
                     <div className={self.props.sceneViewer ? "mf-local-width scene-listener" : "scene-listener"} ref="scene_listener">
                         <Loader loaded={this.state.scene !== null}></Loader>
-                        <RandomVisualPlayer 
+                        <RandomVisualPlayer
                             sceneStyle={this.state.scene.style}
                             mediaQueue={this.state.mediaObjectQueue}
                             triggerMediaActiveTheme={this.triggerMediaActiveTheme}
                             removeMediaActiveThemesAfterDone={this.removeMediaActiveThemesAfterDone}
                             cuePointMediaObjects={this.state.cuePointMediaObjects}
-                            cueMediaObjectDoneHandler={this.cueMediaObjectDoneHandler}
-                        />
-                        {ThemeDisplay}
-                        {TagForm}
+                            cueMediaObjectDoneHandler={this.cueMediaObjectDoneHandler}>
+                            {ThemeDisplay}
+                            {TagForm}
+                        </RandomVisualPlayer>
+
                     </div>
                     <div></div>
                 </AspectRatio>
