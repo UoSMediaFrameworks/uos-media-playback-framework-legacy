@@ -3,6 +3,7 @@ var FontAwesome = require('react-fontawesome');
 var SizeMe = require('react-sizeme');
 var Creatable = require('react-select').Creatable;
 var Select = require('react-select').Select;
+var _ = require('lodash');
 
 var ratioList = [
         {label: "16:9 (standard)", value: "16:9"},
@@ -21,7 +22,7 @@ var ToolBar = React.createClass({
 
     render() {
 
-        items = [];
+        let items = [];
 
         if (this.props.isRandom === true) {
             return (
@@ -40,8 +41,7 @@ var ToolBar = React.createClass({
         }
 
         const customStyles = {
-            control: (base, state) => ({
-                ...base,
+            control: (base, state) => (_.merge(base,{
                 background: "var(--main-control-bg)",
                 border: "#343434",
                 color: "var(--main-control-text-colour)",
@@ -51,9 +51,8 @@ var ToolBar = React.createClass({
                 // Overwrittes the different states of border
                 // Removes weird border around container
                 boxShadow: state.isFocused ? null : null,
-              }),
-            menu: base => ({
-              ...base,
+              })),
+            menu: base => (_.merge(base,{
               // override border radius to match the box
               borderRadius: 0,
               // beautify the word cut by adding a dash see https://caniuse.com/#search=hyphens for the compatibility
@@ -64,12 +63,11 @@ var ToolBar = React.createClass({
               color: "black",
               // prevent menu to scroll y
               wordWrap: "break-word"
-            }),
-            menuList: base => ({
-              ...base,
+            })),
+            menuList: base => (_.merge(base, {
               // kill the white space on first and last option
               padding: 0
-            }),
+            })),
           };
 
 
@@ -165,13 +163,13 @@ var ToolBar = React.createClass({
                     size='2x'/>
             </span>
 
-            
+
             <span>
                 <span className="mf-gui-toolbar-text">Scene AR</span>
                 <div style={{width: "200px", display:"inline-block"}}>
-                    <Creatable 
+                    <Creatable
                         menuPlacement="top"
-                        options={ratioList} 
+                        options={ratioList}
                         styles={customStyles}
                         onChange={this.handleSelectRatio}
                         defaultValue={{label: this.props.ratio, value: this.props.ratio}}
@@ -189,7 +187,7 @@ var ToolBar = React.createClass({
                 <img id="Full" onClick={this.props.context.templateButtonClick} src="images/Full.png"/>
                 <img id="Center" onClick={this.props.context.templateButtonClick} src="images/Center.png"/>
             </span>
-        
+
         </div>
         )
     }
