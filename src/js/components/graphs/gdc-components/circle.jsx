@@ -16,14 +16,27 @@ var Circle = React.createClass({
         });
     },
     componentWillReceiveProps: function (nextProps) {
-        var node = d3.select(ReactDOM.findDOMNode(this));
+
         var self = this;
+
+        var hiddenNode = d3.select(this.refs.hiddenCircle);
+
+        hiddenNode.transition().ease(d3.easeCubicInOut).duration(3000)
+            .attr("cy", nextProps.data.cy)
+            .attr("cx", nextProps.data.cx)
+            .attr("x", nextProps.data.x)
+            .attr("y", nextProps.data.y)
+            .attr("r", nextProps.data.r + 4)
+            .attr("fill", nextProps.data.color);
+
+        var node = d3.select(this.refs.circle);
+
         node.transition().ease(d3.easeCubicInOut).duration(3000)
             .attr("cy", nextProps.data.cy)
             .attr("cx", nextProps.data.cx)
             .attr("x", nextProps.data.x)
             .attr("y", nextProps.data.y)
-            .attr("r", nextProps.data.r)
+            .attr("r", nextProps.data.r - 2)
             .attr("fill", nextProps.data.color)
             .on('end', function () {
                 self.setState({
@@ -33,33 +46,49 @@ var Circle = React.createClass({
                     cy: nextProps.data.cy,
                     r: nextProps.data.r,
                     color: nextProps.data.color
-                })
+                });
             });
     },
+
     componentWillUnmount:function(){
         var node = d3.select(ReactDOM.findDOMNode(this));
         node.transition()
     },
+
     render(){
         var classes = classNames({
             'shown-circle': this.props.data.visible,
             'highlight': this.props.data.highlighted
         });
-        /*       onClick={this.props.clickHandler.bind(this, this.props.data)}*/
         return (
 
-            <circle
-                cy={this.state.cy}
-                cx={this.state.cx}
-                r={this.state.r}
+            <g
                 className={classes}
-                x={this.state.x}
-                y={this.state.y}
-                fill={this.state.color}
                 onClick={this.props.clickHandler.bind(null,this.props.data)}
-                onDoubleClick={this.props.dblClickHandler.bind(null, this.props.data)}
-            >
-            </circle>
+                onDoubleClick={this.props.dblClickHandler.bind(null, this.props.data)}>
+
+                <circle
+                    ref="hiddenCircle"
+                    cy={this.state.cy}
+                    cx={this.state.cx}
+                    r={this.state.r + 4}
+                    x={this.state.x}
+                    y={this.state.y}
+                    opacity={0}
+                    fill={"none"}>
+                </circle>
+
+                <circle
+                    ref="circle"
+                    cy={this.state.cy}
+                    cx={this.state.cx}
+                    r={this.state.r - 2}
+                    x={this.state.x}
+                    y={this.state.y}
+                    fill={this.state.color}>
+                </circle>
+            </g>
+
         )
     }
 });

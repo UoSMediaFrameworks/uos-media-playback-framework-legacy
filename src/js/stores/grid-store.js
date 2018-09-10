@@ -104,7 +104,7 @@ var GridStore = assign({}, EventEmitter.prototype, {
     },
 
     hasMaximisedView: function () {
-        // APEP allow components to see if we have any maximised components.
+        // APEP allow preview to see if we have any maximised preview.
         return _.filter(gridState.layoutManager.layout, function (item) {
                 return item.state === "max";
             }).length !== 0;
@@ -190,12 +190,12 @@ var GridStore = assign({}, EventEmitter.prototype, {
             case ActionTypes.LAYOUT_PRESET_SELECTED:
                 GridStore.setLayoutFromPreset(action.preset);
                 break;
-            // APEP allow us to catch DOM size changes so we can do the minimize size calculations for some components.
+            // APEP allow us to catch DOM size changes so we can do the minimize size calculations for some preview.
             case ActionTypes.GRID_CONTAINER_UPDATE:
                 gridState.layoutManager.gridContainerDOMClientHeight = action.clientHeight;
                 gridState.layoutManager.gridContainerDOMClientWidth = action.clientWidth;
                 gridState.layoutManager.gridContainerNumberOfRows = action.numberOfRows;
-                // APEP we do not want to emit a change and for any components to rerender for now.
+                // APEP we do not want to emit a change and for any preview to rerender for now.
                 break;
         }
 

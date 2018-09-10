@@ -13,8 +13,8 @@ var PresentationLayoutApp = require('./pages/presentation-layout-app.jsx');
 var LoginPage = require('./pages/login-page.jsx');
 var ClientStore = require('./stores/client-store');
 var appVersion = require('./utils/app-version');
-var AdjustableGrid = require('./components/pages/adjustable-grid.jsx');
-var PopOutComponent = require('./components/pages/pop-out-component.jsx');
+var AdjustableGrid = require('./pages/adjustable-grid.jsx');
+var PopOutComponent = require('./pages/pop-out-component.jsx');
 // login with localStorage creds if possible
 HubSendActions.tryTokenLogin();
 

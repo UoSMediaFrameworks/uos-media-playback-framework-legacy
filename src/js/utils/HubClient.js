@@ -55,7 +55,7 @@ var HubClient = {
                     connectionCache.setGroupID(groupID);//AJF: set the groupID
 
                     //Angel P: I am calling this function to register the listener to a specific room ID
-                    //In order for the layout components graph to communicate with the Scene graph editor.
+                    //In order for the layout preview graph to communicate with the Scene graph editor.
                     HubClient.registerToGraphPlayerRoom(socketID)
 
                     HubRecieveActions.recieveLoginResult(true);

@@ -1,18 +1,18 @@
 let React = require('react');
 let _ = require('lodash');
-let SceneStore = require('../../stores/scene-store');
-let GridStore = require("../../stores/grid-store");
-let HubSendActions = require('../../actions/hub-send-actions');
-let SceneActions = require('../../actions/scene-actions');
+let SceneStore = require('../stores/scene-store');
+let GridStore = require("../stores/grid-store");
+let HubSendActions = require('../actions/hub-send-actions');
+let SceneActions = require('../actions/scene-actions');
 let Rnd = require('react-rnd');
 let FontAwesome = require('react-fontawesome');
 let Rectangle = require('react-rectangle');
 let ImageLoader = require('react-imageloader');
-let MediaObjectPreview = require('../scene-editor/media-object-preview.jsx');
-let Glyphicon = require('../glyphicon.jsx');
+let MediaObjectPreview = require('./scene-editor/preview/media-object-preview.jsx');
+let Glyphicon = require('./glyphicon.jsx');
 let Hat = require('hat');
 let NumericInput = require('react-numeric-input');
-
+let AspectRatio = require('../utils/aspect-ratio.jsx');
 let SceneEditorGUI = React.createClass({
 
     saveTimeout: null,
@@ -538,12 +538,11 @@ let SceneEditorGUI = React.createClass({
 
         return (
             <div className="mf-empty-grid-component">
-                <Rectangle aspectRatio={[16, 9]}>
-                    <div className="mf-scene-layout-area mf_fs_widget_padding_remove" ref={(c) => this.SceneLayoutArea = c}>
+                <AspectRatio ratio={this.state.scene.aspect || "16:9"} offset={80}>
+                    <div className="mf-scene-layout-area" ref={(c) => this.SceneLayoutArea = c}>
                         {renderTargets}
                     </div>
-                </Rectangle>
-                <div className="mf-gui-toolbar mf_fs_widget_padding_remove">
+                    <div className="mf-gui-toolbar">
 
                     <span>
                         <FontAwesome
@@ -639,6 +638,7 @@ let SceneEditorGUI = React.createClass({
                     </span>
 
                 </div>
+                </AspectRatio>
             </div>
         )
 

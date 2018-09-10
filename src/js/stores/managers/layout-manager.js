@@ -297,7 +297,7 @@ class LayoutManager {
         var compStartRowScanY = component.y;
         var compEndRowScanY = component.y + component.h;
 
-        // APEP scan for components that intersect with this row
+        // APEP scan for preview that intersect with this row
         var componentsIntersectingWithRowScan = _.filter(this.layout, function(comp){
 
             var compTopCollision = comp.y === compStartRowScanY || ((comp.y > compStartRowScanY) && (comp.y < compEndRowScanY));

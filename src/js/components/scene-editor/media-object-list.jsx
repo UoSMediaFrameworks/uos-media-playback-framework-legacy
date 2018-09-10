@@ -3,7 +3,7 @@
 var React = require('react');
 var Glyphicon = require('../glyphicon.jsx');
 var SceneActions = require('../../actions/scene-actions');
-var MediaObjectPreview = require('./media-object-preview.jsx');
+var MediaObjectPreview = require('./preview/media-object-preview.jsx');
 var TagMatcher = require('../../utils/tag-matcher');
 var _ = require("lodash");
 var MediaDownloader = require('../../utils/media-downloader.js');
@@ -11,15 +11,12 @@ var soundCloud = require('../../utils/sound-cloud');
 var ThemeDownloader = require('../../utils/theme-downloader');
 
 var MediaObjectList = React.createClass({
-
-
     getInitialState: function () {
-
         return {
             selectedIndex: this.props.focusedMediaObject,
             listLayout: 'Grid',
             tagSearch: "",
-            highlightType: 'Filter',
+            highlightType: 'Filter'
         };
     },
 

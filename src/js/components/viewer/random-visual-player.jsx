@@ -35,7 +35,7 @@ var RandomVisualPlayer = React.createClass({
                 }
             });
 
-            //APEP Setting state will trigger a new render, with a new render components will be unmounted/mounted
+            //APEP Setting state will trigger a new render, with a new render preview will be unmounted/mounted
             self.setState({mediaQueue: self.props.mediaQueue, arr: self.state.arr});
         } catch (e) {
             console.log("rsvp error", e)
@@ -241,6 +241,7 @@ var RandomVisualPlayer = React.createClass({
             <div className="player" ref="player" style={this.props.sceneStyle}>
                 {q}
                 {cueMediaObjects}
+                {this.props.children}
             </div>
         );
     }

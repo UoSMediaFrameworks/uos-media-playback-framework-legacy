@@ -1,7 +1,7 @@
 'use strict';
 var React = require('react');
-var SceneGraphList = require('../scene-graph-list.jsx');
-var FormHelper = require('../../mixins/form-helper');
+var SceneGraphList = require('./scene-graph-list.jsx');
+var FormHelper = require('../mixins/form-helper');
 var mediaHubGraphURL = process.env.MEDIA_HUB_GRAPH_URL || "";
 var presentationNamespaceQueryParams = "?roomId=presentation";
 var presentationMediaHubGraphURL = mediaHubGraphURL.length > 0 ? mediaHubGraphURL + presentationNamespaceQueryParams : "";

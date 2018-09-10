@@ -1,12 +1,12 @@
 var React = require('react');
 
 //Stores
-var SceneStore = require('../../stores/scene-store');
-var SceneSavedStore = require('../../stores/scene-saving-store');
-var GridStore = require("../../stores/grid-store");
-var AddMediaObjectStore = require("../../stores/add-media-object-store");
+var SceneStore = require('../stores/scene-store');
+var SceneSavedStore = require('../stores/scene-saving-store');
+var GridStore = require("../stores/grid-store");
+var AddMediaObjectStore = require("../stores/add-media-object-store");
 
-var AddMediaObject = require('../scene-editor/add-media-object.jsx');
+var AddMediaObject = require('./scene-editor/add-media-object.jsx');
 
 //Autosave timeout length - should be ~instant here to avoid missing tags
 const saveTimeoutLength = 100;
@@ -39,7 +39,7 @@ var MediaUpload = React.createClass({
         SceneSavedStore.removeChangeListener(this._onChange);
         AddMediaObjectStore.removeChangeListener(this._onChange);
     },
-    
+
 
     render() {
         console.log(this.state.scene);
