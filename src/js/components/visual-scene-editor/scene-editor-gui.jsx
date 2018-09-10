@@ -586,7 +586,7 @@ var SceneEditorGUI = React.createClass({
     },
 
     handleRatioChange(ratio) {
-        scene = this.state.scene;
+        let scene = this.state.scene;
         scene.aspect = ratio;
         this.setState({scene: scene, shouldSave: true});
     },
@@ -625,7 +625,7 @@ var SceneEditorGUI = React.createClass({
                     return (
 
                         <div className="mf-no-scroll-grid-component" style={{display: "flex"}}>
-                        <AspectRatio 
+                        <AspectRatio
                             ratio={this.state.scene.aspect || '16:9'}
                             offset={this.state.toolbarHeight}
                             >
@@ -655,7 +655,7 @@ var SceneEditorGUI = React.createClass({
                      */
                     return (
                         <div className="mf-empty-grid-component" style={{display: "flex"}}>
-                            <AspectRatio 
+                            <AspectRatio
                                 ratio={this.state.scene.aspect  || '16:9'}
                                 offset={this.state.toolbarHeight}
                             >
@@ -688,7 +688,7 @@ var SceneEditorGUI = React.createClass({
                                 </div>
                                 <ToolBar context={this} ratio={this.state.scene.aspect || "16:9"} onSize={(size) => this.setState({toolbarHeight: size.height})} />
                             </AspectRatio>
-                            
+
                         </div>
 
                     );
