@@ -1,10 +1,7 @@
 var React = require('react');
 var classes = require('classnames');
 var _ = require('lodash');
-var d3 = require("d3");
 var TransitionGroup = require('react-transition-group/TransitionGroup');
-var connectionCache = require("../../utils/connection-cache");
-var HubClient = require("../../utils/HubClient");
 var GraphBreadcrumbActions = require("../../actions/graph-breadcrumb-actions");
 var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
 var AutowalkStore = require('../../stores/autowalk-store.js');
@@ -12,7 +9,7 @@ var Circle = require("./narm-components/circle.jsx");
 var Path = require("./narm-components/path.jsx");
 var Text = require("./narm-components/text.jsx");
 
-
+var MFAPI = require('../../utils/mf-api.js');
 var _autowalkHandlerInterval = null;
 var _playRandomNodeInterval = null;
 var MemoirGraph = React.createClass({
@@ -21,12 +18,12 @@ var MemoirGraph = React.createClass({
         return {data: null}
     },
     componentWillMount: function () {
-        this.setupNodes(this.props.data,this.props)
+        this.setupNodes(this.props.data, this.props)
         /*  this.setState({data:this.props.data})*/
     },
     componentWillReceiveProps: function (nextProps) {
         if (nextProps.shouldUpdateId != this.props.shouldUpdateId) {
-            this.setupNodes(nextProps.data,nextProps)
+            this.setupNodes(nextProps.data, nextProps)
         }
 
     },
@@ -118,7 +115,7 @@ var MemoirGraph = React.createClass({
             }
         }
     },
-    setupChapterNodes: function (data,p) {
+    setupChapterNodes: function (data, p) {
         var chapterNodes = _.filter(data.nodes, function (node) {
             return node.type == 'chapter';
         });
@@ -127,11 +124,11 @@ var MemoirGraph = React.createClass({
 
             node.cx = (Math.cos(radian) * p.innerHeight / 2) + p.innerWidth / 2;
 
-            node.cy = (Math.sin(radian) * p.innerHeight / 2) +p.innerHeight / 2;
+            node.cy = (Math.sin(radian) * p.innerHeight / 2) + p.innerHeight / 2;
             node.r = 16;
         })
     },
-    setupSceneNodes: function (data,p) {
+    setupSceneNodes: function (data, p) {
         var sceneNodes = _.filter(data.nodes, function (node) {
             return node.type == 'scene';
         });
@@ -224,21 +221,33 @@ var MemoirGraph = React.createClass({
         }
 
         list = this.dedupeNodeList(list);
+
+        var scoreList = {
+            "play": {
+                "themes": [],
+                "scenes": []
+            }
+        };
         //To finalize this method it sends the list of scenes to the graph viewer
         if (t.type != "theme") {
-            HubClient.publishSceneCommand(list, connectionCache.getSocketID())
+            //To finalize this method it sends the list of scenes to the graph viewer
+            _.each(list, function (scene) {
+                scoreList.play.scenes.push(scene.toString());
+            });
+
+            MFAPI.sendScoreCommand(scoreList);
         } else {
-            var scoreList = {
-                "play": {
-                    "themes": [],
-                    "scenes": []
-                }
-            };
+
             scoreList.play.themes.push(t.name.toString());
             _.each(list, function (scene) {
                 scoreList.play.scenes.push(scene.toString());
             });
-            HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID())
+            try {
+                MFAPI.sendScoreCommand(scoreList);
+            } catch (e) {
+                console.log("GRAPH Error ", e)
+            }
+
         }
     },
     render() {

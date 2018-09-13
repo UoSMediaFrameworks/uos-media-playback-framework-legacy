@@ -6,8 +6,6 @@ var Path = require("./gdc-components/path.jsx");
 var Text = require("./gdc-components/text.jsx")
 
 var _ = require("lodash");
-var connectionCache = require("../../utils/connection-cache");
-var HubClient = require("../../utils/HubClient");
 var AutocompleteStore = require('../../stores/autocomplete-store');
 var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
 var GraphBreadcrumbActions = require("../../actions/graph-breadcrumb-actions");

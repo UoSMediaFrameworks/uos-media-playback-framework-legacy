@@ -5,12 +5,10 @@ var Circle = require("./narm-components/circle.jsx");
 var Path = require("./narm-components/path.jsx");
 var Text = require("./narm-components/text.jsx");
 var _ = require("lodash");
-var connectionCache = require("../../utils/connection-cache");
-var HubClient = require("../../utils/HubClient");
 var BreadcrumbsStore = require('../../stores/breadcrumbs-store');
 var GraphBreadcrumbActions =require("../../actions/graph-breadcrumb-actions");
 var AutowalkStore = require('../../stores/autowalk-store.js');
-
+var MFAPI = require('../../utils/mf-api.js')
 
 var _autowalkHandlerInterval = null;
 var _playRandomNodeInterval = null;
@@ -158,19 +156,24 @@ var NarmGraph = React.createClass({
         list = this.dedupeNodeList(list);
         //To finalize this method it sends the list of scenes to the graph viewer
         if (t.type != "theme") {
-            HubClient.publishSceneCommand(list, connectionCache.getSocketID())
+            //To finalize this method it sends the list of scenes to the graph viewer
+            _.each(list, function (scene) {
+                scoreList.play.scenes.push(scene.toString());
+            });
+
+            MFAPI.sendScoreCommand(scoreList);
         } else {
-            var scoreList = {
-                "play": {
-                    "themes": [],
-                    "scenes": []
-                }
-            };
+
             scoreList.play.themes.push(t.name.toString());
             _.each(list, function (scene) {
                 scoreList.play.scenes.push(scene.toString());
             });
-            HubClient.publishScoreCommand(scoreList, connectionCache.getSocketID())
+            try {
+                MFAPI.sendScoreCommand(scoreList);
+            } catch (e) {
+                console.log("GRAPH Error ", e)
+            }
+
         }
     },
     setupRootNodes: function (data,p) {
