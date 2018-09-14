@@ -1,30 +1,28 @@
 'use strict';
 /*jshint browser:true */
 
-// var SceneActions = require('../actions/scene-actions');
-// var HubRecieveActions = require('../actions/hub-recieve-actions');
-
 var io = require('socket.io-client');
 var _ = require('lodash');
 
 var MediaEngineReceiveActions = require('../../actions/media-engine/receive-actions');
-var MediaEngineSendActions = require('../../actions/media-engine/send-actions');
 var HubRecieveActions = require('../../actions/hub-recieve-actions');
 
 // APEP 090518 turn into constants and / or even better pull the constants from the controller project
 const BASE_TOPIC = "mediaframework.html.random.1.0.0.";
 
-const ACTIVE_SCENE__STATE_CHANGE = "event.playback.scene.active"
+const ACTIVE_SCENE__STATE_CHANGE = "event.playback.scene.active";
 const ACTIVE_SCENE__STATE_CHANGE_TOPIC = BASE_TOPIC + ACTIVE_SCENE__STATE_CHANGE;
 
 const DEACTIVE_SCENE__STATE_CHANGE_TOPIC = BASE_TOPIC + "event.playback.scenes.deactive";
-
 
 const MEDIA_OBJECT_INSTANCE__EVENTS__STATE_CHANGE = "html.event.playback.media.state.change";
 const MEDIA_OBJECT_INSTANCE__EVENTS__STATE_CHANGE_TOPIC = BASE_TOPIC + MEDIA_OBJECT_INSTANCE__EVENTS__STATE_CHANGE;
 
 const MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE = "html.event.playback.media.property.change";
 const MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE_TOPIC = BASE_TOPIC + MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE;
+
+const REFRESH_EVENT = "event.playback.refresh";
+const REFRESH_EVENT_TOPIC = BASE_TOPIC + REFRESH_EVENT;
 
 var WebsocketHTMLRandomControllerConnection = {
 
@@ -83,6 +81,11 @@ var WebsocketHTMLRandomControllerConnection = {
 
         this.socket.on(MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE_TOPIC, function(payload) {
             MediaEngineReceiveActions.receiveMediaObjectInstanceProperty(payload.connection, payload.instance)
+        });
+
+        // APEP we want to listen for additional controller events
+        this.socket.on(REFRESH_EVENT_TOPIC, function () {
+            location.reload();
         });
     },
 
