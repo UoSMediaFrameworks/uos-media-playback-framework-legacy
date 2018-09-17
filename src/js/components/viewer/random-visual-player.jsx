@@ -6,6 +6,8 @@ var ImageMediaObject = require('../../utils/media-object/image-media-object');
 var TextMediaObject = require('../../utils/media-object/text-media-object');
 var AudioMediaObject = require('../../utils/media-object/audio-media-object');
 var hat = require('hat');
+var TWEEN = require('@tweenjs/tween.js');
+var ReactAnimationFrame = require('react-animation-frame');
 
 var RandomVisualPlayer = React.createClass({
 
@@ -195,6 +197,10 @@ var RandomVisualPlayer = React.createClass({
         }
     },
 
+    onAnimationFrame(time) {
+        TWEEN.update(time);
+    },
+
     render: function () {
 
         var self = this;
@@ -248,4 +254,4 @@ var RandomVisualPlayer = React.createClass({
 
 });
 
-module.exports = RandomVisualPlayer;
+module.exports = ReactAnimationFrame(RandomVisualPlayer, 125);
