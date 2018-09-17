@@ -2,6 +2,7 @@ var React = require('react');
 var soundCloud = require('../../../utils/sound-cloud');
 var TWEEN = require('@tweenjs/tween.js');
 var Audio5 = require('audio5');
+var _ = require('lodash');
 
 var AudioMediaObject = React.createClass({
 
@@ -21,10 +22,7 @@ var AudioMediaObject = React.createClass({
 
     componentDidMount: function() {
         // APEP set the autoreply value based off the mediaObject, with an overriding default of 1
-        if(this.props.data && this.props.data.mediaObject && this.props.data.mediaObject._obj) {
-            var autoreplay = this.props.data.mediaObject._obj.hasOwnProperty("autoreplay") ? this.props.data.mediaObject._obj.autoreplay : 1;
-            this.setState({"autoreplay": autoreplay})
-        }
+        this.setState({"autoreplay": _.get(this, 'props.data.mediaObject._obj.autoreplay', 0)})
         this.play();
     },
 
@@ -37,8 +35,8 @@ var AudioMediaObject = React.createClass({
         }
     },
 
+    // APEP we never need to re-render for an audio component
     shouldComponentUpdate(nextProps, nextState) {
-        // APEP we never need to re-render for an audio component
         return false;
     },
 
@@ -47,6 +45,7 @@ var AudioMediaObject = React.createClass({
         var position = {vol: start};
         var target = {vol: end};
         var player = audioPlayer || this.state.player;
+
         return new TWEEN.Tween(position)
             .to(target, duration)
             .onUpdate(function(obj) {
@@ -74,33 +73,23 @@ var AudioMediaObject = React.createClass({
     loopingHandler: function() {
         var self = this;
 
-        this.setState({currentLoop: this.state.currentLoop + 1});
+        let currentLoop = _.clone(this.state.currentLoop) + 1;
+
+        this.setState({currentLoop: currentLoop});
 
         // APEP if the current loop matches or is higher, the audio element is complete
-        if(this.state.currentLoop >= this.state.autoreplay) {
+        if(currentLoop >= this.state.autoreplay) {
             self.transition();
         } else {
-            console.log("AudioMediaObject - loopingHandler - Loop again - currentLoop: , autoreplay: ", this.state.currentLoop, this.state.autoreplay);
+            console.log(`AudioMediaObject - loopingHandler - Loop again - currentLoop: ${currentLoop}, this.state.currentLoop: ${this.state.currentLoop}, autoreplay: ${this.state.autoreplay}`);
             self.state.player.seek(0);
             self.state.player.play();
-            var mediaObject = self.props.data.mediaObject._obj;
-            self.unlockCuePointsForMediaObject(mediaObject);
+            self.unlockCuePointsForMediaObject(self.props.data.mediaObject._obj);
         }
-
-    },
-
-    audioPlayerTimeUpdateForAnim: function(position, duration) {
-        // console.log("AudioMediaObject - audioPlayerTimeUpdateForAnim - position, duration", position, duration);
-
-        // APEP as requested as part of the lib, we need to keep calling this update function
-        TWEEN.update(position * 1000);
     },
 
     audioPlayerTimeUpdate: function (position, duration) {
         // console.log("AudioMediaObject - audioPlayerTimeUpdate - position, duration", position, duration);
-
-        // APEP as requested as part of the lib, we need to keep calling this update function
-        TWEEN.update(position * 1000);
 
         var mediaObject = this.props.data.mediaObject._obj;
 
@@ -175,12 +164,6 @@ var AudioMediaObject = React.createClass({
                 // APEP set the volume as 0 and allow the audio tween to ramp up to the authored volume
                 this.volume(0);
 
-                self.unlockCuePointsForMediaObject(mediaObject);
-
-                //APEP tween volume
-                var _ops = self.props.data.mediaObject._ops;
-                var firstPlayAudioTween = self.tweenAudio(0, volume, _ops.transitionDuration, this);
-                self.setState({firstPlayAudioTween: firstPlayAudioTween});
 
                 this.on("timeupdate", self.audioPlayerTimeUpdate, self);
 
@@ -191,6 +174,12 @@ var AudioMediaObject = React.createClass({
 
                 // APEP Play the audio clips
                 this.play();
+
+                var _ops = self.props.data.mediaObject._ops;
+
+                //APEP tween volume
+                var firstPlayAudioTween = self.tweenAudio(0, volume, _ops.transitionDuration, this);
+                self.setState({firstPlayAudioTween: firstPlayAudioTween});
             }
         });
     },
@@ -204,6 +193,8 @@ var AudioMediaObject = React.createClass({
         }
 
         var self = this;
+
+        this.unlockCuePointsForMediaObject(mediaObject);
 
         // APEP soundcloud audio - a simple search of the URL is OK.
         if (mediaObject.url.indexOf("soundcloud.com") !== -1) {
@@ -236,7 +227,6 @@ var AudioMediaObject = React.createClass({
             this.state.player.pause();
             this.state.player.destroy();
             this.state.player.off("timeupdate", this.audioPlayerTimeUpdate);
-            this.state.player.off("timeupdate", this.audioPlayerTimeUpdateForAnim);
         }
 
         this.setState({disposed: true});
@@ -261,7 +251,6 @@ var AudioMediaObject = React.createClass({
             if(self.state.player) {
                 // APEP change the func handler for timeupdate, we need timeupdate for any Tweens
                 self.state.player.off("timeupdate", self.audioPlayerTimeUpdate);
-                self.state.player.on("timeupdate", self.audioPlayerTimeUpdateForAnim, self);
 
                 var _ops = self.props.data.mediaObject._ops;
                 var currentVolume = self.state.player.volume();
