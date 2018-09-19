@@ -113,14 +113,10 @@ var SceneMonacoTextEditor = React.createClass({
 
         var scene = SceneStore.getScene(this.props._id);
 
-        var compareNewPropsAndCurrentEditorCopy = !_.isEqual(scene, this.getMonacoEditorVersionOfScene());
+        var sceneVal = this.getHumanReadableScene(scene);
+        var code = this.getSceneStringForSceneObj(sceneVal);
 
-        if (compareNewPropsAndCurrentEditorCopy) {
-            var sceneVal = this.getHumanReadableScene(scene);
-            var code = this.getSceneStringForSceneObj(sceneVal);
-
-            this.setState({scene: scene, code: code})
-        }
+        this.setState({scene: scene, code: code})
     },
 
     // Try get a JSON copy of the scene loaded in editor for comparsion check
@@ -147,7 +143,6 @@ var SceneMonacoTextEditor = React.createClass({
     },
 
     saveSceneHistory: function (sceneJsonStringSha1Hash) {
-
         // APEP avoid filling history, the lower the number the better.
         // APEP ideally should be 1 or 2 to avoid race conditions
         if (this.state.sceneHistory.length > 4)
@@ -168,10 +163,8 @@ var SceneMonacoTextEditor = React.createClass({
             var shouldSave = mediaWithoutTagOrType.length === 0;
 
             if (!_.isEqual(this.state.scene, newScene) && shouldSave) {
-
                 // Save a copy of the to be saved new scene, allows the component update cycle to skip updates to avoid race condition for moving cursor post save
                 this.saveSceneHistory(sha1(JSON.stringify(newScene)));
-
                 SceneActions.updateScene(newScene);
             }
 
@@ -215,7 +208,6 @@ var SceneMonacoTextEditor = React.createClass({
             if (isInTags)
                 SceneActions.changeMediaObjectFocus(parseInt(m), true);
         }
-
     },
 
     onChangeCursorPosition: function (e) {
