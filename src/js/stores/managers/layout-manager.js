@@ -28,7 +28,8 @@ class LayoutManager {
 
         if (loadedLayout.length < 1) {
             //layout not present in localstorage so load default.
-            this.layout = this.ensureValidComponents(this.loadPreset(PresetLayouts.default));
+            //25/09/18 AP: Since there is a requirement for the users to be able to clear their grid this might be redundant as a feature core-281
+            this.layout = [];
         } else {
             this.layout = this.ensureValidComponents(loadedLayout);
         }

@@ -68,6 +68,9 @@ module.exports = {
                 {"x":0,"y":14,"w":30,"h":8,"_w":30,"_h":8,"type":"Scene-Media-Browser","visible":true,"isResizable":true,"state":"default","moved":false,"static":false},
                 {"x":0,"y":0,"w":17,"h":14,"_w":17,"_h":14,"type":"Scene-Editor-Multi","visible":true,"isResizable":true,"state":"default","moved":false,"static":false}
             ]
-        }
+        },
+        "clear":[
+
+        ]
     }
 };
