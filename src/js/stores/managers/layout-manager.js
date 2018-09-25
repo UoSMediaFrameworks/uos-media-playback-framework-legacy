@@ -25,10 +25,12 @@ class LayoutManager {
         this.gridContainerNumberOfRows = 0;
 
         var loadedLayout = this.getLayoutFromLocalStorage();
-
-        if (loadedLayout.length < 1) {
+        //25/09/18 AP: This will make sure first time users get the default layout as the key containing the layouts do not exist in local storage
+        if(loadedLayout === undefined){
             //layout not present in localstorage so load default.
-            //25/09/18 AP: Since there is a requirement for the users to be able to clear their grid this might be redundant as a feature core-281
+            this.layout = this.ensureValidComponents(this.loadPreset(PresetLayouts.default));
+        }
+        else if (loadedLayout.length < 1) {
             this.layout = [];
         } else {
             this.layout = this.ensureValidComponents(loadedLayout);
@@ -261,8 +263,11 @@ class LayoutManager {
 
     // APEP static method
     getLayoutFromLocalStorage() {
-        var parsedLayout = JSON.parse(localStorage.getItem('layout')) || [];
-        if (parsedLayout.length < 1) {
+        var parsedLayout = JSON.parse(localStorage.getItem('layout'));
+        if(parsedLayout === undefined || parsedLayout === null){
+            return undefined;
+        }
+        else if (parsedLayout.length < 1) {
             return [];
         } else {
             // APEP TODO Values of Infinity get converted to nulls in local storage.  Must write test to fix
