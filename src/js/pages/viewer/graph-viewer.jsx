@@ -95,8 +95,6 @@ var ImageMediaObjectInstance = React.createClass({
     }
 });
 
-
-
 var DashVideoMediaObjectInstance = React.createClass({
 
     getInitialState: function () {
@@ -630,12 +628,14 @@ var GraphViewer = React.createClass({
             </p>
         });
 
+        // APEP should wrap into a menu with options
+        let typeDebugComponent = <div style={{position: 'absolute', top: 0, right: 0, zIndex: 10000000}}>
+            {typeInfo}
+        </div>;
+
         return (
             <div>
                 {restartController}
-                <div style={{position: 'absolute', top: 0, right: 0, zIndex: 10000000}}>
-                    {typeInfo}
-                </div>
                 {_.map(this.state.media, (mo) => {
                     return <MediaObjectInstance key={mo._id} mo={mo} connection={this.state.connection} audioContext={this.state.audioContext}/>
                 })}
