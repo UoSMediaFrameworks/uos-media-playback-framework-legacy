@@ -1,3 +1,5 @@
+var hat = require('hat');
+
 var SceneConstants = require('../constants/scene-constants');
 var AppDispatcher = require('../dispatchers/app-dispatcher');
 var ActionTypes = SceneConstants.ActionTypes;
@@ -60,12 +62,48 @@ var HubRecieveActions = {
         });
     },
 
+    statusMessageWithAutoClose: function(message) {
+        let actionId = hat();
+
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.STATUS_MESSAGE,
+            message: message,
+            status: 'success',
+            id: actionId
+        });
+
+        setTimeout(function() {
+            AppDispatcher.handleViewAction({
+                type: ActionTypes.STATUS_MESSAGE_REMOVE,
+                id: actionId
+            });
+        }, 5000)
+    },
+
     errorMessage: function(message) {
         AppDispatcher.handleViewAction({
             type: ActionTypes.STATUS_MESSAGE,
             message: message,
             status: 'danger'
         });
+    },
+
+    errorMessageWithAutoClose: function(message) {
+        let actionId = hat();
+
+        AppDispatcher.handleViewAction({
+            type: ActionTypes.STATUS_MESSAGE,
+            message: message,
+            status: 'danger',
+            id: actionId
+        });
+
+        setTimeout(function() {
+            AppDispatcher.handleViewAction({
+                type: ActionTypes.STATUS_MESSAGE_REMOVE,
+                id: actionId
+            });
+        }, 2500)
     },
 
     recieveSceneListForPlayer: function(scenes) {

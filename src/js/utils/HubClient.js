@@ -83,7 +83,7 @@ var HubClient = {
         });
 
         socket.on('connect_error', function(err) {
-            HubRecieveActions.errorMessage(
+            HubRecieveActions.errorMessageWithAutoClose(
                 "Connection to hub failed: " +
                 err.toString() +
                 "\nTrying to reconnect.");

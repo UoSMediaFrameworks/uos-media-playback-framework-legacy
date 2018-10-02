@@ -51,7 +51,7 @@ var WebsocketHTMLRandomControllerConnection = {
 
             console.log(`MediaEngineConnection - received socket connection event`);
 
-            HubRecieveActions.statusMessage("html random connection connection made");
+            HubRecieveActions.statusMessageWithAutoClose("html random connection connection made");
 
             self.socket.emit('auth', creds, function(err, token) {
 
