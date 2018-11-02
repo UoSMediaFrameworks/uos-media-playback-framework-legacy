@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const moment = require('moment');
 
 const AppDispatcher = require('../../dispatchers/app-dispatcher');
 const MediaObjectState = require('../../private-dependencies/media-object-state');
@@ -16,6 +17,8 @@ module.exports = {
     API_PLAY_MEDIA_COMMAND: "event.playback.media.show",
     TRANSITION_MEDIA_COMMAND: "event.playback.media.transition",
     DONE_MEDIA_COMMAND: "event.playback.media.done",
+
+    MEDIA_EVENT_COMMAND: "event.playback.media.engine.media.event",
 
     mediaObjectInstanceReady(connection, instance) {
         let instanceForUpdate = _.cloneDeep(instance);
@@ -52,6 +55,17 @@ module.exports = {
         // };
 
         MediaEngineConnection.publishMediaInstanceStateChange(path, connection, instance);
+    },
+
+    mediaObjectPublishEvent(instance) {
+
+        var MediaEngineConnection = require('../../utils/media-engine/connection');
+
+        let instanceForUpdate = _.cloneDeep(instance);
+
+        instanceForUpdate.state = instanceForUpdate.state.state;
+
+        MediaEngineConnection.publishMediaInstanceEvent(this.MEDIA_EVENT_COMMAND, instance, parseInt(moment().format('x')))
     },
 
     restartController() {

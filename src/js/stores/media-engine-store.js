@@ -200,6 +200,11 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
                         // console.log(`state from DTO - isStateDirty ${isStateTransition} - ie Controller reported state: ${instance.state.compositeState()}`);
                         MediaEngineStore._mediaInstanceStateChange(connection, instance);
                         MediaEngineStore.emitChange();
+
+                        // APEP 021118 send back a socket message that as a media engine, we've received and processed a state change
+                        // any media engine driven state changes go to server first and end up back here before we actually update state
+                        // when we make a change, we clone an instance and wait for the backend to drive the actual react store state change
+                        SendActions.mediaObjectPublishEvent(instance);
                     }
                 } catch (e) {
                     console.log(`error ${e.message}`);
