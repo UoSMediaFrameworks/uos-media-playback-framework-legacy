@@ -91,14 +91,16 @@ var WebsocketHTMLRandomControllerConnection = {
 
     /**
      * Allow media instance state changes to be published to the controller
-     * @param path
-     * @param connection
-     * @param instance
+     * While this looks generic, it's specific for submitting media engine change requests to controller
      */
     publishMediaInstanceStateChange: function(path, connection, instance) {
         this.socket.emit(path, connection, instance)
     },
 
+    /**
+     * Generic method to publish events to the analytics listeners
+     * events are pre-described by the controller project and the schema needs to be correct
+     */
     publishMediaInstanceEvent: function(path, event, eventTime) {
         this.socket.emit(path, event, eventTime)
     }

@@ -18,7 +18,8 @@ module.exports = {
     TRANSITION_MEDIA_COMMAND: "event.playback.media.transition",
     DONE_MEDIA_COMMAND: "event.playback.media.done",
 
-    MEDIA_EVENT_COMMAND: "event.playback.media.engine.media.event",
+    MEDIA_ENGINE_EVENT_COMMAND: "event.playback.media.engine.media.event",
+    MEDIA_ENGINE_PROPERTY_CHANGE_COMMAND: "event.playback.media.engine.media.property.change",
 
     mediaObjectInstanceReady(connection, instance) {
         let instanceForUpdate = _.cloneDeep(instance);
@@ -40,19 +41,14 @@ module.exports = {
         this.updateMediaInstance(this.TRANSITION_MEDIA_COMMAND, connection, instanceForUpdate);
     },
 
+    // Generic helper to publish change state request to controller,
+    // See mediaObjectInstanceReady, mediaObjectInstanceFileEnded for DTO conversion
+    // TODO review if cloneDeep is truly necessary, likely _.pick (or es6 alternatives - spread operator) the key fields is a smarter option when going back to controller
     updateMediaInstance(path, connection, instance) {
 
         // console.log(`updateMediaInstance ${path}`);
 
         var MediaEngineConnection = require('../../utils/media-engine/connection');
-
-        // APEP TODO prune instance fields not required for sending
-
-        // let instanceForUpdate = _.cloneDeep(instance);
-        //
-        // instanceForUpdate.state = {
-        //     state: instance.state.compositeState()
-        // };
 
         MediaEngineConnection.publishMediaInstanceStateChange(path, connection, instance);
     },
@@ -63,9 +59,23 @@ module.exports = {
 
         let instanceForUpdate = _.cloneDeep(instance);
 
-        instanceForUpdate.state = instanceForUpdate.state.state;
+        instanceForUpdate.state = {
+            state: instanceForUpdate.state.state
+        };
 
-        MediaEngineConnection.publishMediaInstanceEvent(this.MEDIA_EVENT_COMMAND, instance, parseInt(moment().format('x')))
+        MediaEngineConnection.publishMediaInstanceEvent(this.MEDIA_ENGINE_EVENT_COMMAND, instanceForUpdate, parseInt(moment().format('x')))
+    },
+
+    mediaObjectPropertyChangePublishEvent(instance) {
+
+        var MediaEngineConnection = require('../../utils/media-engine/connection');
+
+        // TODO finalise full object vs partials
+        // Using partials here as backend has full object and we only have a few key fields that can be changed in current version
+
+        let instanceForUpdate = _.pick(instance, ["_id", "guid", "messageId", "_volume"]);
+
+        MediaEngineConnection.publishMediaInstanceEvent(this.MEDIA_ENGINE_PROPERTY_CHANGE_COMMAND, instanceForUpdate, parseInt(moment().format('x')))
     },
 
     restartController() {

@@ -157,18 +157,22 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
                     let updatedData = _.pick(instance, propertiesToTransfer);
                     let poolInstance = mediaInstancePool.get(instance._id);
+
+                    // first obj is modified, bad code smell that should be capturing the return value but checked docs and modifying the first obj still works
                     _.merge(poolInstance, updatedData);
 
                     // APEP TODO 140618 we might not need to do this - unit test this
                     mediaInstancePool.set(poolInstance._id, poolInstance);
                     MediaEngineStore.emitChange();
+
+                    SendActions.mediaObjectPropertyChangePublishEvent(poolInstance);
                 }
 
                 break;
 
             case ActionTypes.RECEIVE_MEDIA_OBJECT_INSTANCE:
                 console.log(`MediaEngineStore - RECEIVE_MEDIA_OBJECT_INSTANCE`);
-                console.log(_.pick(instance, ["_id", "state", "_volume", "state"]));
+                // console.log(_.pick(instance, ["_id", "state", "_volume", "state"]));
 
                 instance.state = new MediaObjectState({initialState: instance.state.state});
 
@@ -191,9 +195,6 @@ var MediaEngineStore = assign({}, EventEmitter.prototype, {
 
                     // APEP for any media object instance message - store the server copy in the instance pool
                     mediaInstancePool.set(instance._id, instance);
-
-                    // APEP TODO maybe separate receive_media_object and dirty_properties_media_object straight from the controller
-                    // We already do the work there to know if its a state transition or just a property update
 
                     // APEP is the state property has specifically changed - we need to handle state transition logic
                     if(isStateTransition) {
