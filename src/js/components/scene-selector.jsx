@@ -1,14 +1,13 @@
 'use strict';
 
 var React = require('react');
+var ReactBootstrap = require('react-bootstrap');
+var Modal = ReactBootstrap.Modal;
 
 //stores
 var SceneListStore = require('../stores/scene-list-store');
 var HubSendActions = require('../actions/hub-send-actions');
 var HubClient = require('../utils/HubClient');
-var ReactBootstrap = require('react-bootstrap');
-var Modal = ReactBootstrap.Modal;
-
 
 //preview
 var SelectPlus = require('react-select-plus').default;
@@ -18,10 +17,13 @@ var ReactClipboard = require('react-copy-to-clipboard').CopyToClipboard;
 //utils
 var _ = require('lodash');
 
+//constants
+var LocalStorageKeys = require('../constants/local-storage-constants').LocalStorageKeys;
+
 var SceneSelector = React.createClass({
 
   getInitialState: function () {
-    var lastSelectedScene = JSON.parse(localStorage.getItem("scene-selector-filter"));
+    var lastSelectedScene = JSON.parse(localStorage.getItem(LocalStorageKeys.SCENE_SELECTOR_FILTER));
 
     if (lastSelectedScene === null) {
       //no scene in local storage revert to default
@@ -36,7 +38,6 @@ var SceneSelector = React.createClass({
   },
 
   _getState: function() {
-
       //add default blank option at top
       var sceneListItems = [{value: "none", label: "none"}]
 
@@ -46,9 +47,20 @@ var SceneSelector = React.createClass({
         sceneListItems.push({label: scene.name, value: scene})
       });
 
-      return {
+      let state = {
           sceneListItems: sceneListItems,
       };
+
+      //if a scene is already selected in the dropdown filter, update the values to match to store
+      //match to store allows scene editor changes to a scenes name update the dropdown
+      let existingFilterSelection = _.get(this, 'state.sceneListFilter.value._id');
+      if (existingFilterSelection) {
+          let selectedScene = _.find(sceneListItems, function(scene) { return scene.value._id === existingFilterSelection});
+          if (selectedScene)
+              state["sceneListFilter"] = selectedScene;
+      }
+
+      return state;
   },
 
   componentDidMount: function () {
@@ -106,7 +118,6 @@ var SceneSelector = React.createClass({
   },
 
   //details modal
-
   _showSceneDetailsModal: function() {
     if (this.state.sceneListFilter.value != "none") {
       this.setState({showDetailsModal: true})
@@ -120,18 +131,19 @@ var SceneSelector = React.createClass({
   _completeDetailsModal: function() {
     var newName = this.sceneNameEditInput.value;
     var self = this;
+
     //potentialy risky (saving over scene)
     HubClient.loadSceneWithCb(this.state.sceneListFilter.value._id, function(scene) {
-      scene.name=newName
+      scene.name=newName;
       HubClient.save(scene);
       self.setState({showDetailsModal: false, sceneListFilter: {value: scene, label: scene.name}});
     });
-
   },
 
   componentDidUpdate: function() {
-    //always save filter on change
-    localStorage.setItem('scene-selector-filter', JSON.stringify(this.state.sceneListFilter.value)); //save to local storage to maintain state on refresh
+      //always save filter on change - save to local storage to maintain state on refresh
+      //TODO need to consider what happens when a scene is renamed, this state.sceneListFilter may be out of date
+      localStorage.setItem(LocalStorageKeys.SCENE_SELECTOR_FILTER, JSON.stringify(this.state.sceneListFilter.value));
   },
 
   render: function() {

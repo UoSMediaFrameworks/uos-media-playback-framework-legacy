@@ -1,12 +1,14 @@
 'use strict';
 
-var AppDispatcher = require('../dispatchers/app-dispatcher');
 var EventEmitter = require('events').EventEmitter;
-var ActionTypes = require('../constants/scene-constants').ActionTypes;
 var assign = require('object-assign');
 var _ = require('lodash');
-var CHANGE_EVENT = 'CHANGE_EVENT';
 
+var AppDispatcher = require('../dispatchers/app-dispatcher');
+var ActionTypes = require('../constants/scene-constants').ActionTypes;
+var LocalStorageKeys = require('../constants/local-storage-constants').LocalStorageKeys;
+
+var CHANGE_EVENT = 'CHANGE_EVENT';
 var _loadingScenes = false;
 var _scenes = {};
 
@@ -86,12 +88,13 @@ var SceneListStore = assign({}, EventEmitter.prototype, {
                 delete _scenes[action.sceneId];
                 SceneListStore.emitChange();
                 break;
+
             case ActionTypes.HUB_LOGOUT:
                 _scenes = {};
+                localStorage.removeItem(LocalStorageKeys.SCENE_SELECTOR_FILTER);
                 SceneListStore.emitChange();
                 break;
         }
-
 
         return true;
     })
