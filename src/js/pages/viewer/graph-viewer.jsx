@@ -140,6 +140,7 @@ var DashVideoMediaObjectInstance = React.createClass({
             this.refs.player.removeEventListener('canplay', this.onReady);
             this.refs.player.removeEventListener('ended', this.onEnded);
             this.dash.reset();
+            this.dash = null;
         }
     },
 
