@@ -95,6 +95,87 @@ var ImageMediaObjectInstance = React.createClass({
     }
 });
 
+var ShakaPlayerDashVideoMediaObjectInstance = React.createClass({
+
+    getInitialState: function () {
+
+        let state = {
+            style: {}
+        };
+
+        state.style = _.extend(state.style, InstanceStateToReact.convertInstanceTransitionProperties(this.props.mo).style);
+        state.style = _.extend(state.style, InstanceStateToReact.convertInstanceVisualLayer(this.props.mo).style);
+        state.style = _.extend(state.style, InstanceStateToReact.convertInstanceVisualPosition(this.props.mo).style);
+
+        this.dash = null;
+
+        return state;
+    },
+
+    // APEP 160518 valid on load for a dash video media object
+    onReady: function () {
+        MediaEngineSendActions.mediaObjectInstanceReady(this.props.connection, this.props.mo);
+    },
+
+    onEnded: function () {
+        MediaEngineSendActions.mediaObjectInstanceFileEnded(this.props.connection, this.props.mo);
+    },
+
+    componentDidMount: function() {
+
+        this.dash = new shaka.Player(this.refs.player);
+
+        this.dash.load(this.props.mo._content)
+            .then(() => {
+                console.log("shaka player loaded");
+                this.onReady();
+            });
+
+        this.dash.addEventListener('error', this.onEnded);
+        // this.dash.addEventListener('playing', onPlaying);
+        // this.dash.addEventListener('pause', onPause);
+        this.dash.addEventListener('ended', this.onEnded);
+        this.dash.volume = this.props.mo._authoredVolume / 100;
+    },
+
+    componentWillUnmount: function() {
+        if (this.dash) {
+            this.dash.removeEventListener('ended', this.onEnded);
+            this.dash.removeEventListener('error', this.onEnded);
+            this.dash.unload();
+            this.dash.destroy();
+        }
+    },
+
+    onInitialised: function (e) {
+        try {
+        } finally {
+        }
+    },
+
+    render: function () {
+
+        let VIDEO_CLASSES = classNames({
+            "video-media-object": true,
+            "media-object": true,
+            "show-media-object": this.props.mo.state.state === InternalEventConstants.MEDIA_OBJECT_INSTANCE.STATE.PLAYING
+        });
+
+        return (
+            <video
+                ref="player"
+                className={VIDEO_CLASSES}
+                style={this.state.style}
+                preload='none'
+                autoPlay={true}
+                controls={false}
+                width={this.state.style.width}
+                height={this.state.style.height}>
+            </video>
+        );
+    }
+});
+
 var DashVideoMediaObjectInstance = React.createClass({
 
     getInitialState: function () {
@@ -183,7 +264,7 @@ var DashVideoMediaObjectInstance = React.createClass({
 var VideoMediaObjectInstance = React.createClass({
     render: function () {
         return (
-            <DashVideoMediaObjectInstance mo={this.props.mo} connection={this.props.connection}/>
+            <ShakaPlayerDashVideoMediaObjectInstance mo={this.props.mo} connection={this.props.connection}/>
         )
     }
 });
