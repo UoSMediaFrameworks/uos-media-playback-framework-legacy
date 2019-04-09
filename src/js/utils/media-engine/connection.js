@@ -15,14 +15,16 @@ const ACTIVE_SCENE__STATE_CHANGE_TOPIC = BASE_TOPIC + ACTIVE_SCENE__STATE_CHANGE
 
 const DEACTIVE_SCENE__STATE_CHANGE_TOPIC = BASE_TOPIC + "event.playback.scenes.deactive";
 
-const MEDIA_OBJECT_INSTANCE__EVENTS__STATE_CHANGE = "html.event.playback.media.state.change";
+const MEDIA_OBJECT_INSTANCE__EVENTS__STATE_CHANGE = "region.event.playback.media.state.change";
 const MEDIA_OBJECT_INSTANCE__EVENTS__STATE_CHANGE_TOPIC = BASE_TOPIC + MEDIA_OBJECT_INSTANCE__EVENTS__STATE_CHANGE;
 
-const MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE = "html.event.playback.media.property.change";
+const MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE = "region.event.playback.media.property.change";
 const MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE_TOPIC = BASE_TOPIC + MEDIA_OBJECT_INSTANCE__EVENTS__PROPERTY_CHANGE;
 
 const REFRESH_EVENT = "event.playback.refresh";
 const REFRESH_EVENT_TOPIC = BASE_TOPIC + REFRESH_EVENT;
+
+const PLAYER_ID = process.env.PLAYER_ID.toString();
 
 var WebsocketHTMLRandomControllerConnection = {
 
@@ -42,6 +44,8 @@ var WebsocketHTMLRandomControllerConnection = {
         }
 
         console.log(`MediaEngineConnection - login ${url} ${JSON.stringify(creds)}`);
+
+        creds.playerId = PLAYER_ID;
 
         this.socket = io(url, {forceNew: true, transports: ['websocket']});
 
