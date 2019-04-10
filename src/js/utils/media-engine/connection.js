@@ -100,7 +100,7 @@ var WebsocketHTMLRandomControllerConnection = {
      * @param instance
      */
     publishMediaInstanceStateChange: function(path, connection, instance) {
-        this.socket.emit(path, connection, instance)
+        this.socket.emit(path, {id: this.socket.id}, instance)
     }
 };
 
