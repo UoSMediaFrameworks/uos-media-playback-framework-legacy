@@ -5,7 +5,7 @@
 var imageFileTypes = ["png", "PNG", "jpg", "JPG","JPEG","jpeg", "webp", "WEBP", "gif", "GIF", "svg", "SVG"];
 var videoFileTypes = ["mov", "MOV", 'mp4', "MP4", "webm", "WEBM", "flv", "FLV", "wmv", "WMV", "avi", "AVI",
     "ogg", "OGG", "ogv", "OGV", "qt", "QT", "asf", "ASF", "mpg", "MPG", "3gp", "3GP"];
-var audioFileTypes = ["mp3", "MP3", "wav", "WAV"];
+var audioFileTypes = ["mp3", "MP3", "wav", "WAV", "m4a", "M4A"];
 
 var allFileTypes = imageFileTypes.concat(videoFileTypes);
 allFileTypes = allFileTypes.concat(audioFileTypes);
