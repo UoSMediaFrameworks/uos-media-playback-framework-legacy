@@ -256,59 +256,69 @@ var SceneEditorGUI = React.createClass({
         this.saveTimeout = setTimeout(this.saveToScene, 1000);
     },
 
+    _tryGetCurrentMediaObjectZIndex() {
+        try {
+            var style = this.state.scene.scene[this.state.focusedMediaObject].style;
+
+            if (style.hasOwnProperty("z-index")) {
+                return style["z-index"];
+            }
+
+            return 1;
+        } catch (err) {
+            return 1;
+        }
+    },
+
     saveToScene() {
+        //Capture current state
+        var placement = this.state.placement;
 
-                //Capture current state
-                var placement = this.state.placement;
+        //Used to build the new style
+        var mfStyle = {};
 
-                //Used to build the new style
-                var mfStyle = {}
+        //Map placement to correct CSS style
+        if (this.state.placement.isRandom == false) {
+            mfStyle["z-index"] = this._tryGetCurrentMediaObjectZIndex();
+            mfStyle["position"] = "absolute";
+            //x,y coordinates map to CSS "top" and "left" (in relative units)
+            mfStyle["left"] = '' + placement
+                .x
+                .toFixed(2) + '%';
+            mfStyle["top"] = '' + placement
+                .y
+                .toFixed(2) + '%';
+            //Width and height (in relative units)
+            mfStyle["width"] = '' + placement
+                .width
+                .toFixed(2) + '%';
+            mfStyle["height"] = '' + placement
+                .height
+                .toFixed(2) + '%';
 
-                //Random placement, provide no style so MF player uses random positioning
-                if (this.state.placement.isRandom == true) {
-                    mfStyle["z-index"] = 1;
-                }
+            mfStyle["max-width"] = '' + placement
+                .width
+                .toFixed(2) + '%';
+            mfStyle["max-height"] = '' + placement
+                .height
+                .toFixed(2) + '%';
+            //Rotation (degrees)
+            mfStyle["transform"] = 'rotate(' + placement.rotation + 'deg)';
+        } else {
+            // Random placement, provide no style so MF player uses random positioning
+            mfStyle["z-index"] = this._tryGetCurrentMediaObjectZIndex();
+        }
 
-                //Map placement to correct CSS style
-                if (this.state.placement.isRandom == false) {
-                    mfStyle["z-index"] = 1;
-                    mfStyle["position"] = "absolute";
-                    //x,y coordinates map to CSS "top" and "left" (in relative units)
-                    mfStyle["left"] = '' + placement
-                        .x
-                        .toFixed(2) + '%';
-                    mfStyle["top"] = '' + placement
-                        .y
-                        .toFixed(2) + '%'
-                    //Width and height (in relative units)
-                    mfStyle["width"] = '' + placement
-                        .width
-                        .toFixed(2) + '%';
-                    mfStyle["height"] = '' + placement
-                        .height
-                        .toFixed(2) + '%';
-
-                    mfStyle["max-width"] = '' + placement
-                        .width
-                        .toFixed(2) + '%';
-                    mfStyle["max-height"] = '' + placement
-                        .height
-                        .toFixed(2) + '%';
-                    //Rotation (degrees)
-                    mfStyle["transform"] = 'rotate(' + placement.rotation + 'deg)';
-                }
-
-                //Attemp to save back to the scene store
-                try {
-                    var scene = this.state.scene
-                    scene.scene[this.state.focusedMediaObject].style = mfStyle
-                    SceneActions.updateScene(scene)
-                    console.log("SceneEditorGUI: Changes saved:", JSON.stringify(mfStyle))
-                } catch (error) {
-                    console.log("SceneEditorGUI: Failed to save changes:", error)
-                }
-
-            },
+        //Attempt to save back to the scene store
+        try {
+            var scene = this.state.scene;
+            scene.scene[this.state.focusedMediaObject].style = mfStyle;
+            SceneActions.updateScene(scene);
+            console.log("SceneEditorGUI: Changes saved:", JSON.stringify(mfStyle));
+        } catch (error) {
+            console.log("SceneEditorGUI: Failed to save changes:", error);
+        }
+    },
 
 
     //object being dragged (don't save to many events generated)
