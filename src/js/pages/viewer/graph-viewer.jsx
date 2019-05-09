@@ -636,6 +636,7 @@ var GraphViewer = React.createClass({
 
         return (
             <div>
+                {typeDebugComponent}
                 {restartController}
                 {_.map(this.state.media, (mo) => {
                     return <MediaObjectInstance key={mo._id} mo={mo} connection={this.state.connection} audioContext={this.state.audioContext}/>
