@@ -29,6 +29,7 @@ function _getState() {
 }
 
 var NavigationBar = React.createClass({
+
     mixins: [FormHelper],
     getInitialState: function () {
         return _getState();
@@ -59,18 +60,9 @@ var NavigationBar = React.createClass({
         ViewLayoutActions.addLayoutComponent(type);
     },
 
-    componentDidMount: function () {
-
-    },
-
     componentWillMount: function () {
         ClientStore.addChangeListener(this._onLoginChange);
         GridStore.addChangeListener(this._onLayoutChange);
-    },
-
-    handleCreateScene: function (event) {
-        event.preventDefault();
-        HubSendActions.tryCreateScene(this.getRefVal('name'));
     },
 
     handleGraphRoomChange: function (event) {
@@ -95,7 +87,6 @@ var NavigationBar = React.createClass({
                 return (<li>
                     <span className="navbar-text">Scene Graph</span>
                 </li>);
-                break;
             case LayoutComponentConstants.SceneGraphList:
                 return (<li>
                     <form className='form-inline mf-form' onSubmit={this.handleCreateSceneGraph} role='form'>
@@ -115,7 +106,6 @@ var NavigationBar = React.createClass({
                         <button type='submit' className='btn btn-dark'>Create</button>
                     </form>
                 </li>);
-                break;
             case LayoutComponentConstants.GraphViewer:
                 return (<li>
                     <form className='form-inline mf-form' onSubmit={this.handleGraphRoomChange} role='form'>
@@ -125,10 +115,8 @@ var NavigationBar = React.createClass({
                         <button type='submit' className='btn btn-dark'>Set Room</button>
                     </form>
                 </li>);
-                break;
             case LayoutComponentConstants.SceneViewer:
                 return <li><span className="navbar-text">Scene Viewer</span></li>;
-                break;
             case LayoutComponentConstants.Graph:
                 return (<li>
                     <form className='form-inline mf-form' onSubmit={this.handleGraphRoomChange} role='form'>
@@ -138,16 +126,12 @@ var NavigationBar = React.createClass({
                         <button type='submit' className='btn btn-dark'>Set Room</button>
                     </form>
                 </li>);
-                break;
             case LayoutComponentConstants.SceneMediaBrowser:
                 return <li><span className="navbar-text">Scene Viewer</span></li>;
-                break;
             case LayoutComponentConstants.SceneEditor:
                 return <li><span className="navbar-text">Scene Viewer</span></li>;
-                break;
             default:
                 return (<li><span className="navbar-text"></span></li>); //return empty if no navbar element
-                break
         }
 
     },
@@ -156,7 +140,12 @@ var NavigationBar = React.createClass({
     },
 
     render: function () {
+
+        if (!this.state.loggedIn)
+            return null;
+
         var self = this;
+
         var nc = this.getNavComponent();
         var isAdmin = connectionCache.getGroupID() === 0;
         var sessionNav = null;
@@ -195,107 +184,100 @@ var NavigationBar = React.createClass({
             // navbarParentClassname += 'hidden';
         }
 
-        if (this.state.loggedIn)
         // APEP TODO Tech Debt
         // APEP TODO We should add browser tool tips to the dropdown button menu to show that key bindings can be used.
         // APEP TODO we need to add an on select handler for the event keys
         // APEP TODO Look at why we have a hard coded Version: 0
         // APEP TODO A lot of these can be React classes
-            return (
-                <nav className={navbarParentClassname}>
-                    <div className="container-fluid mf-brand-position-fix">
-                        <div className="navbar-header">
-                            <button type="button" className="navbar-toggle collapsed" data-toggle="collapse"
-                                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                                <span className="sr-only">Toggle navigation</span>
-                                <span className="icon-bar"/>
-                                <span className="icon-bar"/>
-                                <span className="icon-bar"/>
-                            </button>
-                        </div>
-                        <div className="collapse navbar-collapse mf-brand-position-fix">
-                            <ul className="nav navbar-nav navbar-left">
-                                <li><img className="mf-image-logo" src="/images/salford-logo.png"/></li>
-                                <li><img className="mf-image-logo" src="/images/MF_transparent.png"/></li>
-                                <li>
-                                <SceneSelector _sceneFocusHandler={GridStore.focusScene}></SceneSelector>
-                                </li>
-                            </ul>
-                            <ul className="nav navbar-nav navbar-right">
-                                <li>
-                                    <span className="navbar-text">Version: 0</span>
-                                </li>
-                                {sessionNav}
-                                {adminDropDown}
-                                <li className="mf-dropdown">
-                                    <DropdownButton id="set-layout-to-preset" title={"Workflows"} className="btn btn-dark navbar-btn">
-                                        <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.default)}>Default</MenuItem>
-                                        <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.authoring.scene)}>Scene Editing</MenuItem>
-                                        <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.authoring.graph)}>Graph Editing</MenuItem>
-                                        <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.authoring.multiItem)}>Multi Item Editing</MenuItem>
-                                        <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.clear)}>Clear</MenuItem>
-                                    </DropdownButton>
-                                </li>
-                                <li className="mf-dropdown">
-                                    <DropdownButton id="add-component-drop-down" title={"Components"}
-                                                    className="btn btn-dark navbar-btn">
-                                        <MenuItem divider/>
-                                        <MenuItem header>Scenes</MenuItem>
-                                        <MenuItem eventKey="1"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditor)}>Scene
-                                            Editor</MenuItem>
-                                        <MenuItem eventKey="1"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.MuliItemEditor)}>Scene Editor Multi
-                                        </MenuItem>
-                                        <MenuItem eventKey="2"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneMediaBrowser)}>Scene
-                                            Media Browser</MenuItem>
-                                        <MenuItem eventKey="3"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditorGUI)}>Visual
-                                            Scene Editor</MenuItem>
-                                        <MenuItem eventKey="4"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.TagEditor)}>Tag
-                                            Editor</MenuItem>
-                                        <MenuItem eventKey="B"
-                                                onClick={self.addComponent.bind(this, LayoutComponentConstants.MediaUpload)}>Media Uploader
-                                        </MenuItem>
-                                        <MenuItem divider/>
-                                        <MenuItem header>Graphs</MenuItem>
-                                        <MenuItem eventKey="5"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneGraphList)}>Scene
-                                            Graph List</MenuItem>
-                                        <MenuItem eventKey="6"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneGraph)}>Scene
-                                            Graph Editor</MenuItem>
-                                        <MenuItem eventKey="7"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.Graph)}>Graph</MenuItem>
 
-                                        <MenuItem divider/>
-                                        <MenuItem header>Players</MenuItem>
-                                        <MenuItem eventKey="8"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneViewer)}>Scene
-                                            Preview Player</MenuItem>
-                                        <MenuItem eventKey="9"
-                                                  onClick={self.addComponent.bind(this, LayoutComponentConstants.GraphViewer)}>External
-                                            Player</MenuItem>
-                                    </DropdownButton>
-                                </li>
-                                <li>
-                                    <button type="button" onClick={this.handleLogout}
-                                            className='btn btn-dark navbar-btn'>
-                                        Log out
-                                    </button>
-                                </li>
-                            </ul>
-                            <ul className="nav navbar-nav navbar-right">
-                                {nc}
-                            </ul>
-                        </div>
+        return (
+            <nav className={navbarParentClassname}>
+                <div className="container-fluid mf-brand-position-fix">
+                    <div className="navbar-header">
+                        <button type="button" className="navbar-toggle collapsed" data-toggle="collapse"
+                                data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                            <span className="sr-only">Toggle navigation</span>
+                            <span className="icon-bar"/>
+                            <span className="icon-bar"/>
+                            <span className="icon-bar"/>
+                        </button>
                     </div>
-                </nav>
-            );
-        else
-            return null;
+                    <div className="collapse navbar-collapse mf-brand-position-fix">
+                        <ul className="nav navbar-nav navbar-left">
+                            <li><img className="mf-image-logo" src="/images/salford-logo.png"/></li>
+                            <li><img className="mf-image-logo" src="/images/MF_transparent.png"/></li>
+                            <li><SceneSelector _sceneFocusHandler={GridStore.focusScene}/></li>
+                        </ul>
+                        <ul className="nav navbar-nav navbar-right">
+                            <li><span className="navbar-text">Version: 0</span></li>
+                            {sessionNav}
+                            {adminDropDown}
+                            <li className="mf-dropdown">
+                                <DropdownButton id="set-layout-to-preset" title={"Workflows"} className="btn btn-dark navbar-btn">
+                                    <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.default)}>Default</MenuItem>
+                                    <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.authoring.scene)}>Scene Editing</MenuItem>
+                                    <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.authoring.graph)}>Graph Editing</MenuItem>
+                                    <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.authoring.multiItem)}>Multi Item Editing</MenuItem>
+                                    <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.clear)}>Clear</MenuItem>
+                                </DropdownButton>
+                            </li>
+                            <li className="mf-dropdown">
+                                <DropdownButton id="add-component-drop-down" title={"Components"}
+                                                className="btn btn-dark navbar-btn">
+                                    <MenuItem divider/>
+                                    <MenuItem header>Scenes</MenuItem>
+                                    <MenuItem eventKey="1"
+                                              onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditor)}>Scene
+                                        Editor</MenuItem>
+                                    <MenuItem eventKey="1"
+                                              onClick={self.addComponent.bind(this, LayoutComponentConstants.MuliItemEditor)}>Scene Editor Multi
+                                    </MenuItem>
+                                    <MenuItem eventKey="2"
+                                              onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneMediaBrowser)}>Scene
+                                        Media Browser</MenuItem>
+                                    <MenuItem eventKey="3"
+                                              onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneEditorGUI)}>Visual
+                                        Scene Editor</MenuItem>
+                                    <MenuItem eventKey="4"
+                                              onClick={self.addComponent.bind(this, LayoutComponentConstants.TagEditor)}>Tag
+                                        Editor</MenuItem>
+                                    <MenuItem eventKey="B"
+                                            onClick={self.addComponent.bind(this, LayoutComponentConstants.MediaUpload)}>Media Uploader
+                                    </MenuItem>
+                                    <MenuItem divider/>
+                                    <MenuItem header>Graphs</MenuItem>
+                                    <MenuItem eventKey="5"
+                                              onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneGraphList)}>Scene
+                                        Graph List</MenuItem>
+                                    <MenuItem eventKey="6"
+                                              onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneGraph)}>Scene
+                                        Graph Editor</MenuItem>
+                                    <MenuItem eventKey="7"
+                                              onClick={self.addComponent.bind(this, LayoutComponentConstants.Graph)}>Graph</MenuItem>
+                                    <MenuItem divider/>
+                                    <MenuItem header>Players</MenuItem>
+                                    <MenuItem eventKey="8"
+                                              onClick={self.addComponent.bind(this, LayoutComponentConstants.SceneViewer)}>Scene
+                                        Preview Player</MenuItem>
+                                    <MenuItem eventKey="9"
+                                              onClick={self.addComponent.bind(this, LayoutComponentConstants.GraphViewer)}>External
+                                        Player</MenuItem>
+                                </DropdownButton>
+                            </li>
+                            <li>
+                                <button type="button" onClick={this.handleLogout}
+                                        className='btn btn-dark navbar-btn'>
+                                    Log out
+                                </button>
+                            </li>
+                        </ul>
+                        <ul className="nav navbar-nav navbar-right">
+                            {nc}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        );
 
     }
 

@@ -13,12 +13,19 @@ var getImageMediaObjectThumbnailUrl = function (mediaObjectUrl) {
         return mediaObjectUrl;
     }
 
-    if (mediaObjectUrl.indexOf(process.env.AZURE_CDN_URL) === -1) {
+    // APEP problem finding with showing thumbnails, given that we use the img fallback, lets simplify by always trying to show a thumbnail using convention.
+    // if the image is not an MF image, the image fallback will handle the lack of thumbnail
+    // if (mediaObjectUrl.indexOf(process.env.AZURE_CDN_URL) === -1) {
+    //     return mediaObjectUrl;
+    // }
+
+    try {
+        var trailingSlash = mediaObjectUrl.lastIndexOf('/');
+        return mediaObjectUrl.substring(0, trailingSlash + 1) + "thumbnail-" + mediaObjectUrl.substring(trailingSlash + 1, mediaObjectUrl.length);
+    } catch (e) {
         return mediaObjectUrl;
     }
 
-    var trailingSlash = mediaObjectUrl.lastIndexOf('/');
-    return mediaObjectUrl.substring(0, trailingSlash + 1) + "thumbnail-" + mediaObjectUrl.substring(trailingSlash + 1, mediaObjectUrl.length);
 };
 
 var getFilenameFromUrl = function (url) {
@@ -58,8 +65,9 @@ var MediaObjectPreview = React.createClass({
         if (!mediaObject || !mediaObject.type) {
             return;
         }
-        console.log(mediaObject.type)
+
         switch (mediaObject.type) {
+
             case 'audio':
                 if (mediaObject.url.indexOf('soundcloud.com') !== -1) {
                     this.loadSoundcloudThumbnailAndTitle(mediaObject);
@@ -85,7 +93,6 @@ var MediaObjectPreview = React.createClass({
                 } else {
                     this.setState({title: this.loadAudioTitle(mediaObject)});
                 }
-                ;
                 break;
 
             case 'text':
@@ -122,6 +129,7 @@ var MediaObjectPreview = React.createClass({
         var type = this.props.mediaObject.type,
             title, extra;
         var self = this;
+
         switch (type) {
             case 'image':
                 extra = <ImgLoader

@@ -2,6 +2,9 @@ var JSZip = require("jszip")
 var TagMatcher = require('./tag-matcher');
 var _ = require('lodash');
 var soundCloud = require('./sound-cloud');
+require('screw-filereader');
+var streamSaver = require('streamsaver');
+
 
 class ThemeDownloader {
 
@@ -9,7 +12,7 @@ class ThemeDownloader {
         this.zip = new JSZip();
     }
 
-    download(scene) {
+    download(scene, progressCB, errorCB, completeCB) {
         var sceneClone = _.cloneDeep(scene) //make sure no changes made to scene object refrence!
         var mediaObjectList = sceneClone.scene;
         var themes = sceneClone.themes
@@ -70,15 +73,16 @@ class ThemeDownloader {
 
         console.log(files)
         var filename = sceneClone._id + "_" + sceneClone.name + "_themes" + ".zip";
-        this.downloadAsZipFile(files, filename)
+        this.downloadAsZipFile(files, filename, progressCB, errorCB, completeCB)
 
     }
 
-    addToZip(downloadObject) {
+    addToZip(downloadObject, progressCB, outOf) {
         var url = downloadObject.url;
         var folder = downloadObject.theme;
+        var attemptsRemaining = 3;
         var self = this;
-        return new Promise(function(resolve) {
+        return new Promise(function(resolve, reject) {
           var httpRequest = new XMLHttpRequest();
           httpRequest.responseType="blob";
           httpRequest.open("GET", url);
@@ -89,18 +93,28 @@ class ThemeDownloader {
                   simpleFileName += ".mp3" // for soundcloud
               }
             self.zip.file(folder + "/" + guid + "_" + simpleFileName, this.response);
+            progressCB(outOf);
             resolve()
+          }
+          httpRequest.onerror = function() {
+            attemptsRemaining --;
+            if(attemptsRemaining > 0) {
+                httpRequest.open("GET", url);
+                httpRequest.send(); //keep trying
+            } else {
+                reject(); //fail download
+            }
           }
           httpRequest.send()
         })
     }
 
-    downloadAsZipFile(downloadObjects, filename) {
+    downloadAsZipFile(downloadObjects, filename, progressCB, errorCB, completeCB) {
         var self = this;
         self.zip = new JSZip(); //need to create new zip object or old files remain
         //promise structure to zip all files and download.
         Promise.all(downloadObjects.map(function(downloadObject) {
-            return self.addToZip(downloadObject)
+            return self.addToZip(downloadObject, progressCB, downloadObjects.length)
           }))
           .then(function() {
             self.zip.generateAsync({
@@ -108,13 +122,16 @@ class ThemeDownloader {
             })
             .then(function(content) {
                 self.downloadBlobWithFileName(content, filename);
-            });
+                completeCB();
+            }).catch(error => {
+                errorCB(); //download failed.
+              });
           })
       }
 
+    /*~500MB limit due to chrome! 2GB in firefox...
     downloadBlobWithFileName(blob, filename) {
         let blobURL = URL.createObjectURL(blob)
-
         //workaround to rename blob!
         let a = document.createElement("a")
         a.download = filename
@@ -123,7 +140,24 @@ class ThemeDownloader {
         a.click()
         document.body.removeChild(a)
         URL.revokeObjectURL(blobURL);
+    }*/
+
+    /*streams zip directly to file using serviceworker (no memory limit) but requires HTTPS so disabled for now.
+    streamZipToFile(zip, filename) {
+        let fileStream = streamSaver.createWriteStream(filename).getWriter()
+            zip.generateInternalStream({type: "blob"})
+                .on('data', data => fileStream.write(data))
+                .on('error', err => {fileStream.abort(); console.log("Download error", err)})
+                .on('end', () => fileStream.close())
+                .resume()
     }
+    */
+
+   //stream zip not async but fast alows multi GB file sizes.
+   downloadBlobWithFileName(blob, filename) {
+    let fileStream = streamSaver.createWriteStream(filename)
+    blob.stream().pipeTo(fileStream)
+   }
 
 }
 

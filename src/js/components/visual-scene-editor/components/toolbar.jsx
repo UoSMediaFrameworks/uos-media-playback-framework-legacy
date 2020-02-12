@@ -135,7 +135,7 @@ var ToolBar = React.createClass({
             </span>
 
             <span>
-                <span className="mf-gui-toolbar-text">Random Postion</span>
+                <span className="mf-gui-toolbar-text">Random Position</span>
                 <FontAwesome
                     id="randomPlacement"
                     className='mf-gui-toolbar-icon'

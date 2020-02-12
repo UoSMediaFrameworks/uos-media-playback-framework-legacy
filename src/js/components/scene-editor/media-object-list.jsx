@@ -9,6 +9,8 @@ var _ = require("lodash");
 var MediaDownloader = require('../../utils/media-downloader.js');
 var soundCloud = require('../../utils/sound-cloud');
 var ThemeDownloader = require('../../utils/theme-downloader');
+var toastr = require("toastr"); 
+
 
 var MediaObjectList = React.createClass({
     getInitialState: function () {
@@ -94,6 +96,8 @@ var MediaObjectList = React.createClass({
 
     downloadMediaObjects: function(items) {
         var urls = [];
+        
+        var dlmesg = toastr.info("This may take a long time","Downloading Content", {timeOut:0, extendedTimeOut: 0, positionClass: "toast-bottom-right"});
         items.forEach(listItem => {
             if (listItem.props.isMatched) {
             var mediaObject = listItem.props.mediaObject;
@@ -115,8 +119,51 @@ var MediaObjectList = React.createClass({
         if (this.state.tagSearch.length > 0) {
             searchTerm = "_(" + this.state.tagSearch + ")"
         }
+        
+        var progress = 0;
+        var progressCB = function() {
+            progress +=1
+            dlmesg.find(".toast-message").text("Processing item " + progress + "  of " + urls.length );
+            if (progress > urls.length) {
+                dlmesg.find(".toast-message").text("Ziping files for download");
+            } 
+        }
+        var errorCB = function () {
+            dlmesg.fadeOut(0); //instant remove
+            toastr.error("Download failed");
+        }
+        var completeCB = function() {
+            dlmesg.fadeOut(0);
+            toastr.success("Download Done");
+        }
+        
+
         var filename = this.props.scene._id + "_" + this.props.scene.name + searchTerm + ".zip";
-        MediaDownloader.downloadAsZipFile(urls, filename);
+        MediaDownloader.downloadAsZipFile(urls, filename, progressCB, errorCB, completeCB);
+    },
+
+    downloadThemes: function() {
+        var downloader = new ThemeDownloader();
+        var dlmesg = toastr.info("This may take a long time","Downloading Content", {timeOut:0, extendedTimeOut: 0, positionClass: "toast-bottom-right"});
+
+        var progress = 0;
+        var progressCB = function(outOf) {
+            progress +=1
+            dlmesg.find(".toast-message").text("Processing item " + progress + "  of " + outOf );
+            if (progress > outOf) {
+                dlmesg.find(".toast-message").text("Ziping files for download");
+            } 
+        }
+        var errorCB = function () {
+            dlmesg.fadeOut(0); //instant remove
+            toastr.error("Download failed");
+        }
+        var completeCB = function() {
+            dlmesg.fadeOut(0);
+            toastr.success("Download Done");
+        }
+
+        downloader.download(this.props.scene, progressCB, errorCB, completeCB );
     },
 
     getFilteredMediaList() {
@@ -207,8 +254,7 @@ var MediaObjectList = React.createClass({
                 <button type='button'
                         className="btn btn-dark"
                         onClick={() => {
-                            var downloader = new ThemeDownloader();
-                            downloader.download(this.props.scene);
+                            this.downloadThemes();
                         }}>
                         Download Audio Themes
                 </button>
