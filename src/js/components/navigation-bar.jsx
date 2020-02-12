@@ -189,6 +189,7 @@ var NavigationBar = React.createClass({
         // APEP TODO we need to add an on select handler for the event keys
         // APEP TODO Look at why we have a hard coded Version: 0
         // APEP TODO A lot of these can be React classes
+
         return (
             <nav className={navbarParentClassname}>
                 <div className="container-fluid mf-brand-position-fix">
@@ -217,6 +218,7 @@ var NavigationBar = React.createClass({
                                     <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.authoring.scene)}>Scene Editing</MenuItem>
                                     <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.authoring.graph)}>Graph Editing</MenuItem>
                                     <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.authoring.multiItem)}>Multi Item Editing</MenuItem>
+                                    <MenuItem onClick={ViewLayoutActions.setPreset.bind(this, LayoutComponentPresets.clear)}>Clear</MenuItem>
                                 </DropdownButton>
                             </li>
                             <li className="mf-dropdown">
@@ -252,7 +254,6 @@ var NavigationBar = React.createClass({
                                         Graph Editor</MenuItem>
                                     <MenuItem eventKey="7"
                                               onClick={self.addComponent.bind(this, LayoutComponentConstants.Graph)}>Graph</MenuItem>
-
                                     <MenuItem divider/>
                                     <MenuItem header>Players</MenuItem>
                                     <MenuItem eventKey="8"

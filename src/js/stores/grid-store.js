@@ -173,7 +173,7 @@ var GridStore = assign({}, EventEmitter.prototype, {
                 GridStore.emitChange();
                 break;
             case ActionTypes.LAYOUT_CHANGE:
-                // saveToLS(action.layout);
+
                 gridState.layoutManager.setLayout(action.layout);
                 GridStore.emitChange();
                 break;
