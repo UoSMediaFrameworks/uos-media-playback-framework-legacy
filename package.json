@@ -58,7 +58,7 @@
     "jsonfile": "^2.4.0",
     "jszip": "^3.1.5",
     "keymirror": "^0.1.0",
-    "lodash": "^3.6.0",
+    "lodash": "^4.17.19",
     "lodash._basecreatewrapper": "^2.4.1",
     "lodash._isnative": "^2.4.0",
     "lodash._slice": "^2.4.1",
